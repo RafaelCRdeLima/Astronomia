@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Dois relógios locais</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --line: #343434;
+      --text: #f4f4f1;
+      --muted: #aaa69c;
+      --accent: #d7b46a;
+      --blue: #73a7ff;
+      --red: #ff6b4a;
+      --green: #74d6a2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 16px 0 24px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(26px, 3vw, 40px);
+      line-height: 1.05;
+      font-weight: 720;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .badge {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 18px;
+      margin-top: 14px;
+    }
+
+    aside,
+    .panel,
+    .metric {
+      background: linear-gradient(180deg, var(--panel), #0b0b0b);
+      border: 1px solid var(--line);
+    }
+
+    aside {
+      padding: 14px;
+      align-self: start;
+    }
+
+    .control {
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .control:first-child {
+      padding-top: 0;
+    }
+
+    .control:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    label span {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .hint {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preset {
+      min-height: 34px;
+      color: var(--text);
+      background: #0b0b0b;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+    }
+
+    .preset:hover,
+    .preset:focus-visible {
+      border-color: var(--accent);
+      color: var(--accent);
+      outline: none;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .stage {
+      position: relative;
+      padding: 16px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 350px;
+      background: radial-gradient(circle at 28% 52%, #17120a 0, #0b0b0b 34%, #050505 100%);
+      border: 1px solid #242424;
+    }
+
+    .equation {
+      position: absolute;
+      left: 32px;
+      top: 30px;
+      padding: 10px 12px;
+      color: var(--text);
+      background: rgb(5 5 5 / 78%);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .equation .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 78px;
+      padding: 11px;
+    }
+
+    .metric .name {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .metric .value {
+      margin-top: 9px;
+      color: var(--text);
+      font-size: clamp(18px, 2.2vw, 26px);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .metric .unit {
+      margin-top: 7px;
+      color: var(--accent);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    #factorMetric {
+      font-size: 15px;
+      line-height: 1.25;
+      white-space: normal;
+    }
+
+    .status {
+      color: var(--green);
+    }
+
+    .status.warning {
+      color: var(--red);
+    }
+
+    .clocks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .clock-card {
+      padding: 12px;
+    }
+
+    .clock-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .clock-title {
+      font-weight: 700;
+    }
+
+    .clock-readout {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .clock-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 145px;
+    }
+
+    .clock {
+      position: relative;
+      width: min(150px, 62vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      background:
+        radial-gradient(circle at center, #161616 0 10%, transparent 10.5%),
+        radial-gradient(circle at center, #0c0c0c 0, #070707 68%, #050505 100%);
+      box-shadow: inset 0 0 0 1px #111, 0 0 0 1px #111;
+    }
+
+    .clock::before {
+      content: "";
+      position: absolute;
+      inset: 13%;
+      border-radius: 50%;
+      border: 1px solid #262626;
+    }
+
+    .hand {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: 38%;
+      transform-origin: 50% 100%;
+      border-radius: 999px;
+    }
+
+    .hand.a {
+      background: var(--blue);
+    }
+
+    .hand.b {
+      background: var(--red);
+    }
+
+    .hub {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .tick {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: 9px;
+      background: #555;
+      transform-origin: 50% calc(75px - 1px);
+    }
+
+    @media (max-width: 900px) {
+      header,
+      main,
+      .metrics,
+      .clocks {
+        grid-template-columns: 1fr;
+      }
+
+      .badge {
+        justify-self: start;
+      }
+
+      canvas {
+        height: 430px;
+      }
+
+      .equation {
+        position: static;
+        margin-bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>Dois relógios locais no campo gravitacional</h1>
+        <p class="subtitle">
+          Escolha a massa e o raio físico do corpo central. Depois posicione dois observadores estáticos: nenhum pode ficar abaixo da superfície, e o fim do controle representa infinito.
+        </p>
+      </div>
+      <div class="badge">Schwarzschild · observadores estáticos</div>
+    </header>
+
+    <main>
+      <aside>
+        <div class="control">
+          <label for="mass">Massa central <span id="massValue">1,000 M_solar</span></label>
+          <input id="mass" type="range" min="0" max="10000" value="8700" step="1">
+          <p class="hint">Escala logarítmica suave de 0 até 8 massas solares.</p>
+        </div>
+
+        <div class="control">
+          <label for="bodyRadius">Raio do corpo <span id="bodyRadiusValue">109,1 R_Terra</span></label>
+          <input id="bodyRadius" type="range" min="0" max="10000" value="8420" step="1">
+          <p class="hint">A superfície do corpo central. Os observadores sempre começam a partir deste raio.</p>
+        </div>
+
+        <div class="control">
+          <label for="observerA">Observador A <span id="observerAValue">superfície</span></label>
+          <input id="observerA" type="range" min="0" max="10000" value="0" step="1">
+          <p class="hint">De R do corpo até infinito. A última posição do controle é infinito.</p>
+        </div>
+
+        <div class="control">
+          <label for="observerB">Observador B <span id="observerBValue">∞</span></label>
+          <input id="observerB" type="range" min="0" max="10000" value="10000" step="1">
+          <p class="hint">Compare dois relógios locais, não um relógio local com um relógio abstrato.</p>
+        </div>
+
+        <div class="control">
+          <label for="time">Tempo coordenado t <span id="timeValue">12,0 h</span></label>
+          <input id="time" type="range" min="0" max="24" value="12" step="0.1">
+          <p class="hint">Usado apenas como referência comum para calcular quanto cada relógio acumula.</p>
+        </div>
+
+        <div class="control">
+          <label>Configurações típicas</label>
+          <div class="preset-grid">
+            <button class="preset" data-preset="earth" type="button">Terra</button>
+            <button class="preset" data-preset="sun" type="button">Sol</button>
+            <button class="preset" data-preset="jupiter" type="button">Júpiter</button>
+            <button class="preset" data-preset="neutron" type="button">Estrela de nêutrons</button>
+            <button class="preset" data-preset="blackhole" type="button">Buraco negro</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="content">
+        <section class="panel stage">
+          <div class="equation">
+            d&tau;(r) = &radic;(1 - Rs/r) dt
+            <div class="muted">Rs = 2GM/c² · na posição ∞, d&tau; = dt</div>
+          </div>
+          <canvas id="space" width="900" height="498"></canvas>
+        </section>
+
+        <section class="metrics">
+          <div class="metric">
+            <div class="name">Tempo próprio A</div>
+            <div class="value" id="tauAMetric">12,00</div>
+            <div class="unit">horas</div>
+          </div>
+          <div class="metric">
+            <div class="name">Tempo próprio B</div>
+            <div class="value" id="tauBMetric">12,00</div>
+            <div class="unit">horas</div>
+          </div>
+          <div class="metric">
+            <div class="name">Diferença |B - A|</div>
+            <div class="value" id="diffMetric">0,0</div>
+            <div class="unit" id="diffUnit">minutos</div>
+          </div>
+          <div class="metric">
+            <div class="name">Fator A / Fator B</div>
+            <div class="value" id="factorMetric">1,000 / 1,000</div>
+            <div class="unit">τ/t</div>
+          </div>
+          <div class="metric">
+            <div class="name">Raio de Schwarzschild</div>
+            <div class="value" id="rsMetric">4,64e-4</div>
+            <div class="unit">raios da Terra</div>
+          </div>
+          <div class="metric">
+            <div class="name">Estado físico</div>
+            <div class="value status" id="statusMetric">fora</div>
+            <div class="unit" id="statusDetail">R_corpo > Rs</div>
+          </div>
+        </section>
+
+        <section class="clocks">
+          <div class="panel clock-card">
+            <div class="clock-head">
+              <div class="clock-title">Relógio A</div>
+              <div class="clock-readout" id="clockAReadout">12:00</div>
+            </div>
+            <div class="clock-wrap">
+              <div class="clock" id="clockA">
+                <div class="hand a" id="handA"></div>
+                <div class="hub"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel clock-card">
+            <div class="clock-head">
+              <div class="clock-title">Relógio B</div>
+              <div class="clock-readout" id="clockBReadout">12:00</div>
+            </div>
+            <div class="clock-wrap">
+              <div class="clock" id="clockB">
+                <div class="hand b" id="handB"></div>
+                <div class="hub"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const mass = document.getElementById("mass");
+    const bodyRadius = document.getElementById("bodyRadius");
+    const observerA = document.getElementById("observerA");
+    const observerB = document.getElementById("observerB");
+    const time = document.getElementById("time");
+    const massValue = document.getElementById("massValue");
+    const bodyRadiusValue = document.getElementById("bodyRadiusValue");
+    const observerAValue = document.getElementById("observerAValue");
+    const observerBValue = document.getElementById("observerBValue");
+    const timeValue = document.getElementById("timeValue");
+    const tauAMetric = document.getElementById("tauAMetric");
+    const tauBMetric = document.getElementById("tauBMetric");
+    const diffMetric = document.getElementById("diffMetric");
+    const diffUnit = document.getElementById("diffUnit");
+    const factorMetric = document.getElementById("factorMetric");
+    const rsMetric = document.getElementById("rsMetric");
+    const statusMetric = document.getElementById("statusMetric");
+    const statusDetail = document.getElementById("statusDetail");
+    const clockAReadout = document.getElementById("clockAReadout");
+    const clockBReadout = document.getElementById("clockBReadout");
+    const handA = document.getElementById("handA");
+    const handB = document.getElementById("handB");
+    const canvas = document.getElementById("space");
+    const ctx = canvas.getContext("2d");
+
+    const SOLAR_RS_KM = 2.95325008;
+    const EARTH_RADIUS_KM = 6371;
+    const SOLAR_RS_IN_EARTH_RADII = SOLAR_RS_KM / EARTH_RADIUS_KM;
+    const MASS_MAX_SOLAR = 8;
+    const BODY_RADIUS_MAX_EARTH = 1000;
+    const FAR_RADIUS_EARTH = 1e7;
+    const SLIDER_STEPS = 10000;
+    const MASS_K = 16;
+    const BODY_RADIUS_K = 14;
+
+    const PRESETS = {
+      earth: { mass: 0.000003003, radius: 1, a: 0, b: SLIDER_STEPS, time: 12 },
+      sun: { mass: 1, radius: 109.1, a: 0, b: SLIDER_STEPS, time: 12 },
+      jupiter: { mass: 0.0009546, radius: 11.21, a: 0, b: SLIDER_STEPS, time: 12 },
+      neutron: { mass: 1.4, radius: 0.0019, a: 0, b: Math.round(SLIDER_STEPS * 0.9), time: 12 },
+      blackhole: { mass: 8, radius: 8 * SOLAR_RS_IN_EARTH_RADII, a: Math.round(SLIDER_STEPS * 0.12), b: SLIDER_STEPS, time: 12 }
+    };
+
+    function ptNumber(value, digits = 2) {
+      return Number(value).toLocaleString("pt-BR", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      });
+    }
+
+    function compactNumber(value, digits = 3) {
+      if (!Number.isFinite(value)) return "∞";
+      if (Math.abs(value) > 0 && Math.abs(value) < 0.001) {
+        return value.toExponential(2).replace(".", ",");
+      }
+      return ptNumber(value, digits);
+    }
+
+    function formatTimeDifference(seconds) {
+      if (!Number.isFinite(seconds)) return { value: "—", unit: "" };
+      if (seconds >= 3600) return { value: ptNumber(seconds / 3600, 3), unit: "horas" };
+      if (seconds >= 60) return { value: ptNumber(seconds / 60, 3), unit: "minutos" };
+      if (seconds >= 1) return { value: ptNumber(seconds, 3), unit: "segundos" };
+      if (seconds >= 1e-3) return { value: ptNumber(seconds * 1e3, 3), unit: "milissegundos" };
+      if (seconds >= 1e-6) return { value: ptNumber(seconds * 1e6, 3), unit: "microssegundos" };
+      return { value: ptNumber(seconds * 1e9, 3), unit: "nanossegundos" };
+    }
+
+    function formatFactor(value) {
+      if (!Number.isFinite(value)) return "—";
+      const closeToOne = Math.abs(1 - value) < 1e-5;
+      return ptNumber(value, closeToOne ? 10 : 6);
+    }
+
+    function sliderToPhysical(position, maxValue, curvature) {
+      const s = Math.max(0, Math.min(1, Number(position) / SLIDER_STEPS));
+      return maxValue * (Math.exp(curvature * s) - 1) / (Math.exp(curvature) - 1);
+    }
+
+    function physicalToSlider(value, maxValue, curvature) {
+      if (value <= 0) return 0;
+      const capped = Math.min(value, maxValue);
+      const s = Math.log(1 + capped / maxValue * (Math.exp(curvature) - 1)) / curvature;
+      return Math.round(s * SLIDER_STEPS);
+    }
+
+    function radialPosition(observerSlider, surfaceRadius) {
+      const position = Number(observerSlider);
+      const surface = Math.max(surfaceRadius, 1e-9);
+      if (position >= SLIDER_STEPS) return Infinity;
+      const u = Math.max(0, position) / (SLIDER_STEPS - 1);
+      const far = Math.max(FAR_RADIUS_EARTH, surface * 1e5);
+      return surface * Math.exp(Math.log(far / surface) * u);
+    }
+
+    function radialLabel(observerSlider, radius, surfaceRadius) {
+      if (Number(observerSlider) >= SLIDER_STEPS) return "∞";
+      if (Number(observerSlider) === 0) return "superfície";
+      return `${compactNumber(radius, 3)} R_Terra`;
+    }
+
+    function clockText(hours) {
+      if (!Number.isFinite(hours)) return "—";
+      const totalMinutes = Math.round(hours * 60);
+      const h = Math.floor(totalMinutes / 60);
+      const m = Math.abs(totalMinutes % 60);
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    }
+
+    function handAngle(hours) {
+      if (!Number.isFinite(hours)) return 0;
+      return (hours % 12) * 30;
+    }
+
+    function factorAtRadius(radius, rsEarth) {
+      if (!Number.isFinite(radius)) return 1;
+      if (rsEarth <= 0) return 1;
+      if (radius <= rsEarth) return NaN;
+      return Math.sqrt(1 - rsEarth / radius);
+    }
+
+    function getState() {
+      const massSolar = sliderToPhysical(mass.value, MASS_MAX_SOLAR, MASS_K);
+      const surfaceRadius = sliderToPhysical(bodyRadius.value, BODY_RADIUS_MAX_EARTH, BODY_RADIUS_K);
+      const t = Number(time.value);
+      const rsEarth = massSolar * SOLAR_RS_IN_EARTH_RADII;
+      const rA = radialPosition(observerA.value, surfaceRadius);
+      const rB = radialPosition(observerB.value, surfaceRadius);
+      const factorA = factorAtRadius(rA, rsEarth);
+      const factorB = factorAtRadius(rB, rsEarth);
+      const tauA = Number.isFinite(factorA) ? t * factorA : NaN;
+      const tauB = Number.isFinite(factorB) ? t * factorB : NaN;
+      return { massSolar, surfaceRadius, t, rsEarth, rA, rB, factorA, factorB, tauA, tauB };
+    }
+
+    function drawTicks(clock) {
+      for (let i = 0; i < 12; i += 1) {
+        const tick = document.createElement("div");
+        tick.className = "tick";
+        tick.style.transform = `translate(-50%, -75px) rotate(${i * 30}deg) translateY(4px)`;
+        clock.appendChild(tick);
+      }
+    }
+
+    drawTicks(document.getElementById("clockA"));
+    drawTicks(document.getElementById("clockB"));
+
+    function resizeCanvas() {
+      const box = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.round(box.width * ratio);
+      canvas.height = Math.round(box.height * ratio);
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      draw();
+    }
+
+    function mapRadiusFactory(state, maxDrawRadius) {
+      const values = [state.surfaceRadius, state.rsEarth, state.rA, state.rB]
+        .filter((value) => Number.isFinite(value) && value > 0);
+      const minValue = Math.max(1e-9, Math.min(...values));
+      const maxValue = Math.max(FAR_RADIUS_EARTH, ...values, minValue * 100);
+      return (value) => {
+        if (!Number.isFinite(value)) return maxDrawRadius;
+        if (value <= 0) return 0;
+        const u = Math.log10(1 + value / minValue) / Math.log10(1 + maxValue / minValue);
+        return 18 + u * maxDrawRadius;
+      };
+    }
+
+    function drawObserver(cx, cy, radiusPx, color, label, yOffset) {
+      const x = cx + radiusPx;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(x, cy + yOffset);
+      ctx.stroke();
+
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, cy + yOffset, 11, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#f4f4f1";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = "#f4f4f1";
+      ctx.font = "700 13px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(label, x, cy + yOffset - 20);
+    }
+
+    function draw() {
+      const state = getState();
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      const cx = width * 0.22;
+      const cy = height * 0.54;
+      const maxDrawRadius = Math.min(width * 0.64, height * 0.72);
+      const mapRadius = mapRadiusFactory(state, maxDrawRadius);
+      const surfacePx = Math.max(18, mapRadius(state.surfaceRadius));
+      const rsPx = state.rsEarth > 0 ? Math.max(10, mapRadius(state.rsEarth)) : 0;
+      const rAPx = mapRadius(state.rA);
+      const rBPx = mapRadius(state.rB);
+
+      ctx.clearRect(0, 0, width, height);
+
+      const bg = ctx.createRadialGradient(cx, cy, 5, cx, cy, maxDrawRadius + 120);
+      bg.addColorStop(0, "rgba(215,180,106,0.24)");
+      bg.addColorStop(0.32, "rgba(255,107,74,0.08)");
+      bg.addColorStop(1, "rgba(5,5,5,0)");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = "#2c2c2c";
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 5; i += 1) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, 32 + i * maxDrawRadius / 6, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      if (state.rsEarth > 0) {
+        ctx.fillStyle = "rgba(255,107,74,0.07)";
+        ctx.beginPath();
+        ctx.arc(cx, cy, rsPx, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#ff6b4a";
+        ctx.lineWidth = 1.6;
+        ctx.setLineDash([7, 7]);
+        ctx.beginPath();
+        ctx.arc(cx, cy, rsPx, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#ff6b4a";
+        ctx.font = "12px Inter, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("Rs", cx + rsPx + 7, cy - 5);
+      }
+
+      ctx.fillStyle = "rgba(215,180,106,0.16)";
+      ctx.beginPath();
+      ctx.arc(cx, cy, surfacePx, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#d7b46a";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.arc(cx, cy, surfacePx, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const bodyDrawRadius = Math.max(24, Math.min(46, surfacePx * 0.32));
+      const gradient = ctx.createRadialGradient(cx - 15, cy - 17, 5, cx, cy, bodyDrawRadius);
+      gradient.addColorStop(0, "#fff1bd");
+      gradient.addColorStop(0.35, "#d7b46a");
+      gradient.addColorStop(1, "#7b5224");
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(cx, cy, bodyDrawRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#050505";
+      ctx.font = "700 16px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("M", cx, cy + 5);
+
+      ctx.strokeStyle = "#73a7ff";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, rAPx, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#ff6b4a";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, rBPx, 0, Math.PI * 2);
+      ctx.stroke();
+
+      drawObserver(cx, cy, rAPx, "#73a7ff", "A", -8);
+      drawObserver(cx, cy, rBPx, "#ff6b4a", "B", 16);
+
+      ctx.fillStyle = "#aaa69c";
+      ctx.font = "12px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`R_corpo = ${compactNumber(state.surfaceRadius, 3)} R_Terra`, cx, cy + bodyDrawRadius + 18);
+      ctx.textAlign = "right";
+      ctx.fillText("escala radial logarítmica; fim do controle = infinito", width - 24, height - 22);
+    }
+
+    function update() {
+      const state = getState();
+      const invalidSurface = state.rsEarth > 0 && state.surfaceRadius <= state.rsEarth;
+      const validA = Number.isFinite(state.tauA);
+      const validB = Number.isFinite(state.tauB);
+      const diffSeconds = validA && validB ? Math.abs(state.tauB - state.tauA) * 3600 : NaN;
+      const diff = formatTimeDifference(diffSeconds);
+
+      massValue.textContent = `${compactNumber(state.massSolar, 6)} M_solar`;
+      bodyRadiusValue.textContent = `${compactNumber(state.surfaceRadius, 3)} R_Terra`;
+      observerAValue.textContent = radialLabel(observerA.value, state.rA, state.surfaceRadius);
+      observerBValue.textContent = radialLabel(observerB.value, state.rB, state.surfaceRadius);
+      timeValue.textContent = `${ptNumber(state.t, 1)} h`;
+      tauAMetric.textContent = validA ? ptNumber(state.tauA, 6) : "—";
+      tauBMetric.textContent = validB ? ptNumber(state.tauB, 6) : "—";
+      diffMetric.textContent = diff.value;
+      diffUnit.textContent = diff.unit;
+      factorMetric.innerHTML = `A ${formatFactor(state.factorA)}<br>B ${formatFactor(state.factorB)}`;
+      rsMetric.textContent = compactNumber(state.rsEarth, 5);
+      statusMetric.textContent = invalidSurface ? "R <= Rs" : "fora";
+      statusMetric.classList.toggle("warning", invalidSurface);
+      statusDetail.textContent = invalidSurface ? "superfície dentro do horizonte" : "observadores >= R_corpo";
+      clockAReadout.textContent = validA ? clockText(state.tauA) : "—";
+      clockBReadout.textContent = validB ? clockText(state.tauB) : "—";
+      handA.style.transform = `translate(-50%, -100%) rotate(${handAngle(state.tauA)}deg)`;
+      handB.style.transform = `translate(-50%, -100%) rotate(${handAngle(state.tauB)}deg)`;
+      handA.style.opacity = validA ? "1" : "0.25";
+      handB.style.opacity = validB ? "1" : "0.25";
+      draw();
+    }
+
+    function applyPreset(preset) {
+      mass.value = physicalToSlider(preset.mass, MASS_MAX_SOLAR, MASS_K);
+      bodyRadius.value = physicalToSlider(preset.radius, BODY_RADIUS_MAX_EARTH, BODY_RADIUS_K);
+      observerA.value = preset.a;
+      observerB.value = preset.b;
+      time.value = preset.time;
+      update();
+    }
+
+    document.querySelectorAll("[data-preset]").forEach((button) => {
+      button.addEventListener("click", () => applyPreset(PRESETS[button.dataset.preset]));
+    });
+
+    [mass, bodyRadius, observerA, observerB, time].forEach((control) => {
+      control.addEventListener("input", update);
+    });
+
+    window.addEventListener("resize", resizeCanvas);
+    applyPreset(PRESETS.earth);
+    resizeCanvas();
+    update();
+  </script>
+</body>
+</html>
