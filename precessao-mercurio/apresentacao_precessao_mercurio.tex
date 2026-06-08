@@ -216,12 +216,13 @@
     \column{0.4\textwidth}
     \centering
     \begin{tikzpicture}[scale=0.84]
-      \fill[yellow!70!orange] (0,0) circle (0.15);
+      \coordinate (sun) at (1.18,0);
       \draw[thick,blue!65] (0.35,0) ellipse (1.7 and 0.95);
       \draw[thick,red!70,dashed,rotate=18] (0.35,0) ellipse (1.7 and 0.95);
       \draw[->,thick] (1.95,0) arc[start angle=0,end angle=18,radius=1.95];
       \node at (2.35,0.38) {$\Delta\varpi$};
-      \node[below] at (0,-0.18) {Sol};
+      \fill[yellow!70!orange] (sun) circle (0.15);
+      \node[below] at ([yshift=-0.12cm]sun) {Sol};
       \fill[blue!70] (2.05,0) circle (0.06);
       \fill[red!70] (2.0,0.65) circle (0.06);
       \node[right] at (2.1,0) {periélio};
