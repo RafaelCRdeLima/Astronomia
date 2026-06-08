@@ -84,11 +84,22 @@
     \draw[MercuryLine,line width=0.35pt]
       ([xshift=0.9cm,yshift=0.9cm]current page.south west) --
       ([xshift=-0.9cm,yshift=0.9cm]current page.south east);
+    \node[
+      anchor=east,
+      inner sep=0pt,
+      opacity=0.88
+    ] at ([xshift=-0.9cm,yshift=0.25cm]current page.east)
+      {\includegraphics[height=0.62\paperheight]{assets/mercury_messenger.png}};
   \end{tikzpicture}
   \vspace{1.2cm}
-  {\usebeamerfont{title}\color{MercuryText}\inserttitle\par}
-  \vspace{0.35cm}
-  {\usebeamerfont{subtitle}\color{MercuryMuted}\insertsubtitle\par}
+  \begin{minipage}{0.64\paperwidth}
+    {\usebeamerfont{title}\fontsize{25}{30}\selectfont\color{MercuryText}
+      O Problema da\\
+      Precessão da Órbita\\
+      de Mercúrio\par}
+    \vspace{0.35cm}
+    {\usebeamerfont{subtitle}\color{MercuryMuted}\insertsubtitle\par}
+  \end{minipage}
   \vfill
   {\color{MercuryMuted}\insertauthor\quad|\quad\insertinstitute\par}
 }
