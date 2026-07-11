@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratório 1 | Brilho aparente, distância e inferência</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel-2: #151515;
+      --line: #343434;
+      --text: #f4f4f1;
+      --muted: #aaa69c;
+      --accent: #d7b46a;
+      --blue: #72a7ff;
+      --cyan: #6fd3d8;
+      --warn: #e6a15b;
+      --bad: #d96d6d;
+      --good: #8fd18f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1480px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 22px 0 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 3.7vw, 52px);
+      line-height: 1.02;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .badge,
+    .chip {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      padding: 9px 11px;
+      cursor: pointer;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(390px, 1.1fr) minmax(320px, 0.85fr) minmax(420px, 1.05fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #0b0b0b);
+      border: 1px solid var(--line);
+      min-width: 0;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--accent);
+      font-size: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel .body {
+      padding: 12px 14px 14px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      background: radial-gradient(circle at 50% 30%, #11172a, #050505 70%);
+      border: 1px solid var(--line);
+    }
+
+    .sky-wrap {
+      position: relative;
+    }
+
+    .sky-tip {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(5, 5, 5, 0.76);
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      pointer-events: none;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 10px;
+      min-height: 70px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 9px;
+    }
+
+    .control {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.72);
+    }
+
+    .control:last-child {
+      border-bottom: 0;
+    }
+
+    .readout {
+      color: var(--text);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
+    }
+
+    .formula {
+      color: var(--muted);
+      background: #080808;
+      border: 1px solid var(--line);
+      padding: 9px;
+      line-height: 1.45;
+      font-family: "Latin Modern Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 14px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: #0b0b0b;
+      color: var(--muted);
+      padding: 8px 9px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .chart {
+      width: 100%;
+      height: 250px;
+      border: 1px solid var(--line);
+      background: #080808;
+    }
+
+    .table-wrap {
+      max-height: 340px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.7);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      color: var(--accent);
+      background: #090909;
+      z-index: 1;
+    }
+
+    tr.selected td {
+      background: rgba(215, 180, 106, 0.12);
+    }
+
+    .tasks {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .task {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #0b0b0b;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .task strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 1220px) {
+      .layout {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .analysis-panel {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: min(100% - 16px, 1480px);
+      }
+
+      header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 25px;
+        line-height: 1.08;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      .badge {
+        justify-self: start;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Laboratório 1:<br>Do brilho aparente à distância</h1>
+        <p>Capítulo 1 · Fundamentos observacionais<br>Escalas de medida</p>
+      </div>
+      <div class="badge">Astrofísica Moderna</div>
+    </header>
+
+    <div class="toolbar">
+      <a class="button" href="../">Página principal</a>
+      <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
+      <button class="button" id="exportCsv" type="button">Exportar CSV</button>
+      <button class="button" id="resetStar" type="button">Restaurar estrela</button>
+      <span class="chip" id="datasetInfo">30 estrelas simuladas</span>
+    </div>
+
+    <section class="layout" aria-label="Dashboard do laboratório">
+      <section class="panel">
+        <h2>Céu observado</h2>
+        <div class="body">
+          <div class="sky-wrap">
+            <canvas id="sky" width="760" height="520" aria-label="Mapa do céu simulado"></canvas>
+            <div class="sky-tip">Clique em uma estrela para investigar</div>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <small>Magnitude aparente</small>
+              <strong id="mApp">--</strong>
+            </div>
+            <div class="metric">
+              <small>Paralaxe medida</small>
+              <strong id="parallax">--</strong>
+            </div>
+            <div class="metric">
+              <small>Distância inferida</small>
+              <strong id="distance">--</strong>
+            </div>
+            <div class="metric">
+              <small>Luminosidade inferida</small>
+              <strong id="luminosity">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Laboratório de medidas</h2>
+        <div class="body">
+          <div class="control">
+            <label for="starSelect">Objeto selecionado</label>
+            <select id="starSelect"></select>
+          </div>
+
+          <div class="control">
+            <label for="distanceSlider">Distância real</label>
+            <input id="distanceSlider" type="range" min="5" max="1200" step="1">
+            <div class="readout"><span id="distanceTrue">-- pc</span><span>altere a geometria</span></div>
+          </div>
+
+          <div class="control">
+            <label for="luminositySlider">Luminosidade intrínseca</label>
+            <input id="luminositySlider" type="range" min="-2" max="5" step="0.01">
+            <div class="readout"><span id="luminosityTrue">-- L☉</span><span>escala log</span></div>
+          </div>
+
+          <div class="control">
+            <label for="extinctionSlider">Extinção visual A<sub>V</sub></label>
+            <input id="extinctionSlider" type="range" min="0" max="4" step="0.01">
+            <div class="readout"><span id="extinction">-- mag</span><span>poeira interestelar</span></div>
+          </div>
+
+          <div class="control">
+            <label for="noiseSlider">Incerteza relativa da paralaxe</label>
+            <input id="noiseSlider" type="range" min="0.01" max="0.45" step="0.01">
+            <div class="readout"><span id="noise">--</span><span>erro experimental</span></div>
+          </div>
+
+          <div class="formula">
+            p(") = 1 / d(pc)<br>
+            F/F☉@10pc = (L/L☉) / (d/10)² · 10<sup>-0.4A</sup><br>
+            M = m - 5 log₁₀(d/10pc) - A
+          </div>
+        </div>
+      </section>
+
+      <section class="panel analysis-panel">
+        <h2>Inferência física</h2>
+        <div class="tabs" role="tablist" aria-label="Visualizações">
+          <button class="tab" id="tab-distance" type="button" aria-selected="true">m × distância</button>
+          <button class="tab" id="tab-luminosity" type="button" aria-selected="false">L inferida × L real</button>
+          <button class="tab" id="tab-error" type="button" aria-selected="false">erro de paralaxe</button>
+        </div>
+        <div class="body">
+          <canvas class="chart" id="chart" width="820" height="420" aria-label="Gráfico de inferência"></canvas>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--blue)"></i>catálogo</span>
+            <span><i class="dot" style="background: var(--accent)"></i>selecionada</span>
+            <span><i class="dot" style="background: var(--bad)"></i>alta incerteza</span>
+          </div>
+
+          <div class="tasks">
+            <div class="task">
+              <strong>Experimento A</strong>
+              Aumente a distância mantendo a luminosidade fixa. Registre como fluxo e magnitude aparente mudam.
+            </div>
+            <div class="task">
+              <strong>Experimento B</strong>
+              Compare duas estrelas com o mesmo brilho aparente. Use paralaxe para decidir qual é mais luminosa.
+            </div>
+            <div class="task">
+              <strong>Experimento C</strong>
+              Aumente A<sub>V</sub>. Identifique quando uma estrela parece fraca por poeira, não por baixa luminosidade.
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>id</th>
+                  <th>p mas</th>
+                  <th>σp mas</th>
+                  <th>d pc</th>
+                  <th>m</th>
+                  <th>M</th>
+                  <th>A<sub>V</sub></th>
+                  <th>L/L☉</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const TAU = Math.PI * 2;
+    const SOLAR_MV = 4.83;
+    const stars = [];
+    let selected = 0;
+    let chartMode = "distance";
+
+    const sky = document.getElementById("sky");
+    const skyCtx = sky.getContext("2d");
+    const chart = document.getElementById("chart");
+    const chartCtx = chart.getContext("2d");
+    const starSelect = document.getElementById("starSelect");
+    const distanceSlider = document.getElementById("distanceSlider");
+    const luminositySlider = document.getElementById("luminositySlider");
+    const extinctionSlider = document.getElementById("extinctionSlider");
+    const noiseSlider = document.getElementById("noiseSlider");
+    const tableBody = document.getElementById("tableBody");
+
+    function mulberry32(seed) {
+      return function rand() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    const rand = mulberry32(481516);
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function log10(value) {
+      return Math.log(value) / Math.LN10;
+    }
+
+    function fmt(value, digits = 2) {
+      if (!Number.isFinite(value)) return "--";
+      if (Math.abs(value) >= 1000) return value.toFixed(0);
+      if (Math.abs(value) >= 100) return value.toFixed(1);
+      return value.toFixed(digits);
+    }
+
+    function makeCatalog() {
+      const names = ["Alfa", "Beta", "Gama", "Delta", "Eta", "Teta", "Iota", "Kappa", "Lambda", "Mu"];
+      for (let i = 0; i < 30; i++) {
+        const distance = 10 ** (Math.log10(7) + rand() * (Math.log10(1100) - Math.log10(7)));
+        const luminosity = 10 ** (-1.6 + rand() * 5.4);
+        const extinction = rand() < 0.62 ? rand() * 1.2 : 1.2 + rand() * 2.5;
+        const noise = 0.025 + rand() * 0.28;
+        const colorIntrinsic = clamp(1.35 - 0.26 * log10(luminosity) + (rand() - 0.5) * 0.35, -0.25, 1.7);
+        const star = {
+          id: `${names[i % names.length]}-${String(i + 1).padStart(2, "0")}`,
+          x: rand(),
+          y: rand(),
+          distance,
+          luminosity,
+          extinction,
+          noise,
+          colorIntrinsic,
+        };
+        star.original = { distance, luminosity, extinction, noise, colorIntrinsic };
+        stars.push(star);
+      }
+    }
+
+    function observed(star) {
+      const trueParallaxMas = 1000 / star.distance;
+      const sigmaParallaxMas = Math.max(0.005, trueParallaxMas * star.noise);
+      const phase = Math.sin(star.id.split("-")[1] * 1.731);
+      const measuredParallaxMas = Math.max(0.02, trueParallaxMas + sigmaParallaxMas * 0.72 * phase);
+      const inferredDistance = 1000 / measuredParallaxMas;
+      const absoluteMag = SOLAR_MV - 2.5 * log10(star.luminosity);
+      const apparentMag = absoluteMag + 5 * log10(star.distance / 10) + star.extinction;
+      const flux = star.luminosity / ((star.distance / 10) ** 2) * 10 ** (-0.4 * star.extinction);
+      const inferredAbsMag = apparentMag - 5 * log10(inferredDistance / 10) - star.extinction;
+      const inferredLuminosity = 10 ** ((SOLAR_MV - inferredAbsMag) / 2.5);
+      const colorObserved = star.colorIntrinsic + 0.32 * star.extinction;
+      return {
+        trueParallaxMas,
+        sigmaParallaxMas,
+        measuredParallaxMas,
+        inferredDistance,
+        absoluteMag,
+        apparentMag,
+        flux,
+        inferredAbsMag,
+        inferredLuminosity,
+        colorObserved,
+        relativeParallaxError: sigmaParallaxMas / measuredParallaxMas,
+      };
+    }
+
+    function starColor(colorIndex, alpha = 1) {
+      const t = clamp((colorIndex + 0.25) / 2.2, 0, 1);
+      const r = Math.round(120 + 135 * t);
+      const g = Math.round(165 + 70 * (1 - Math.abs(t - 0.48)));
+      const b = Math.round(255 - 185 * t);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function drawSky() {
+      skyCtx.clearRect(0, 0, sky.width, sky.height);
+      skyCtx.fillStyle = "#050505";
+      skyCtx.fillRect(0, 0, sky.width, sky.height);
+      const glow = skyCtx.createRadialGradient(sky.width * 0.52, sky.height * 0.36, 12, sky.width * 0.52, sky.height * 0.36, sky.width * 0.78);
+      glow.addColorStop(0, "#182447");
+      glow.addColorStop(0.52, "#0b1020");
+      glow.addColorStop(1, "#050505");
+      skyCtx.fillStyle = glow;
+      skyCtx.fillRect(0, 0, sky.width, sky.height);
+
+      for (let i = 0; i < 140; i++) {
+        const x = (i * 197.37) % sky.width;
+        const y = (i * 113.91) % sky.height;
+        skyCtx.fillStyle = `rgba(255,255,255,${0.08 + ((i * 17) % 40) / 220})`;
+        skyCtx.fillRect(x, y, 1, 1);
+      }
+
+      stars.forEach((star, index) => {
+        const o = observed(star);
+        const x = 28 + star.x * (sky.width - 56);
+        const y = 28 + star.y * (sky.height - 56);
+        const size = clamp(7.2 - o.apparentMag * 0.45, 1.8, 8.8);
+        const alpha = clamp(1.15 - o.apparentMag / 12, 0.28, 1);
+        skyCtx.beginPath();
+        skyCtx.fillStyle = starColor(o.colorObserved, alpha);
+        skyCtx.shadowColor = starColor(o.colorObserved, 0.85);
+        skyCtx.shadowBlur = index === selected ? 18 : 8;
+        skyCtx.arc(x, y, size, 0, TAU);
+        skyCtx.fill();
+        skyCtx.shadowBlur = 0;
+        if (index === selected) {
+          skyCtx.strokeStyle = "rgba(215,180,106,0.95)";
+          skyCtx.lineWidth = 2;
+          skyCtx.beginPath();
+          skyCtx.arc(x, y, size + 7, 0, TAU);
+          skyCtx.stroke();
+        }
+      });
+    }
+
+    function drawAxes(ctx, w, h, labels) {
+      ctx.strokeStyle = "#343434";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(54, 24);
+      ctx.lineTo(54, h - 42);
+      ctx.lineTo(w - 20, h - 42);
+      ctx.stroke();
+      ctx.fillStyle = "#aaa69c";
+      ctx.font = "12px system-ui";
+      ctx.fillText(labels.y, 10, 20);
+      ctx.fillText(labels.x, w - 120, h - 12);
+    }
+
+    function plotPoint(ctx, x, y, color, radius) {
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.arc(x, y, radius, 0, TAU);
+      ctx.fill();
+    }
+
+    function drawChart() {
+      const w = chart.width;
+      const h = chart.height;
+      chartCtx.clearRect(0, 0, w, h);
+      chartCtx.fillStyle = "#080808";
+      chartCtx.fillRect(0, 0, w, h);
+      const padL = 54;
+      const padR = 20;
+      const padT = 24;
+      const padB = 42;
+      let points;
+      let labels;
+      if (chartMode === "distance") {
+        points = stars.map((s, i) => ({ i, x: observed(s).inferredDistance, y: observed(s).apparentMag, err: observed(s).relativeParallaxError }));
+        labels = { x: "distância inferida (pc)", y: "m aparente" };
+      } else if (chartMode === "luminosity") {
+        points = stars.map((s, i) => ({ i, x: s.luminosity, y: observed(s).inferredLuminosity, err: observed(s).relativeParallaxError }));
+        labels = { x: "L real", y: "L inferida" };
+      } else {
+        points = stars.map((s, i) => ({ i, x: observed(s).measuredParallaxMas, y: observed(s).relativeParallaxError * 100, err: observed(s).relativeParallaxError }));
+        labels = { x: "paralaxe medida (mas)", y: "erro relativo %" };
+      }
+      drawAxes(chartCtx, w, h, labels);
+
+      const xs = points.map(p => chartMode === "distance" || chartMode === "luminosity" || chartMode === "error" ? log10(Math.max(p.x, 0.001)) : p.x);
+      const ys = points.map(p => p.y);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const scaleX = value => padL + ((log10(Math.max(value, 0.001)) - minX) / Math.max(0.001, maxX - minX)) * (w - padL - padR);
+      const scaleY = value => {
+        const t = (value - minY) / Math.max(0.001, maxY - minY);
+        const yy = chartMode === "distance" ? t : 1 - t;
+        return padT + yy * (h - padT - padB);
+      };
+
+      if (chartMode === "luminosity") {
+        chartCtx.strokeStyle = "rgba(215,180,106,0.45)";
+        chartCtx.setLineDash([5, 5]);
+        chartCtx.beginPath();
+        const min = Math.max(0.001, Math.min(...points.map(p => p.x), ...points.map(p => p.y)));
+        const max = Math.max(...points.map(p => p.x), ...points.map(p => p.y));
+        chartCtx.moveTo(scaleX(min), scaleY(min));
+        chartCtx.lineTo(scaleX(max), scaleY(max));
+        chartCtx.stroke();
+        chartCtx.setLineDash([]);
+      }
+
+      points.forEach(p => {
+        const isSelected = p.i === selected;
+        const color = isSelected ? "#d7b46a" : p.err > 0.25 ? "#d96d6d" : "#72a7ff";
+        plotPoint(chartCtx, scaleX(p.x), scaleY(p.y), color, isSelected ? 6 : 4);
+      });
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+      stars.forEach((star, index) => {
+        const o = observed(star);
+        const tr = document.createElement("tr");
+        if (index === selected) tr.className = "selected";
+        tr.innerHTML = `
+          <td>${star.id}</td>
+          <td>${fmt(o.measuredParallaxMas, 2)}</td>
+          <td>${fmt(o.sigmaParallaxMas, 2)}</td>
+          <td>${fmt(o.inferredDistance, 1)}</td>
+          <td>${fmt(o.apparentMag, 2)}</td>
+          <td>${fmt(o.inferredAbsMag, 2)}</td>
+          <td>${fmt(star.extinction, 2)}</td>
+          <td>${fmt(o.inferredLuminosity, 2)}</td>
+        `;
+        tr.addEventListener("click", () => selectStar(index));
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function populateSelect() {
+      starSelect.innerHTML = "";
+      stars.forEach((star, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = star.id;
+        starSelect.appendChild(option);
+      });
+    }
+
+    function syncControls() {
+      const star = stars[selected];
+      distanceSlider.value = String(Math.round(star.distance));
+      luminositySlider.value = String(log10(star.luminosity));
+      extinctionSlider.value = String(star.extinction);
+      noiseSlider.value = String(star.noise);
+      starSelect.value = String(selected);
+    }
+
+    function updateReadouts() {
+      const star = stars[selected];
+      const o = observed(star);
+      document.getElementById("mApp").textContent = fmt(o.apparentMag, 2);
+      document.getElementById("parallax").textContent = `${fmt(o.measuredParallaxMas, 2)} mas`;
+      document.getElementById("distance").textContent = `${fmt(o.inferredDistance, 1)} pc`;
+      document.getElementById("luminosity").textContent = `${fmt(o.inferredLuminosity, 2)} L☉`;
+      document.getElementById("distanceTrue").textContent = `${fmt(star.distance, 1)} pc`;
+      document.getElementById("luminosityTrue").textContent = `${fmt(star.luminosity, 2)} L☉`;
+      document.getElementById("extinction").textContent = `${fmt(star.extinction, 2)} mag`;
+      document.getElementById("noise").textContent = `${fmt(star.noise * 100, 0)}%`;
+    }
+
+    function render() {
+      updateReadouts();
+      drawSky();
+      drawChart();
+      renderTable();
+    }
+
+    function selectStar(index) {
+      selected = index;
+      syncControls();
+      render();
+    }
+
+    function exportCsv() {
+      const header = [
+        "id", "paralaxe_mas", "erro_paralaxe_mas", "distancia_inferida_pc",
+        "distancia_real_pc", "fluxo_relativo", "m_aparente", "M_inferida",
+        "cor_observada", "extincao_Av", "luminosidade_real_Lsol", "luminosidade_inferida_Lsol"
+      ];
+      const rows = stars.map(star => {
+        const o = observed(star);
+        return [
+          star.id,
+          o.measuredParallaxMas,
+          o.sigmaParallaxMas,
+          o.inferredDistance,
+          star.distance,
+          o.flux,
+          o.apparentMag,
+          o.inferredAbsMag,
+          o.colorObserved,
+          star.extinction,
+          star.luminosity,
+          o.inferredLuminosity,
+        ].map(value => typeof value === "number" ? value.toPrecision(7) : value);
+      });
+      const csv = [header, ...rows].map(row => row.join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "laboratorio_capitulo_1_catalogo.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    sky.addEventListener("click", event => {
+      const rect = sky.getBoundingClientRect();
+      const sx = sky.width / rect.width;
+      const sy = sky.height / rect.height;
+      const x = (event.clientX - rect.left) * sx;
+      const y = (event.clientY - rect.top) * sy;
+      let best = 0;
+      let bestD = Infinity;
+      stars.forEach((star, index) => {
+        const px = 28 + star.x * (sky.width - 56);
+        const py = 28 + star.y * (sky.height - 56);
+        const d = Math.hypot(px - x, py - y);
+        if (d < bestD) {
+          bestD = d;
+          best = index;
+        }
+      });
+      if (bestD < 32) selectStar(best);
+    });
+
+    starSelect.addEventListener("change", event => selectStar(Number(event.target.value)));
+    distanceSlider.addEventListener("input", event => {
+      stars[selected].distance = Number(event.target.value);
+      render();
+    });
+    luminositySlider.addEventListener("input", event => {
+      stars[selected].luminosity = 10 ** Number(event.target.value);
+      render();
+    });
+    extinctionSlider.addEventListener("input", event => {
+      stars[selected].extinction = Number(event.target.value);
+      render();
+    });
+    noiseSlider.addEventListener("input", event => {
+      stars[selected].noise = Number(event.target.value);
+      render();
+    });
+    document.getElementById("resetStar").addEventListener("click", () => {
+      Object.assign(stars[selected], stars[selected].original);
+      syncControls();
+      render();
+    });
+    document.getElementById("exportCsv").addEventListener("click", exportCsv);
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", "false"));
+        tab.setAttribute("aria-selected", "true");
+        chartMode = tab.id.replace("tab-", "");
+        drawChart();
+      });
+    });
+
+    makeCatalog();
+    populateSelect();
+    syncControls();
+    render();
+  </script>
+</body>
+</html>
