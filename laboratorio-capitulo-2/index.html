@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratório 2 | Órbitas, massa central e leis de Kepler</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel-2: #151515;
+      --line: #343434;
+      --text: #f4f4f1;
+      --muted: #aaa69c;
+      --accent: #d7b46a;
+      --blue: #72a7ff;
+      --cyan: #64d7d2;
+      --orange: #e6a15b;
+      --bad: #d96d6d;
+      --good: #8fd18f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1500px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 22px 0 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 3.6vw, 52px);
+      line-height: 1.02;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .badge,
+    .chip {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .button,
+    .tab {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      padding: 9px 11px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .button:hover,
+    .button:focus-visible,
+    .tab:hover,
+    .tab:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(430px, 1.1fr) minmax(330px, 0.82fr) minmax(440px, 1.03fr);
+      gap: 12px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #0b0b0b);
+      border: 1px solid var(--line);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--accent);
+      font-size: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel .body {
+      padding: 12px 14px 14px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      background: #070707;
+      border: 1px solid var(--line);
+    }
+
+    .orbit-wrap {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .orbit-tip {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      width: calc(100% - 24px);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      white-space: normal;
+      background: rgba(5, 5, 5, 0.78);
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      pointer-events: none;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 10px;
+      min-height: 70px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 9px;
+    }
+
+    .control {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.72);
+    }
+
+    .control:last-child {
+      border-bottom: 0;
+    }
+
+    .readout {
+      color: var(--text);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
+    }
+
+    .formula {
+      color: var(--muted);
+      background: #080808;
+      border: 1px solid var(--line);
+      padding: 9px;
+      line-height: 1.45;
+      font-family: "Latin Modern Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 14px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      color: var(--muted);
+      padding: 8px 9px;
+      font-size: 12px;
+    }
+
+    .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .chart {
+      width: 100%;
+      height: 250px;
+      border: 1px solid var(--line);
+      background: #080808;
+    }
+
+    .table-wrap {
+      max-height: 330px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.7);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      color: var(--accent);
+      background: #090909;
+      z-index: 1;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .task {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #0b0b0b;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .task strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 1240px) {
+      .layout {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .analysis-panel {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: calc(100vw - 16px);
+      }
+
+      header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .panel {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 12px;
+      }
+
+      #orbitCanvas,
+      .chart {
+        width: calc(100vw - 48px);
+        max-width: calc(100vw - 48px);
+      }
+
+      h1 {
+        font-size: 25px;
+        line-height: 1.08;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      .badge {
+        justify-self: start;
+      }
+
+      .toolbar {
+        gap: 7px;
+      }
+
+      .button,
+      .chip {
+        padding: 8px 9px;
+        font-size: 13px;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Laboratório 2:<br>Órbitas e massa central</h1>
+        <p>Capítulo 2 · Mecânica celeste<br>Gravitação newtoniana e leis de Kepler</p>
+      </div>
+      <div class="badge">Astrofísica Moderna</div>
+    </header>
+
+    <div class="toolbar">
+      <a class="button" href="../">Página principal</a>
+      <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
+      <button class="button" id="playPause" type="button">Pausar</button>
+      <button class="button" id="exportCsv" type="button">Exportar CSV</button>
+      <button class="button" id="reset" type="button">Restaurar sistema</button>
+      <span class="chip">Unidades: AU, ano, Msun</span>
+    </div>
+
+    <section class="layout" aria-label="Dashboard do laboratório">
+      <section class="panel">
+        <h2>Sistema orbital</h2>
+        <div class="body">
+          <div class="orbit-wrap">
+            <canvas id="orbitCanvas" width="780" height="540" aria-label="Simulação orbital"></canvas>
+            <div class="orbit-tip">A trilha clara mostra a órbita. A região dourada marca áreas varridas iguais.</div>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <small>Período orbital</small>
+              <strong id="periodMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>Massa inferida por Kepler</small>
+              <strong id="massInferMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>Excentricidade</small>
+              <strong id="eccMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>Energia específica</small>
+              <strong id="energyMetric">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Controles físicos</h2>
+        <div class="body">
+          <div class="control">
+            <label for="preset">Sistema observado</label>
+            <select id="preset">
+              <option value="earth">Planeta tipo Terra</option>
+              <option value="mars">Planeta externo excêntrico</option>
+              <option value="binary">Estrela em binária larga</option>
+              <option value="comet">Cometa de alta excentricidade</option>
+              <option value="escape">Teste de escape</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="mass">Massa central</label>
+            <input id="mass" type="range" min="0.25" max="5" step="0.01">
+            <div class="readout"><span id="massReadout">-- Msun</span><span>M</span></div>
+          </div>
+
+          <div class="control">
+            <label for="semiMajor">Semieixo maior</label>
+            <input id="semiMajor" type="range" min="0.25" max="12" step="0.01">
+            <div class="readout"><span id="semiMajorReadout">-- AU</span><span>a</span></div>
+          </div>
+
+          <div class="control">
+            <label for="eccentricity">Excentricidade</label>
+            <input id="eccentricity" type="range" min="0" max="0.92" step="0.01">
+            <div class="readout"><span id="eccReadout">--</span><span>e</span></div>
+          </div>
+
+          <div class="control">
+            <label for="phase">Tempo orbital</label>
+            <input id="phase" type="range" min="0" max="1" step="0.001">
+            <div class="readout"><span id="phaseReadout">-- yr</span><span>t</span></div>
+          </div>
+
+          <div class="control">
+            <label for="velocityFactor">Velocidade inicial no periastro</label>
+            <input id="velocityFactor" type="range" min="0.35" max="1.65" step="0.01">
+            <div class="readout"><span id="velocityReadout">-- v circ</span><span>modo escape</span></div>
+          </div>
+
+          <div class="formula">
+            P² = 4π²a³ / GM &nbsp; → &nbsp; em AU, ano, Msun: M = a³/P²<br>
+            e = (rₐ - rₚ)/(rₐ + rₚ)<br>
+            ε = v²/2 - GM/r &nbsp; ; &nbsp; G = 4π²
+          </div>
+        </div>
+      </section>
+
+      <section class="panel analysis-panel">
+        <h2>Análise dos dados</h2>
+        <div class="tabs" role="tablist" aria-label="Visualizações">
+          <button class="tab" id="tab-radius" type="button" aria-selected="true">r(t)</button>
+          <button class="tab" id="tab-speed" type="button" aria-selected="false">v(t)</button>
+          <button class="tab" id="tab-area" type="button" aria-selected="false">área/tempo</button>
+          <button class="tab" id="tab-kepler" type="button" aria-selected="false">P² × a³</button>
+        </div>
+        <div class="body">
+          <canvas class="chart" id="chart" width="820" height="420" aria-label="Gráfico dos dados orbitais"></canvas>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--blue)"></i>dados exportáveis</span>
+            <span><i class="dot" style="background: var(--accent)"></i>ponto atual</span>
+            <span><i class="dot" style="background: var(--orange)"></i>referência teórica</span>
+          </div>
+
+          <div class="tasks">
+            <div class="task">
+              <strong>Experimento 1</strong>
+              Meça P e a. Calcule M = a³/P² e compare com a massa central usada no laboratório.
+            </div>
+            <div class="task">
+              <strong>Experimento 2</strong>
+              Meça rₚ e rₐ. Calcule e = (rₐ-rₚ)/(rₐ+rₚ) e compare com o controle.
+            </div>
+            <div class="task">
+              <strong>Experimento 3</strong>
+              Use a tabela para mostrar que ΔA/Δt é aproximadamente constante na órbita elíptica.
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>t yr</th>
+                  <th>x AU</th>
+                  <th>y AU</th>
+                  <th>r AU</th>
+                  <th>v AU/yr</th>
+                  <th>ε</th>
+                  <th>ΔA/Δt</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const TAU = Math.PI * 2;
+    const G = 4 * Math.PI * Math.PI;
+    const canvas = document.getElementById("orbitCanvas");
+    const ctx = canvas.getContext("2d");
+    const chart = document.getElementById("chart");
+    const chartCtx = chart.getContext("2d");
+    const tableBody = document.getElementById("tableBody");
+    const preset = document.getElementById("preset");
+    const mass = document.getElementById("mass");
+    const semiMajor = document.getElementById("semiMajor");
+    const eccentricity = document.getElementById("eccentricity");
+    const phase = document.getElementById("phase");
+    const velocityFactor = document.getElementById("velocityFactor");
+
+    let chartMode = "radius";
+    let playing = true;
+    let lastTime = performance.now();
+
+    const presets = {
+      earth: { M: 1, a: 1, e: 0.02, f: 1, phase: 0 },
+      mars: { M: 1, a: 1.52, e: 0.21, f: 1, phase: 0 },
+      binary: { M: 2.2, a: 8, e: 0.38, f: 1, phase: 0 },
+      comet: { M: 1, a: 7, e: 0.82, f: 1, phase: 0 },
+      escape: { M: 1, a: 1, e: 0, f: 1.45, phase: 0 },
+    };
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function fmt(value, digits = 2) {
+      if (!Number.isFinite(value)) return "--";
+      if (Math.abs(value) >= 1000) return value.toFixed(0);
+      if (Math.abs(value) >= 100) return value.toFixed(1);
+      if (Math.abs(value) < 0.01 && value !== 0) return value.toExponential(2);
+      return value.toFixed(digits);
+    }
+
+    function state() {
+      const M = Number(mass.value);
+      const a = Number(semiMajor.value);
+      const e = Number(eccentricity.value);
+      const phaseValue = Number(phase.value);
+      const vf = Number(velocityFactor.value);
+      const P = Math.sqrt(a ** 3 / M);
+      return { M, a, e, phaseValue, vf, P };
+    }
+
+    function solveEccentricAnomaly(meanAnomaly, e) {
+      let E = e < 0.8 ? meanAnomaly : Math.PI;
+      for (let i = 0; i < 8; i++) {
+        E -= (E - e * Math.sin(E) - meanAnomaly) / (1 - e * Math.cos(E));
+      }
+      return E;
+    }
+
+    function ellipticalPoint(s, fraction) {
+      const Mmean = TAU * fraction;
+      const E = solveEccentricAnomaly(Mmean, s.e);
+      const x = s.a * (Math.cos(E) - s.e);
+      const y = s.a * Math.sqrt(1 - s.e ** 2) * Math.sin(E);
+      const r = Math.hypot(x, y);
+      const speed = Math.sqrt(G * s.M * (2 / r - 1 / s.a));
+      const energy = -G * s.M / (2 * s.a);
+      const h = Math.sqrt(G * s.M * s.a * (1 - s.e ** 2));
+      const areaRate = h / 2;
+      return { x, y, r, speed, energy, areaRate, t: fraction * s.P };
+    }
+
+    function escapePoint(s, fraction) {
+      const rp = s.a;
+      const vc = Math.sqrt(G * s.M / rp);
+      const vp = s.vf * vc;
+      const energy = 0.5 * vp ** 2 - G * s.M / rp;
+      const h = rp * vp;
+      const angle = fraction * TAU;
+      const effectiveE = Math.sqrt(Math.max(0, 1 + 2 * energy * h ** 2 / ((G * s.M) ** 2)));
+      const denominator = 1 + effectiveE * Math.cos(angle);
+      const r = denominator > 0.08 ? h ** 2 / (G * s.M * denominator) : 24;
+      const x = r * Math.cos(angle);
+      const y = r * Math.sin(angle);
+      const speed = Math.sqrt(Math.max(0, 2 * (energy + G * s.M / r)));
+      return { x, y, r, speed, energy, areaRate: h / 2, t: fraction * 2.5 };
+    }
+
+    function currentIsEscape() {
+      return preset.value === "escape";
+    }
+
+    function pointAt(fraction) {
+      const s = state();
+      return currentIsEscape() ? escapePoint(s, fraction) : ellipticalPoint(s, fraction);
+    }
+
+    function sampleOrbit(count = 96) {
+      const rows = [];
+      for (let i = 0; i <= count; i++) {
+        rows.push(pointAt(i / count));
+      }
+      return rows;
+    }
+
+    function syncReadouts() {
+      const s = state();
+      const p = pointAt(s.phaseValue);
+      const rp = s.a * (1 - s.e);
+      const ra = s.a * (1 + s.e);
+      const inferredMass = s.a ** 3 / s.P ** 2;
+      document.getElementById("massReadout").textContent = `${fmt(s.M, 2)} Msun`;
+      document.getElementById("semiMajorReadout").textContent = `${fmt(s.a, 2)} AU`;
+      document.getElementById("eccReadout").textContent = fmt(s.e, 2);
+      document.getElementById("phaseReadout").textContent = `${fmt(p.t, 3)} yr`;
+      document.getElementById("velocityReadout").textContent = `${fmt(s.vf, 2)} v circ`;
+      document.getElementById("periodMetric").textContent = currentIsEscape() ? "aberta" : `${fmt(s.P, 3)} yr`;
+      document.getElementById("massInferMetric").textContent = currentIsEscape() ? "não ligada" : `${fmt(inferredMass, 3)} Msun`;
+      document.getElementById("eccMetric").textContent = currentIsEscape() ? `e > 1` : `${fmt((ra - rp) / (ra + rp), 3)}`;
+      document.getElementById("energyMetric").textContent = `${fmt(p.energy, 3)} AU²/yr²`;
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const glow = ctx.createRadialGradient(canvas.width * 0.5, canvas.height * 0.5, 10, canvas.width * 0.5, canvas.height * 0.5, canvas.width * 0.65);
+      glow.addColorStop(0, "#172238");
+      glow.addColorStop(0.55, "#09101b");
+      glow.addColorStop(1, "#050505");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < 130; i++) {
+        const x = (i * 193.7) % canvas.width;
+        const y = (i * 117.3) % canvas.height;
+        ctx.fillStyle = `rgba(255,255,255,${0.06 + ((i * 19) % 45) / 260})`;
+        ctx.fillRect(x, y, 1, 1);
+      }
+    }
+
+    function drawOrbit() {
+      const s = state();
+      const rows = sampleOrbit(180);
+      const maxR = Math.max(...rows.map(row => Math.hypot(row.x, row.y)), s.a * (1 + s.e), 1);
+      const scale = Math.min(canvas.width, canvas.height) * 0.33 / maxR;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const toScreen = p => ({ x: cx + p.x * scale, y: cy - p.y * scale });
+      drawBackground();
+
+      ctx.strokeStyle = "rgba(114,167,255,0.52)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      rows.forEach((row, index) => {
+        const q = toScreen(row);
+        if (index === 0) ctx.moveTo(q.x, q.y);
+        else ctx.lineTo(q.x, q.y);
+      });
+      if (!currentIsEscape()) ctx.closePath();
+      ctx.stroke();
+
+      const current = pointAt(s.phaseValue);
+      const currentScreen = toScreen(current);
+      const previous = pointAt(clamp(s.phaseValue - 0.055, 0, 1));
+      const previousScreen = toScreen(previous);
+      ctx.fillStyle = "rgba(215,180,106,0.18)";
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(previousScreen.x, previousScreen.y);
+      ctx.lineTo(currentScreen.x, currentScreen.y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "rgba(215,180,106,0.55)";
+      ctx.stroke();
+
+      ctx.fillStyle = "#f0cc78";
+      ctx.shadowColor = "#f0cc78";
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10, 0, TAU);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = "#72a7ff";
+      ctx.shadowColor = "#72a7ff";
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(currentScreen.x, currentScreen.y, 6, 0, TAU);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      ctx.strokeStyle = "rgba(244,244,241,0.28)";
+      ctx.setLineDash([4, 5]);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(currentScreen.x, currentScreen.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "#aaa69c";
+      ctx.font = "12px system-ui";
+      ctx.fillText(`r = ${fmt(current.r, 2)} AU`, currentScreen.x + 10, currentScreen.y - 10);
+      if (!currentIsEscape()) {
+        ctx.fillText(`P = ${fmt(s.P, 3)} yr`, 14, 22);
+        ctx.fillText(`rₚ = ${fmt(s.a * (1 - s.e), 2)} AU · rₐ = ${fmt(s.a * (1 + s.e), 2)} AU`, 14, 42);
+      } else {
+        ctx.fillText(`v₀/vcirc = ${fmt(s.vf, 2)} · vesc/vcirc = ${fmt(Math.sqrt(2), 3)}`, 14, 22);
+        ctx.fillText(current.energy >= 0 ? "trajetória aberta: ε ≥ 0" : "trajetória ligada: ε < 0", 14, 42);
+      }
+    }
+
+    function drawAxes(ctx2, w, h, labels) {
+      ctx2.strokeStyle = "#343434";
+      ctx2.lineWidth = 1;
+      ctx2.beginPath();
+      ctx2.moveTo(56, 24);
+      ctx2.lineTo(56, h - 42);
+      ctx2.lineTo(w - 20, h - 42);
+      ctx2.stroke();
+      ctx2.fillStyle = "#aaa69c";
+      ctx2.font = "12px system-ui";
+      ctx2.fillText(labels.y, 10, 18);
+      ctx2.fillText(labels.x, w - 132, h - 12);
+    }
+
+    function drawChart() {
+      const w = chart.width;
+      const h = chart.height;
+      chartCtx.fillStyle = "#080808";
+      chartCtx.fillRect(0, 0, w, h);
+      const padL = 56;
+      const padR = 20;
+      const padT = 24;
+      const padB = 42;
+      let rows = sampleOrbit(80);
+      let points;
+      let labels;
+      if (chartMode === "radius") {
+        points = rows.map(row => ({ x: row.t, y: row.r }));
+        labels = { x: "tempo (yr)", y: "r (AU)" };
+      } else if (chartMode === "speed") {
+        points = rows.map(row => ({ x: row.t, y: row.speed }));
+        labels = { x: "tempo (yr)", y: "v (AU/yr)" };
+      } else if (chartMode === "area") {
+        points = rows.map(row => ({ x: row.t, y: row.areaRate }));
+        labels = { x: "tempo (yr)", y: "ΔA/Δt" };
+      } else {
+        const s = state();
+        points = [0.65, 0.9, 1.2, 1.7, 2.4, 3.5, 5.1, 7.5, 10].map(a => {
+          const P = Math.sqrt(a ** 3 / s.M);
+          return { x: a ** 3, y: P ** 2 };
+        });
+        labels = { x: "a³ (AU³)", y: "P² (yr²)" };
+      }
+
+      drawAxes(chartCtx, w, h, labels);
+      const minX = Math.min(...points.map(p => p.x));
+      const maxX = Math.max(...points.map(p => p.x));
+      const minY = Math.min(...points.map(p => p.y));
+      const maxY = Math.max(...points.map(p => p.y));
+      const sx = value => padL + ((value - minX) / Math.max(0.001, maxX - minX)) * (w - padL - padR);
+      const sy = value => padT + (1 - (value - minY) / Math.max(0.001, maxY - minY)) * (h - padT - padB);
+
+      if (chartMode === "kepler") {
+        chartCtx.strokeStyle = "rgba(230,161,91,0.6)";
+        chartCtx.beginPath();
+        points.forEach((p, i) => {
+          if (i === 0) chartCtx.moveTo(sx(p.x), sy(p.y));
+          else chartCtx.lineTo(sx(p.x), sy(p.y));
+        });
+        chartCtx.stroke();
+      }
+
+      chartCtx.strokeStyle = "#72a7ff";
+      chartCtx.lineWidth = 1.5;
+      chartCtx.beginPath();
+      points.forEach((p, i) => {
+        if (i === 0) chartCtx.moveTo(sx(p.x), sy(p.y));
+        else chartCtx.lineTo(sx(p.x), sy(p.y));
+      });
+      chartCtx.stroke();
+
+      points.forEach(p => {
+        chartCtx.fillStyle = "#72a7ff";
+        chartCtx.beginPath();
+        chartCtx.arc(sx(p.x), sy(p.y), 3.4, 0, TAU);
+        chartCtx.fill();
+      });
+
+      if (chartMode !== "kepler") {
+        const current = pointAt(state().phaseValue);
+        const y = chartMode === "radius" ? current.r : chartMode === "speed" ? current.speed : current.areaRate;
+        chartCtx.fillStyle = "#d7b46a";
+        chartCtx.beginPath();
+        chartCtx.arc(sx(current.t), sy(y), 6, 0, TAU);
+        chartCtx.fill();
+      }
+    }
+
+    function renderTable() {
+      const rows = sampleOrbit(24);
+      tableBody.innerHTML = "";
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${fmt(row.t, 3)}</td>
+          <td>${fmt(row.x, 3)}</td>
+          <td>${fmt(row.y, 3)}</td>
+          <td>${fmt(row.r, 3)}</td>
+          <td>${fmt(row.speed, 3)}</td>
+          <td>${fmt(row.energy, 3)}</td>
+          <td>${fmt(row.areaRate, 3)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function render() {
+      syncReadouts();
+      drawOrbit();
+      drawChart();
+      renderTable();
+    }
+
+    function applyPreset(name) {
+      const p = presets[name];
+      mass.value = p.M;
+      semiMajor.value = p.a;
+      eccentricity.value = p.e;
+      velocityFactor.value = p.f;
+      phase.value = p.phase;
+      velocityFactor.disabled = name !== "escape";
+      render();
+    }
+
+    function exportCsv() {
+      const rows = sampleOrbit(96);
+      const header = ["t_yr", "x_AU", "y_AU", "r_AU", "v_AU_per_yr", "specific_energy_AU2_per_yr2", "area_rate_AU2_per_yr", "M_Msun", "a_AU", "e"];
+      const s = state();
+      const lines = [header.join(",")];
+      rows.forEach(row => {
+        lines.push([
+          row.t, row.x, row.y, row.r, row.speed, row.energy, row.areaRate, s.M, s.a, currentIsEscape() ? "open" : s.e,
+        ].map(value => typeof value === "number" ? value.toFixed(8) : value).join(","));
+      });
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "laboratorio_capitulo_2_orbita.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function tick(now) {
+      const dt = Math.min(0.04, (now - lastTime) / 1000);
+      lastTime = now;
+      if (playing) {
+        const current = Number(phase.value);
+        phase.value = (current + dt * 0.045) % 1;
+        render();
+      }
+      requestAnimationFrame(tick);
+    }
+
+    preset.addEventListener("change", () => applyPreset(preset.value));
+    [mass, semiMajor, eccentricity, phase, velocityFactor].forEach(input => input.addEventListener("input", render));
+    document.getElementById("playPause").addEventListener("click", event => {
+      playing = !playing;
+      event.currentTarget.textContent = playing ? "Pausar" : "Animar";
+    });
+    document.getElementById("exportCsv").addEventListener("click", exportCsv);
+    document.getElementById("reset").addEventListener("click", () => applyPreset(preset.value));
+    document.getElementById("tab-radius").addEventListener("click", () => setChart("radius"));
+    document.getElementById("tab-speed").addEventListener("click", () => setChart("speed"));
+    document.getElementById("tab-area").addEventListener("click", () => setChart("area"));
+    document.getElementById("tab-kepler").addEventListener("click", () => setChart("kepler"));
+
+    function setChart(mode) {
+      chartMode = mode;
+      document.querySelectorAll(".tab").forEach(button => button.setAttribute("aria-selected", String(button.id === `tab-${mode}`)));
+      drawChart();
+    }
+
+    applyPreset("earth");
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

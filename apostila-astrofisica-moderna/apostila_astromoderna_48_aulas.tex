@@ -447,6 +447,51 @@ v_{\rm esc}=\sqrt{\frac{2GM}{R}}.
 \]
 Para a Terra, $v_{\rm esc}\simeq11{,}2\,\mathrm{km\,s^{-1}}$. Para uma anã branca com massa solar e raio terrestre, a mesma fórmula daria milhares de quilômetros por segundo. A equação é newtoniana, mas já aponta para o regime em que relatividade e compactação se tornam inevitáveis.
 \end{lessonblock}
+
+\subsection*{Laboratório}
+\addcontentsline{toc}{subsection}{Laboratório -- Capítulo 2}
+O laboratório interativo deste capítulo está disponível em:
+
+\begin{center}
+\url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-2/}
+\end{center}
+
+Neste laboratório você observará um sistema orbital simulado em unidades astronômicas: distância em UA, tempo em anos e massa em massas solares. O objetivo é usar medidas de órbita para inferir massa, testar as leis de Kepler e decidir se uma trajetória é ligada ou de escape.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
+\textbf{Preparação dos dados.} Abra o laboratório, escolha um sistema observado e exporte o CSV. O arquivo contém tempo, posição, raio orbital, velocidade, energia específica e taxa de área varrida. Use pelo menos três configurações diferentes: uma órbita quase circular, uma órbita elíptica e o modo de escape.
+
+\textbf{Experimento 1: massa central pela terceira lei de Kepler.}
+Para uma órbita ligada, meça o semieixo maior $a$ e o período $P$. Em unidades de UA, ano e massa solar, use:
+\[
+\frac{M}{M_\odot}=\frac{a^3}{P^2}.
+\]
+Calcule a massa central para pelo menos três valores de $a$. Compare com a massa escolhida no controle do laboratório e registre o erro percentual.
+
+\textbf{Experimento 2: excentricidade orbital.}
+Na órbita elíptica, determine o periastro $r_p$ e o apoastro $r_a$ a partir da tabela ou do gráfico $r(t)$. Calcule:
+\[
+e=\frac{r_a-r_p}{r_a+r_p}.
+\]
+Compare com o valor exibido no laboratório. Interprete fisicamente o que muda na órbita quando $e$ aumenta.
+
+\textbf{Experimento 3: segunda lei de Kepler.}
+Use a coluna $\Delta A/\Delta t$ do CSV para verificar se a taxa de área varrida permanece aproximadamente constante. Calcule a média, o maior desvio percentual em relação à média e explique por que a velocidade orbital aumenta perto do periastro.
+
+\textbf{Experimento 4: energia orbital.}
+Para três situações diferentes, use a energia específica:
+\[
+\epsilon=\frac{v^2}{2}-\frac{GM}{r}.
+\]
+Classifique cada caso como órbita ligada ($\epsilon<0$), escape parabólico aproximado ($\epsilon\simeq0$) ou trajetória aberta ($\epsilon>0$). No modo de escape, compare a velocidade inicial com $v_{\rm esc}=\sqrt{2GM/r}$.
+
+\textbf{Experimento 5: gráfico de Kepler.}
+Gere uma tabela com pelo menos cinco valores de $a$ para a mesma massa central. Para cada caso, meça $P$, calcule $a^3$ e $P^2$, e faça um gráfico $P^2$ versus $a^3$. A inclinação esperada é $1/M$ quando as unidades são UA, ano e $M_\odot$. Interprete a inclinação encontrada.
+\end{lessonblock}
+
+\begin{lessonblock}{Formato da entrega}
+A entrega deve conter uma tabela com as configurações usadas, um gráfico $P^2$ versus $a^3$, um gráfico $r(t)$ de uma órbita elíptica, os cálculos de massa, excentricidade, energia e taxa de área, sempre com unidades. A conclusão deve responder: como uma órbita observada permite medir massa sem tocar no corpo central?
+\end{lessonblock}
 \newpage
 \section*{Capítulo 3 -- Radiação, corpo negro e espectros}
 \addcontentsline{toc}{section}{Capítulo 3 -- Radiação, corpo negro e espectros}
