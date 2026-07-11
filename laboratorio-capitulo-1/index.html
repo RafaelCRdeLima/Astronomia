@@ -40,7 +40,7 @@
     }
 
     .shell {
-      width: min(1480px, calc(100vw - 28px));
+      width: min(1760px, calc(100vw - 28px));
       margin: 0 auto;
       padding: 22px 0 28px;
     }
@@ -84,6 +84,14 @@
       align-items: center;
     }
 
+    .view-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
     .button {
       border: 1px solid var(--line);
       color: var(--text);
@@ -98,11 +106,28 @@
       outline: none;
     }
 
+    .view-tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     .layout {
       display: grid;
-      grid-template-columns: minmax(620px, 1.35fr) minmax(330px, 0.72fr) minmax(420px, 0.98fr);
+      grid-template-columns: minmax(860px, 1fr) minmax(340px, 0.28fr);
       gap: 12px;
       align-items: start;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .layout.view.active {
+      display: grid;
     }
 
     .panel {
@@ -257,13 +282,13 @@
 
     .chart {
       width: 100%;
-      height: 250px;
+      height: 420px;
       border: 1px solid var(--line);
       background: #080808;
     }
 
     .table-wrap {
-      max-height: 340px;
+      max-height: 68vh;
       overflow: auto;
       border: 1px solid var(--line);
       margin-top: 10px;
@@ -341,11 +366,7 @@
 
     @media (max-width: 1220px) {
       .layout {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .analysis-panel {
-        grid-column: 1 / -1;
+        grid-template-columns: 1fr;
       }
     }
 
@@ -361,6 +382,16 @@
 
       .layout {
         display: block;
+      }
+
+      .view-tabs {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .view-tabs .button {
+        width: 100%;
+        text-align: left;
       }
 
       .panel {
@@ -412,12 +443,18 @@
       <span class="chip" id="datasetInfo">30 estrelas simuladas</span>
     </div>
 
-    <section class="layout" aria-label="Dashboard do laboratório">
+    <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
+      <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
+      <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência física</button>
+      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Tabela de dados</button>
+    </div>
+
+    <section class="layout view active" id="observationView" aria-label="Dashboard de observação">
       <section class="panel">
         <h2>Céu observado</h2>
         <div class="body">
           <div class="sky-wrap">
-            <canvas id="sky" width="1120" height="720" aria-label="Mapa do céu simulado"></canvas>
+            <canvas id="sky" width="1500" height="900" aria-label="Mapa do céu simulado"></canvas>
             <div class="sky-tip">Clique em uma estrela. Compare datas opostas no grid.</div>
           </div>
           <div class="metrics">
@@ -510,7 +547,9 @@
           </div>
         </div>
       </section>
+    </section>
 
+    <section class="view" id="analysisView" aria-label="Inferência física">
       <section class="panel analysis-panel">
         <h2>Inferência física</h2>
         <div class="tabs" role="tablist" aria-label="Visualizações">
@@ -540,7 +579,14 @@
               Use filtros B, V e R para separar cor observada, extinção e luminosidade inferida.
             </div>
           </div>
+        </div>
+      </section>
+    </section>
 
+    <section class="view" id="dataView" aria-label="Tabela de dados">
+      <section class="panel">
+        <h2>Tabela de dados</h2>
+        <div class="body">
           <div class="table-wrap">
             <table>
               <thead>
@@ -1071,6 +1117,16 @@
       event.currentTarget.textContent = hidden ? "Habilitar modo instrutor" : "Ocultar modo instrutor";
     });
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
+
+    document.querySelectorAll(".view-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".view-tab").forEach(tab => tab.setAttribute("aria-selected", "false"));
+        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+        button.setAttribute("aria-selected", "true");
+        document.getElementById(button.dataset.view).classList.add("active");
+        drawChart();
+      });
+    });
 
     document.querySelectorAll(".tab").forEach(tab => {
       tab.addEventListener("click", () => {
