@@ -164,6 +164,51 @@
       overflow: hidden;
     }
 
+    .sky-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .sky-action {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(5, 5, 5, 0.8);
+      padding: 7px 9px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .sky-action:hover,
+    .sky-action:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .sky-wrap.map-fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: #050505;
+      padding: 12px;
+      display: grid;
+      align-items: stretch;
+    }
+
+    .sky-wrap.map-fullscreen canvas {
+      width: 100%;
+      height: calc(100vh - 24px);
+      object-fit: contain;
+    }
+
+    .sky-wrap.map-fullscreen .sky-tip {
+      right: auto;
+      width: min(560px, calc(100vw - 24px));
+    }
+
     .hidden {
       display: none;
     }
@@ -455,6 +500,9 @@
         <div class="body">
           <div class="sky-wrap">
             <canvas id="sky" width="1500" height="900" aria-label="Mapa do céu simulado"></canvas>
+            <div class="sky-actions">
+              <button class="sky-action" id="toggleMapFullscreen" type="button">Tela cheia</button>
+            </div>
             <div class="sky-tip">Clique em uma estrela. Compare datas opostas no grid.</div>
           </div>
           <div class="metrics">
@@ -622,6 +670,7 @@
     let filterMode = "V";
 
     const sky = document.getElementById("sky");
+    const skyWrap = sky.closest(".sky-wrap");
     const skyCtx = sky.getContext("2d");
     const chart = document.getElementById("chart");
     const chartCtx = chart.getContext("2d");
@@ -1001,6 +1050,31 @@
       renderTable();
     }
 
+    function setMapFullscreen(enabled) {
+      skyWrap.classList.toggle("map-fullscreen", enabled);
+      document.getElementById("toggleMapFullscreen").textContent = enabled ? "Voltar" : "Tela cheia";
+      drawSky();
+    }
+
+    async function toggleMapFullscreen() {
+      const willEnter = !skyWrap.classList.contains("map-fullscreen");
+      if (willEnter) {
+        setMapFullscreen(true);
+        if (skyWrap.requestFullscreen) {
+          try {
+            await skyWrap.requestFullscreen();
+          } catch (error) {
+            setMapFullscreen(true);
+          }
+        }
+      } else {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+        setMapFullscreen(false);
+      }
+    }
+
     function selectStar(index) {
       selected = index;
       syncControls();
@@ -1117,6 +1191,15 @@
       event.currentTarget.textContent = hidden ? "Habilitar modo instrutor" : "Ocultar modo instrutor";
     });
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
+    document.getElementById("toggleMapFullscreen").addEventListener("click", toggleMapFullscreen);
+    document.addEventListener("fullscreenchange", () => {
+      setMapFullscreen(document.fullscreenElement === skyWrap);
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && skyWrap.classList.contains("map-fullscreen") && !document.fullscreenElement) {
+        setMapFullscreen(false);
+      }
+    });
 
     document.querySelectorAll(".view-tab").forEach(button => {
       button.addEventListener("click", () => {
