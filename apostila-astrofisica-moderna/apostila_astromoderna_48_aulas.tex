@@ -329,13 +329,21 @@ O laboratório interativo deste capítulo está disponível em:
 \url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-1/}
 \end{center}
 
-Neste laboratório você trabalhará com um catálogo simulado de estrelas. O objetivo não é apenas manipular controles, mas transformar dados observados em grandezas físicas usando as equações deste capítulo. Ao final, entregue uma tabela curta, os cálculos principais e uma interpretação física em texto.
+Neste laboratório você trabalhará como em uma pequena campanha observacional. Cada acesso ao painel gera um catálogo diferente, de modo que os números não serão iguais para todos os grupos. O objetivo é medir posições em datas diferentes, exportar o catálogo, transformar observáveis em grandezas físicas e justificar as inferências feitas.
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
-\textbf{Preparação dos dados.} Abra o laboratório, selecione uma estrela no céu simulado e use o botão \textit{Exportar CSV}. O arquivo contém paralaxe medida, erro de paralaxe, distância real simulada, fluxo relativo, magnitude aparente, magnitude absoluta inferida, cor observada, extinção $A_V$ e luminosidade. Use pelo menos 8 estrelas do catálogo para a análise; inclua obrigatoriamente a estrela selecionada no painel principal.
+\textbf{Preparação dos dados.} Abra o laboratório, selecione uma estrela no mapa e varie a data de observação. Use a opção de sobrepor uma data oposta para visualizar o deslocamento anual da estrela em relação ao grid e às estrelas de referência. Depois use o botão \textit{Exportar CSV}. O arquivo contém paralaxe medida, erro de paralaxe, posições simuladas em janeiro e julho, magnitude nos filtros $B$, $V$ e $R$, magnitude absoluta inferida, cor observada, extinção $A_V$ e luminosidade. Use pelo menos 8 estrelas do catálogo para a análise.
 
-\textbf{Experimento 1: paralaxe e distância.}
-Para cada uma das 8 estrelas escolhidas, calcule a distância a partir da paralaxe:
+\textbf{Experimento 1: paralaxe por duas épocas.}
+Para cada uma das 8 estrelas escolhidas, use as colunas de posição em janeiro e julho para calcular o deslocamento angular no mapa:
+\[
+\Delta_{\rm px}=\sqrt{(x_{\rm jul}-x_{\rm jan})^2+(y_{\rm jul}-y_{\rm jan})^2}.
+\]
+No laboratório, a escala do mapa é indicada em mas por pixel. Estime a paralaxe por:
+\[
+p_{\rm grid}(\mathrm{mas})=\frac{\Delta_{\rm px}}{2}\,s_{\rm mapa}.
+\]
+Compare $p_{\rm grid}$ com a paralaxe exportada no CSV. Em seguida calcule a distância:
 \[
 d(\mathrm{pc})=\frac{1000}{p(\mathrm{mas})}.
 \]
@@ -343,7 +351,7 @@ Calcule também a incerteza aproximada:
 \[
 \sigma_d\simeq d\,\frac{\sigma_p}{p}.
 \]
-Entregue uma tabela com $p$, $\sigma_p$, $d$ e $\sigma_d$. Identifique a estrela com maior erro relativo de distância e explique numericamente por que paralaxes pequenas tornam a distância menos confiável.
+Entregue uma tabela com $\Delta_{\rm px}$, $p_{\rm grid}$, $p$, $\sigma_p$, $d$ e $\sigma_d$. Identifique a estrela com maior erro relativo de distância e explique numericamente por que paralaxes pequenas tornam a distância menos confiável.
 
 \textbf{Experimento 2: magnitude absoluta.}
 Usando a magnitude aparente $m$, a distância inferida $d$ e a extinção $A_V$, calcule para as mesmas estrelas:
@@ -359,23 +367,26 @@ Converta magnitude absoluta em luminosidade relativa ao Sol usando $M_{\odot,V}=
 \]
 Ordene as 8 estrelas por luminosidade. Depois ordene as mesmas estrelas por magnitude aparente. As duas ordenações coincidem? Escolha dois casos em que não coincidam e explique, com números, se a diferença vem principalmente de distância, luminosidade intrínseca ou extinção.
 
-\textbf{Experimento 4: poeira e interpretação da cor.}
-Escolha uma estrela e varie $A_V$ no controle do laboratório, mantendo distância e luminosidade fixas. Anote pelo menos quatro valores de $A_V$ e registre, para cada um, magnitude aparente, fluxo relativo e cor observada. Mostre que o objeto fica mais fraco quando $A_V$ aumenta. Interprete por que uma estrela pode parecer fria/vermelha sem que sua temperatura intrínseca tenha mudado.
-
-\textbf{Experimento 5: lei do inverso do quadrado.}
-Escolha uma estrela, fixe luminosidade e extinção, e varie a distância para $d$, $2d$ e $3d$ usando o controle do laboratório. Registre o fluxo relativo em cada caso. Compare as razões medidas com as previsões:
+\textbf{Experimento 4: fotometria em filtros.}
+Para as mesmas 8 estrelas, registre $m_B$, $m_V$ e $m_R$. Calcule o índice de cor:
 \[
-\frac{F(2d)}{F(d)}=\frac{1}{4},\qquad
-\frac{F(3d)}{F(d)}=\frac{1}{9}.
+B-V=m_B-m_V.
 \]
-Calcule os desvios percentuais entre o valor obtido no laboratório e o valor previsto. Interprete o resultado.
+Compare estrelas com $B-V$ pequeno e grande. Interprete, com números, quais objetos parecem mais azuis ou mais vermelhos. Discuta por que cor observada não mede apenas temperatura: poeira e extinção também entram na interpretação.
+
+\textbf{Experimento 5: brilho aparente versus distância.}
+Escolha pares de estrelas com luminosidades inferidas parecidas, mas distâncias diferentes. Para cada par, compare os fluxos relativos com a previsão aproximada da lei do inverso do quadrado:
+\[
+\frac{F_1}{F_2}\simeq\frac{L_1}{L_2}\left(\frac{d_2}{d_1}\right)^2\,10^{-0{,}4(A_{V,1}-A_{V,2})}.
+\]
+Calcule pelo menos três razões de fluxo previstas e compare com o CSV. Interprete quando a diferença é dominada por distância, luminosidade intrínseca ou extinção.
 \end{lessonblock}
 
 \begin{lessonblock}{Formato da entrega}
 A entrega deve conter:
 \begin{enumerate}
 \item uma tabela com as 8 estrelas analisadas e as grandezas calculadas;
-\item pelo menos um gráfico feito a partir do CSV exportado, por exemplo $m$ versus $d$ ou $L_{\rm inferida}$ versus $L_{\rm real}$;
+\item pelo menos dois gráficos feitos a partir do CSV: um de deslocamento/paralaxe e outro de magnitude ou luminosidade versus distância;
 \item as contas dos cinco experimentos, com unidades;
 \item uma interpretação curta separando observáveis, grandezas inferidas e hipóteses usadas;
 \item uma conclusão respondendo: por que brilho aparente sozinho não permite saber se uma estrela é fisicamente luminosa?
