@@ -321,6 +321,68 @@ Uma Cefeida em uma galáxia próxima tem magnitude aparente média $m=24{,}0$. P
 logo $28=5\log_{10}(d/10\,\mathrm{pc})$ e $\log_{10}(d/10)=5{,}6$. Portanto $d\simeq10^{6{,}6}\,\mathrm{pc}\simeq4{,}0\,\mathrm{Mpc}$. Uma extinção de apenas $0{,}2$ magnitude já deslocaria a distância inferida; por isso calibração fotométrica e poeira não são detalhes cosméticos.
 \end{lessonblock}
 
+\subsection*{Laboratório}
+\addcontentsline{toc}{subsection}{Laboratório -- Capítulo 1}
+O laboratório interativo deste capítulo está disponível em:
+
+\begin{center}
+\url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-1/}
+\end{center}
+
+Neste laboratório você trabalhará com um catálogo simulado de estrelas. O objetivo não é apenas manipular controles, mas transformar dados observados em grandezas físicas usando as equações deste capítulo. Ao final, entregue uma tabela curta, os cálculos principais e uma interpretação física em texto.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
+\textbf{Preparação dos dados.} Abra o laboratório, selecione uma estrela no céu simulado e use o botão \textit{Exportar CSV}. O arquivo contém paralaxe medida, erro de paralaxe, distância real simulada, fluxo relativo, magnitude aparente, magnitude absoluta inferida, cor observada, extinção $A_V$ e luminosidade. Use pelo menos 8 estrelas do catálogo para a análise; inclua obrigatoriamente a estrela selecionada no painel principal.
+
+\textbf{Experimento 1: paralaxe e distância.}
+Para cada uma das 8 estrelas escolhidas, calcule a distância a partir da paralaxe:
+\[
+d(\mathrm{pc})=\frac{1000}{p(\mathrm{mas})}.
+\]
+Calcule também a incerteza aproximada:
+\[
+\sigma_d\simeq d\,\frac{\sigma_p}{p}.
+\]
+Entregue uma tabela com $p$, $\sigma_p$, $d$ e $\sigma_d$. Identifique a estrela com maior erro relativo de distância e explique numericamente por que paralaxes pequenas tornam a distância menos confiável.
+
+\textbf{Experimento 2: magnitude absoluta.}
+Usando a magnitude aparente $m$, a distância inferida $d$ e a extinção $A_V$, calcule para as mesmas estrelas:
+\[
+M=m-5\log_{10}\left(\frac{d}{10\,\mathrm{pc}}\right)-A_V.
+\]
+Compare seu valor de $M$ com a coluna de magnitude absoluta inferida no arquivo exportado. Registre a diferença absoluta $|\Delta M|$ para cada estrela. Se houver diferença relevante, verifique arredondamento, uso de parsec e inclusão de $A_V$.
+
+\textbf{Experimento 3: luminosidade a partir de magnitude.}
+Converta magnitude absoluta em luminosidade relativa ao Sol usando $M_{\odot,V}=4{,}83$:
+\[
+\frac{L}{L_\odot}=10^{(4{,}83-M)/2{,}5}.
+\]
+Ordene as 8 estrelas por luminosidade. Depois ordene as mesmas estrelas por magnitude aparente. As duas ordenações coincidem? Escolha dois casos em que não coincidam e explique, com números, se a diferença vem principalmente de distância, luminosidade intrínseca ou extinção.
+
+\textbf{Experimento 4: poeira e interpretação da cor.}
+Escolha uma estrela e varie $A_V$ no controle do laboratório, mantendo distância e luminosidade fixas. Anote pelo menos quatro valores de $A_V$ e registre, para cada um, magnitude aparente, fluxo relativo e cor observada. Mostre que o objeto fica mais fraco quando $A_V$ aumenta. Interprete por que uma estrela pode parecer fria/vermelha sem que sua temperatura intrínseca tenha mudado.
+
+\textbf{Experimento 5: lei do inverso do quadrado.}
+Escolha uma estrela, fixe luminosidade e extinção, e varie a distância para $d$, $2d$ e $3d$ usando o controle do laboratório. Registre o fluxo relativo em cada caso. Compare as razões medidas com as previsões:
+\[
+\frac{F(2d)}{F(d)}=\frac{1}{4},\qquad
+\frac{F(3d)}{F(d)}=\frac{1}{9}.
+\]
+Calcule os desvios percentuais entre o valor obtido no laboratório e o valor previsto. Interprete o resultado.
+\end{lessonblock}
+
+\begin{lessonblock}{Formato da entrega}
+A entrega deve conter:
+\begin{enumerate}
+\item uma tabela com as 8 estrelas analisadas e as grandezas calculadas;
+\item pelo menos um gráfico feito a partir do CSV exportado, por exemplo $m$ versus $d$ ou $L_{\rm inferida}$ versus $L_{\rm real}$;
+\item as contas dos cinco experimentos, com unidades;
+\item uma interpretação curta separando observáveis, grandezas inferidas e hipóteses usadas;
+\item uma conclusão respondendo: por que brilho aparente sozinho não permite saber se uma estrela é fisicamente luminosa?
+\end{enumerate}
+As respostas devem ser numéricas. Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' só contam se vierem acompanhadas de valores calculados.
+\end{lessonblock}
+
 \newpage
 \section*{Capítulo 2 -- Mecânica celeste e gravitação}
 \addcontentsline{toc}{section}{Capítulo 2 -- Mecânica celeste e gravitação}
