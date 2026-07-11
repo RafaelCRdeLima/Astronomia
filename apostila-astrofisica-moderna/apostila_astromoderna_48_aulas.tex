@@ -1,0 +1,1050 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{titling}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{needspace}
+\usepackage[bookmarks=false]{hyperref}
+
+\geometry{
+  top=2.4cm,
+  bottom=2.6cm,
+  left=2.25cm,
+  right=2.25cm,
+  headheight=22pt
+}
+
+\definecolor{astroNavy}{HTML}{14213D}
+\definecolor{astroBlue}{HTML}{2F6690}
+\definecolor{astroCyan}{HTML}{35A7B8}
+\definecolor{astroGold}{HTML}{F2A541}
+\definecolor{astroInk}{HTML}{232323}
+\definecolor{astroMuted}{HTML}{667085}
+\definecolor{astroPaper}{HTML}{F7F9FC}
+\definecolor{astroLine}{HTML}{D8E2EC}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=astroBlue,
+  urlcolor=astroBlue,
+  pdftitle={Astrofisica Moderna: Apostila de capitulos de estudo},
+  pdfauthor={Material didatico em portugues}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlist{itemsep=0.15em, topsep=0.25em, leftmargin=1.35em}
+\renewcommand{\arraystretch}{1.18}
+\color{astroInk}
+\graphicspath{{figuras/}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\footnotesize\textcolor{astroMuted}{Astrofisica Moderna}}
+\rhead{\footnotesize\textcolor{astroMuted}{\nouppercase{\leftmark}}}
+\cfoot{\small\textcolor{astroMuted}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{astroLine}\leaders\hrule height \headrulewidth\hfill}}
+
+\titleformat{\section}
+  {\Large\bfseries\color{astroNavy}}
+  {}
+  {0pt}
+  {}
+  [\vspace{-0.45em}\textcolor{astroGold}{\titlerule[1.1pt]}]
+\titlespacing*{\section}{0pt}{1.4em}{0.85em}
+
+\newtcolorbox{noticebox}{
+  enhanced,
+  breakable,
+  colback=astroPaper,
+  colframe=astroBlue,
+  borderline west={2.4pt}{0pt}{astroGold},
+  boxrule=0.5pt,
+  arc=2pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt
+}
+
+\newtcolorbox{aulahead}[3]{
+  enhanced,
+  colback=astroNavy,
+  colframe=astroNavy,
+  arc=2pt,
+  boxrule=0pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  overlay={
+    \fill[astroGold] (frame.north west) rectangle ([xshift=4pt]frame.south west);
+  },
+  fontupper=\color{white},
+  before skip=1.2em,
+  after skip=0.8em,
+  title={\large Aula #1},
+  fonttitle=\bfseries\color{astroGold},
+  attach boxed title to top left={xshift=9pt,yshift=-2pt},
+  boxed title style={colback=astroNavy, colframe=astroNavy, boxrule=0pt}
+}
+
+\newtcolorbox{lessonblock}[2][]{
+  enhanced,
+  breakable,
+  colback=white,
+  colframe=astroLine,
+  coltitle=astroNavy,
+  colbacktitle=astroPaper,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=10pt,
+  right=10pt,
+  top=7pt,
+  bottom=7pt,
+  title={#2},
+  fonttitle=\bfseries,
+  borderline west={2pt}{0pt}{astroCyan},
+  #1
+}
+
+\newcommand{\aula}[3]{%
+  \Needspace{10\baselineskip}%
+  \section*{Aula #1 -- #2}%
+  \phantomsection%
+  \addcontentsline{toc}{section}{\texorpdfstring{Aula #1 -- #2}{Aula #1 - #2}}%
+  \markboth{Aula #1}{Aula #1}%
+  \begin{aulahead}{#1}{#2}{#3}%
+    \Large\bfseries #2\par\vspace{0.35em}%
+    {\small\textcolor{astroLine}{Referência principal no Carroll \& Ostlie: #3}}%
+  \end{aulahead}%
+  \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Pergunta inicial}%
+  Que observação, escala física ou impasse conceitual torna necessário estudar \textbf{#2}? Antes de ler os objetivos, escreva uma hipótese curta. Ao final da aula, volte a ela e corrija o que mudou.%
+  \end{lessonblock}%
+}
+\newcommand{\objetivos}[1]{\begin{lessonblock}{Ao final, você deve conseguir}#1\end{lessonblock}}
+\newcommand{\ideias}[1]{\begin{lessonblock}{Ideias-chave}\begin{itemize}#1\end{itemize}\end{lessonblock}}
+\newcommand{\atividade}[1]{\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Para praticar}#1\end{lessonblock}}
+\newcommand{\exercicios}[1]{\begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Exercícios}\begin{enumerate}#1\end{enumerate}\end{lessonblock}\medskip}
+\newcommand{\observaveis}[4]{%
+  \begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Da observação ao modelo}%
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}}
+  \toprule
+  Observável & Grandeza inferida & Hipótese ou calibração necessária \\
+  \midrule
+  #1 & #2 & #3 \\
+  \bottomrule
+  \end{tabular}
+
+  \textbf{Pergunta de checagem:} #4
+  \end{lessonblock}
+}
+\newcommand{\aberturabloco}[3]{%
+  \begin{noticebox}
+  \textbf{Bloco #1.} #2
+
+  \textbf{Como estudar este bloco:} #3
+  \end{noticebox}
+}
+\newcommand{\imagemastro}[4]{%
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=#1\textwidth]{#2}
+  \caption{\textbf{#3.} #4}
+  \end{figure}
+}
+\title{\textbf{Astrofísica Moderna}\\Apostila de capítulos de estudo}
+\author{Material didático em português baseado na organização conceitual de\\Bradley W. Carroll e Dale A. Ostlie, \textit{An Introduction to Modern Astrophysics}, 2ª ed.}
+\date{2026}
+
+\begin{document}
+\pagenumbering{Roman}
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{0.8cm}
+{\color{astroGold}\rule{\textwidth}{1.2pt}}\par
+\vspace{1.0cm}
+{\fontsize{34}{38}\selectfont\bfseries\color{astroNavy} Astrofísica Moderna\par}
+\vspace{0.35cm}
+{\Large\color{astroBlue} Capítulos de estudo\par}
+{\large\color{astroMuted} Material para alunos de graduação em Física\par}
+\vfill
+\begin{noticebox}
+Material didático em português baseado na organização conceitual de Bradley W. Carroll e Dale A. Ostlie, \textit{An Introduction to Modern Astrophysics}, 2ª ed.
+\end{noticebox}
+\vfill
+{\color{astroMuted}2026\par}
+\vspace{0.6cm}
+{\color{astroGold}\rule{0.38\textwidth}{1.2pt}}\par
+\end{titlepage}
+\pagenumbering{roman}
+
+\begin{noticebox}
+Esta apostila é um material original de apoio para aulas. Ela usa o livro de Carroll \& Ostlie como referência de conteúdo, sequência e aprofundamento, mas não reproduz o texto do livro. Para demonstrações completas, exemplos resolvidos e problemas adicionais, consulte o PDF de referência na pasta da disciplina.
+\end{noticebox}
+
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\pagenumbering{arabic}
+
+\section*{Como usar esta apostila}
+\addcontentsline{toc}{section}{Como usar esta apostila}
+Esta apostila reúne os capítulos de estudo do curso de Astrofísica Moderna. Ela foi escrita para acompanhar a leitura, organizar os conceitos em português e ajudar você a conectar observações, modelos físicos, estimativas e interpretação de dados.
+
+O planejamento detalhado dos encontros, com as fichas numeradas do semestre, foi separado no arquivo \texttt{plano\_aulas\_astromoderna\_48\_aulas.tex}. Use esse documento como roteiro semanal. Use esta apostila principal como material de leitura contínua: antes de cada bloco do curso, leia o capítulo correspondente, marque dúvidas e tente refazer as estimativas apresentadas.
+
+As figuras, tabelas e gráficos não são enfeites. Em astrofísica, muitas conclusões nascem de uma cadeia: observável $\rightarrow$ calibração $\rightarrow$ modelo $\rightarrow$ interpretação física. Sempre que encontrar uma imagem ou gráfico, pergunte: o que foi medido diretamente? O que foi inferido? Que hipótese poderia estar errada?
+
+\section*{Ementa sintética}
+\addcontentsline{toc}{section}{Ementa sintética}
+Esfera celeste e coordenadas; mecânica celeste; radiação, espectros e telescópios; parâmetros estelares; classificação espectral; atmosferas e interiores estelares; Sol; meio interestelar e formação estelar; evolução estelar; remanescentes compactos; relatividade geral e buracos negros; sistemas binários; Sistema Solar; exoplanetas; Via Láctea; galáxias; expansão cósmica; núcleos ativos; cosmologia e universo primordial.
+
+\section*{Constantes e relações úteis}
+\addcontentsline{toc}{section}{Constantes e relações úteis}
+\begin{itemize}
+\item Velocidade da luz: $c=2{,}998\times10^8\,\mathrm{m\,s^{-1}}$.
+\item Constante gravitacional: $G=6{,}674\times10^{-11}\,\mathrm{N\,m^2\,kg^{-2}}$.
+\item Constante de Planck: $h=6{,}626\times10^{-34}\,\mathrm{J\,s}$.
+\item Constante de Boltzmann: $k=1{,}381\times10^{-23}\,\mathrm{J\,K^{-1}}$.
+\item Massa solar: $M_\odot=1{,}989\times10^{30}\,\mathrm{kg}$; luminosidade solar: $L_\odot=3{,}83\times10^{26}\,\mathrm{W}$.
+\item Parsec: $1\,\mathrm{pc}=3{,}086\times10^{16}\,\mathrm{m}=3{,}26\,\mathrm{anos\text{-}luz}$.
+\item Lei de Stefan-Boltzmann: $F=\sigma T^4$; luminosidade: $L=4\pi R^2\sigma T^4$.
+\item Módulo de distância: $m-M=5\log_{10}(d/10\,\mathrm{pc})$.
+\item Lei de Hubble-Lemaître: $v=H_0 d$.
+\end{itemize}
+
+\newpage
+
+\section*{Capítulos de apoio expandidos}
+\addcontentsline{toc}{section}{Capítulos de apoio expandidos}
+Os 15 capítulos a seguir funcionam como leitura de sustentação para os blocos conceituais do curso. Eles foram escritos para que cada parte do curso tenha um núcleo de conteúdo contínuo, com explicações, exemplos de ordem de grandeza, perguntas de interpretação e conexões entre observação e teoria. O objetivo é ajudar você a estudar com autonomia: aqui a prioridade é organizar as ideias físicas em português, em uma sequência adequada para acompanhar o semestre.
+
+\begin{noticebox}
+Antes de cada bloco de aulas, leia o capítulo correspondente e marque trechos em que aparecem relações entre observação e inferência física. Durante a aula, use essas marcações para acompanhar cálculos, interpretar gráficos e registrar dúvidas.
+\end{noticebox}
+
+\newpage
+\section*{Capítulo 1 -- Fundamentos observacionais e escalas de medida}
+\addcontentsline{toc}{section}{Capítulo 1 -- Fundamentos observacionais e escalas de medida}
+A astrofísica moderna começa com uma limitação que é também sua força: quase tudo que sabemos sobre o universo vem de observações à distância. Não podemos colocar uma estrela em uma bancada, mudar sua massa e medir a resposta; não podemos repetir a formação de uma galáxia em laboratório; não podemos acelerar a história cósmica para ver o resultado final. Em vez disso, observamos luz, posição, tempo, movimento e, em casos especiais, partículas e ondas gravitacionais. A tarefa central do astrofísico é transformar sinais recebidos em propriedades físicas: distância, massa, temperatura, composição química, densidade, idade e história evolutiva.
+
+O céu aparente é descrito por coordenadas. A esfera celeste não é uma casca real ao redor da Terra, mas uma construção geométrica extremamente útil. Quando dizemos que uma estrela tem certa ascensão reta e declinação, estamos especificando uma direção no céu, não uma posição tridimensional completa. Essa distinção é importante: duas estrelas podem aparecer próximas angularmente e estar separadas por centenas ou milhares de parsecs ao longo da linha de visada. A geometria celeste permite prever quando um objeto nasce, culmina e se põe; a física permite interpretar o que sua luz revela.
+
+O tempo astronômico também tem uma lógica própria. O dia solar acompanha a posição aparente do Sol; o dia sideral acompanha a rotação da Terra em relação às estrelas distantes. Como a Terra avança em sua órbita ao redor do Sol, esses dois ciclos não coincidem exatamente. Essa diferença explica por que o céu noturno muda ao longo do ano e por que constelações visíveis em uma estação deixam de dominar o céu em outra. Para a observação, o tempo sideral informa quais ascensões retas estão próximas do meridiano local, isto é, quais regiões do céu estão em posição favorável.
+
+A primeira grande ferramenta quantitativa é a paralaxe. Se a Terra observa uma estrela de lados opostos de sua órbita, a posição aparente dessa estrela muda ligeiramente em relação ao fundo distante. Quanto menor a paralaxe, maior a distância. O parsec nasce dessa geometria: uma estrela a 1 parsec teria paralaxe de 1 segundo de arco. A ideia é simples, mas a medição é delicada, porque segundos de arco são ângulos minúsculos. Missões como Hipparcos e Gaia revolucionaram esse campo ao medir paralaxes para enormes amostras de estrelas, tornando possível construir mapas dinâmicos da vizinhança galáctica.
+
+Outro pilar é a escala de brilho. Fluxo é energia recebida por unidade de área e tempo; luminosidade é energia emitida por unidade de tempo. A relação entre os dois, em um modelo isotrópico simples, é
+\[
+F=\frac{L}{4\pi d^2}.
+\]
+Essa equação é uma das pontes mais importantes da astronomia. Se conhecemos a luminosidade intrínseca de um objeto, o fluxo observado fornece distância. Se conhecemos a distância, o fluxo fornece luminosidade. A dificuldade prática está em saber quando podemos confiar em uma dessas grandezas. Por isso, velas padrão, como Cefeidas e supernovas Ia, são tão valiosas: elas oferecem caminhos independentes para calibrar distâncias.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.0cm,y=3.25cm]
+  \draw[->,astroMuted] (0,0) -- (6.8,0) node[right] {$d$};
+  \draw[->,astroMuted] (0,0) -- (0,1.22) node[above] {$F/F_0$};
+  \draw[astroBlue,very thick] plot[smooth] coordinates {(1,1) (1.5,0.44) (2,0.25) (3,0.11) (4,0.063) (5,0.04) (6,0.028)};
+  \fill[astroGold] (1,1) circle (2pt);
+  \draw[astroLine] (1,0) -- (1,1);
+  \node[above,astroNavy,fill=white,inner sep=1.5pt] at (1,1.04) {\small $1$};
+  \fill[astroGold] (2,0.25) circle (2pt);
+  \draw[astroLine] (2,0) -- (2,0.25);
+  \node[above right,astroNavy,fill=white,inner sep=1.5pt] at (2.05,0.25) {\small $1/4$};
+  \fill[astroGold] (3,0.11) circle (2pt);
+  \draw[astroLine] (3,0) -- (3,0.11);
+  \node[above right,astroNavy,fill=white,inner sep=1.5pt] at (3.05,0.11) {\small $1/9$};
+  \node[anchor=west,astroMuted,fill=white,inner sep=2pt] at (3.45,0.72) {\scriptsize $F\propto d^{-2}$};
+\end{tikzpicture}
+\caption{\textbf{Lei do inverso do quadrado.} O fluxo cai rapidamente com a distância: dobrar a distância reduz o fluxo a um quarto.}
+\end{figure}
+
+A escala de magnitudes preserva a tradição histórica de classificar estrelas por brilho aparente, mas com definição logarítmica moderna. Uma diferença de 5 magnitudes corresponde a um fator 100 em fluxo. Isso significa que pequenas diferenças numéricas em magnitude podem representar grandes diferenças físicas. A magnitude aparente mede o que chega até nós; a magnitude absoluta mede o brilho que o objeto teria a 10 parsecs. A diferença entre as duas está ligada ao módulo de distância, uma relação simples que aparece repetidamente em astrofísica estelar e extragaláctica.
+
+Para interpretar observações, também precisamos lembrar que a luz pode ser modificada no caminho. Poeira interestelar absorve e espalha radiação, afetando mais fortemente comprimentos de onda curtos. O resultado é extinção e avermelhamento: o objeto parece mais fraco e mais vermelho do que seria sem poeira. Um erro comum é atribuir toda cor observada apenas à temperatura. Em muitos contextos, especialmente no plano da Via Láctea e em regiões de formação estelar, é necessário separar cor intrínseca e efeito do meio.
+
+\textbf{Exemplo guiado.} Imagine duas estrelas com mesma luminosidade, mas uma delas está três vezes mais distante. O fluxo observado da estrela distante será nove vezes menor, porque o fluxo cai com o quadrado da distância. Em magnitudes, essa diferença é
+\[
+\Delta m=-2{,}5\log_{10}(F_2/F_1).
+\]
+Como $F_2/F_1=1/9$, obtemos $\Delta m\simeq2{,}4$. A estrela mais distante parece cerca de 2,4 magnitudes mais fraca, mesmo sendo fisicamente igual. Este exemplo mostra por que brilho aparente sozinho raramente basta.
+
+\textbf{Perguntas para discussão.}
+\begin{itemize}
+\item Por que um mapa celeste é bidimensional, enquanto a Galáxia é tridimensional?
+\item Que hipóteses entram ao transformar fluxo em luminosidade?
+\item Como poeira pode imitar efeitos que parecem ser de temperatura ou distância?
+\item Por que escalas logarítmicas aparecem naturalmente em astronomia?
+\end{itemize}
+
+\textbf{Para praticar.} Escolha uma estrela brilhante visível no céu da estação. Pesquise sua magnitude aparente, distância aproximada e tipo espectral. Estime sua magnitude absoluta e compare com o Sol. Separe três ideias: aparência no céu, luminosidade intrínseca e posição física no espaço. O resultado costuma ser revelador: algumas estrelas famosas são brilhantes por estarem próximas; outras são brilhantes porque são intrinsicamente enormes ou muito luminosas.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: fluxo, luminosidade e módulo de distância}
+Se uma fonte emite luminosidade total $L$ de modo aproximadamente isotrópico, essa energia atravessa uma esfera de raio $d$ e área $4\pi d^2$. O fluxo medido por unidade de área é, portanto,
+\[
+F=\frac{L}{4\pi d^2}.
+\]
+A escala de magnitudes é definida por
+\[
+m_2-m_1=-2{,}5\log_{10}\left(\frac{F_2}{F_1}\right).
+\]
+Comparando o fluxo observado a uma distância $d$ com o fluxo que o mesmo objeto teria a $10\,\mathrm{pc}$, obtemos o módulo de distância:
+\[
+m-M=5\log_{10}\left(\frac{d}{10\,\mathrm{pc}}\right).
+\]
+Essa dedução mostra onde entram as hipóteses: emissão isotrópica, ausência de extinção e distância em parsecs. Quando houver poeira, a forma observacional passa a incluir uma correção $A$: $m-M=5\log_{10}(d/10\,\mathrm{pc})+A$.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: distância por módulo}
+Uma Cefeida em uma galáxia próxima tem magnitude aparente média $m=24{,}0$. Pela relação período-luminosidade, estima-se magnitude absoluta $M=-4{,}0$. Ignorando extinção,
+\[
+24-(-4)=5\log_{10}(d/10\,\mathrm{pc}),
+\]
+logo $28=5\log_{10}(d/10\,\mathrm{pc})$ e $\log_{10}(d/10)=5{,}6$. Portanto $d\simeq10^{6{,}6}\,\mathrm{pc}\simeq4{,}0\,\mathrm{Mpc}$. Uma extinção de apenas $0{,}2$ magnitude já deslocaria a distância inferida; por isso calibração fotométrica e poeira não são detalhes cosméticos.
+\end{lessonblock}
+
+\newpage
+\section*{Capítulo 2 -- Mecânica celeste e gravitação}
+\addcontentsline{toc}{section}{Capítulo 2 -- Mecânica celeste e gravitação}
+\aberturabloco{Fundamentos quantitativos}{Este capítulo reforça a passagem da geometria observacional para a dinâmica gravitacional. A pergunta central é simples: como movimentos observados revelam massa?}{Trabalhe sempre com desenho, unidades e ordem de grandeza antes de substituir números. Em gravitação, uma conta dimensional bem feita costuma revelar metade da física.}
+
+Órbitas são uma das ferramentas mais poderosas da astrofísica porque a gravidade transforma movimento em medida de massa. No caso circular simples, igualamos força gravitacional e aceleração centrípeta:
+\[
+\frac{GMm}{r^2}=\frac{mv^2}{r}.
+\]
+Daí vem $v^2=GM/r$ e $M=rv^2/G$. Essa relação aparece em muitos lugares: planetas ao redor do Sol, estrelas ao redor do centro galáctico, gás em discos de galáxias e matéria em aglomerados. A forma exata muda com geometria e distribuição de massa, mas a ideia permanece: movimento orbital é uma balança gravitacional.
+
+A terceira lei de Kepler generalizada,
+\[
+P^2=\frac{4\pi^2a^3}{G(M_1+M_2)},
+\]
+mostra que período e tamanho orbital medem a soma das massas. Em sistemas planetários, normalmente $M_\star\gg M_p$, e a massa do planeta pouco altera o período. Em binárias estelares, as duas massas podem ser comparáveis, e o problema fica mais rico. Por isso estrelas binárias são tão importantes no Carroll \& Ostlie: elas fornecem massas reais, não apenas estimativas teóricas.
+
+\observaveis{período orbital, semieixo maior angular, velocidade radial}{massa total, inclinação orbital, separação física}{distância calibrada, órbita aproximadamente kepleriana, identificação correta dos componentes}{Que parte da massa foi medida dinamicamente e que parte depende de uma hipótese geométrica?}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[astroLine,thick] (0,0) ellipse (3.0 and 1.45);
+  \fill[astroGold] (-1.55,0) circle (4pt) node[below=4pt,astroNavy] {\small foco};
+  \fill[astroBlue] (1.1,1.35) circle (3pt) node[above,astroNavy] {\small planeta};
+  \draw[->,astroBlue,thick] (1.1,1.35) -- (1.9,1.05) node[right,astroMuted] {\small $v$};
+  \draw[astroMuted] (-3.0,-1.75) -- (3.0,-1.75);
+  \draw[astroMuted] (-3.0,-1.85) -- (-3.0,-1.65);
+  \draw[astroMuted] (3.0,-1.85) -- (3.0,-1.65);
+  \node[astroMuted] at (0,-2.05) {\small eixo maior $2a$};
+  \node[astroNavy,fill=white,inner sep=2pt] at (0,1.95) {\small órbita elíptica};
+\end{tikzpicture}
+\caption{\textbf{Órbita kepleriana esquemática.} O foco ocupado pelo corpo central e o semieixo maior organizam a relação entre período e massa.}
+\end{figure}
+
+\textbf{Exemplo resolvido.} Um planeta orbita uma estrela em $P=1$ ano com $a=1\,\mathrm{UA}$. Como esse é o caso da Terra, a massa inferida é $1M_\odot$. Se outro planeta orbita a mesma estrela em $a=4\,\mathrm{UA}$, então $P^2\propto a^3=64$, logo $P=8$ anos. A conta não exigiu conhecer $G$ porque usamos uma calibração solar. Essa é uma lição prática: relações proporcionais são atalhos poderosos quando a referência é bem escolhida.
+
+\textbf{Erros comuns.} Não confunda raio orbital instantâneo com semieixo maior; não use a forma circular quando a excentricidade é essencial; não esqueça a inclinação em velocidades radiais; não trate velocidade projetada como velocidade total sem justificativa.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: terceira lei de Kepler}
+Para uma órbita circular, $v=2\pi r/P$. Igualando gravidade e aceleração centrípeta,
+\[
+\frac{G(M_1+M_2)}{r^2}=\frac{v^2}{r}=\frac{4\pi^2r}{P^2}.
+\]
+Reorganizando,
+\[
+P^2=\frac{4\pi^2r^3}{G(M_1+M_2)}.
+\]
+Para órbitas elípticas, o raio circular $r$ é substituído pelo semieixo maior $a$. A forma final é a mesma já apresentada:
+\[
+P^2=\frac{4\pi^2a^3}{G(M_1+M_2)}.
+\]
+O detalhe conceitual importante é que a lei mede a massa total do sistema, não apenas a massa do corpo central, embora em planetas comuns a massa da estrela domine.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: velocidade de escape}
+A velocidade de escape vem de igualar energia cinética inicial e energia gravitacional necessária para escapar:
+\[
+\frac{1}{2}mv_{\rm esc}^2=\frac{GMm}{R}
+\quad\Rightarrow\quad
+v_{\rm esc}=\sqrt{\frac{2GM}{R}}.
+\]
+Para a Terra, $v_{\rm esc}\simeq11{,}2\,\mathrm{km\,s^{-1}}$. Para uma anã branca com massa solar e raio terrestre, a mesma fórmula daria milhares de quilômetros por segundo. A equação é newtoniana, mas já aponta para o regime em que relatividade e compactação se tornam inevitáveis.
+\end{lessonblock}
+\newpage
+\section*{Capítulo 3 -- Radiação, corpo negro e espectros}
+\addcontentsline{toc}{section}{Capítulo 3 -- Radiação, corpo negro e espectros}
+A luz é o mensageiro mais importante da astrofísica. Ela transporta energia, momento, direção, polarização e informação espectral. Um único fóton possui energia $E=h\nu=hc/\lambda$, de modo que comprimentos de onda menores correspondem a fótons mais energéticos. Essa relação conecta cor, temperatura, transições atômicas e processos de alta energia. Quando um telescópio registra luz, ele não está apenas formando uma imagem: está coletando evidências sobre a matéria que emitiu, absorveu ou espalhou essa radiação.
+
+O espectro contínuo de muitos objetos pode ser comparado, em primeira aproximação, à radiação de corpo negro. Um corpo negro ideal absorve e emite radiação de maneira determinada apenas por sua temperatura. A lei de Wien indica que o comprimento de onda de máxima emissão diminui quando a temperatura aumenta:
+\[
+\lambda_{\max}T\simeq2{,}9\times10^{-3}\,\mathrm{m\,K}.
+\]
+Por isso estrelas frias têm aparência avermelhada e estrelas quentes emitem mais fortemente em azul e ultravioleta. Essa regra, porém, não deve ser usada mecanicamente: atmosferas reais têm linhas, bandas moleculares, opacidades dependentes do comprimento de onda e efeitos de poeira no caminho.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.0cm,y=3.0cm]
+  \draw[->,astroMuted] (0,0) -- (7,0) node[right] {$\lambda$};
+  \draw[->,astroMuted] (0,0) -- (0,1.28) node[above] {intensidade};
+  \draw[astroCyan,very thick] plot[smooth] coordinates {(0.45,0.02) (0.8,0.18) (1.1,0.75) (1.45,1.05) (2.0,0.72) (3.0,0.32) (4.5,0.12) (6.3,0.04)};
+  \draw[astroGold,very thick] plot[smooth] coordinates {(0.65,0.01) (1.2,0.08) (1.9,0.38) (2.8,0.78) (3.7,0.62) (4.8,0.33) (6.3,0.12)};
+  \draw[astroLine] (1.45,0) -- (1.45,1.05);
+  \draw[astroLine] (2.8,0) -- (2.8,0.78);
+  \node[astroCyan,fill=white,inner sep=1.5pt] at (1.2,1.17) {\scriptsize quente};
+  \node[astroGold,fill=white,inner sep=1.5pt] at (3.65,0.82) {\scriptsize frio};
+  \draw[->,astroMuted] (2.55,1.08) -- (1.62,1.02);
+  \node[anchor=west,astroMuted,fill=white,inner sep=2pt] at (2.65,1.08) {\scriptsize pico em $\lambda$ menor};
+\end{tikzpicture}
+\caption{\textbf{Corpo negro qualitativo.} A lei de Wien conecta temperatura e comprimento de onda de máxima emissão, mas espectros reais carregam linhas e efeitos de opacidade.}
+\end{figure}
+
+As linhas espectrais são assinaturas de quantização. Átomos e moléculas só absorvem ou emitem fótons associados a diferenças específicas de energia entre níveis. Uma linha de hidrogênio, cálcio, sódio ou ferro é como uma pista de presença química, mas sua intensidade depende de temperatura, ionização, densidade e opacidade. A ausência de uma linha forte não significa necessariamente ausência do elemento; pode significar que o elemento está em estado de ionização inadequado ou que as condições físicas não favorecem aquela transição.
+
+O efeito Doppler transforma espectros em medidores de movimento. Se uma fonte se aproxima, suas linhas deslocam-se para comprimentos de onda menores; se se afasta, deslocam-se para comprimentos maiores. Para velocidades pequenas comparadas à velocidade da luz, a aproximação
+\[
+\frac{\Delta\lambda}{\lambda}\simeq\frac{v_r}{c}
+\]
+permite medir a velocidade radial. Esse método revela binárias espectroscópicas, rotação estelar, expansão de nebulosas, discos de acreção, planetas por velocidade radial e redshifts de galáxias. Em cosmologia, o redshift ganha interpretação ligada à expansão do próprio espaço, mas a ideia observacional continua sendo o deslocamento de linhas.
+\newpage
+\section*{Capítulo 4 -- Telescópios, detectores e observação multi-banda}
+\addcontentsline{toc}{section}{Capítulo 4 -- Telescópios, detectores e observação multi-banda}
+Telescópios são máquinas de coletar fótons e separar informação. A abertura determina a área coletora e influencia a resolução angular. Em regime limitado por difração, a escala angular mínima é proporcional a $\lambda/D$, em que $D$ é o diâmetro do instrumento. Isso explica por que telescópios maiores distinguem detalhes menores e por que observações em rádio exigem antenas ou interferômetros gigantescos. Na prática, a atmosfera, a estabilidade térmica, os detectores e o processamento de dados também limitam o resultado final.
+
+Cada faixa do espectro revela processos diferentes. Rádio traça gás frio, campos magnéticos e linhas como a de 21 cm do hidrogênio neutro. Infravermelho atravessa melhor regiões empoeiradas e revela objetos frios, discos e estrelas jovens. Visível é rico em linhas atômicas e excelente para astrometria e fotometria. Ultravioleta mostra estrelas quentes e gás ionizado. Raios X e gama revelam acreção, choques, plasmas quentes, pulsares, remanescentes de supernovas e eventos extremos. A astrofísica moderna é multiobservacional porque nenhum comprimento de onda conta a história inteira.
+
+A fotometria mede brilho em bandas. Com filtros diferentes, obtemos cores, e cores podem ser ligadas a temperatura, avermelhamento, idade populacional ou composição. A espectroscopia dispersa a luz em comprimento de onda e permite diagnósticos mais ricos. A imagem mostra morfologia e posição. A polarimetria informa orientação de campos magnéticos e geometria de espalhamento. A variabilidade revela escalas de tempo e tamanhos: se um objeto muda em um dia, a região responsável não pode ser muito maior que um dia-luz, pois partes distantes não poderiam coordenar a variação mais rapidamente que a luz.
+
+\textbf{Exemplo guiado.} Uma linha que deveria aparecer em $\lambda_0=500\,\mathrm{nm}$ é observada em $501\,\mathrm{nm}$. O deslocamento relativo é $\Delta\lambda/\lambda=1/500=0{,}002$. A velocidade radial aproximada é $v_r\simeq0{,}002c\simeq600\,\mathrm{km\,s^{-1}}$. Esse número pode indicar movimento orbital, ejeção de gás, rotação ou recessão, dependendo do objeto. A conta sozinha não decide o cenário; ela precisa de contexto físico.
+
+\textbf{Perguntas para discussão.}
+\begin{itemize}
+\item Por que espectros são mais diagnósticos que imagens bonitas?
+\item Que limitações surgem ao estimar temperatura apenas pela cor?
+\item Como distinguir deslocamento Doppler de uma identificação errada de linha?
+\item Por que telescópios espaciais são decisivos em ultravioleta e raios X?
+\end{itemize}
+
+\textbf{Para praticar.} Compare três espectros esquemáticos: uma estrela fria com bandas moleculares, uma estrela quente com linhas de hidrogênio e uma nebulosa de emissão. Identifique contínuo, linhas, possíveis temperaturas relativas e tipo de objeto. Em seguida, anote o que não pode ser concluído sem calibração, distância ou modelos atmosféricos. Esta prática treina uma habilidade central: separar observação direta de inferência física.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: de energia do fóton à temperatura}
+A relação $E=h\nu=hc/\lambda$ liga uma grandeza microscópica, a energia de um fóton, a uma grandeza observável, o comprimento de onda. Para um corpo negro, o pico do espectro satisfaz aproximadamente
+\[
+\lambda_{\max}T=2{,}9\times10^{-3}\,\mathrm{m\,K}.
+\]
+Assim, uma estrela cujo pico idealizado estivesse em $500\,\mathrm{nm}$ teria
+\[
+T\simeq\frac{2{,}9\times10^{-3}}{5{,}0\times10^{-7}}\simeq5800\,\mathrm{K}.
+\]
+O número é solar, mas a interpretação exige cuidado: filtros medem bandas largas, atmosferas têm linhas de absorção e poeira pode deslocar a cor observada. A lei de Wien é um primeiro diagnóstico, não uma sentença final.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: resolução angular}
+No limite de difração, a resolução angular típica de uma abertura circular é da ordem de
+\[
+\theta\simeq1{,}22\frac{\lambda}{D}.
+\]
+Para um telescópio de $D=2\,\mathrm{m}$ observando em $\lambda=500\,\mathrm{nm}$, temos $\theta\simeq3\times10^{-7}\,\mathrm{rad}$, cerca de $0{,}06$ segundo de arco. Da superfície terrestre, a turbulência atmosférica frequentemente piora esse valor. Essa comparação explica por que telescópios espaciais e óptica adaptativa mudaram tanto a astronomia observacional.
+\end{lessonblock}
+
+\newpage
+\section*{Capítulo 5 -- Estrutura estelar e diagrama HR}
+\addcontentsline{toc}{section}{Capítulo 5 -- Estrutura estelar e diagrama HR}
+Estrelas são esferas autogravitantes de plasma em equilíbrio dinâmico. A gravidade tende a contrair; a pressão interna resiste. Em uma estrela estável, cada camada sente o peso das camadas externas e precisa de um gradiente de pressão para sustentá-las. Essa condição é expressa pela equação de equilíbrio hidrostático,
+\[
+\frac{dP}{dr}=-\frac{Gm(r)\rho(r)}{r^2}.
+\]
+Embora pareça abstrata, ela resume uma ideia simples: quanto mais fundo entramos na estrela, maior deve ser a pressão, porque há mais material acima pressionando para baixo.
+
+A energia que mantém a luminosidade estelar vem principalmente da fusão nuclear durante a sequência principal. Em estrelas como o Sol, a cadeia próton-próton transforma hidrogênio em hélio e libera energia porque a massa final é ligeiramente menor que a massa inicial. Em estrelas mais massivas, o ciclo CNO torna-se mais importante. A fusão não é apenas uma fonte de calor; ela regula a estrutura. Se a taxa de geração de energia aumenta, a estrela pode expandir e esfriar parcialmente o núcleo; se diminui, a contração eleva temperatura e densidade. Estrelas são sistemas com mecanismos de autorregulação.
+
+O transporte de energia pode ocorrer por radiação, convecção ou condução. Em regiões radiativas, fótons são absorvidos e reemitidos muitas vezes, realizando uma caminhada aleatória para fora. Em regiões convectivas, parcelas de gás transportam energia por movimento macroscópico. A convecção aparece quando o gradiente térmico necessário para transportar energia por radiação se torna muito íngreme. Em matéria degenerada, como em anãs brancas, a condução por elétrons pode ser extremamente eficiente. Saber qual mecanismo domina é essencial para entender interiores, atmosferas e evolução.
+
+O diagrama Hertzsprung-Russell organiza estrelas por luminosidade e temperatura efetiva. A sequência principal não é apenas uma linha empírica: ela representa estrelas em fusão estável de hidrogênio no núcleo. Estrelas massivas ficam no alto e à esquerda, quentes e luminosas; estrelas de baixa massa ficam abaixo e à direita, frias e pouco luminosas. Gigantes vermelhas são luminosas apesar de frias porque possuem raios enormes. Anãs brancas são quentes mas pouco luminosas porque têm raios pequenos. Assim, o HR condensa temperatura, raio, luminosidade e estágio evolutivo.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.0cm,y=0.78cm]
+  \draw[->,astroMuted] (0,0) -- (7.2,0) node[right] {temperatura menor};
+  \draw[->,astroMuted] (0,0) -- (0,6.2) node[above] {luminosidade maior};
+  \draw[astroBlue,very thick] plot[smooth] coordinates {(1,5.4) (2,4.4) (3.1,3.2) (4.3,2.0) (5.6,1.0) (6.5,0.45)};
+  \draw[astroGold,fill=astroGold!18] (4.4,4.5) ellipse (1.15 and 0.55);
+  \draw[astroCyan,fill=astroCyan!16] (2.1,0.85) ellipse (1.0 and 0.38);
+  \draw[->,astroBlue] (2.05,3.55) -- (2.45,3.75);
+  \node[anchor=east,astroBlue,fill=white,inner sep=1.5pt] at (2.0,3.55) {\scriptsize sequência principal};
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (4.4,5.35) {\scriptsize gigantes vermelhas};
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (2.1,1.35) {\scriptsize anãs brancas};
+  \node[astroMuted] at (1.1,-0.35) {\small quente};
+  \node[astroMuted] at (6.3,-0.35) {\small frio};
+\end{tikzpicture}
+\caption{\textbf{Diagrama HR esquemático.} A posição de uma estrela combina temperatura, luminosidade, raio e estágio evolutivo.}
+\end{figure}
+
+\aberturabloco{Estrelas}{Este capítulo conecta espectros, luminosidades, massas e modelos internos em uma leitura física do diagrama HR.}{Ao estudar estrelas, mantenha sempre quatro grandezas em diálogo: $M$, $R$, $L$ e $T_{\rm eff}$. Quase toda interpretação estelar move uma delas e observa a resposta das outras.}
+
+O diagrama HR é bonito, mas seu valor real é quantitativo. A relação
+\[
+L=4\pi R^2\sigma T_{\rm eff}^4
+\]
+permite transformar posição no HR em uma estimativa de raio. Duas estrelas com a mesma temperatura, mas luminosidades diferentes, têm raios diferentes. Uma gigante vermelha pode ser fria e luminosa porque seu raio é enorme; uma anã branca pode ser quente e fraca porque seu raio é pequeno.
+
+Para estudantes de Física, o passo seguinte é perceber que a sequência principal é uma família de soluções de equilíbrio. A estrela precisa satisfazer conservação de massa, equilíbrio hidrostático, transporte de energia e geração de energia. Em forma conceitual:
+\[
+\frac{dP}{dr}=-\frac{Gm\rho}{r^2},\qquad
+\frac{dm}{dr}=4\pi r^2\rho,\qquad
+\frac{dL}{dr}=4\pi r^2\rho\epsilon.
+\]
+Mesmo sem resolver numericamente essas equações, elas ensinam como pensar. Se a massa aumenta, a pressão central necessária aumenta; a temperatura central tende a subir; a taxa de fusão cresce; a luminosidade aumenta fortemente; o tempo de vida diminui.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1cm,y=0.8cm]
+  \draw[->,astroMuted] (0,0) -- (7,0) node[right] {$M/M_\odot$};
+  \draw[->,astroMuted] (0,0) -- (0,6) node[above] {$L/L_\odot$};
+  \draw[astroBlue,very thick] plot[smooth] coordinates {(0.6,0.25) (1.4,0.7) (2.3,1.5) (3.2,2.7) (4.1,4.0) (5.0,5.1) (6.0,5.7)};
+  \node[anchor=west,astroNavy,fill=white,inner sep=2pt] at (3.95,1.95) {\scriptsize $L\sim M^{3\text{--}4}$};
+  \draw[astroLine] (1.4,0) -- (1.4,0.7);
+  \draw[astroLine] (3.2,0) -- (3.2,2.7);
+  \node[astroMuted] at (3.5,-0.45) {\small escala esquemática, não linear};
+\end{tikzpicture}
+\caption{\textbf{Relação massa-luminosidade qualitativa.} Na sequência principal, pequenas mudanças de massa podem produzir grandes mudanças de luminosidade e tempo de vida.}
+\end{figure}
+
+\observaveis{classe espectral, magnitude, cor, paralaxe}{temperatura efetiva, luminosidade, raio, estágio evolutivo}{calibração fotométrica, correção de extinção, modelo atmosférico, distância confiável}{A posição no HR foi medida diretamente ou construída a partir de várias inferências?}
+
+\textbf{Exemplo resolvido.} Considere uma estrela de sequência principal com $M=2M_\odot$ e use $L\propto M^{3{,}5}$. Então $L\simeq2^{3{,}5}L_\odot\simeq11L_\odot$. Se o combustível disponível cresce aproximadamente com $M$, mas o consumo cresce com $L$, o tempo de vida relativo escala como $t\propto M/L$. Assim, $t\simeq2/11\simeq0{,}18$ do tempo solar. Uma estrela mais massiva vive menos não por ter pouco combustível, mas por gastá-lo muito mais rápido.
+
+\textbf{O que expandir no estudo individual.} Leia no Carroll \& Ostlie os trechos sobre equações de estrutura, opacidade e modelos estelares como um conjunto. Não tente memorizar cada fórmula isoladamente. Monte uma tabela com: equação, grandeza conservada, hipótese física e consequência observacional.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: tempo de Kelvin-Helmholtz}
+Antes de se compreender a fusão nuclear, uma hipótese natural era que estrelas brilhassem por contração gravitacional. A energia gravitacional disponível tem ordem
+\[
+E_g\sim\frac{GM^2}{R}.
+\]
+Dividindo pela luminosidade, obtemos uma escala de tempo:
+\[
+t_{\rm KH}\sim\frac{GM^2}{RL}.
+\]
+Para o Sol, isso dá dezenas de milhões de anos, muito menos que a idade geológica da Terra e que a idade solar conhecida. A discrepância histórica foi uma pista decisiva: a fonte de energia das estrelas precisava ser nuclear, não apenas gravitacional.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: ponto de saída de aglomerados}
+Em um aglomerado aberto, todas as estrelas nasceram aproximadamente juntas. Se o ponto de saída da sequência principal está perto de $M\simeq3M_\odot$, e se usamos $t\propto M/L$ com $L\propto M^{3{,}5}$, então
+\[
+t\propto M^{-2{,}5}.
+\]
+Comparado ao Sol, $t\simeq10\,\mathrm{Gyr}\times3^{-2{,}5}\simeq0{,}6\,\mathrm{Gyr}$. A idade estimada é grosseira, mas mostra por que o diagrama HR de um aglomerado funciona como relógio estelar.
+\end{lessonblock}
+\newpage
+\section*{Capítulo 6 -- Meio interestelar, formação e evolução estelar}
+\addcontentsline{toc}{section}{Capítulo 6 -- Meio interestelar, formação e evolução estelar}
+\imagemastro{0.86}{carina_nebula.jpg}{Região de formação estelar}{Nuvens de gás e poeira na Nebulosa de Carina mostram o ambiente onde novas estrelas nascem e interagem com radiação intensa. Crédito: NASA, ESA, N. Smith e Hubble Heritage Team, via Wikimedia Commons.}
+
+A massa é o parâmetro dominante da evolução estelar. Uma estrela mais massiva tem mais combustível, mas consome esse combustível de forma muito mais rápida. Por isso vive menos. Uma estrela de baixa massa pode permanecer na sequência principal por dezenas ou centenas de bilhões de anos; uma estrela massiva pode evoluir em poucos milhões de anos. Essa diferença transforma aglomerados estelares em relógios: estrelas nascidas quase ao mesmo tempo, mas com massas diferentes, deixam a sequência principal em momentos diferentes. O ponto de saída fornece estimativas de idade.
+
+Quando o hidrogênio central se esgota, a estrela precisa se reajustar. O núcleo contrai, camadas externas podem expandir e a estrela pode tornar-se gigante. Em massas adequadas, inicia-se queima de hélio em carbono e oxigênio. Estrelas de baixa e massa intermediária terminam como anãs brancas após perda de massa e formação de nebulosas planetárias. Estrelas massivas avançam por estágios sucessivos de fusão até formar núcleos ricos em ferro. Como fusão de ferro não libera energia em condições estelares usuais, o núcleo perde sustentação e pode colapsar, originando supernova e remanescente compacto.
+
+Remanescentes compactos mostram regimes extremos da matéria. Anãs brancas são sustentadas por pressão de degenerescência dos elétrons. Estrelas de nêutrons envolvem densidades nucleares, campos magnéticos intensos e rotação rápida. Buracos negros aparecem quando nenhuma pressão conhecida impede a formação de um horizonte de eventos. Esses objetos conectam astrofísica estelar, relatividade, física nuclear e observações de altas energias. Eles também enriquecem a Galáxia: supernovas e ventos estelares devolvem elementos ao meio interestelar, preparando material para novas gerações de estrelas e planetas.
+
+\textbf{Exemplo guiado.} Se duas estrelas têm a mesma temperatura efetiva, mas uma é 100 vezes mais luminosa, a relação $L=4\pi R^2\sigma T^4$ indica que a luminosidade cresce com $R^2$ quando $T$ é igual. Logo, a estrela mais luminosa tem raio 10 vezes maior. Esse raciocínio simples explica por que gigantes podem ser tão brilhantes mesmo com temperaturas superficiais relativamente baixas.
+
+\textbf{Perguntas para discussão.}
+\begin{itemize}
+\item Por que massa inicial organiza tanto a vida de uma estrela?
+\item Como o HR permite distinguir temperatura, luminosidade e tamanho?
+\item O que significa uma estrela estar em equilíbrio se seu interior está em movimento?
+\item Por que remanescentes compactos são laboratórios de física extrema?
+\end{itemize}
+
+\textbf{Para praticar.} Crie uma pequena lista de estrelas fictícias com temperatura, luminosidade e massa aproximada. Posicione cada estrela em um diagrama HR esquemático e proponha seu estágio evolutivo. Em seguida, considere incertezas como poeira, distância mal medida e binaridade. Essa segunda leitura é mais realista e mostra por que classificação astrofísica depende de várias linhas de evidência.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: equilíbrio hidrostático}
+Considere uma casca esférica de raio $r$, espessura $dr$, densidade $\rho$ e massa interna $m(r)$. A força gravitacional por unidade de volume é aproximadamente $\rho Gm(r)/r^2$, apontando para dentro. Para que a casca não acelere, a diferença de pressão entre a face interna e a externa precisa equilibrar esse peso:
+\[
+P(r)-P(r+dr)\simeq \rho\frac{Gm(r)}{r^2}dr.
+\]
+Dividindo por $dr$ e tomando o limite diferencial,
+\[
+\frac{dP}{dr}=-\frac{Gm(r)\rho(r)}{r^2}.
+\]
+O sinal negativo apenas registra que a pressão diminui quando caminhamos para fora. A equação é local: ela vale camada por camada, não apenas para a estrela inteira.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: raio a partir de $L$ e $T$}
+Use a forma relativa da lei de Stefan-Boltzmann:
+\[
+\frac{L}{L_\odot}=\left(\frac{R}{R_\odot}\right)^2\left(\frac{T}{T_\odot}\right)^4.
+\]
+Uma estrela gigante tem $L=100L_\odot$ e $T\simeq T_\odot/2$. Então
+\[
+100=\left(\frac{R}{R_\odot}\right)^2\left(\frac{1}{2}\right)^4
+\]
+e $R/R_\odot=\sqrt{1600}=40$. A estrela é fria na superfície, mas muito luminosa porque a área emissora é enorme. Esse é o tipo de leitura física que o diagrama HR deve provocar.
+\end{lessonblock}
+
+\newpage
+\section*{Capítulo 7 -- Remanescentes compactos e altas energias}
+\addcontentsline{toc}{section}{Capítulo 7 -- Remanescentes compactos e altas energias}
+\aberturabloco{Altas energias}{O fio condutor deste capítulo é a pergunta: o que acontece quando a gravidade força a matéria para regimes em que pressão térmica comum não basta?}{Acompanhe sempre três escalas: densidade, velocidade de escape e tempo de variabilidade. Elas dizem se o objeto é comum, compacto ou extremo.}
+
+Anãs brancas, estrelas de nêutrons e buracos negros são finais possíveis de evolução estelar, mas também são laboratórios de Física. Em uma anã branca, a sustentação vem da pressão de degenerescência dos elétrons. Em uma estrela de nêutrons, densidades nucleares tornam a equação de estado um problema profundo. Em buracos negros, o horizonte de eventos marca uma fronteira causal.
+
+A escala relativística mais simples é o raio de Schwarzschild:
+\[
+R_s=\frac{2GM}{c^2}.
+\]
+Para uma massa solar, $R_s\simeq3\,\mathrm{km}$. Essa aproximação é uma âncora útil: um buraco negro de $10M_\odot$ tem raio de Schwarzschild de ordem $30\,\mathrm{km}$; um buraco negro supermassivo de $4\times10^6M_\odot$ tem escala de milhões de quilômetros.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[astroLine,fill=astroCyan!15] (0,0) circle (1.35);
+  \draw[astroLine,fill=astroGold!22] (3.4,0) circle (0.62);
+  \draw[astroLine,fill=astroNavy!85] (6.0,0) circle (0.38);
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (0,-1.8) {\small anã branca};
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (3.4,-1.8) {\small estrela de nêutrons};
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (6.0,-1.8) {\small buraco negro};
+  \node[astroMuted,fill=white,inner sep=1.5pt] at (0,1.8) {\small $R\sim R_\oplus$};
+  \node[astroMuted,fill=white,inner sep=1.5pt] at (3.4,1.15) {\small $R\sim10$ km};
+  \node[astroMuted,fill=white,inner sep=1.5pt] at (6.0,0.9) {\small horizonte};
+  \draw[->,astroBlue,thick] (-1.4,-2.45) -- (6.4,-2.45);
+  \node[anchor=west,astroMuted,fill=white,inner sep=1.5pt] at (3.9,-2.2) {\scriptsize compactação crescente};
+\end{tikzpicture}
+\caption{\textbf{Sequência de compactação.} Objetos compactos têm massas estelares em raios cada vez menores, levando a densidades e velocidades de escape extremas.}
+\end{figure}
+
+\observaveis{raios X, pulsos periódicos, variabilidade rápida, órbitas de companheiras}{massa compacta, raio máximo da região emissora, campo magnético, taxa de acreção}{modelo de emissão, inclinação orbital, distância, identificação do objeto companheiro}{A luminosidade vem da superfície, de um disco de acreção ou de uma região relativística?}
+
+\textbf{Exemplo resolvido.} Se uma fonte varia significativamente em $\Delta t=1\,\mathrm{ms}$, a região que coordena essa variação não pode ter tamanho muito maior que $c\Delta t\approx3\times10^5\,\mathrm{m}=300\,\mathrm{km}$. Isso não prova sozinho que há uma estrela de nêutrons ou buraco negro, mas coloca a fonte no regime compacto. Variabilidade é uma régua causal.
+
+\textbf{Conexão com supernovas.} Supernovas não são apenas explosões bonitas. Elas conectam nucleossíntese, ondas de choque, neutrinos, poeira, enriquecimento químico e formação de remanescentes. Ao estudar uma supernova, pergunte: que estrela explodiu? Qual fonte de energia alimentou a luz? Que elementos foram produzidos? Que remanescente sobrou?
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: raio de Schwarzschild por argumento de escape}
+Uma forma newtoniana de motivar a escala de Schwarzschild é perguntar em que raio a velocidade de escape seria igual à velocidade da luz:
+\[
+v_{\rm esc}=\sqrt{\frac{2GM}{R}}=c.
+\]
+Daí,
+\[
+R=\frac{2GM}{c^2}.
+\]
+Relatividade geral é necessária para interpretar corretamente o horizonte, mas o argumento dimensional revela a escala certa. Para $M=M_\odot$, $R_s\simeq3\,\mathrm{km}$; para $10M_\odot$, $R_s\simeq30\,\mathrm{km}$.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: luminosidade de acreção}
+Uma massa $m$ caindo até raio $R$ libera energia gravitacional de ordem $GMm/R$. Por unidade de tempo, para uma taxa de acreção $\dot M$,
+\[
+L_{\rm acc}\sim\frac{GM\dot M}{R}.
+\]
+Como $R$ é pequeno em objetos compactos, a acreção pode ser muito eficiente. Essa é a razão física para discos de acreção em anãs brancas, estrelas de nêutrons e buracos negros brilharem em ultravioleta e raios X. A luz não vem de fusão nuclear comum, mas da conversão de energia gravitacional em radiação.
+\end{lessonblock}
+\newpage
+\section*{Capítulo 8 -- Formação planetária e Sistema Solar}
+\addcontentsline{toc}{section}{Capítulo 8 -- Formação planetária e Sistema Solar}
+Sistemas planetários são produtos secundários, mas fundamentais, da formação estelar. Quando uma nuvem molecular colapsa, a conservação do momento angular favorece a formação de um disco ao redor da protoestrela. Nesse disco, grãos de poeira colidem, aderem, fragmentam e crescem; corpos maiores atraem material gravitacionalmente; gás e gelo participam de processos dependentes da distância à estrela. A arquitetura final de um sistema planetário preserva parte dessa história, mas também carrega marcas de migração, impactos, ressonâncias e perda atmosférica.
+
+O Sistema Solar oferece um laboratório comparativo. Planetas terrestres são rochosos, densos e próximos do Sol. Gigantes gasosos possuem grandes envelopes de hidrogênio e hélio. Urano e Netuno têm maior fração de compostos voláteis pesados. Corpos menores, como asteroides, cometas e objetos transnetunianos, preservam materiais menos processados e ajudam a reconstruir a evolução inicial. A linha de gelo é uma ideia central: além de certa distância, compostos voláteis podem condensar, aumentando a quantidade de material sólido disponível para formar núcleos planetários.
+
+A temperatura de equilíbrio de um planeta depende de luminosidade estelar, distância orbital, albedo e redistribuição de calor. Atmosferas complicam muito o quadro. Vênus é mais quente que Mercúrio na superfície, apesar de estar mais distante do Sol, porque seu efeito estufa é extremo. Marte perdeu grande parte de sua atmosfera e água superficial estável. A Terra mantém condições superficiais específicas por uma combinação de distância, atmosfera, água líquida, campo magnético, tectônica e história química. Habitabilidade, portanto, nunca deve ser reduzida a uma única distância orbital.
+
+Marés são outro processo essencial. Elas surgem porque a força gravitacional varia ao longo do corpo. Marés explicam travamento síncrono da Lua, aquecimento interno em satélites como Io e Europa, evolução orbital e deformações em planetas próximos de suas estrelas. Em exoplanetas de período curto, marés podem circularizar órbitas, sincronizar rotação e afetar atmosferas. Um planeta não é apenas um corpo isolado: ele responde dinamicamente ao ambiente gravitacional.
+
+\imagemastro{0.68}{jupiter.jpg}{Júpiter como laboratório planetário}{Bandas atmosféricas e a Grande Mancha Vermelha ilustram dinâmica de fluidos, rotação rápida e meteorologia em gigantes gasosos. Crédito: NASA, ESA e equipe Hubble, via Wikimedia Commons.}
+
+\begin{lessonblock}{Leitura física da imagem: Júpiter}
+Na imagem de Júpiter, as faixas claras e escuras não são decoração: elas indicam circulação atmosférica organizada por rotação rápida, convecção, composição e cisalhamento de ventos. A Grande Mancha Vermelha é uma estrutura vorticial persistente. Para transformar a imagem em física, pergunte: qual é a escala espacial? qual é a escala temporal? que fonte de energia mantém a dinâmica? que medições espectrais separariam nuvens altas, composição e temperatura?
+\end{lessonblock}
+
+Corpos menores também merecem destaque. Asteroides e meteoritos registram diferenciação, impactos e composição primitiva. Cometas preservam voláteis e desenvolvem coma e caudas quando se aproximam do Sol. Objetos do cinturão de Kuiper e da nuvem de Oort informam sobre a região externa e perturbações dinâmicas. Em outros sistemas, discos de detritos revelam colisões entre planetesimais e possíveis planetas ainda não observados diretamente. Assim, planetas e pequenos corpos formam um sistema integrado.
+
+\aberturabloco{Sistemas planetários}{A pergunta organizadora deste capítulo é: por que mundos formados no mesmo disco podem ter destinos tão diferentes?}{Compare planetas por pares. A diferença entre Vênus e Terra, ou entre Io e Europa, ensina mais do que uma lista isolada de propriedades.}
+
+Planetologia comparada usa os corpos do Sistema Solar como experimentos naturais. Mercúrio testa exposição solar e perda de voláteis; Vênus mostra efeito estufa extremo; Terra combina água líquida, tectônica e biosfera; Marte registra perda atmosférica e água passada. Nos gigantes, a física muda de escala: rotação rápida, convecção profunda, atmosferas espessas, campos magnéticos e luas ativas dominam o cenário.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{4cm}}
+\caption{\textbf{Comparação planetária mínima.} Use tabelas como esta para separar propriedades medidas de interpretações históricas.}\\
+\toprule
+Mundo & Observação marcante & Interpretação física & Pergunta aberta \\
+\midrule
+Vênus & superfície muito quente & efeito estufa intenso e atmosfera densa & como a história inicial divergiu da Terra? \\
+Marte & vales e minerais hidratados & água líquida passada e perda atmosférica & por quanto tempo houve ambientes habitáveis? \\
+Europa & superfície gelada fraturada & oceano interno provável por aquecimento de maré & há troca química entre oceano e superfície? \\
+Titã & atmosfera rica em nitrogênio & química orgânica em ambiente frio & que ciclos químicos imitam ciclos hidrológicos? \\
+\bottomrule
+\end{longtable}
+
+\newpage
+\section*{Capítulo 9 -- Exoplanetas, atmosferas e habitabilidade}
+\addcontentsline{toc}{section}{Capítulo 9 -- Exoplanetas, atmosferas e habitabilidade}
+A descoberta de exoplanetas mostrou que o Sistema Solar não é um modelo universal. Júpiteres quentes, super-Terras, mini-Netunos e sistemas compactos em ressonância revelaram arquiteturas inesperadas. Os principais métodos de detecção têm vieses. Trânsitos favorecem planetas grandes e próximos, alinhados com nossa linha de visada. Velocidade radial favorece planetas massivos e próximos. Imageamento direto favorece planetas jovens, quentes e afastados. Microlente detecta eventos raros e não repetíveis, mas sensíveis a certas separações. Astrometria mede o balanço no plano do céu e exige precisão extrema.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.0cm,y=2.6cm]
+  \draw[->,astroMuted] (0,0.42) -- (7.2,0.42) node[right] {tempo};
+  \draw[->,astroMuted] (0,0.42) -- (0,1.12) node[above] {fluxo};
+  \draw[astroBlue,very thick] (0.45,0.95) -- (2.35,0.95)
+    .. controls (2.55,0.95) and (2.65,0.78) .. (2.95,0.78)
+    -- (4.25,0.78)
+    .. controls (4.55,0.78) and (4.65,0.95) .. (4.9,0.95)
+    -- (6.75,0.95);
+  \draw[astroLine] (2.95,0.48) -- (2.95,1.02);
+  \draw[astroLine] (4.25,0.48) -- (4.25,1.02);
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (3.6,0.64) {\scriptsize trânsito};
+  \draw[<->,astroGold] (5.12,0.78) -- (5.12,0.95);
+  \node[anchor=west,astroMuted,fill=white,inner sep=2pt] at (5.28,0.865) {\scriptsize profundidade};
+\end{tikzpicture}
+\caption{\textbf{Curva de luz de trânsito.} A queda de brilho mede principalmente a razão entre o raio do planeta e o raio da estrela.}
+\end{figure}
+
+Quando combinamos trânsito e velocidade radial, podemos obter raio e massa, logo densidade média. A densidade ajuda a distinguir mundos rochosos, ricos em água, gasosos ou com envelopes leves. Ainda assim, degenerescências permanecem: composições diferentes podem produzir massas e raios parecidos. Atmosferas exoplanetárias são investigadas por espectroscopia de trânsito, emissão secundária e curvas de fase, mas os sinais são pequenos. A interpretação exige modelos cuidadosos de nuvens, composição, temperatura, atividade estelar e ruído instrumental.
+
+\textbf{Exemplo guiado.} Em um trânsito, a queda relativa de fluxo é aproximadamente $(R_p/R_\star)^2$. Um planeta do tamanho de Júpiter diante de uma estrela do tamanho do Sol tem $R_p/R_\star\simeq0{,}1$, produzindo queda de cerca de 1\%. Um planeta do tamanho da Terra tem $R_p/R_\star\simeq0{,}009$, produzindo queda de aproximadamente 0,008\%. A diferença mostra por que detectar Terras exige fotometria extremamente precisa.
+
+\textbf{Perguntas para discussão.}
+\begin{itemize}
+\item Por que a linha de gelo influencia a formação de gigantes?
+\item Que vieses observacionais moldam o catálogo conhecido de exoplanetas?
+\item Por que densidade média não determina composição de forma única?
+\item Como luas podem ser astrobiologicamente interessantes mesmo fora da zona habitável clássica?
+\end{itemize}
+
+\textbf{Para praticar.} Monte uma tabela com quatro mundos: Terra, Vênus, Europa e um exoplaneta fictício em zona habitável. Compare fonte de energia, atmosfera, água, estabilidade climática e métodos de detecção. A meta é perceber que habitabilidade é um problema multidimensional, não um selo simples aplicado por distância orbital.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: temperatura de equilíbrio}
+Um planeta a distância $a$ intercepta uma potência $\pi R_p^2 L_\star/(4\pi a^2)$. Se reflete uma fração $A$ dessa luz, absorve $(1-A)L_\star R_p^2/(4a^2)$. Emitindo como corpo negro por toda a superfície, perde $4\pi R_p^2\sigma T_{\rm eq}^4$. Igualando absorção e emissão:
+\[
+(1-A)\frac{L_\star}{4\pi a^2}\pi R_p^2=4\pi R_p^2\sigma T_{\rm eq}^4,
+\]
+\[
+T_{\rm eq}=\left[\frac{(1-A)L_\star}{16\pi\sigma a^2}\right]^{1/4}.
+\]
+O raio do planeta cancela: no modelo mais simples, a temperatura de equilíbrio depende da estrela, da distância, do albedo e da redistribuição de calor. Atmosferas reais podem alterar drasticamente a superfície.
+\end{lessonblock}
+
+Exoplanetas ampliam o laboratório. Trânsitos medem raios relativos; velocidades radiais medem massas mínimas; juntos fornecem densidade média. Mas densidade não determina composição de forma única. Um planeta de baixa densidade pode ter envelope de hidrogênio; um planeta de densidade intermediária pode misturar rocha, água e gás; nuvens podem mascarar assinaturas atmosféricas. O catálogo de exoplanetas é também um catálogo de vieses observacionais.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1cm,y=0.8cm]
+  \draw[->,astroMuted] (0,0) -- (7.2,0) node[right] {raio};
+  \draw[->,astroMuted] (0,0) -- (0,6) node[above] {massa};
+  \draw[astroBlue,fill=astroBlue!12] (1.0,0.8) ellipse (0.65 and 0.45);
+  \draw[astroGold,fill=astroGold!18] (3.0,2.2) ellipse (1.1 and 0.8);
+  \draw[astroCyan,fill=astroCyan!16] (5.5,3.6) ellipse (1.1 and 1.25);
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (1.0,1.55) {\scriptsize rochosos};
+  \node[align=center,astroNavy,fill=white,inner sep=1.5pt] at (3.0,3.25) {\scriptsize super-Terras\\[-1pt]mini-Netunos};
+  \node[astroNavy,fill=white,inner sep=1.5pt] at (5.5,5.1) {\scriptsize gigantes};
+  \node[anchor=west,astroMuted,fill=white,inner sep=2pt] at (3.7,0.55) {\scriptsize composição não única};
+\end{tikzpicture}
+\caption{\textbf{Massa-raio esquemático.} Massa e raio ajudam a inferir composição, mas diferentes estruturas internas podem ocupar regiões parecidas.}
+\end{figure}
+
+\observaveis{profundidade de trânsito, período, velocidade radial, espectro de trânsito}{raio, distância orbital, massa mínima, composição atmosférica}{raio estelar, inclinação, atividade estelar, modelo atmosférico}{O método seleciona quais planetas são fáceis de encontrar e quais ficam escondidos?}
+
+\textbf{Exemplo resolvido.} Um trânsito com profundidade de $1\%$ implica $(R_p/R_\star)^2=0{,}01$, logo $R_p/R_\star=0{,}1$. Se a estrela tem raio solar, o planeta tem raio de ordem joviana. Para uma Terra diante de um Sol, a profundidade é cerca de $0{,}008\%$. A diferença explica por que a estatística de exoplanetas nasceu dominada por planetas grandes e próximos.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: densidade média como primeiro diagnóstico}
+Com massa e raio, a densidade média é
+\[
+\rho=\frac{M}{(4/3)\pi R^3}.
+\]
+Em forma relativa à Terra,
+\[
+\frac{\rho}{\rho_\oplus}=\frac{M/M_\oplus}{(R/R_\oplus)^3}.
+\]
+Um planeta com $M=8M_\oplus$ e $R=2R_\oplus$ tem $\rho\simeq\rho_\oplus$. Isso sugere composição rochosa ou rica em materiais densos, mas não resolve a estrutura interna. Já $M=8M_\oplus$ e $R=3R_\oplus$ daria $\rho\simeq0{,}30\rho_\oplus$, indicando envelope volátil ou gasoso relevante.
+\end{lessonblock}
+
+\begin{lessonblock}{Leitura física: espectroscopia de trânsito}
+Durante um trânsito, parte da luz estelar atravessa a atmosfera do planeta. Moléculas e átomos absorvem em comprimentos de onda específicos, alterando ligeiramente a profundidade do trânsito com $\lambda$. A assinatura é pequena porque a atmosfera é uma borda fina comparada ao disco estelar. Por isso a pergunta correta não é apenas ``qual molécula aparece?'', mas também: qual é o raio estelar? há nuvens? a estrela tem manchas? o sinal se repete em outros trânsitos?
+\end{lessonblock}
+\newpage
+\section*{Capítulo 10 -- Via Láctea, dinâmica galáctica e matéria escura}
+\addcontentsline{toc}{section}{Capítulo 10 -- Via Láctea, dinâmica galáctica e matéria escura}
+Galáxias são sistemas gravitacionais compostos por estrelas, gás, poeira, remanescentes, matéria escura e buracos negros centrais. A Via Láctea contém disco, bojo, halo, braços espirais e populações estelares de idades e composições diferentes. O Sol está no disco, longe do centro, orbitando a Galáxia em centenas de milhões de anos. Nossa posição interna torna o estudo da Via Láctea ao mesmo tempo rico e difícil: temos medidas detalhadas de estrelas próximas, mas a poeira e a perspectiva interna complicam a visão global.
+
+Curvas de rotação galácticas são uma das evidências clássicas de matéria escura. Se a maior parte da massa estivesse concentrada na região luminosa central, esperaríamos velocidades orbitais decrescentes em grandes raios. Em muitas galáxias, as velocidades permanecem aproximadamente constantes. Isso sugere a presença de halos massivos de matéria não luminosa. A interpretação moderna combina curvas de rotação, lentes gravitacionais, dinâmica de aglomerados, CMB e formação de estruturas. Matéria escura não é uma ideia isolada para resolver um único gráfico; ela aparece em várias escalas.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1.0cm,y=3.2cm]
+  \draw[->,astroMuted] (0,0) -- (7.2,0) node[right] {raio};
+  \draw[->,astroMuted] (0,0) -- (0,1.2) node[above] {velocidade};
+  \draw[astroGold,very thick,dashed] plot[smooth] coordinates {(0.45,0.12) (1.0,0.82) (1.7,0.72) (2.7,0.55) (4.0,0.41) (5.5,0.32) (6.7,0.27)};
+  \draw[astroBlue,very thick] plot[smooth] coordinates {(0.45,0.12) (1.0,0.78) (1.8,0.88) (3.0,0.90) (4.5,0.89) (6.6,0.88)};
+  \draw[astroGold,very thick,dashed] (4.2,1.13) -- (4.75,1.13);
+  \node[anchor=west,astroNavy,fill=white,inner sep=1.5pt] at (4.85,1.13) {\scriptsize kepleriana};
+  \draw[astroBlue,very thick] (4.2,1.02) -- (4.75,1.02);
+  \node[anchor=west,astroNavy,fill=white,inner sep=1.5pt] at (4.85,1.02) {\scriptsize observada};
+\end{tikzpicture}
+\caption{\textbf{Curva de rotação galáctica.} Velocidades aproximadamente planas em grandes raios indicam massa distribuída além da região mais luminosa.}
+\end{figure}
+\newpage
+\section*{Capítulo 11 -- Galáxias, interações e núcleos ativos}
+\addcontentsline{toc}{section}{Capítulo 11 -- Galáxias, interações e núcleos ativos}
+Galáxias são classificadas morfologicamente como espirais, elípticas, lenticulares e irregulares, mas essa classificação é apenas uma entrada para a física. Espirais têm discos, gás frio e formação estelar ativa. Elípticas costumam ter populações mais velhas e menos gás frio, embora haja exceções. Interações e fusões transformam morfologias, disparam surtos de formação estelar, alimentam núcleos ativos e redistribuem momento angular. A aparência de uma galáxia é resultado de massa, ambiente, história de acreção, gás disponível e feedback.
+
+\imagemastro{0.72}{m51_hubble.jpg}{Galáxia espiral M51}{A estrutura espiral e a interação com a companheira tornam M51 um bom exemplo visual de morfologia, formação estelar e efeitos gravitacionais. Crédito: NASA, ESA, Hubble Heritage Team e colaboradores, via Wikimedia Commons.}
+
+Formação estelar em galáxias depende de gás frio e denso. Braços espirais não são necessariamente conjuntos fixos de estrelas, mas padrões dinâmicos por onde gás pode ser comprimido. Regiões HII, nebulosas moleculares e estrelas jovens traçam locais recentes de formação. Já populações antigas informam a história acumulada. A metalicidade, isto é, a abundância de elementos mais pesados que hélio, funciona como registro químico: gerações anteriores de estrelas enriquecem o meio interestelar, alterando a composição das gerações seguintes.
+
+A escada de distâncias extragalácticas combina métodos calibrados em sequência. Paralaxe calibra estrelas próximas; Cefeidas calibram distâncias em galáxias próximas; supernovas Ia alcançam distâncias maiores; redshift entra em escalas cosmológicas. Cada degrau carrega incertezas próprias. A robustez vem da sobreposição: métodos diferentes precisam concordar onde seus domínios se cruzam. A lei de Hubble-Lemaître, $v=H_0d$, emerge ao observar que galáxias distantes apresentam redshift proporcional à distância, interpretado como expansão cósmica.
+
+Em grandes escalas, galáxias não se distribuem aleatoriamente. Elas formam grupos, aglomerados, filamentos, paredes e vazios. Essa teia cósmica resulta do crescimento gravitacional de pequenas flutuações iniciais. Simulações cosmológicas mostram como matéria escura estrutura potenciais gravitacionais nos quais gás cai, esfria e forma galáxias. Feedback de supernovas e núcleos ativos regula o processo, impedindo que toda matéria bariônica vire estrela de maneira simples. A formação de galáxias é um problema de múltiplas escalas: do parsec de regiões de formação estelar ao megaparsec de ambientes cósmicos.
+
+Núcleos ativos de galáxias mostram que buracos negros supermassivos podem liberar enorme energia por acreção. O material que cai forma discos quentes, jatos relativísticos e regiões emissoras compactas. Quasares são AGNs muito luminosos, visíveis a grandes distâncias, e funcionam como sondas do universo jovem e do meio intergaláctico. O modelo unificado de AGN usa orientação, obscurecimento, disco, toro e jatos para explicar classes observacionais diferentes. Ainda assim, evolução temporal, ambiente e taxa de acreção também importam.
+
+\textbf{Exemplo guiado.} Se uma galáxia tem velocidade de rotação aproximadamente constante $v$ em raio $r$, a massa interna inferida por órbita circular é $M(<r)\simeq v^2r/G$. Se $v$ não diminui quando $r$ cresce, a massa interna continua aumentando com o raio. Essa é a essência da evidência dinâmica para halos extensos: a luz pode cair, mas a massa gravitacional inferida continua relevante.
+
+\textbf{Perguntas para discussão.}
+\begin{itemize}
+\item Por que a Via Láctea é difícil de mapear apesar de estarmos dentro dela?
+\item Como curvas de rotação apontam para massa não luminosa?
+\item Por que morfologia galáctica não é uma classificação puramente visual?
+\item Que papel o ambiente desempenha na evolução de galáxias?
+\end{itemize}
+
+\textbf{Para praticar.} Use uma curva de rotação simplificada com valores de $v$ em diferentes raios. Calcule massas internas proporcionais a $v^2r$ e compare com um perfil luminoso hipotético. A conclusão importante é que a massa dinâmica pode crescer além da região onde a luz domina. A partir daí, registre hipóteses, incertezas e evidências independentes de matéria escura.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: curva de rotação e massa interna}
+Para uma órbita circular em um potencial aproximadamente esférico, a aceleração centrípeta é $v^2/r$ e a aceleração gravitacional é $GM(<r)/r^2$. Igualando:
+\[
+\frac{v^2}{r}=\frac{GM(<r)}{r^2}
+\quad\Rightarrow\quad
+M(<r)=\frac{v^2r}{G}.
+\]
+Se a velocidade permanece quase constante em grandes raios, então $M(<r)\propto r$. Ou seja, a massa dinâmica continua crescendo onde a luz visível já pode ter caído bastante. Essa é a leitura essencial da curva plana.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: massa dinâmica de uma galáxia}
+Para $v=200\,\mathrm{km\,s^{-1}}$ em $r=10\,\mathrm{kpc}$,
+\[
+M(<r)\simeq\frac{(2\times10^5\,\mathrm{m\,s^{-1}})^2(3{,}1\times10^{20}\,\mathrm{m})}{6{,}67\times10^{-11}}
+\simeq1{,}9\times10^{41}\,\mathrm{kg},
+\]
+ou cerca de $10^{11}M_\odot$. Se em $20\,\mathrm{kpc}$ a velocidade ainda for parecida, a massa interna dobra aproximadamente. Essa conta simples já mostra por que a dinâmica exige mais massa do que a luz sugere.
+\end{lessonblock}
+
+\newpage
+\section*{Capítulo 12 -- Cosmologia observacional e expansão do universo}
+\addcontentsline{toc}{section}{Capítulo 12 -- Cosmologia observacional e expansão do universo}
+Cosmologia estuda o universo em grandes escalas, onde a distribuição média de matéria e energia pode ser tratada de forma homogênea e isotrópica em primeira aproximação. Essa hipótese não diz que o universo é uniforme em escalas pequenas: estrelas, galáxias e aglomerados existem. Ela afirma que, em escalas suficientemente grandes, não há centro ou direção privilegiada evidente. O modelo cosmológico moderno combina relatividade geral, expansão observada, radiação cósmica de fundo, abundâncias primordiais e formação de estruturas.
+
+A expansão cósmica é descrita pelo fator de escala. Galáxias distantes não se afastam simplesmente como projéteis atravessando espaço estático; em cosmologia relativística, o próprio espaço entre observadores comóveis se expande. O redshift cosmológico mede quanto o comprimento de onda da luz foi esticado desde a emissão. Para pequenos redshifts, a lei de Hubble-Lemaître aproxima a relação entre velocidade recessional e distância. Para grandes redshifts, é necessário usar o modelo cosmológico completo, com parâmetros de matéria, radiação, curvatura e energia escura.
+
+A densidade crítica define a escala em que a geometria espacial é plana em modelos simples. Costumamos expressar componentes do universo por parâmetros $\Omega$: matéria bariônica, matéria escura, radiação e energia escura. Observações indicam que a matéria bariônica é apenas uma fração pequena do conteúdo total. Matéria escura domina a matéria gravitante em muitas escalas. Energia escura está associada à expansão acelerada observada no universo recente. Esses nomes resumem fenômenos medidos, mas não encerram as perguntas fundamentais sobre a natureza microscópica desses componentes.
+
+A radiação cósmica de fundo é uma das evidências mais fortes do universo quente e denso. Ela possui espectro quase perfeito de corpo negro, com temperatura atual próxima de 2,7 K. Essa radiação foi liberada quando elétrons e prótons se combinaram em átomos neutros, tornando o universo transparente à luz. Antes disso, fótons eram espalhados frequentemente por elétrons livres. As pequenas anisotropias da CMB registram flutuações de densidade que mais tarde cresceriam para formar estruturas. Assim, um mapa de micro-ondas carrega informação sobre física do universo jovem.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=0.93cm,y=0.9cm]
+  \draw[astroLine,thick] (0,0) -- (7.6,0);
+  \fill[astroGold] (0.35,0) circle (2.5pt);
+  \draw[astroBlue] (0.35,0) -- (0.35,0.55);
+  \node[align=center,astroNavy,fill=white,inner sep=1pt] at (0.35,0.85) {\scriptsize inflação};
+  \node[align=center,astroMuted] at (0.35,-0.36) {\scriptsize $10^{-36}$ s};
+  \fill[astroGold] (1.45,0) circle (2.5pt);
+  \draw[astroBlue] (1.45,0) -- (1.45,-0.55);
+  \node[align=center,astroNavy,fill=white,inner sep=1pt] at (1.45,-0.9) {\scriptsize nucleossíntese};
+  \node[align=center,astroMuted] at (1.45,0.38) {\scriptsize 3 min};
+  \fill[astroGold] (2.75,0) circle (2.5pt);
+  \draw[astroBlue] (2.75,0) -- (2.75,0.55);
+  \node[align=center,astroNavy,fill=white,inner sep=1pt] at (2.75,0.85) {\scriptsize CMB};
+  \node[align=center,astroMuted] at (2.75,-0.36) {\scriptsize 380 mil anos};
+  \fill[astroGold] (4.2,0) circle (2.5pt);
+  \draw[astroBlue] (4.2,0) -- (4.2,-0.55);
+  \node[align=center,astroNavy,fill=white,inner sep=1pt] at (4.2,-0.9) {\scriptsize primeiras\\[-1pt]estrelas};
+  \node[align=center,astroMuted] at (4.2,0.38) {\scriptsize centenas de Myr};
+  \fill[astroGold] (5.75,0) circle (2.5pt);
+  \draw[astroBlue] (5.75,0) -- (5.75,0.55);
+  \node[align=center,astroNavy,fill=white,inner sep=1pt] at (5.75,0.85) {\scriptsize Sistema Solar};
+  \node[align=center,astroMuted] at (5.75,-0.36) {\scriptsize 9{,}2 Gyr};
+  \fill[astroGold] (7.2,0) circle (2.5pt);
+  \draw[astroBlue] (7.2,0) -- (7.2,-0.55);
+  \node[align=center,astroNavy,fill=white,inner sep=1pt] at (7.2,-0.9) {\scriptsize hoje};
+  \node[align=center,astroMuted] at (7.2,0.38) {\scriptsize 13{,}8 Gyr};
+  \node[astroMuted,fill=white,inner sep=2pt] at (3.8,1.35) {\scriptsize escala temporal qualitativa};
+\end{tikzpicture}
+\caption{\textbf{Linha do tempo cosmológica.} Eventos muito próximos do Big Bang e bilhões de anos posteriores precisam ser organizados em escala não linear.}
+\end{figure}
+
+\imagemastro{0.84}{hudf_2014.jpg}{Campo ultraprofundo do Hubble}{Uma pequena região do céu contém milhares de galáxias em diferentes distâncias e épocas cósmicas, tornando a imagem uma janela para evolução galáctica. Crédito: NASA, ESA e Hubble, via ESA/Hubble.}
+\newpage
+\section*{Capítulo 13 -- Universo primordial e modelo cosmológico padrão}
+\addcontentsline{toc}{section}{Capítulo 13 -- Universo primordial e modelo cosmológico padrão}
+A nucleossíntese primordial ocorreu nos primeiros minutos, quando temperatura e densidade permitiram formar núcleos leves. O resultado principal foi hidrogênio, hélio e pequenas quantidades de deutério, hélio-3 e lítio. Elementos mais pesados exigem ambientes estelares e explosivos posteriores. A concordância entre abundâncias previstas e observadas é um teste importante do modelo. Ela também limita a quantidade de matéria bariônica: não podemos simplesmente declarar que toda matéria escura é gás comum frio sem violar essas evidências.
+
+Inflação é uma hipótese para uma fase de expansão extremamente rápida no universo primordial. Ela foi proposta para explicar problemas como a homogeneidade do céu em regiões que, sem inflação, não teriam tido tempo causal para se equilibrar; a quase planura espacial; e a origem de flutuações iniciais. Em muitos modelos, flutuações quânticas esticadas pela inflação tornam-se sementes clássicas para a estrutura cósmica. A inflação não é uma única teoria fechada, mas uma família de cenários testados por previsões sobre anisotropias, polarização e distribuição de estruturas.
+
+A expansão acelerada foi inferida de supernovas Ia distantes e hoje é sustentada por múltiplas observações combinadas. Energia escura pode ser representada, no modelo mais simples, por uma constante cosmológica. Mas a interpretação física permanece aberta: pode ser energia do vácuo, um campo dinâmico ou sinal de que a gravidade precisa ser entendida de outra forma em grandes escalas. A postura científica adequada é dupla: usar o modelo $\Lambda$CDM porque ele funciona muito bem, e ao mesmo tempo reconhecer que seus componentes escuros ainda pedem explicação profunda.
+
+\textbf{Exemplo guiado.} Um redshift $z=1$ significa que o comprimento de onda observado é duas vezes o emitido, pois $1+z=\lambda_{\rm obs}/\lambda_{\rm em}$. Uma linha emitida em $400\,\mathrm{nm}$ seria observada em $800\,\mathrm{nm}$. Isso não deve ser interpretado como simples Doppler newtoniano em todos os casos; em cosmologia, o redshift acumula a expansão do universo ao longo da trajetória da luz.
+
+\textbf{Perguntas para discussão.}
+\begin{itemize}
+\item Em que sentido o universo pode ser homogêneo se galáxias existem?
+\item Por que a CMB é uma evidência tão forte de um universo quente no passado?
+\item Como abundâncias de elementos leves limitam a quantidade de matéria bariônica?
+\item O que significa aceitar um modelo cosmológico bem-sucedido sem conhecer totalmente a natureza de seus componentes?
+\end{itemize}
+
+\textbf{Para praticar.} Construa uma linha do tempo em escala logarítmica: inflação, nucleossíntese primordial, recombinação, primeiras estrelas, primeiras galáxias, formação do Sistema Solar e presente. Em cada marco, registre temperatura qualitativa, componentes dominantes e evidência observacional. A escala logarítmica é essencial: os primeiros segundos e os bilhões de anos posteriores precisam caber na mesma narrativa.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: redshift e fator de escala}
+Em cosmologia homogênea, comprimentos de onda acompanham a expansão do universo. Se $a(t)$ é o fator de escala, então
+\[
+1+z=\frac{\lambda_{\rm obs}}{\lambda_{\rm em}}=\frac{a(t_{\rm obs})}{a(t_{\rm em})}.
+\]
+Tomando $a(t_{\rm obs})=1$, um objeto em $z=3$ emitiu a luz quando o fator de escala era $a=1/4$. Isso não significa que ele estava simplesmente se movendo a uma velocidade newtoniana específica; significa que a luz foi esticada pela expansão acumulada entre emissão e observação.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: densidade crítica}
+A densidade crítica é
+\[
+\rho_c=\frac{3H_0^2}{8\pi G}.
+\]
+Usando $H_0\simeq70\,\mathrm{km\,s^{-1}\,Mpc^{-1}}\simeq2{,}3\times10^{-18}\,\mathrm{s^{-1}}$, obtemos
+\[
+\rho_c\simeq9\times10^{-27}\,\mathrm{kg\,m^{-3}}.
+\]
+O número parece absurdamente pequeno, mas em volumes cosmológicos ele controla a geometria e a história de expansão. Essa é uma boa lição de escala: densidade média cósmica não se compara intuitivamente com densidades de laboratório.
+\end{lessonblock}
+
+\newpage
+\section*{Capítulo 14 -- Dados astronômicos, incerteza e inferência}
+\addcontentsline{toc}{section}{Capítulo 14 -- Dados astronômicos, incerteza e inferência}
+\aberturabloco{Métodos}{Este capítulo atravessa todo o curso. Ele transforma a apostila em material de graduação ao insistir que astrofísica não é coleção de objetos: é inferência física a partir de dados imperfeitos.}{Sempre escreva três linhas antes de resolver um problema: o que foi observado, o que será inferido e qual hipótese sustenta a ponte entre os dois.}
+
+Uma medida astronômica raramente entrega diretamente a grandeza desejada. O detector mede contagens; a redução transforma contagens em fluxo; a calibração converte fluxo em magnitude ou luminosidade; o modelo interpreta luminosidade, cor, espectro ou variabilidade como temperatura, massa, composição ou distância. A cadeia pode ser excelente, mas precisa ser explícita.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{3.1cm}}
+\caption{\textbf{Cadeias de inferência frequentes em astrofísica.}}\\
+\toprule
+Observável & Inferência comum & Risco principal & Checagem recomendada \\
+\midrule
+paralaxe & distância & erro relativo grande para paralaxe pequena & comparar com outros indicadores \\
+cor & temperatura & poeira e metalicidade & usar espectro ou correção de extinção \\
+linha deslocada & velocidade radial/redshift & identificação errada da linha & procurar múltiplas linhas \\
+curva de luz & raio, período, geometria & manchas, binaridade, ruído & observar vários ciclos \\
+velocidade orbital & massa dinâmica & inclinação e distribuição de massa & combinar com imagem/modelo \\
+\bottomrule
+\end{longtable}
+
+Incerteza não é detalhe burocrático; é parte da conclusão. Uma distância com erro de 20\% produz erro de aproximadamente 40\% em luminosidade, pois $L\propto d^2$ para fluxo fixo. Uma linha espectral fraca pode ser ruído; uma correlação pode ser seleção observacional; uma amostra brilhante pode excluir objetos fracos e distantes. Bons resultados astrofísicos não eliminam incertezas: eles mostram que a conclusão sobrevive a elas.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=1cm,y=0.9cm]
+  \node[draw=astroLine,fill=astroPaper,rounded corners=2pt,minimum width=2.2cm,minimum height=0.75cm] (a) at (0,0) {fótons};
+  \node[draw=astroLine,fill=astroPaper,rounded corners=2pt,minimum width=2.2cm,minimum height=0.75cm] (b) at (2.8,0) {contagens};
+  \node[draw=astroLine,fill=astroPaper,rounded corners=2pt,minimum width=2.2cm,minimum height=0.75cm] (c) at (5.6,0) {fluxo};
+  \node[draw=astroLine,fill=astroPaper,rounded corners=2pt,minimum width=2.2cm,minimum height=0.75cm] (d) at (1.4,-1.6) {modelo};
+  \node[draw=astroLine,fill=astroPaper,rounded corners=2pt,minimum width=2.2cm,minimum height=0.75cm] (e) at (4.2,-1.6) {parâmetro físico};
+  \draw[->,astroBlue,thick] (a) -- (b);
+  \draw[->,astroBlue,thick] (b) -- (c);
+  \draw[->,astroBlue,thick] (c) -- (e);
+  \draw[->,astroGold,thick] (d) -- (e);
+  \node[astroMuted,fill=white,inner sep=1.5pt] at (2.8,0.75) {\scriptsize calibração};
+  \node[astroMuted,fill=white,inner sep=1.5pt] at (2.8,-2.35) {\scriptsize interpretação depende do modelo};
+\end{tikzpicture}
+\caption{\textbf{Da detecção à física.} O dado bruto passa por calibração e modelo antes de virar massa, temperatura, distância ou composição.}
+\end{figure}
+
+\textbf{Roteiro de leitura de gráficos.} Primeiro descreva eixos e unidades. Depois identifique tendência, dispersão e pontos fora do padrão. Só então escreva a interpretação física. Se a interpretação vier antes da descrição, você provavelmente está vendo no gráfico o que esperava ver.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: propagação de erro em luminosidade}
+Se a luminosidade é inferida por $L=4\pi d^2F$, então erros relativos pequenos obedecem aproximadamente
+\[
+\frac{\Delta L}{L}\simeq 2\frac{\Delta d}{d}+\frac{\Delta F}{F},
+\]
+quando queremos uma estimativa conservadora de ordem de grandeza. Para erros independentes, usa-se soma em quadratura:
+\[
+\left(\frac{\sigma_L}{L}\right)^2\simeq \left(2\frac{\sigma_d}{d}\right)^2+\left(\frac{\sigma_F}{F}\right)^2.
+\]
+O fator 2 diante da distância é crucial. Uma distância ruim contamina fortemente luminosidade, raio inferido e qualquer conclusão evolutiva baseada neles.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de aplicação: significância simples}
+Suponha que duas medidas de velocidade radial de uma estrela diferem por $6\,\mathrm{m\,s^{-1}}$, e cada medida tem incerteza de $2\,\mathrm{m\,s^{-1}}$. A incerteza da diferença é aproximadamente $\sqrt{2^2+2^2}=2{,}8\,\mathrm{m\,s^{-1}}$. A diferença corresponde a cerca de $2{,}1\sigma$. Isso é sugestivo, mas não conclusivo. Para declarar um planeta por velocidade radial, seria necessário ver periodicidade, consistência em muitos pontos e descartar atividade estelar.
+\end{lessonblock}
+
+\begin{lessonblock}{Do ajuste ao argumento físico}
+Um ajuste matemático só vira argumento astrofísico quando os resíduos fazem sentido. Depois de ajustar uma reta, curva de luz ou modelo espectral, examine: os resíduos têm padrão? aumentam em uma região específica? coincidem com baixa razão sinal-ruído? Um modelo errado pode ter $\chi^2$ aparentemente aceitável se as incertezas foram superestimadas; um modelo correto pode parecer ruim se há erro sistemático não modelado. Dados astronômicos pedem humildade quantitativa.
+\end{lessonblock}
+\newpage
+\section*{Capítulo 15 -- Projetos guiados com dados públicos}
+\addcontentsline{toc}{section}{Capítulo 15 -- Projetos guiados com dados públicos}
+\aberturabloco{Projetos}{Este capítulo transforma conteúdos do semestre em investigações pequenas. A meta não é fazer pesquisa original, mas treinar a passagem entre dado, modelo e argumento físico.}{Escolha um projeto por bloco. Entregue sempre uma figura, uma conta de ordem de grandeza, uma tabela curta e um parágrafo explicando limitações.}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{2.5cm}}
+\caption{\textbf{Projetos recomendados para acompanhar os blocos conceituais do curso.}}\\
+\toprule
+Projeto & Dados ou entrada & Produto esperado & Bloco do curso \\
+\midrule
+Céu local & mapa celeste, Stellarium ou efemérides & desenho do céu e explicação de coordenadas & Fundamentos \\
+HR de aglomerado & Gaia ou tabela fornecida & diagrama cor-magnitude e idade qualitativa & Estrelas \\
+Trânsito exoplanetário & curva de luz simplificada & raio relativo e discussão de ruído & Exoplanetas \\
+Curva de rotação & tabela raio-velocidade & massa dinâmica proporcional a $v^2r$ & Galáxias \\
+Lei de Hubble-Lemaître & distâncias e redshifts & ajuste linear simples e interpretação & Cosmologia \\
+Linha do tempo cósmica & eventos e redshifts & escala logarítmica comentada & Universo primordial \\
+\bottomrule
+\end{longtable}
+
+\textbf{Projeto 1: diagrama HR com dados do Gaia.} Selecione um aglomerado aberto com paralaxes confiáveis. Construa um gráfico de magnitude absoluta contra cor. Identifique sequência principal, possível ponto de saída e gigantes. Discuta por que membros contaminantes e poeira podem deslocar pontos. O objetivo não é obter uma idade precisa; é entender por que o HR é um instrumento físico.
+
+\textbf{Projeto 2: trânsito exoplanetário.} Use uma curva de luz normalizada. Meça a profundidade média durante o trânsito e estime $R_p/R_\star$. Se houver período, estime a distância orbital usando a terceira lei de Kepler em unidades solares. Discuta por que manchas estelares, ruído instrumental e inclinação orbital podem afetar a interpretação.
+
+\textbf{Projeto 3: matéria escura em uma galáxia.} A partir de uma tabela com raio e velocidade, calcule uma massa interna proporcional a $v^2r$. Compare com um perfil luminoso qualitativo. A pergunta central é: a massa dinâmica continua crescendo onde a luz já diminuiu? Escreva a conclusão sem exagero: a curva sugere massa não luminosa, mas a interpretação completa usa evidências independentes.
+
+\textbf{Projeto 4: expansão cósmica.} Use um conjunto pequeno de galáxias com distância e redshift baixo. Faça um gráfico $v$ versus $d$ e estime a inclinação. Discuta dispersão por velocidades peculiares, calibração de distância e por que a lei linear é aproximação local. Em seguida, explique por que redshifts altos exigem cosmologia relativística.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Modelo de relatório científico curto}
+Cada projeto deve caber em 3 a 5 páginas e seguir uma estrutura fixa:
+\begin{enumerate}
+\item \textbf{Pergunta física:} uma pergunta respondível com os dados disponíveis.
+\item \textbf{Dados e calibração:} origem dos dados, unidades, cortes aplicados e limitações.
+\item \textbf{Método:} equações usadas, hipóteses e justificativa do gráfico escolhido.
+\item \textbf{Resultado:} figura principal, tabela curta e estimativa numérica.
+\item \textbf{Discussão:} incertezas, vieses e uma conclusão proporcional ao que foi medido.
+\end{enumerate}
+Essa estrutura treina escrita científica sem exigir que o estudante produza pesquisa original.
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de projeto expandido: HR de um aglomerado}
+Para construir um diagrama cor-magnitude com dados do Gaia, escolha um aglomerado aberto e selecione estrelas em uma janela de posição, paralaxe e movimento próprio. Converta magnitude aparente em magnitude absoluta usando a paralaxe ou uma distância média confiável. Plote magnitude absoluta no eixo vertical, invertendo o eixo para que estrelas mais luminosas fiquem acima, e cor no eixo horizontal. O produto final deve identificar sequência principal, possíveis gigantes, membros suspeitos e ponto de saída. A discussão deve responder: quais cortes podem ter removido membros reais? quais estrelas podem ser contaminantes de campo? como extinção deslocaria o diagrama?
+\end{lessonblock}
+
+\begin{lessonblock}{Exemplo de projeto expandido: curva de rotação}
+Monte uma tabela com raio em kpc e velocidade em $\mathrm{km\,s^{-1}}$. Faça dois gráficos: $v(r)$ e uma massa dinâmica proporcional a $v^2r$. Se a curva de rotação fica plana, a massa inferida cresce aproximadamente com $r$. Compare com uma curva de luz hipotética ou com uma imagem da galáxia. A conclusão correta não é ``provei matéria escura'', mas ``a dinâmica exige massa distribuída além do que a luz traça diretamente, em concordância com o cenário de halo escuro''.
+\end{lessonblock}
+
+\begin{noticebox}
+\textbf{Formato de entrega dos projetos.} Uma boa entrega tem uma pergunta física, uma figura legível, uma tabela curta, uma estimativa numérica, uma discussão de incertezas e uma conclusão proporcional aos dados. Evite conclusões grandiosas para dados pequenos.
+\end{noticebox}
+\newpage
+\section*{Bibliografia}
+\addcontentsline{toc}{section}{Bibliografia}
+\begin{itemize}
+\item Carroll, B. W.; Ostlie, D. A. \textit{An Introduction to Modern Astrophysics}. 2ª ed. Cambridge University Press, 2017.
+\item Karttunen, H. et al. \textit{Fundamental Astronomy}. Springer.
+\item Ryden, B.; Peterson, B. M. \textit{Foundations of Astrophysics}. Cambridge University Press.
+\item NASA/IPAC Extragalactic Database, SIMBAD, ESA Gaia Archive e NASA Exoplanet Archive para consultas orientadas de dados.
+\end{itemize}
+
+\end{document}

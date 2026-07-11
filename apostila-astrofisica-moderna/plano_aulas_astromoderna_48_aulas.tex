@@ -1,0 +1,947 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{titling}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{needspace}
+\usepackage[bookmarks=false]{hyperref}
+
+\geometry{
+  top=2.4cm,
+  bottom=2.6cm,
+  left=2.25cm,
+  right=2.25cm,
+  headheight=22pt
+}
+
+\definecolor{astroNavy}{HTML}{14213D}
+\definecolor{astroBlue}{HTML}{2F6690}
+\definecolor{astroCyan}{HTML}{35A7B8}
+\definecolor{astroGold}{HTML}{F2A541}
+\definecolor{astroInk}{HTML}{232323}
+\definecolor{astroMuted}{HTML}{667085}
+\definecolor{astroPaper}{HTML}{F7F9FC}
+\definecolor{astroLine}{HTML}{D8E2EC}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=astroBlue,
+  urlcolor=astroBlue,
+  pdftitle={Astrofisica Moderna: Plano de aulas e fichas de estudo},
+  pdfauthor={Material didatico em portugues}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlist{itemsep=0.15em, topsep=0.25em, leftmargin=1.35em}
+\renewcommand{\arraystretch}{1.18}
+\color{astroInk}
+\graphicspath{{figuras/}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\footnotesize\textcolor{astroMuted}{Astrofisica Moderna}}
+\rhead{\footnotesize\textcolor{astroMuted}{\nouppercase{\leftmark}}}
+\cfoot{\small\textcolor{astroMuted}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{astroLine}\leaders\hrule height \headrulewidth\hfill}}
+
+\titleformat{\section}
+  {\Large\bfseries\color{astroNavy}}
+  {}
+  {0pt}
+  {}
+  [\vspace{-0.45em}\textcolor{astroGold}{\titlerule[1.1pt]}]
+\titlespacing*{\section}{0pt}{1.4em}{0.85em}
+
+\newtcolorbox{noticebox}{
+  enhanced,
+  breakable,
+  colback=astroPaper,
+  colframe=astroBlue,
+  borderline west={2.4pt}{0pt}{astroGold},
+  boxrule=0.5pt,
+  arc=2pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt
+}
+
+\newtcolorbox{aulahead}[3]{
+  enhanced,
+  colback=astroNavy,
+  colframe=astroNavy,
+  arc=2pt,
+  boxrule=0pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  overlay={
+    \fill[astroGold] (frame.north west) rectangle ([xshift=4pt]frame.south west);
+  },
+  fontupper=\color{white},
+  before skip=1.2em,
+  after skip=0.8em,
+  title={\large Aula #1},
+  fonttitle=\bfseries\color{astroGold},
+  attach boxed title to top left={xshift=9pt,yshift=-2pt},
+  boxed title style={colback=astroNavy, colframe=astroNavy, boxrule=0pt}
+}
+
+\newtcolorbox{lessonblock}[2][]{
+  enhanced,
+  breakable,
+  colback=white,
+  colframe=astroLine,
+  coltitle=astroNavy,
+  colbacktitle=astroPaper,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=10pt,
+  right=10pt,
+  top=7pt,
+  bottom=7pt,
+  title={#2},
+  fonttitle=\bfseries,
+  borderline west={2pt}{0pt}{astroCyan},
+  #1
+}
+
+\newcommand{\aula}[3]{%
+  \Needspace{10\baselineskip}%
+  \section*{Aula #1 -- #2}%
+  \phantomsection%
+  \addcontentsline{toc}{section}{\texorpdfstring{Aula #1 -- #2}{Aula #1 - #2}}%
+  \markboth{Aula #1}{Aula #1}%
+  \begin{aulahead}{#1}{#2}{#3}%
+    \Large\bfseries #2\par\vspace{0.35em}%
+    {\small\textcolor{astroLine}{Referência principal no Carroll \& Ostlie: #3}}%
+  \end{aulahead}%
+  \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Pergunta inicial}%
+  Que observação, escala física ou impasse conceitual torna necessário estudar \textbf{#2}? Antes de ler os objetivos, escreva uma hipótese curta. Ao final da aula, volte a ela e corrija o que mudou.%
+  \end{lessonblock}%
+}
+\newcommand{\objetivos}[1]{\begin{lessonblock}{Ao final, você deve conseguir}#1\end{lessonblock}}
+\newcommand{\ideias}[1]{\begin{lessonblock}{Ideias-chave}\begin{itemize}#1\end{itemize}\end{lessonblock}}
+\newcommand{\atividade}[1]{\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Para praticar}#1\end{lessonblock}}
+\newcommand{\exercicios}[1]{\begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Exercícios}\begin{enumerate}#1\end{enumerate}\end{lessonblock}\medskip}
+\newcommand{\observaveis}[4]{%
+  \begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Da observação ao modelo}%
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}}
+  \toprule
+  Observável & Grandeza inferida & Hipótese ou calibração necessária \\
+  \midrule
+  #1 & #2 & #3 \\
+  \bottomrule
+  \end{tabular}
+
+  \textbf{Pergunta de checagem:} #4
+  \end{lessonblock}
+}
+\newcommand{\aberturabloco}[3]{%
+  \begin{noticebox}
+  \textbf{Bloco #1.} #2
+
+  \textbf{Como estudar este bloco:} #3
+  \end{noticebox}
+}
+\newcommand{\imagemastro}[4]{%
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=#1\textwidth]{#2}
+  \caption{\textbf{#3.} #4}
+  \end{figure}
+}
+\newcommand{\roteirocapitulo}[6]{%
+  \newpage
+  \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Estudo dirigido do capítulo}
+  \textbf{Tema central:} #1
+
+  \textbf{Mapa conceitual mínimo.} Antes de avançar, escreva uma versão própria dos conceitos a seguir e conecte-os com setas causais, não apenas com setas de associação:
+  \begin{itemize}
+  #2
+  \end{itemize}
+  O mapa deve indicar quais grandezas são observáveis diretamente, quais são inferidas por modelo e quais dependem de calibração. Esse cuidado evita uma confusão comum em astrofísica: tratar uma quantidade derivada como se fosse uma medida direta.
+
+  \textbf{Leitura ativa.} Releia o capítulo procurando três frases que expressem relações de causa e efeito. Reescreva cada uma delas no formato ``se ... então ... porque ...''. Esse exercício obriga a explicitar o mecanismo físico, e não apenas o nome do fenômeno.
+  \end{lessonblock}
+
+  \begin{lessonblock}{Problema orientado}
+  #3
+
+  \textbf{Roteiro de resolução.}
+  \begin{enumerate}
+  \item Identifique as grandezas dadas e escreva suas unidades.
+  \item Desenhe um esquema simples do sistema físico antes de substituir números.
+  \item Escolha a relação física apropriada e justifique por que ela se aplica.
+  \item Faça a conta mantendo potências de dez separadas dos fatores numéricos.
+  \item Interprete o resultado em palavras: ele é grande, pequeno ou plausível?
+  \end{enumerate}
+  Ao final, escreva uma frase sobre a principal hipótese simplificadora usada. Em astronomia, saber o que foi ignorado é parte da resposta.
+  \end{lessonblock}
+
+  \newpage
+  \begin{lessonblock}[borderline west={2pt}{0pt}{astroCyan}]{Análise de dados ou gráfico}
+  #4
+
+  \textbf{Questões de interpretação.}
+  \begin{enumerate}
+  \item Qual é a tendência principal que o gráfico ou tabela mostra?
+  \item Há algum ponto que parece discrepante? Que explicações físicas ou observacionais poderiam justificá-lo?
+  \item Que transformação de escala ajudaria: linear, logarítmica, normalizada ou razão entre grandezas?
+  \item Que conclusão seria precipitada sem uma estimativa de incerteza?
+  \end{enumerate}
+  A resposta deve separar descrição, inferência e especulação. Descrição é o que se vê; inferência é o que se calcula ou modela; especulação é uma hipótese ainda não testada com os dados disponíveis.
+  \end{lessonblock}
+
+  \begin{lessonblock}{Erros comuns e antídotos}
+  \begin{itemize}
+  #5
+  \end{itemize}
+  Para cada erro, escreva um exemplo concreto e uma pergunta de checagem. A pergunta de checagem deve ser curta o suficiente para ser usada durante uma revisão ou resolução de exercícios.
+  \end{lessonblock}
+
+  \newpage
+  \begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Produção escrita}
+  #6
+
+  \textbf{Formato sugerido.} Escreva entre 20 e 30 linhas. O primeiro parágrafo deve apresentar o fenômeno; o segundo deve explicar o mecanismo físico; o terceiro deve discutir uma limitação observacional ou uma hipótese do modelo. Evite começar com definições de dicionário. Comece com uma pergunta física ou com uma observação concreta.
+  \end{lessonblock}
+
+  \begin{lessonblock}{Exercícios adicionais}
+  \begin{enumerate}
+  \item Crie uma estimativa de ordem de grandeza relacionada ao capítulo e resolva-a com no máximo três equações.
+  \item Escolha uma afirmação qualitativa do texto e traduza-a em uma relação matemática aproximada.
+  \item Identifique uma situação em que duas interpretações diferentes poderiam produzir observações parecidas.
+  \item Proponha uma observação adicional que ajudaria a distinguir essas interpretações.
+  \item Escreva uma pergunta conceitual que ajude a verificar se você entendeu a ideia central.
+  \end{enumerate}
+  \end{lessonblock}
+}
+
+\title{\textbf{Astrofísica Moderna}\\Plano de aulas e fichas de estudo\\48 aulas}
+\author{Material didático em português baseado na organização conceitual de\\Bradley W. Carroll e Dale A. Ostlie, \textit{An Introduction to Modern Astrophysics}, 2ª ed.}
+\date{2026}
+
+\begin{document}
+\pagenumbering{Roman}
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{0.8cm}
+{\color{astroGold}\rule{\textwidth}{1.2pt}}\par
+\vspace{1.0cm}
+{\fontsize{32}{36}\selectfont\bfseries\color{astroNavy} Astrofísica Moderna\par}
+\vspace{0.35cm}
+{\Large\color{astroBlue} Plano de aulas e fichas de estudo\par}
+{\large\color{astroMuted} 48 aulas\par}
+\vfill
+\begin{noticebox}
+Este documento reúne as fichas de estudo aula a aula. A apostila principal fica reservada aos capítulos de conteúdo; este arquivo serve como roteiro de acompanhamento, preparação e revisão de cada encontro.
+\end{noticebox}
+\vfill
+{\color{astroMuted}2026\par}
+\vspace{0.6cm}
+{\color{astroGold}\rule{0.38\textwidth}{1.2pt}}\par
+\end{titlepage}
+\pagenumbering{roman}
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section*{Como usar este plano de aulas}
+\addcontentsline{toc}{section}{Como usar este plano de aulas}
+Este documento é o roteiro de estudo do semestre. Cada ficha apresenta uma pergunta inicial, objetivos, ideias-chave, uma atividade curta e exercícios. Use a pergunta inicial como gatilho: tente responder antes da aula, volte a ela depois e observe o que mudou.
+
+A leitura conceitual completa está na apostila principal, \texttt{apostila\_astromoderna\_48\_aulas.tex}. Aqui, a função das fichas é organizar o ritmo do curso e indicar o que preparar, revisar e praticar em cada encontro.
+
+\section*{Distribuição das 48 aulas}
+\addcontentsline{toc}{section}{Distribuição das 48 aulas}
+\begin{longtable}{>{\raggedright\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}p{9.2cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+Aulas & Tema & Bloco \\
+\midrule
+1--6 & Ferramentas observacionais: céu, órbitas, luz e telescópios & Fundamentos \\
+7--21 & Estrelas: parâmetros, espectros, interiores, Sol, formação e evolução & Astrofísica estelar \\
+22--25 & Compactos, relatividade e binárias interagentes & Altas energias \\
+26--34 & Sistema Solar, corpos menores e exoplanetas & Astrofísica planetária \\
+35--42 & Via Láctea, galáxias, evolução galáctica e estrutura cósmica & Galáxias \\
+43--48 & Galáxias ativas, cosmologia, CMB, energia escura e universo primordial & Cosmologia \\
+\bottomrule
+\end{longtable}
+
+\newpage
+\aula{1}{O céu como laboratório físico}{cap. 1}
+\objetivos{Reconhecer a astronomia como ciência observacional e conectar fenômenos aparentes do céu a modelos físicos.}
+\ideias{
+\item A esfera celeste é uma construção geométrica útil, não uma superfície real.
+\item O movimento diário do céu vem da rotação da Terra; o movimento anual aparente do Sol vem da translação terrestre.
+\item Modelos astronômicos são avaliados pela capacidade de prever posições, brilhos e espectros.
+}
+\atividade{Desenhe a esfera celeste local: horizonte, zênite, polos celestes e equador celeste para a latitude de sua cidade.}
+\exercicios{
+\item Explique por que estrelas diferentes são visíveis em épocas diferentes do ano.
+\item Qual é a altura aproximada do polo celeste sul para um observador em Joinville, SC, latitude cerca de $26^\circ$ S?
+}
+
+\aula{2}{Coordenadas celestes e tempo astronômico}{cap. 1}
+\objetivos{Usar ascensão reta, declinação, altitude e azimute; entender a ligação entre tempo sideral e observação.}
+\ideias{
+\item Declinação é análoga à latitude; ascensão reta é análoga à longitude, medida em horas.
+\item O tempo sideral indica quais ascensões retas cruzam o meridiano local.
+\item A conversão entre sistemas depende da latitude, da hora e da data.
+}
+\atividade{Escolher uma estrela brilhante e interpretar sua posição em um mapa celeste ou aplicativo planetário.}
+\exercicios{
+\item Por que a ascensão reta é medida em horas?
+\item Uma estrela no equador celeste fica quanto tempo acima do horizonte, aproximadamente, para um observador fora dos polos?
+}
+
+\aula{3}{Órbitas elípticas e leis de Kepler}{cap. 2}
+\objetivos{Interpretar as leis de Kepler e aplicá-las a planetas, satélites e estrelas binárias.}
+\ideias{
+\item A elipse possui semieixo maior $a$, excentricidade $e$ e foco ocupado pelo corpo central em órbitas keplerianas.
+\item A segunda lei de Kepler expressa conservação do momento angular.
+\item A terceira lei relaciona escala orbital e período: $P^2\propto a^3$ para massas fixas.
+}
+\atividade{Comparar órbitas com $e=0$, $0{,}3$ e $0{,}8$ e discutir onde a velocidade orbital é maior.}
+\exercicios{
+\item Se $a$ dobra em torno do Sol, por qual fator o período orbital muda?
+\item O que aconteceria com a velocidade de um planeta ao passar pelo periélio?
+}
+
+\aula{4}{Gravitação newtoniana e teorema do virial}{cap. 2}
+\objetivos{Relacionar força gravitacional, energia orbital e sistemas autogravitantes.}
+\ideias{
+\item A gravitação universal explica queda, órbitas planetárias e dinâmica de aglomerados.
+\item Em órbitas ligadas, energia total é negativa.
+\item Para muitos sistemas em equilíbrio, o teorema do virial dá $2K+U=0$.
+}
+\atividade{Estimar a massa do Sol a partir de $P=1$ ano e $a=1$ UA.}
+\exercicios{
+\item Derive a forma proporcional $M\propto a^3/P^2$ para uma órbita circular.
+\item Por que aquecer um sistema autogravitante pode fazê-lo expandir?
+}
+
+\aula{5}{Luz, magnitudes e corpo negro}{cap. 3}
+\objetivos{Usar brilho aparente, fluxo, magnitude e radiação de corpo negro para extrair informação física.}
+\ideias{
+\item Fluxo diminui com a distância como $F=L/(4\pi d^2)$.
+\item A escala de magnitudes é logarítmica: diferença de 5 magnitudes equivale a fator 100 em fluxo.
+\item A lei de Wien, $\lambda_{\max}T\simeq2{,}9\times10^{-3}\,\mathrm{m\,K}$, liga cor e temperatura.
+}
+\atividade{Comparar espectros de corpos negros de 3000 K, 5800 K e 10000 K.}
+\exercicios{
+\item Uma estrela é 100 vezes mais brilhante que outra. Qual é a diferença de magnitude?
+\item Estime o comprimento de onda de máximo de emissão do Sol usando $T\approx5800$ K.
+}
+
+\aula{6}{Fótons, espectros e telescópios}{caps. 5 e 6}
+\objetivos{Compreender como linhas espectrais e instrumentos transformam luz em diagnóstico astrofísico.}
+\ideias{
+\item Energia de fóton: $E=h\nu=hc/\lambda$.
+\item Linhas de absorção e emissão revelam composição, temperatura, densidade e velocidade.
+\item A resolução angular de um telescópio melhora com abertura maior e comprimento de onda menor.
+}
+\atividade{Identificar, em um espectro simples, contínuo, linhas de absorção e linhas de emissão.}
+\exercicios{
+\item Um fóton azul tem energia maior ou menor que um fóton vermelho? Justifique.
+\item Por que rádio telescópios costumam ter antenas grandes?
+}
+
+\aula{7}{Sistemas binários e massas estelares}{cap. 7}
+\objetivos{Mostrar por que estrelas binárias são fundamentais para medir massas.}
+\ideias{
+\item Binárias visuais, espectroscópicas e eclipsantes oferecem informações complementares.
+\item Curvas de velocidade radial revelam movimento ao longo da linha de visada.
+\item Massa é o parâmetro mais importante para a evolução estelar.
+}
+\atividade{Interpretar uma curva de luz de binária eclipsante e localizar eclipse primário e secundário.}
+\exercicios{
+\item Por que estrelas isoladas têm massas mais difíceis de medir?
+\item Que informação adicional uma binária eclipsante fornece em relação a uma binária apenas espectroscópica?
+}
+
+\aula{8}{Classificação espectral e diagrama HR}{cap. 8}
+\objetivos{Ler o diagrama Hertzsprung-Russell e relacionar classe espectral, temperatura, luminosidade e raio.}
+\ideias{
+\item A sequência OBAFGKM organiza estrelas por temperatura decrescente.
+\item No diagrama HR, a sequência principal reflete fusão estável de hidrogênio no núcleo.
+\item Gigantes e anãs brancas ocupam regiões distintas por terem raios muito diferentes.
+}
+\atividade{Posicionar Sol, Sirius, Betelgeuse e uma anã branca típica em um diagrama HR esquemático.}
+\exercicios{
+\item Duas estrelas têm a mesma temperatura, mas uma é 100 vezes mais luminosa. Qual deve ter raio maior?
+\item Por que a cor de uma estrela é um indicador imperfeito, mas útil, de temperatura?
+}
+
+\aula{9}{Atmosferas estelares e opacidade}{cap. 9}
+\objetivos{Entender por que a radiação que observamos vem de camadas externas e como a opacidade molda espectros.}
+\ideias{
+\item A fotosfera é aproximadamente a região de profundidade óptica $\tau\sim1$.
+\item Opacidade mede quão eficientemente a matéria bloqueia ou absorve radiação.
+\item Perfis de linha dependem de temperatura, pressão, rotação e campos magnéticos.
+}
+\atividade{Discutir por que não vemos diretamente o núcleo do Sol, embora a energia venha de lá.}
+\exercicios{
+\item Defina, em palavras, profundidade óptica.
+\item Cite dois mecanismos que podem alargar uma linha espectral.
+}
+
+\aula{10}{Equilíbrio hidrostático}{cap. 10}
+\objetivos{Derivar a ideia física de equilíbrio entre gravidade e gradiente de pressão no interior estelar.}
+\ideias{
+\item Estrelas são esferas de plasma sustentadas por pressão interna.
+\item Em equilíbrio, $dP/dr=-Gm(r)\rho/r^2$.
+\item A pressão precisa crescer para dentro porque o peso das camadas superiores aumenta.
+}
+\atividade{Fazer uma analogia quantitativa com pressão no fundo de uma coluna de fluido.}
+\exercicios{
+\item O que ocorreria se a pressão interna de uma estrela diminuísse subitamente?
+\item Por que o centro de uma estrela tem temperatura maior que a superfície?
+}
+
+\aula{11}{Fontes de energia das estrelas}{cap. 10}
+\objetivos{Comparar contração gravitacional, reações nucleares e escalas de tempo estelares.}
+\ideias{
+\item A fusão de hidrogênio em hélio é a fonte dominante na sequência principal.
+\item Cadeia próton-próton domina em estrelas como o Sol; ciclo CNO cresce em importância em estrelas mais massivas.
+\item Pequenas diferenças de massa nuclear aparecem como energia via $E=mc^2$.
+}
+\atividade{Estimar a fração de massa convertida em energia na fusão H$\rightarrow$He e discutir a longevidade solar.}
+\exercicios{
+\item Por que reações nucleares exigem temperaturas tão altas?
+\item Explique por que estrelas mais massivas vivem menos, apesar de terem mais combustível.
+}
+
+\aula{12}{Transporte de energia no interior estelar}{cap. 10}
+\objetivos{Distinguir transporte radiativo, convectivo e condutivo em estrelas.}
+\ideias{
+\item Transporte radiativo ocorre por absorções e reemissões sucessivas.
+\item Convecção aparece quando o gradiente de temperatura torna o fluido instável.
+\item Condutividade é crucial em matéria degenerada, como anãs brancas.
+}
+\atividade{Comparar água aquecida numa panela com uma camada estelar convectiva.}
+\exercicios{
+\item Por que fótons podem levar muito tempo para escapar do interior solar?
+\item Que condição qualitativa favorece convecção?
+}
+
+\aula{13}{Modelos estelares e sequência principal}{cap. 10}
+\objetivos{Entender o conjunto mínimo de equações de estrutura estelar e a relação massa-luminosidade.}
+\ideias{
+\item Modelos estelares combinam massa, pressão, luminosidade e temperatura como funções do raio.
+\item Para estrelas de sequência principal, luminosidade cresce rapidamente com a massa.
+\item A posição no HR é resultado da estrutura interna e da taxa de geração de energia.
+}
+\atividade{Esboçar como muda uma estrela de sequência principal ao aumentar a massa.}
+\exercicios{
+\item Se $L\propto M^{3{,}5}$, uma estrela de $2M_\odot$ é quantas vezes mais luminosa que o Sol?
+\item Por que a sequência principal não é uma linha de idade única?
+}
+
+\aula{14}{O Sol como estrela padrão}{cap. 11}
+\objetivos{Usar o Sol como laboratório para estrutura, atmosfera e atividade magnética estelar.}
+\ideias{
+\item A fotosfera produz o contínuo visível; cromosfera e coroa mostram plasma magnetizado.
+\item Manchas solares são regiões mais frias associadas a campos magnéticos intensos.
+\item Neutrinos e heliossismologia sondam o interior solar.
+}
+\atividade{Analisar uma imagem solar em luz branca ou H-alfa e identificar estruturas.}
+\exercicios{
+\item Por que a coroa solar pode ser mais quente que a fotosfera?
+\item O que a detecção de neutrinos solares confirma sobre o núcleo?
+}
+
+\aula{15}{Meio interestelar: gás e poeira}{cap. 12}
+\objetivos{Descrever fases do meio interestelar e seus efeitos sobre observações.}
+\ideias{
+\item O meio interestelar contém gás ionizado, atômico, molecular e poeira.
+\item Poeira causa extinção e avermelhamento da luz estelar.
+\item Linhas como 21 cm do hidrogênio neutro mapeiam estrutura galáctica.
+}
+\atividade{Comparar a cor observada de uma estrela sem poeira e com avermelhamento interestelar.}
+\exercicios{
+\item Diferencie extinção e avermelhamento.
+\item Por que nuvens moleculares são locais naturais de formação estelar?
+}
+
+\aula{16}{Formação estelar e protoestrelas}{cap. 12}
+\objetivos{Explicar colapso gravitacional, critério de Jeans e evolução pré-sequência principal.}
+\ideias{
+\item Uma nuvem colapsa quando a gravidade vence pressão, turbulência e campos magnéticos.
+\item A massa de Jeans expressa uma escala crítica de instabilidade.
+\item Discos circumestelares surgem por conservação de momento angular.
+}
+\atividade{Estimar qualitativamente por que uma nuvem ao contrair tende a girar mais rápido.}
+\exercicios{
+\item O que impede uma nuvem qualquer de colapsar imediatamente?
+\item Por que estrelas jovens costumam estar associadas a nebulosas?
+}
+
+\aula{17}{Evolução na sequência principal}{cap. 13}
+\objetivos{Relacionar massa inicial, composição e tempo de vida durante a queima de hidrogênio.}
+\ideias{
+\item A sequência principal é uma fase longa de equilíbrio térmico e hidrostático.
+\item A composição central muda com a fusão, alterando pressão, temperatura e luminosidade.
+\item Massa inicial define grande parte do destino evolutivo.
+}
+\atividade{Comparar trajetórias evolutivas de estrelas de baixa e alta massa no HR.}
+\exercicios{
+\item Por que aglomerados estelares são úteis para testar evolução estelar?
+\item O que significa ponto de saída da sequência principal em um aglomerado?
+}
+
+\aula{18}{Gigantes, queima de hélio e estágios tardios}{cap. 13}
+\objetivos{Descrever a evolução pós-sequência principal de estrelas de baixa e massa intermediária.}
+\ideias{
+\item Ao esgotar hidrogênio central, a estrela reajusta sua estrutura e pode virar gigante vermelha.
+\item Queima de hélio produz carbono e oxigênio.
+\item Perda de massa e nebulosas planetárias antecedem anãs brancas em muitos casos.
+}
+\atividade{Interpretar o HR de um aglomerado com ramo de gigantes.}
+\exercicios{
+\item Por que uma estrela expande quando o núcleo contrai?
+\item Uma nebulosa planetária tem relação direta com planetas? Explique.
+}
+
+\aula{19}{Pulsação estelar e sismologia}{cap. 14}
+\objetivos{Entender pulsação como ferramenta de distância e de estrutura interna.}
+\ideias{
+\item Cefeidas obedecem uma relação período-luminosidade essencial para a escala de distâncias.
+\item Pulsação resulta de mecanismos de armazenamento e liberação de energia em camadas ionizadas.
+\item Heliossismologia e asterossismologia usam oscilações para sondar interiores.
+}
+\atividade{Usar uma relação período-luminosidade simplificada para estimar distância de uma Cefeida.}
+\exercicios{
+\item Por que Cefeidas são chamadas de velas padrão?
+\item Qual é a vantagem de medir frequências de oscilação em uma estrela?
+}
+
+\aula{20}{Estrelas massivas e supernovas}{cap. 15}
+\objetivos{Explicar evolução de estrelas massivas, colapso de núcleo e produção de elementos.}
+\ideias{
+\item Estrelas massivas podem queimar sucessivamente elementos até formar núcleos ricos em ferro.
+\item Ferro não libera energia por fusão em condições estelares comuns.
+\item Supernovas de colapso de núcleo enriquecem o meio interestelar e deixam remanescentes compactos.
+}
+\atividade{Montar o ``modelo de cebola'' de uma estrela massiva evoluída.}
+\exercicios{
+\item Por que o ferro marca uma fronteira energética na fusão nuclear?
+\item Cite dois efeitos astrofísicos de uma supernova na galáxia.
+}
+
+\aula{21}{Anãs brancas e matéria degenerada}{cap. 16}
+\objetivos{Introduzir pressão de degenerescência e limite de Chandrasekhar.}
+\ideias{
+\item Anãs brancas são remanescentes sustentados por pressão de degenerescência dos elétrons.
+\item A massa máxima típica é próxima de $1{,}4M_\odot$.
+\item Elas esfriam lentamente, funcionando como fósseis térmicos de populações estelares.
+}
+\atividade{Comparar qualitativamente pressão térmica e pressão de degenerescência.}
+\exercicios{
+\item Por que uma anã branca não precisa de fusão ativa para se sustentar?
+\item O que pode ocorrer se uma anã branca em binária ganhar massa demais?
+}
+
+\aula{22}{Estrelas de nêutrons e pulsares}{cap. 16}
+\objetivos{Descrever remanescentes compactos, conservação de momento angular e emissão pulsada.}
+\ideias{
+\item Estrelas de nêutrons têm massas solares comprimidas em raios de ordem dezenas de quilômetros.
+\item Pulsares são estrelas de nêutrons magnetizadas em rotação.
+\item Campos magnéticos intensos e rotação rápida tornam esses objetos laboratórios extremos.
+}
+\atividade{Estimar o aumento de rotação quando um núcleo estelar colapsa conservando momento angular.}
+\exercicios{
+\item Por que pulsares parecem piscar?
+\item Qual propriedade torna estrelas de nêutrons muito mais densas que anãs brancas?
+}
+
+\aula{23}{Relatividade geral e buracos negros}{cap. 17}
+\objetivos{Apresentar gravidade como geometria e definir horizonte de eventos e raio de Schwarzschild.}
+\ideias{
+\item Relatividade geral descreve gravidade como curvatura do espaço-tempo.
+\item O raio de Schwarzschild é $R_s=2GM/c^2$.
+\item Buracos negros são detectados por seus efeitos gravitacionais e por acreção, não por luz emitida do horizonte.
+}
+\atividade{Calcular $R_s$ para uma massa solar e comparar com o raio do Sol.}
+\exercicios{
+\item O que é horizonte de eventos?
+\item Por que um buraco negro em binária pode ser brilhante em raios X?
+}
+
+\aula{24}{Sistemas binários próximos e acreção}{cap. 18}
+\objetivos{Entender lóbulos de Roche, transferência de massa e discos de acreção.}
+\ideias{
+\item Em binárias próximas, uma estrela pode preencher seu lóbulo de Roche.
+\item A matéria transferida forma disco quando possui momento angular suficiente.
+\item Novas, supernovas Ia e binárias de raios X dependem de acreção sobre objetos compactos.
+}
+\atividade{Desenhar equipotenciais em uma binária e localizar o ponto de Lagrange interno.}
+\exercicios{
+\item Por que discos de acreção aquecem?
+\item Qual é a diferença geral entre nova e supernova Ia?
+}
+
+\aula{25}{Síntese da astrofísica estelar}{caps. 7--18}
+\objetivos{Integrar nascimento, vida e morte das estrelas em uma narrativa física coerente.}
+\ideias{
+\item Massa inicial é a variável que mais organiza a evolução estelar.
+\item Observações de espectros, luminosidades e variabilidade testam modelos.
+\item Remanescentes compactos conectam evolução estelar, relatividade e altas energias.
+}
+\atividade{Construir um mapa conceitual: nuvem molecular $\rightarrow$ estrela $\rightarrow$ remanescente.}
+\exercicios{
+\item Compare os destinos prováveis de estrelas de $1M_\odot$, $8M_\odot$ e $30M_\odot$.
+\item Que observações permitiriam estimar idade de um aglomerado?
+}
+
+\aula{26}{Processos físicos no Sistema Solar}{cap. 19}
+\objetivos{Aplicar gravitação, equilíbrio térmico, atmosferas e marés ao Sistema Solar.}
+\ideias{
+\item Planetas refletem e emitem radiação; equilíbrio térmico depende de distância, albedo e atmosfera.
+\item Marés surgem de diferenças espaciais na força gravitacional.
+\item Atmosferas planetárias dependem de gravidade, temperatura, composição e história.
+}
+\atividade{Comparar temperatura de equilíbrio de Mercúrio, Terra e Marte ignorando atmosfera.}
+\exercicios{
+\item Por que a Lua mostra quase sempre a mesma face para a Terra?
+\item Como o albedo altera a temperatura de equilíbrio?
+}
+
+\aula{27}{Planetas terrestres}{cap. 20}
+\objetivos{Comparar Mercúrio, Vênus, Terra, Lua e Marte como corpos rochosos.}
+\ideias{
+\item Planetas terrestres têm superfícies sólidas e histórias geológicas diversas.
+\item Efeito estufa explica a temperatura elevada de Vênus.
+\item Marte registra evidências de água passada e evolução atmosférica importante.
+}
+\atividade{Montar uma tabela comparativa de atmosfera, campo magnético, água e atividade geológica.}
+\exercicios{
+\item Por que Vênus é mais quente que Mercúrio na superfície?
+\item Cite uma evidência de água líquida antiga em Marte.
+}
+
+\aula{28}{Gigantes gasosos, luas e anéis}{cap. 21}
+\objetivos{Descrever estrutura de planetas gigantes e diversidade de satélites.}
+\ideias{
+\item Júpiter e Saturno são ricos em hidrogênio e hélio; Urano e Netuno têm mais compostos voláteis pesados.
+\item Luas gigantes podem ter oceanos internos, vulcanismo ou atmosferas.
+\item Anéis são sistemas de partículas moldados por gravidade, colisões e ressonâncias.
+}
+\atividade{Comparar Io, Europa, Titã e Encélado como mundos ativos.}
+\exercicios{
+\item Por que Europa é alvo de interesse astrobiológico?
+\item O que mantém anéis planetários finos e estruturados?
+}
+
+\aula{29}{Corpos menores: asteroides, cometas e cinturão de Kuiper}{cap. 22}
+\objetivos{Entender corpos menores como registros da formação do Sistema Solar.}
+\ideias{
+\item Asteroides concentram-se principalmente entre Marte e Júpiter, mas há muitas populações dinâmicas.
+\item Cometas preservam material volátil e desenvolvem coma e cauda ao se aproximarem do Sol.
+\item Objetos transnetunianos ajudam a reconstruir a história externa do Sistema Solar.
+}
+\atividade{Interpretar a diferença entre cauda de poeira e cauda iônica de um cometa.}
+\exercicios{
+\item Por que meteoritos são amostras importantes?
+\item Qual é a diferença entre meteoroide, meteoro e meteorito?
+}
+
+\aula{30}{Formação do Sistema Solar}{cap. 23}
+\objetivos{Apresentar a hipótese nebular, acreção planetesimal e diferenciação planetária.}
+\ideias{
+\item O Sistema Solar nasceu de um disco protoplanetário ao redor do jovem Sol.
+\item A linha de gelo influenciou a composição dos planetas.
+\item Migração planetária e impactos gigantes ajudaram a moldar a arquitetura atual.
+}
+\atividade{Desenhar um disco com gradiente de temperatura e localizar regiões de planetas rochosos e gigantes.}
+\exercicios{
+\item Por que planetas gigantes se formaram preferencialmente longe do Sol?
+\item Como a conservação de momento angular explica a formação de um disco?
+}
+
+\aula{31}{Exoplanetas: métodos de detecção}{caps. 7 e 23}
+\objetivos{Explicar velocidade radial, trânsito, imageamento direto, microlente e astrometria.}
+\ideias{
+\item Velocidade radial mede o balanço gravitacional estrela-planeta.
+\item Trânsitos medem queda de fluxo e fornecem raio relativo.
+\item Métodos diferentes favorecem tipos diferentes de planetas e órbitas.
+}
+\atividade{Calcular a profundidade de trânsito aproximada de um planeta do tamanho de Júpiter diante de uma estrela solar.}
+\exercicios{
+\item Por que planetas grandes e próximos são mais fáceis de detectar por trânsito?
+\item Que combinação de medidas permite obter densidade média de um exoplaneta?
+}
+
+\aula{32}{Arquiteturas planetárias e habitabilidade}{cap. 23}
+\objetivos{Comparar sistemas exoplanetários observados com o Sistema Solar e discutir habitabilidade com cautela.}
+\ideias{
+\item Sistemas exoplanetários mostram grande diversidade: Júpiteres quentes, super-Terras e cadeias ressonantes.
+\item Zona habitável é condição orbital, não garantia de vida.
+\item Atmosferas, atividade estelar e história geológica são essenciais para avaliar habitabilidade.
+}
+\atividade{Debater critérios mínimos para priorizar alvos de busca por atmosferas.}
+\exercicios{
+\item Por que uma zona habitável depende da luminosidade da estrela?
+\item Cite duas razões pelas quais ``habitável'' não significa ``habitado''.
+}
+
+\aula{33}{Escalas, populações e inventário planetário}{caps. 19--23}
+\objetivos{Consolidar o Sistema Solar e exoplanetas por escalas de massa, distância e composição.}
+\ideias{
+\item A classificação de objetos planetários envolve composição, dinâmica e história de formação.
+\item O Sistema Solar é uma referência, mas não representa toda a diversidade planetária.
+\item Pequenos corpos e discos debris conectam sistemas jovens e maduros.
+}
+\atividade{Construir uma escala logarítmica de distâncias: raio terrestre, UA, cinturão de Kuiper, parsec.}
+\exercicios{
+\item Por que escalas logarítmicas são úteis em astronomia?
+\item Escolha um corpo menor e explique que informação ele traz sobre formação planetária.
+}
+
+\aula{34}{Revisão aplicada: do céu local aos sistemas planetários}{caps. 1--23}
+\objetivos{Preparar avaliação integrando observação, luz, estrelas e planetas.}
+\ideias{
+\item A astrofísica combina medidas indiretas: posição, fluxo, espectro, tempo e polarização.
+\item Modelos simples permitem estimativas de ordem de grandeza poderosas.
+\item A interpretação depende de hipóteses explícitas e incertezas.
+}
+\atividade{Resolva um problema aberto: estime propriedades de uma estrela com planeta em trânsito a partir de uma curva de luz simplificada.}
+\exercicios{
+\item Liste cinco grandezas observáveis e cinco grandezas inferidas em astrofísica.
+\item Explique por que uma mesma observação pode admitir mais de uma interpretação.
+}
+
+\aula{35}{A Via Láctea: estrutura geral}{cap. 24}
+\objetivos{Descrever componentes da Galáxia: disco, bojo, halo, braços espirais e matéria escura.}
+\ideias{
+\item A Via Láctea é uma galáxia espiral barrada.
+\item Poeira dificulta observação no visível, mas rádio e infravermelho revelam estrutura.
+\item Populações estelares diferentes indicam histórias de formação distintas.
+}
+\atividade{Desenhar a Via Láctea vista de lado e de cima, com localização aproximada do Sol.}
+\exercicios{
+\item Por que é difícil mapear a Via Láctea estando dentro dela?
+\item Diferencie disco fino, bojo e halo.
+}
+
+\aula{36}{Cinemática galáctica e matéria escura}{cap. 24}
+\objetivos{Usar curvas de rotação para inferir distribuição de massa.}
+\ideias{
+\item Velocidades orbitais no disco revelam a massa interna à órbita.
+\item Curvas de rotação aproximadamente planas indicam massa não luminosa extensa.
+\item Matéria escura é inferida gravitacionalmente em várias escalas.
+}
+\atividade{Comparar curva esperada para massa concentrada com curva observada plana.}
+\exercicios{
+\item Se a massa estivesse concentrada no centro, como a velocidade orbital mudaria com o raio?
+\item Cite outra evidência de matéria escura além de curvas de rotação.
+}
+
+\aula{37}{O centro galáctico}{cap. 24}
+\objetivos{Apresentar evidências para o buraco negro supermassivo central da Via Láctea.}
+\ideias{
+\item Órbitas de estrelas próximas ao centro permitem medir uma massa compacta.
+\item Sgr A* é a fonte associada ao buraco negro central.
+\item O centro galáctico combina densidade estelar alta, gás, poeira e campos magnéticos.
+}
+\atividade{Interpretar um gráfico de órbita de uma estrela ao redor de Sgr A*.}
+\exercicios{
+\item Por que órbitas estelares são evidência forte de massa compacta?
+\item Por que observar o centro galáctico no infravermelho é vantajoso?
+}
+
+\aula{38}{Tipos de galáxias e sequência de Hubble}{cap. 25}
+\objetivos{Classificar galáxias e reconhecer limitações de classificações morfológicas.}
+\ideias{
+\item Galáxias elípticas, espirais e irregulares diferem em forma, gás e formação estelar.
+\item Morfologia não é necessariamente sequência evolutiva simples.
+\item Cor integrada ajuda a distinguir populações jovens e antigas.
+}
+\atividade{Classificar imagens de galáxias e justificar critérios usados.}
+\exercicios{
+\item Por que galáxias espirais tendem a ter regiões azuis nos braços?
+\item O que uma galáxia avermelhada e pobre em gás sugere sobre formação estelar atual?
+}
+
+\aula{39}{Estrutura espiral e formação estelar em galáxias}{cap. 25}
+\objetivos{Explicar braços espirais como padrões dinâmicos e locais de formação estelar.}
+\ideias{
+\item Braços espirais podem ser ondas de densidade ou estruturas transientes.
+\item Gás comprimido favorece formação de estrelas massivas, brilhantes e azuis.
+\item Estrelas velhas e jovens traçam componentes diferentes da galáxia.
+}
+\atividade{Usar uma analogia de tráfego para discutir onda de densidade sem transportar sempre as mesmas estrelas.}
+\exercicios{
+\item Por que braços espirais são destacados por estrelas jovens?
+\item Qual observação ajudaria a mapear gás molecular em uma galáxia?
+}
+
+\aula{40}{Galáxias elípticas, interações e fusões}{caps. 25 e 26}
+\objetivos{Relacionar morfologia, dinâmica e evolução galáctica por interações.}
+\ideias{
+\item Galáxias elípticas costumam ter pouco gás frio e populações estelares antigas.
+\item Encontros gravitacionais geram caudas de maré, pontes e surtos de formação estelar.
+\item Fusões contribuem para crescimento de galáxias e buracos negros centrais.
+}
+\atividade{Analisar imagens de galáxias em interação e identificar marcas dinâmicas.}
+\exercicios{
+\item Por que colisões de galáxias raramente significam colisões diretas entre estrelas?
+\item Como uma fusão pode intensificar formação estelar?
+}
+
+\aula{41}{Escada de distâncias extragalácticas}{cap. 27}
+\objetivos{Compreender paralaxe, Cefeidas, supernovas Ia e redshift como etapas de distância.}
+\ideias{
+\item Cada indicador de distância calibra o próximo em uma cadeia.
+\item Cefeidas e supernovas Ia são importantes por relacionarem luminosidade observável e intrínseca.
+\item Incertezas sistemáticas se propagam pela escada de distâncias.
+}
+\atividade{Montar a sequência: paralaxe $\rightarrow$ Cefeidas $\rightarrow$ supernovas Ia $\rightarrow$ Hubble.}
+\exercicios{
+\item Por que paralaxe não basta para medir distâncias cosmológicas?
+\item O que torna supernovas Ia úteis como indicadores de distância?
+}
+
+\aula{42}{Expansão do universo e grandes estruturas}{cap. 27}
+\objetivos{Introduzir redshift cosmológico, lei de Hubble-Lemaître e aglomerados de galáxias.}
+\ideias{
+\item Redshift cosmológico expressa expansão do espaço em grandes escalas.
+\item A lei $v=H_0d$ é uma relação estatística para galáxias distantes no fluxo cósmico.
+\item Galáxias formam grupos, aglomerados, filamentos e vazios.
+}
+\atividade{Fazer um modelo com pontos em uma bexiga ou malha elástica para visualizar expansão relativa.}
+\exercicios{
+\item Por que a expansão não deve ser imaginada como galáxias fugindo de um centro comum?
+\item Se $H_0=70\,\mathrm{km\,s^{-1}\,Mpc^{-1}}$, estime a velocidade recessional de uma galáxia a 100 Mpc.
+}
+
+\aula{43}{Galáxias ativas e quasares}{cap. 28}
+\objetivos{Explicar núcleos ativos como acreção em buracos negros supermassivos.}
+\ideias{
+\item AGNs podem emitir enorme luminosidade a partir de regiões compactas.
+\item O modelo unificado envolve disco de acreção, toro de poeira, jatos e orientação.
+\item Quasares permitem estudar o universo distante e o meio intergaláctico.
+}
+\atividade{Desenhar o modelo unificado de AGN e prever como muda a aparência com a orientação.}
+\exercicios{
+\item Por que variabilidade rápida indica região emissora pequena?
+\item Como acreção pode converter energia gravitacional em radiação?
+}
+
+\aula{44}{Cosmologia newtoniana e parâmetros cósmicos}{cap. 29}
+\objetivos{Apresentar densidade crítica, curvatura efetiva e componentes do universo.}
+\ideias{
+\item A densidade crítica separa comportamentos dinâmicos em modelos simples.
+\item O universo atual contém matéria bariônica, matéria escura, radiação e energia escura.
+\item Parâmetros cosmológicos são medidos combinando observações independentes.
+}
+\atividade{Construir um gráfico de pizza aproximado dos componentes energéticos do universo atual.}
+\exercicios{
+\item Por que matéria bariônica não pode ser toda a matéria escura?
+\item O que significa dizer que o universo é aproximadamente plano?
+}
+
+\aula{45}{Radiação cósmica de fundo}{cap. 29}
+\objetivos{Entender a CMB como relíquia térmica do universo jovem.}
+\ideias{
+\item A CMB tem espectro quase perfeito de corpo negro com temperatura próxima de 2,7 K.
+\item Ela foi emitida quando o universo se tornou transparente à radiação.
+\item Pequenas anisotropias registram sementes das estruturas cósmicas.
+}
+\atividade{Comparar o espectro de corpo negro da CMB com o de uma estrela.}
+\exercicios{
+\item Por que a CMB aparece hoje em micro-ondas?
+\item Que informação física está codificada nas anisotropias da CMB?
+}
+
+\aula{46}{Cosmologia relativística e energia escura}{cap. 29}
+\objetivos{Discutir expansão acelerada, supernovas Ia e interpretação de energia escura.}
+\ideias{
+\item Em cosmologia moderna, o fator de escala descreve a expansão do universo.
+\item Supernovas Ia distantes indicaram expansão acelerada.
+\item Energia escura é uma descrição fenomenológica do componente associado à aceleração cósmica.
+}
+\atividade{Comparar, qualitativamente, universos com desaceleração, expansão constante e aceleração.}
+\exercicios{
+\item Por que supernovas Ia testam a história de expansão?
+\item Qual é a diferença entre matéria escura e energia escura?
+}
+
+\aula{47}{Universo primordial e inflação}{cap. 30}
+\objetivos{Apresentar nucleossíntese primordial, inflação e origem das estruturas.}
+\ideias{
+\item No universo quente e denso, partículas, radiação e núcleos leves estiveram em interação intensa.
+\item Nucleossíntese primordial produziu principalmente hidrogênio, hélio e traços de lítio.
+\item Inflação é proposta para explicar homogeneidade, planura e origem de flutuações.
+}
+\atividade{Construir uma linha do tempo: inflação, nucleossíntese, recombinação, primeiras estrelas, galáxias.}
+\exercicios{
+\item Por que elementos pesados não foram produzidos em grande quantidade no Big Bang?
+\item Que problema a inflação ajuda a resolver?
+}
+
+\aula{48}{Síntese final: uma narrativa física do universo}{todo o livro}
+\objetivos{Integrar escalas e métodos da astrofísica moderna em uma visão de conjunto.}
+\ideias{
+\item A mesma física aparece em escalas muito diferentes: gravidade, radiação, termodinâmica, plasma e partículas.
+\item A astrofísica é uma ciência de inferência: observamos luz e movimento para reconstruir propriedades distantes.
+\item O universo observável tem história: expansão, formação de estruturas, nascimento e morte de estrelas, enriquecimento químico e formação planetária.
+}
+\atividade{Escolha um objeto astronômico e responda: como medir distância, massa, composição, idade aproximada e contexto evolutivo?}
+\exercicios{
+\item Escolha três equações da apostila e explique o papel físico de cada uma.
+\item Escreva uma síntese de uma página conectando estrelas, galáxias e cosmologia.
+}
+
+
+
+\newpage
+\section*{Como estudar ao longo do semestre}
+\addcontentsline{toc}{section}{Como estudar ao longo do semestre}
+\begin{itemize}
+\item \textbf{Listas curtas:} resolva problemas de estimativa, interpretação de gráficos e leitura de espectros sem esperar dominar todos os detalhes algébricos.
+\item \textbf{Diário observacional:} registre céu, fases da Lua, planetas visíveis, mapas ou simulações. O objetivo é conectar coordenadas e tempo astronômico com experiência concreta.
+\item \textbf{Sínteses de uma página:} ao terminar um bloco, escreva uma explicação curta conectando observação, modelo físico e principal equação.
+\item \textbf{Revisão 1:} fundamentos, luz, estrelas e Sistema Solar.
+\item \textbf{Revisão 2:} galáxias, cosmologia e síntese conceitual.
+\item \textbf{Projeto final:} escolha um sistema astrofísico e estude-o com dados públicos simples, sempre separando observação direta, cálculo e interpretação.
+\end{itemize}
+
+\section*{Projetos de estudo possíveis}
+\addcontentsline{toc}{section}{Projetos de estudo possíveis}
+\begin{enumerate}
+\item Estimar temperatura de estrelas por cor usando fotometria pública.
+\item Construir um diagrama HR de um aglomerado com dados do Gaia.
+\item Modelar uma curva de trânsito exoplanetário simplificada.
+\item Comparar curvas de rotação e inferir matéria escura em galáxias.
+\item Reproduzir uma versão simples da lei de Hubble-Lemaître com catálogo de galáxias.
+\item Fazer uma linha do tempo quantitativa do universo, do Big Bang ao Sistema Solar.
+\end{enumerate}
+\section*{Bibliografia}
+\addcontentsline{toc}{section}{Bibliografia}
+\begin{itemize}
+\item Carroll, B. W.; Ostlie, D. A. \textit{An Introduction to Modern Astrophysics}. 2ª ed. Cambridge University Press, 2017.
+\item Karttunen, H. et al. \textit{Fundamental Astronomy}. Springer.
+\item Ryden, B.; Peterson, B. M. \textit{Foundations of Astrophysics}. Cambridge University Press.
+\item NASA/IPAC Extragalactic Database, SIMBAD, ESA Gaia Archive e NASA Exoplanet Archive para consultas orientadas de dados.
+\end{itemize}
+
+\end{document}

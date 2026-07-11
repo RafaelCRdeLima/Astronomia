@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Astronomia | Aulas e apresentações</title>
+  <title>Astrofísica Moderna | Apostila</title>
   <style>
     :root {
       --bg: #050505;
@@ -26,10 +26,10 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    main {
-      width: min(1040px, calc(100vw - 32px));
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
       margin: 0 auto;
-      padding: 34px 0;
+      padding: 28px 0 34px;
     }
 
     header {
@@ -43,8 +43,9 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(34px, 5vw, 62px);
-      line-height: 1.02;
+      font-size: clamp(30px, 4vw, 56px);
+      line-height: 1.04;
+      max-width: 860px;
     }
 
     p {
@@ -61,16 +62,16 @@
       white-space: nowrap;
     }
 
-    .grid {
+    .links {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
-      margin-top: 22px;
+      margin: 20px 0;
     }
 
     a.card {
-      min-height: 118px;
-      padding: 16px;
+      min-height: 96px;
+      padding: 14px;
       color: var(--text);
       background: linear-gradient(180deg, var(--panel), #0b0b0b);
       border: 1px solid var(--line);
@@ -87,46 +88,69 @@
       display: block;
       color: var(--accent);
       margin-bottom: 8px;
-      font-size: 18px;
     }
 
     .card span {
+      display: block;
       color: var(--muted);
-      line-height: 1.45;
-      font-size: 14px;
+      font-size: 13px;
+      line-height: 1.4;
     }
 
-    @media (max-width: 760px) {
-      header {
+    .viewer {
+      width: 100%;
+      height: min(78vh, 900px);
+      border: 1px solid var(--line);
+      background: #181818;
+    }
+
+    @media (max-width: 820px) {
+      header,
+      .links {
+        grid-template-columns: 1fr;
         display: grid;
       }
 
       .badge {
         justify-self: start;
       }
+
+      .viewer {
+        height: 70vh;
+      }
     }
   </style>
 </head>
 <body>
-  <main>
+  <main class="shell">
     <header>
       <div>
-        <h1>Astronomia</h1>
-        <p>Apresentações, dashboards e materiais interativos de aula.</p>
+        <h1>Astrofísica Moderna</h1>
+        <p>Apostila de capítulos de estudo e plano de aulas para estudantes de graduação em Física.</p>
       </div>
       <div class="badge">Prof. Dr. Rafael Camargo Rodrigues de Lima</div>
     </header>
 
-    <section class="grid" aria-label="Apresentações disponíveis">
-      <a class="card" href="apostila-astrofisica-moderna/">
-        <strong>Astrofísica Moderna</strong>
-        <span>Apostila em PDF com capítulos de estudo, plano das 48 aulas e arquivos LaTeX para consulta.</span>
+    <section class="links" aria-label="Arquivos da apostila">
+      <a class="card" href="apostila_astromoderna_48_aulas.pdf#page=1&zoom=page-fit" target="_blank" rel="noopener">
+        <strong>Abrir apostila</strong>
+        <span>PDF principal com os 15 capítulos de estudo.</span>
       </a>
-      <a class="card" href="precessao-mercurio/">
-        <strong>Precessão da órbita de Mercúrio</strong>
-        <span>Problema histórico, limites da gravitação newtoniana, relatividade geral e dashboards interativos.</span>
+      <a class="card" href="apostila_astromoderna_48_aulas.pdf" download>
+        <strong>Baixar apostila</strong>
+        <span>Arquivo PDF para leitura offline.</span>
+      </a>
+      <a class="card" href="plano_aulas_astromoderna_48_aulas.pdf#page=1&zoom=page-fit" target="_blank" rel="noopener">
+        <strong>Plano de aulas</strong>
+        <span>Fichas de acompanhamento das 48 aulas.</span>
+      </a>
+      <a class="card" href="apostila_astromoderna_48_aulas.tex">
+        <strong>Fonte LaTeX</strong>
+        <span>Arquivo editável da apostila.</span>
       </a>
     </section>
+
+    <iframe class="viewer" src="apostila_astromoderna_48_aulas.pdf#page=1&zoom=page-fit" title="Apostila Astrofísica Moderna"></iframe>
   </main>
 </body>
 </html>
