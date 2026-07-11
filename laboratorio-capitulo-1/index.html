@@ -209,6 +209,20 @@
       width: min(560px, calc(100vw - 24px));
     }
 
+    .sky-measure {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      color: var(--accent);
+      background: rgba(5, 5, 5, 0.78);
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      font-size: 12px;
+      line-height: 1.35;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     .hidden {
       display: none;
     }
@@ -451,6 +465,12 @@
         max-width: calc(100vw - 48px);
       }
 
+      .sky-actions {
+        top: 48px;
+        left: 12px;
+        right: auto;
+      }
+
       h1 {
         font-size: 25px;
         line-height: 1.08;
@@ -503,7 +523,8 @@
             <div class="sky-actions">
               <button class="sky-action" id="toggleMapFullscreen" type="button">Tela cheia</button>
             </div>
-            <div class="sky-tip">Clique em uma estrela. Compare datas opostas no grid.</div>
+            <div class="sky-measure" id="mapMeasure">Régua: clique em dois pontos</div>
+            <div class="sky-tip">Clique em dois pontos para medir distância angular. Clique perto de uma estrela para selecioná-la.</div>
           </div>
           <div class="metrics">
             <div class="metric">
@@ -541,13 +562,9 @@
           </div>
 
           <div class="control">
-            <label for="comparisonSelect">Sobreposição no mapa</label>
-            <select id="comparisonSelect">
-              <option value="none">apenas a data atual</option>
-              <option value="opposite">mostrar data oposta</option>
-              <option value="janjul">mostrar 01 jan e 02 jul</option>
-            </select>
-            <div class="readout"><span id="baselineReadout">--</span><span>baseline paralática</span></div>
+            <label>Régua angular</label>
+            <div class="readout"><span id="angularMeasureReadout">clique em dois pontos</span><span>escala do grid</span></div>
+            <button class="button" id="clearMeasure" type="button">Limpar régua</button>
           </div>
 
           <div class="control">
@@ -666,8 +683,8 @@
     let selected = 0;
     let chartMode = "distance";
     let observationDay = 0;
-    let comparisonMode = "opposite";
     let filterMode = "V";
+    const measurePoints = [];
 
     const sky = document.getElementById("sky");
     const skyWrap = sky.closest(".sky-wrap");
@@ -676,7 +693,6 @@
     const chartCtx = chart.getContext("2d");
     const starSelect = document.getElementById("starSelect");
     const dateSlider = document.getElementById("dateSlider");
-    const comparisonSelect = document.getElementById("comparisonSelect");
     const filterSelect = document.getElementById("filterSelect");
     const distanceSlider = document.getElementById("distanceSlider");
     const luminositySlider = document.getElementById("luminositySlider");
@@ -800,10 +816,6 @@
       };
     }
 
-    function oppositeDay(day = observationDay) {
-      return (Number(day) + 182.5) % 365;
-    }
-
     function starColor(colorIndex, alpha = 1) {
       const t = clamp((colorIndex + 0.25) / 2.2, 0, 1);
       const r = Math.round(120 + 135 * t);
@@ -851,36 +863,6 @@
         skyCtx.fill();
       });
 
-      const ghostDays = [];
-      if (comparisonMode === "opposite") ghostDays.push(oppositeDay());
-      if (comparisonMode === "janjul") ghostDays.push(0, 182.5);
-
-      ghostDays.forEach(day => {
-        stars.forEach(star => {
-          const o = observed(star);
-          const pos = skyPosition(star, day);
-          const size = clamp(6.8 - o.apparentMagFilter * 0.42, 1.6, 8.2);
-          skyCtx.beginPath();
-          skyCtx.strokeStyle = "rgba(215,180,106,0.5)";
-          skyCtx.lineWidth = 1;
-          skyCtx.arc(pos.x, pos.y, size + 2, 0, TAU);
-          skyCtx.stroke();
-        });
-      });
-
-      if (comparisonMode !== "none") {
-        const star = stars[selected];
-        const a = skyPosition(star, observationDay);
-        const b = skyPosition(star, comparisonMode === "janjul" ? 182.5 : oppositeDay());
-        skyCtx.strokeStyle = "rgba(215,180,106,0.75)";
-        skyCtx.setLineDash([5, 5]);
-        skyCtx.beginPath();
-        skyCtx.moveTo(a.x, a.y);
-        skyCtx.lineTo(b.x, b.y);
-        skyCtx.stroke();
-        skyCtx.setLineDash([]);
-      }
-
       stars.forEach((star, index) => {
         const o = observed(star);
         const pos = skyPosition(star);
@@ -901,6 +883,29 @@
           skyCtx.stroke();
         }
       });
+
+      if (measurePoints.length > 0) {
+        skyCtx.save();
+        skyCtx.strokeStyle = "rgba(215,180,106,0.95)";
+        skyCtx.fillStyle = "rgba(215,180,106,0.95)";
+        skyCtx.lineWidth = 2;
+        if (measurePoints.length === 2) {
+          skyCtx.beginPath();
+          skyCtx.moveTo(measurePoints[0].x, measurePoints[0].y);
+          skyCtx.lineTo(measurePoints[1].x, measurePoints[1].y);
+          skyCtx.stroke();
+        }
+        measurePoints.forEach((point, index) => {
+          skyCtx.beginPath();
+          skyCtx.arc(point.x, point.y, 5, 0, TAU);
+          skyCtx.fill();
+          skyCtx.fillStyle = "#050505";
+          skyCtx.font = "bold 11px system-ui";
+          skyCtx.fillText(index === 0 ? "A" : "B", point.x - 4, point.y + 4);
+          skyCtx.fillStyle = "rgba(215,180,106,0.95)";
+        });
+        skyCtx.restore();
+      }
     }
 
     function drawAxes(ctx, w, h, labels) {
@@ -1014,7 +1019,6 @@
     function syncControls() {
       const star = stars[selected];
       dateSlider.value = String(Math.round(observationDay));
-      comparisonSelect.value = comparisonMode;
       filterSelect.value = filterMode;
       distanceSlider.value = String(Math.round(star.distance));
       luminositySlider.value = String(log10(star.luminosity));
@@ -1026,21 +1030,36 @@
     function updateReadouts() {
       const star = stars[selected];
       const o = observed(star);
-      const posNow = skyPosition(star, observationDay);
-      const posOpposite = skyPosition(star, oppositeDay());
-      const displacementPx = Math.hypot(posNow.x - posOpposite.x, posNow.y - posOpposite.y);
-      const measuredFromMapMas = displacementPx * FIELD_MAS_PER_PIXEL / 2;
       document.getElementById("mApp").textContent = `${fmt(o.apparentMagFilter, 2)} (${filterMode})`;
       document.getElementById("parallax").textContent = `${fmt(o.measuredParallaxMas, 2)} mas`;
       document.getElementById("distance").textContent = `${fmt(o.inferredDistance, 1)} pc`;
       document.getElementById("luminosity").textContent = `${fmt(o.inferredLuminosity, 2)} L☉`;
       document.getElementById("dateReadout").textContent = dayLabel(observationDay);
-      document.getElementById("baselineReadout").textContent = `Δ=${fmt(displacementPx, 1)} px → p≈${fmt(measuredFromMapMas, 2)} mas`;
       document.getElementById("filterReadout").textContent = `m=${fmt(o.apparentMagFilter, 2)}, B-V=${fmt(o.colorObserved, 2)}`;
       document.getElementById("distanceTrue").textContent = `${fmt(star.distance, 1)} pc`;
       document.getElementById("luminosityTrue").textContent = `${fmt(star.luminosity, 2)} L☉`;
       document.getElementById("extinction").textContent = `${fmt(star.extinction, 2)} mag`;
       document.getElementById("noise").textContent = `${fmt(star.noise * 100, 0)}%`;
+      updateMeasureReadout();
+    }
+
+    function updateMeasureReadout() {
+      const readout = document.getElementById("angularMeasureReadout");
+      const floating = document.getElementById("mapMeasure");
+      if (measurePoints.length < 2) {
+        const text = measurePoints.length === 0 ? "clique em dois pontos" : "ponto A marcado";
+        readout.textContent = text;
+        floating.textContent = `Régua: ${text}`;
+        return;
+      }
+      const dx = measurePoints[1].x - measurePoints[0].x;
+      const dy = measurePoints[1].y - measurePoints[0].y;
+      const pixels = Math.hypot(dx, dy);
+      const mas = pixels * FIELD_MAS_PER_PIXEL;
+      const arcsec = mas / 1000;
+      const text = `${fmt(pixels, 1)} px = ${fmt(mas, 1)} mas = ${fmt(arcsec, 3)}"`;
+      readout.textContent = text;
+      floating.textContent = `Régua AB: ${text}`;
     }
 
     function render() {
@@ -1136,6 +1155,8 @@
       const sy = sky.height / rect.height;
       const x = (event.clientX - rect.left) * sx;
       const y = (event.clientY - rect.top) * sy;
+      if (measurePoints.length === 2) measurePoints.length = 0;
+      measurePoints.push({ x, y });
       let best = 0;
       let bestD = Infinity;
       stars.forEach((star, index) => {
@@ -1148,16 +1169,17 @@
           best = index;
         }
       });
-      if (bestD < 32) selectStar(best);
+      if (bestD < 32) {
+        selectStar(best);
+      } else {
+        updateMeasureReadout();
+        drawSky();
+      }
     });
 
     starSelect.addEventListener("change", event => selectStar(Number(event.target.value)));
     dateSlider.addEventListener("input", event => {
       observationDay = Number(event.target.value);
-      render();
-    });
-    comparisonSelect.addEventListener("change", event => {
-      comparisonMode = event.target.value;
       render();
     });
     filterSelect.addEventListener("change", event => {
@@ -1191,6 +1213,11 @@
       event.currentTarget.textContent = hidden ? "Habilitar modo instrutor" : "Ocultar modo instrutor";
     });
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
+    document.getElementById("clearMeasure").addEventListener("click", () => {
+      measurePoints.length = 0;
+      updateMeasureReadout();
+      drawSky();
+    });
     document.getElementById("toggleMapFullscreen").addEventListener("click", toggleMapFullscreen);
     document.addEventListener("fullscreenchange", () => {
       setMapFullscreen(document.fullscreenElement === skyWrap);
@@ -1222,7 +1249,6 @@
 
     makeCatalog();
     observationDay = Math.floor(rand() * 365);
-    comparisonMode = "opposite";
     filterMode = "V";
     populateSelect();
     syncControls();
