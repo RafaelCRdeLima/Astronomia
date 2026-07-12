@@ -812,7 +812,8 @@
       const base = clamp(90 - Math.abs(lat), 18, 86);
       const seasonalTilt = 8 * Math.sin((sun.lambda - 90) * DEG);
       const hourFlip = Math.cos(((hour - 18) / 24) * TAU) >= 0 ? 1 : -1;
-      const angle = hourFlip * clamp(base + seasonalTilt, 12, 86) * DEG;
+      const hemisphereFlip = lat < 0 ? -1 : 1;
+      const angle = hemisphereFlip * hourFlip * clamp(base + seasonalTilt, 12, 86) * DEG;
       const scale = (sky.width - 140) / 170;
       return {
         cx: sky.width * 0.52,
@@ -945,7 +946,7 @@
       ctx.fillStyle = "rgba(215,180,106,0.82)";
       ctx.font = "12px system-ui";
       ctx.fillText("eclíptica", eText.x + 8, eText.y - 8);
-      ctx.fillText(`inclinação ${fmt(Math.abs(g.angle * RAD), 0)}°`, eText.x + 8, eText.y + 8);
+      ctx.fillText(`inclinação ${fmt(g.angle * RAD, 0)}°`, eText.x + 8, eText.y + 8);
 
       fixedStars.forEach(star => {
         const p = skyToScreen(star.lambda, star.beta);
