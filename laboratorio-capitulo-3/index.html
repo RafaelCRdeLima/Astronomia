@@ -572,11 +572,72 @@
       return Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
     }
 
+    function makeLineSet(kind) {
+      const jitter = amount => (rand() - 0.5) * amount;
+      const scale = 0.75 + rand() * 0.75;
+      const sets = {
+        quente: [
+          { lambda: 410.17, sigma: 3.4, depth: 0.18 * scale },
+          { lambda: 434.05, sigma: 3.2, depth: 0.22 * scale },
+          { lambda: 486.13, sigma: 3.3, depth: 0.30 * scale },
+          { lambda: 656.28, sigma: 3.7, depth: 0.22 * scale },
+          { lambda: 447.1, sigma: 2.4, depth: 0.16 * scale },
+        ],
+        balmer: [
+          { lambda: 410.17, sigma: 4.2, depth: 0.28 * scale },
+          { lambda: 434.05, sigma: 4.0, depth: 0.34 * scale },
+          { lambda: 486.13, sigma: 4.2, depth: 0.42 * scale },
+          { lambda: 656.28, sigma: 4.8, depth: 0.36 * scale },
+        ],
+        solar: [
+          { lambda: 393.37, sigma: 2.6, depth: 0.30 * scale },
+          { lambda: 396.85, sigma: 2.6, depth: 0.25 * scale },
+          { lambda: 430.0, sigma: 7.5, depth: 0.13 * scale },
+          { lambda: 486.13, sigma: 2.8, depth: 0.13 * scale },
+          { lambda: 517.0, sigma: 3.8, depth: 0.18 * scale },
+          { lambda: 589.0, sigma: 3.0, depth: 0.25 * scale },
+          { lambda: 656.28, sigma: 3.2, depth: 0.12 * scale },
+        ],
+        fria: [
+          { lambda: 430.0, sigma: 8.5, depth: 0.16 * scale },
+          { lambda: 517.0, sigma: 4.8, depth: 0.24 * scale },
+          { lambda: 589.0, sigma: 3.6, depth: 0.38 * scale },
+          { lambda: 656.28, sigma: 2.8, depth: 0.08 * scale },
+          { lambda: 705.0, sigma: 18.0, depth: 0.18 * scale },
+          { lambda: 760.0, sigma: 22.0, depth: 0.16 * scale },
+        ],
+        muitoFria: [
+          { lambda: 516.0, sigma: 7.0, depth: 0.22 * scale },
+          { lambda: 589.0, sigma: 4.0, depth: 0.42 * scale },
+          { lambda: 620.0, sigma: 18.0, depth: 0.18 * scale },
+          { lambda: 705.0, sigma: 24.0, depth: 0.34 * scale },
+          { lambda: 760.0, sigma: 28.0, depth: 0.30 * scale },
+        ],
+      };
+      return sets[kind].map(line => ({
+        lambda: [410.17, 434.05, 486.13, 589.0, 656.28].some(rest => Math.abs(rest - line.lambda) < 0.02)
+          ? line.lambda
+          : line.lambda + jitter(0.7),
+        sigma: line.sigma * (0.85 + rand() * 0.35),
+        depth: clamp(line.depth * (0.85 + rand() * 0.35), 0.04, 0.62),
+      }));
+    }
+
+    function spectralColor(kind) {
+      if (kind === "quente" || kind === "balmer") return "rgba(180,210,255,0.95)";
+      if (kind === "solar") return "rgba(245,245,230,0.95)";
+      if (kind === "fria") return "rgba(255,205,135,0.95)";
+      return "rgba(255,160,105,0.95)";
+    }
+
     function makeTargets() {
       const presets = [
-        { name: "Estrela A", t: 4200 + rand() * 900, rv: -80 + rand() * 160, scale: 0.9 + rand() * 1.1, kind: "fria" },
-        { name: "Estrela B", t: 5600 + rand() * 1000, rv: -120 + rand() * 240, scale: 0.8 + rand() * 1.3, kind: "solar" },
-        { name: "Estrela C", t: 8500 + rand() * 6000, rv: -180 + rand() * 360, scale: 0.7 + rand() * 1.6, kind: "quente" },
+        { name: "Estrela A", t: 3300 + rand() * 700, rv: -120 + rand() * 240, scale: 0.75 + rand() * 0.9, kind: "muitoFria" },
+        { name: "Estrela B", t: 4200 + rand() * 850, rv: -120 + rand() * 240, scale: 0.8 + rand() * 1.0, kind: "fria" },
+        { name: "Estrela C", t: 5400 + rand() * 900, rv: -140 + rand() * 280, scale: 0.7 + rand() * 1.2, kind: "solar" },
+        { name: "Estrela D", t: 6800 + rand() * 1200, rv: -160 + rand() * 320, scale: 0.7 + rand() * 1.1, kind: "balmer" },
+        { name: "Estrela E", t: 9500 + rand() * 3200, rv: -220 + rand() * 440, scale: 0.65 + rand() * 1.25, kind: "quente" },
+        { name: "Estrela F", t: 14500 + rand() * 6500, rv: -260 + rand() * 520, scale: 0.55 + rand() * 1.35, kind: "quente" },
       ];
       presets.forEach((p, i) => {
         targets.push({
@@ -586,7 +647,8 @@
           rv: p.rv,
           scale: p.scale,
           kind: p.kind,
-          absorption: 0.16 + rand() * 0.22,
+          absorption: 0.85 + rand() * 0.35,
+          lines: makeLineSet(p.kind),
           x: 190 + rand() * 1100,
           y: 135 + rand() * 500,
           psf: 11 + rand() * 5,
@@ -657,18 +719,12 @@
     function makeExpectedRates(target) {
       const aperture = apertureQuality(target);
       const points = [];
-      let maxTrue = 0;
+      const normLambda = 550;
+      const normTrue = Math.max(planckShape(normLambda, target.temperature), 1e-30);
       for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
-        maxTrue = Math.max(maxTrue, planckShape(lambda, target.temperature));
-      }
-      const lines = [
-        { lambda: 656.28, sigma: 3.2, depth: target.kind === "quente" ? 0.34 : 0.18 },
-        { lambda: 486.13, sigma: 2.9, depth: target.kind === "quente" ? 0.30 : 0.10 },
-        { lambda: 589.0, sigma: 2.4, depth: target.kind === "fria" ? 0.33 : 0.12 },
-      ];
-      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
-        let continuum = target.scale * planckShape(lambda, target.temperature) / maxTrue;
-        lines.forEach(line => {
+        let continuum = target.scale * planckShape(lambda, target.temperature) / normTrue;
+        continuum = Math.min(continuum, 4.8);
+        target.lines.forEach(line => {
           const observed = line.lambda * (1 + target.rv / C);
           continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
         });
@@ -773,7 +829,7 @@
         const selected = target.id === selectedTargetId;
         const radius = 6.8 - target.mag + target.scale * 2.4;
         const glow = skyCtx.createRadialGradient(target.x, target.y, 0, target.x, target.y, target.psf * 4.2);
-        glow.addColorStop(0, target.kind === "quente" ? "rgba(180,210,255,0.95)" : target.kind === "fria" ? "rgba(255,205,135,0.95)" : "rgba(245,245,230,0.95)");
+        glow.addColorStop(0, spectralColor(target.kind));
         glow.addColorStop(0.22, "rgba(255,255,255,0.48)");
         glow.addColorStop(1, "rgba(255,255,255,0)");
         skyCtx.fillStyle = glow;
