@@ -157,27 +157,20 @@
     #skyField { cursor: crosshair; }
     #spectrum.measure-lines, #analysisChart.measure-lines { cursor: crosshair; }
 
-    .spectrum-acquisition {
-      display: grid;
-      grid-template-columns: 132px minmax(0, 1fr);
-      gap: 10px;
-      align-items: stretch;
-      margin-top: 10px;
-    }
-
     .satellite-toggle {
+      width: 100%;
       border: 1px solid var(--line);
       background: #080808;
       color: var(--muted);
-      padding: 8px;
+      padding: 14px;
       cursor: pointer;
       display: grid;
       grid-template-rows: auto auto;
-      align-content: start;
-      gap: 10px;
-      align-items: start;
+      align-content: center;
+      gap: 12px;
+      align-items: center;
       justify-items: center;
-      min-height: 210px;
+      min-height: 300px;
     }
 
     .satellite-toggle:hover, .satellite-toggle:focus-visible {
@@ -186,8 +179,8 @@
     }
 
     .satellite-toggle img {
-      width: min(116px, 100%);
-      max-height: 150px;
+      width: min(250px, 100%);
+      max-height: 260px;
       object-fit: contain;
       filter: grayscale(1) contrast(1.08) brightness(0.62);
       opacity: 0.72;
@@ -365,7 +358,6 @@
       .button, .chip { width: 100%; text-align: left; }
       .panel { width: 100%; max-width: 100%; margin-bottom: 12px; }
       #skyField, #spectrum, #detector, #analysisChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
-      .spectrum-acquisition { grid-template-columns: 1fr; }
       .satellite-toggle { min-height: 150px; }
       .satellite-toggle img { max-height: 94px; }
       h1 { font-size: 25px; line-height: 1.08; }
@@ -412,13 +404,7 @@
             <span class="chip" id="fieldStatus">Clique em uma estrela brilhante.</span>
           </div>
           <canvas id="detector" width="1500" height="260" aria-label="Imagem espectral no detector"></canvas>
-          <div class="spectrum-acquisition">
-            <button class="satellite-toggle" id="satelliteToggle" type="button" aria-pressed="false" aria-label="Iniciar aquisição de fótons pelo satélite">
-              <img src="../assets/satelite.png" alt="">
-              <span class="satellite-status" id="satelliteStatus">pausado</span>
-            </button>
-            <canvas id="spectrum" width="1500" height="560" aria-label="Espectro observado"></canvas>
-          </div>
+          <canvas id="spectrum" width="1500" height="560" aria-label="Espectro observado"></canvas>
           <div class="metrics">
             <div class="metric">
               <small>Objeto observado</small>
@@ -452,6 +438,14 @@
             <label>Aquisição contínua de fótons</label>
             <div class="formula" id="acquisitionReadout">Aquisição pausada. Escolha o alvo e as aberturas antes de iniciar.</div>
             <div class="readout"><span id="timeReadout">-- s acumulados</span><span id="photonReadout">-- fótons</span></div>
+          </div>
+
+          <div class="control">
+            <label>Satélite detector</label>
+            <button class="satellite-toggle" id="satelliteToggle" type="button" aria-pressed="false" aria-label="Iniciar aquisição de fótons pelo satélite">
+              <img src="../assets/satelite.png" alt="">
+              <span class="satellite-status" id="satelliteStatus">pausado</span>
+            </button>
           </div>
 
           <div class="control">
@@ -1530,7 +1524,7 @@
       document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
       document.getElementById("acquisitionReadout").textContent = isObserving
         ? "Detector recebendo fótons continuamente; o espectro extraído muda enquanto a contagem cresce."
-        : "Aquisição pausada; escolha o alvo, desenhe a abertura da estrela e uma abertura de fundo. Clique no satélite ao lado do espectro para iniciar.";
+        : "Aquisição pausada; escolha o alvo, desenhe a abertura da estrela e uma abertura de fundo. Clique no satélite abaixo para iniciar.";
       satelliteToggle.classList.toggle("active", isObserving);
       satelliteToggle.setAttribute("aria-pressed", String(isObserving));
       satelliteToggle.setAttribute("aria-label", isObserving ? "Pausar aquisição de fótons pelo satélite" : "Iniciar aquisição de fótons pelo satélite");
