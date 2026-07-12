@@ -519,7 +519,7 @@
               <button class="sky-action" id="toggleMapFullscreen" type="button">Tela cheia</button>
             </div>
             <div class="sky-measure" id="mapMeasure">Régua: clique em dois pontos</div>
-            <div class="sky-tip">O horizonte local é a linha horizontal; a faixa inclinada é a eclíptica observada.</div>
+            <div class="sky-tip">Projeção de domo: o zênite fica no centro e o horizonte é a borda circular.</div>
           </div>
           <div class="metrics">
             <div class="metric">
@@ -805,18 +805,11 @@
     }
 
     function eclipticDisplayGeometry() {
-      const sun = sunVector(currentDay());
-      const sunEq = eclipticToEquatorial(sun.lambda, 0);
-      const sunHorizontal = equatorialToHorizontal(sunEq.ra, sunEq.dec);
-      const scale = Math.min((sky.width - 140) / 170, (sky.height - 88) / 100);
+      const radius = Math.min(sky.width, sky.height) * 0.44;
       return {
-        cx: sky.width * 0.52,
-        horizonY: sky.height * 0.78,
-        scale,
-        lambda0: sun.lambda,
-        az0: sunHorizontal.az,
-        alt0: sunHorizontal.alt,
-        azScale: Math.max(0.35, Math.cos(clamp(sunHorizontal.alt, -75, 75) * DEG)),
+        cx: sky.width * 0.5,
+        cy: sky.height * 0.52,
+        radius,
       };
     }
 
@@ -828,18 +821,24 @@
     }
 
     function horizontalToScreen(az, alt, geometry = eclipticDisplayGeometry()) {
-      const azOffset = wrap180(az - geometry.az0);
+      const radius = ((90 - clamp(alt, 0, 90)) / 90) * geometry.radius;
+      const theta = az * DEG;
       return {
-        x: geometry.cx + azOffset * geometry.scale * geometry.azScale,
-        y: geometry.horizonY - alt * geometry.scale,
+        x: geometry.cx + radius * Math.sin(theta),
+        y: geometry.cy - radius * Math.cos(theta),
       };
     }
 
     function screenToSky(x, y) {
       const g = eclipticDisplayGeometry();
+      const dx = x - g.cx;
+      const dy = y - g.cy;
+      const radius = Math.hypot(dx, dy);
+      const az = normDeg(Math.atan2(dx, -dy) * RAD);
+      const alt = 90 - (radius / g.radius) * 90;
       return {
-        az: normDeg(g.az0 + (x - g.cx) / (g.scale * g.azScale)),
-        alt: (g.horizonY - y) / g.scale,
+        az,
+        alt: clamp(alt, 0, 90),
       };
     }
 
@@ -853,8 +852,9 @@
     }
 
     function localEclipticAngle(geometry) {
-      const p1 = skyToScreen(normDeg(geometry.lambda0 - 0.7), 0);
-      const p2 = skyToScreen(normDeg(geometry.lambda0 + 0.7), 0);
+      const sun = sunVector(currentDay());
+      const p1 = skyToScreen(normDeg(sun.lambda - 0.7), 0);
+      const p2 = skyToScreen(normDeg(sun.lambda + 0.7), 0);
       let angle = Math.atan2(-(p2.y - p1.y), p2.x - p1.x) * RAD;
       while (angle > 90) angle -= 180;
       while (angle < -90) angle += 180;
@@ -889,50 +889,42 @@
       ctx.fillRect(0, 0, sky.width, sky.height);
 
       const g = eclipticDisplayGeometry();
-      ctx.strokeStyle = "rgba(170,166,156,0.22)";
-      ctx.lineWidth = 2;
+      ctx.save();
       ctx.beginPath();
-      ctx.moveTo(0, g.horizonY);
-      ctx.lineTo(sky.width, g.horizonY);
-      ctx.stroke();
-      ctx.fillStyle = "rgba(170,166,156,0.7)";
-      ctx.font = "12px system-ui";
-      ctx.fillText("horizonte local", 14, g.horizonY + 18);
+      ctx.arc(g.cx, g.cy, g.radius, 0, TAU);
+      ctx.clip();
 
       ctx.strokeStyle = "rgba(170,166,156,0.14)";
       ctx.lineWidth = 1;
       for (let alt = 15; alt <= 75; alt += 15) {
-        const y = g.horizonY - alt * g.scale;
-        if (y < 30 || y > sky.height - 28) continue;
+        const r = ((90 - alt) / 90) * g.radius;
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(sky.width, y);
+        ctx.arc(g.cx, g.cy, r, 0, TAU);
         ctx.stroke();
         ctx.fillStyle = "rgba(170,166,156,0.55)";
         ctx.font = "11px system-ui";
-        ctx.fillText(`h=${alt}°`, 12, y - 5);
+        ctx.fillText(`h=${alt}°`, g.cx + r + 4, g.cy - 3);
       }
-      for (let azOffset = -90; azOffset <= 90; azOffset += 30) {
-        const x = g.cx + azOffset * g.scale * g.azScale;
-        if (x < 0 || x > sky.width) continue;
+      for (let az = 0; az < 360; az += 30) {
+        const edge = horizontalToScreen(az, 0, g);
         ctx.beginPath();
-        ctx.moveTo(x, 30);
-        ctx.lineTo(x, sky.height - 30);
+        ctx.moveTo(g.cx, g.cy);
+        ctx.lineTo(edge.x, edge.y);
         ctx.stroke();
-        ctx.fillStyle = "rgba(170,166,156,0.55)";
-        ctx.fillText(`${azOffset > 0 ? "+" : ""}${azOffset}° az`, x + 4, 22);
       }
 
       ctx.strokeStyle = "rgba(215,180,106,0.55)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       let eclipticStarted = false;
-      for (let offset = -120; offset <= 120; offset += 2) {
-        const p = skyToScreen(normDeg(g.lambda0 + offset), 0);
-        if (p.x < -80 || p.x > sky.width + 80 || p.y < -80 || p.y > sky.height + 80) {
+      for (let lambda = 0; lambda <= 360; lambda += 1.5) {
+        const eq = eclipticToEquatorial(lambda, 0);
+        const horizontal = equatorialToHorizontal(eq.ra, eq.dec);
+        if (horizontal.alt < 0) {
           eclipticStarted = false;
           continue;
         }
+        const p = horizontalToScreen(horizontal.az, horizontal.alt, g);
         if (!eclipticStarted) {
           ctx.moveTo(p.x, p.y);
           eclipticStarted = true;
@@ -941,7 +933,24 @@
         }
       }
       ctx.stroke();
-      const eText = skyToScreen(normDeg(g.lambda0 + 48), 0);
+      ctx.restore();
+
+      ctx.strokeStyle = "rgba(170,166,156,0.46)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(g.cx, g.cy, g.radius, 0, TAU);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(170,166,156,0.75)";
+      ctx.font = "12px system-ui";
+      ctx.fillText("N", g.cx - 4, g.cy - g.radius - 8);
+      ctx.fillText("S", g.cx - 4, g.cy + g.radius + 18);
+      ctx.fillText("L", g.cx + g.radius + 8, g.cy + 4);
+      ctx.fillText("O", g.cx - g.radius - 18, g.cy + 4);
+      ctx.fillText("zênite", g.cx + 10, g.cy - 8);
+      ctx.fillText("horizonte", g.cx + g.radius - 64, g.cy + 18);
+
+      const sun = sunVector(currentDay());
+      const eText = skyToScreen(normDeg(sun.lambda + 10), 0);
       ctx.fillStyle = "rgba(215,180,106,0.82)";
       ctx.font = "12px system-ui";
       ctx.fillText("eclíptica", eText.x + 8, eText.y - 8);
@@ -949,28 +958,33 @@
 
       fixedStars.forEach(star => {
         const p = skyToScreen(star.lambda, star.beta);
-        if (p.x < 0 || p.x > sky.width || p.y < 0 || p.y > sky.height) return;
+        const skyPoint = screenToSky(p.x, p.y);
+        if (skyPoint.alt <= 0) return;
         ctx.fillStyle = `rgba(255,255,255,${star.alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, star.size, 0, TAU);
         ctx.fill();
       });
 
-      const sun = sunVector(currentDay());
-      const sunPos = skyToScreen(sun.lambda, 0);
-      ctx.fillStyle = "#f2d271";
-      ctx.shadowColor = "#f2d271";
-      ctx.shadowBlur = 16;
-      ctx.beginPath();
-      ctx.arc(sunPos.x, sunPos.y, 8, 0, TAU);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = "#f2d271";
-      ctx.font = "12px system-ui";
-      ctx.fillText("Sol", sunPos.x + 10, sunPos.y - 8);
+      const sunEq = eclipticToEquatorial(sun.lambda, 0);
+      const sunHorizontal = equatorialToHorizontal(sunEq.ra, sunEq.dec);
+      if (sunHorizontal.alt >= 0) {
+        const sunPos = horizontalToScreen(sunHorizontal.az, sunHorizontal.alt, g);
+        ctx.fillStyle = "#f2d271";
+        ctx.shadowColor = "#f2d271";
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.arc(sunPos.x, sunPos.y, 8, 0, TAU);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#f2d271";
+        ctx.font = "12px system-ui";
+        ctx.fillText("Sol", sunPos.x + 10, sunPos.y - 8);
+      }
 
       planets.forEach(body => {
         const app = apparent(body);
+        if (app.alt < 0) return;
         const p = horizontalToScreen(app.az, app.alt, g);
         ctx.fillStyle = body.color;
         ctx.shadowColor = body.color;
@@ -1231,6 +1245,7 @@
       let bestD = Infinity;
       planets.forEach(planet => {
         const app = apparent(planet);
+        if (app.alt < 0) return;
         const p = horizontalToScreen(app.az, app.alt);
         const d = Math.hypot(p.x - x, p.y - y);
         if (d < bestD) {
