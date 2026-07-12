@@ -1060,12 +1060,41 @@
         : "Nenhuma estrela selecionada.";
     }
 
+    function mixColor(a, b, t) {
+      return {
+        r: Math.round(a.r + (b.r - a.r) * t),
+        g: Math.round(a.g + (b.g - a.g) * t),
+        b: Math.round(a.b + (b.b - a.b) * t),
+      };
+    }
+
     function visibleColor(lambda) {
-      const t = clamp((lambda - 380) / 400, 0, 1);
-      const r = Math.round(255 * clamp(Math.sin(Math.PI * (t - 0.05)), 0, 1));
-      const g = Math.round(220 * clamp(Math.sin(Math.PI * (t + 0.18)), 0, 1));
-      const b = Math.round(255 * clamp(Math.sin(Math.PI * (1.05 - t)), 0, 1));
-      return `rgb(${r},${g},${b})`;
+      const stops = [
+        { lambda: 90, color: { r: 255, g: 255, b: 255 } },
+        { lambda: 140, color: { r: 232, g: 225, b: 255 } },
+        { lambda: 210, color: { r: 180, g: 120, b: 255 } },
+        { lambda: 300, color: { r: 116, g: 70, b: 255 } },
+        { lambda: 380, color: { r: 92, g: 74, b: 255 } },
+        { lambda: 430, color: { r: 35, g: 90, b: 255 } },
+        { lambda: 485, color: { r: 0, g: 205, b: 255 } },
+        { lambda: 535, color: { r: 50, g: 230, b: 90 } },
+        { lambda: 580, color: { r: 255, g: 225, b: 60 } },
+        { lambda: 630, color: { r: 255, g: 130, b: 30 } },
+        { lambda: 700, color: { r: 255, g: 42, b: 36 } },
+        { lambda: 760, color: { r: 150, g: 20, b: 25 } },
+        { lambda: 2500, color: { r: 50, g: 8, b: 8 } },
+      ];
+      const lowerIndex = stops.findIndex((stop, i) => lambda >= stop.lambda && lambda <= stops[i + 1]?.lambda);
+      if (lambda <= stops[0].lambda) return "rgb(255,255,255)";
+      if (lowerIndex === -1) {
+        const c = stops[stops.length - 1].color;
+        return `rgb(${c.r},${c.g},${c.b})`;
+      }
+      const a = stops[lowerIndex];
+      const b = stops[lowerIndex + 1];
+      const t = clamp((lambda - a.lambda) / (b.lambda - a.lambda), 0, 1);
+      const { r, g, b: blue } = mixColor(a.color, b.color, t);
+      return `rgb(${r},${g},${blue})`;
     }
 
     function integrateBand(points, center, width) {
@@ -1161,9 +1190,7 @@
       const sx = lambda => lambdaToX(lambda, w, padL, padR);
       const sy = value => padT + (1 - (value - minY) / Math.max(maxY - minY, 1e-8)) * (h - padT - padB);
       for (let lambda = displayLambdaMin; lambda <= displayLambdaMax; lambda += 5) {
-        if (lambda < 380) ctx.fillStyle = "rgb(52,48,116)";
-        else if (lambda > 760) ctx.fillStyle = "rgb(92,24,22)";
-        else ctx.fillStyle = visibleColor(lambda);
+        ctx.fillStyle = visibleColor(lambda);
         ctx.globalAlpha = 0.13;
         ctx.fillRect(sx(lambda), padT, Math.max(1, sx(lambda + 5) - sx(lambda)), h - padT - padB);
       }
