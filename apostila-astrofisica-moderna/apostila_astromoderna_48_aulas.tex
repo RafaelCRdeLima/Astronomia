@@ -860,6 +860,22 @@ f_{\rm faixa}\simeq \sum_i F_{\lambda,i}\,\Delta\lambda_i.
 Esse valor não é o fluxo bolométrico completo, pois falta radiação fora da faixa observada, mas é útil para comparar objetos observados com o mesmo instrumento e a mesma redução. Estrelas quentes podem emitir muita radiação no ultravioleta, fora da faixa visível; estrelas frias podem emitir parte importante no infravermelho. Portanto, a integral visível deve ser interpretada como fluxo na faixa observada, não como luminosidade total sem correção.
 \end{lessonblock}
 
+\begin{lessonblock}{Da imagem ao espectro: abertura e fundo}
+Antes de obter um espectro útil, o observador precisa decidir de onde vem a luz do objeto e de onde vem o fundo. Em uma imagem real, a estrela não aparece como um ponto matemático: ela é espalhada pela óptica e pelo detector em uma \textit{função de espalhamento pontual} (PSF). Por isso usamos uma abertura circular em torno da estrela. Se a abertura for pequena demais, perdemos parte da luz; se for grande demais, somamos ruído e luz de fundo desnecessários.
+
+O sinal líquido de uma estrela pode ser estimado por fotometria de abertura:
+\[
+C_{\rm estrela}=C_{\rm ap}-\frac{A_{\rm ap}}{A_{\rm fundo}}\,C_{\rm fundo},
+\]
+em que $C_{\rm ap}$ é a soma das contagens na abertura da estrela, $C_{\rm fundo}$ é a soma das contagens em uma abertura colocada numa região sem estrelas, e $A_{\rm ap}/A_{\rm fundo}$ corrige a diferença de áreas. O mesmo raciocínio vale para cada comprimento de onda quando extraímos um espectro: para cada $\lambda$, subtraímos o fundo estimado antes de interpretar o contínuo, as cores e as linhas.
+
+\textbf{Exemplo.} Uma abertura na estrela soma $C_{\rm ap}=18500$ contagens. A abertura de fundo soma $C_{\rm fundo}=4200$ contagens e tem área quatro vezes maior. O sinal líquido é
+\[
+C_{\rm estrela}=18500-\frac{1}{4}(4200)=17450.
+\]
+Se o fundo fosse ignorado, o fluxo seria superestimado em aproximadamente $1050/17450\simeq 6{,}0\%$. Essa diferença altera temperaturas por cor, fluxos integrados e profundidades de linhas.
+\end{lessonblock}
+
 \subsection*{Laboratório}
 \addcontentsline{toc}{subsection}{Laboratório -- Capítulo 3}
 O laboratório interativo deste capítulo está disponível em:
@@ -868,43 +884,53 @@ O laboratório interativo deste capítulo está disponível em:
 \url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-3/}
 \end{center}
 
-Neste laboratório você atua como um observador que obtém espectros de estrelas desconhecidas. O painel não entrega diretamente temperatura ou velocidade: ele mostra contagens, resposta instrumental, espectro calibrado, filtros e linhas. Seu trabalho é transformar dados observados em grandezas físicas.
+Neste laboratório você atua como um observador que obtém espectros de estrelas desconhecidas a partir de uma imagem de campo. O painel não entrega diretamente temperatura ou velocidade: primeiro você deve escolher uma estrela, desenhar uma abertura sobre ela, desenhar outra abertura em uma região de fundo, extrair o espectro e então transformar contagens em grandezas físicas.
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
-\textbf{Experimento 1: calibração.}
-Escolha um alvo e registre uma medida no modo bruto, uma com dark subtraído e uma com dark + resposta instrumental. Para cada uma, anote $\lambda_{\max}$ e calcule $T$ por Wien. Quantifique a diferença percentual entre a temperatura bruta e a temperatura calibrada:
+\textbf{Experimento 1: extração por abertura.}
+No campo observado, escolha uma estrela. Use a ferramenta de abertura da estrela e teste três raios diferentes: pequeno, adequado e grande. Para cada raio, mantenha a mesma abertura de fundo, extraia o espectro, registre $\lambda_{\max}$, $F_B$, $F_V$ e o fluxo integrado. Explique numericamente como a escolha da abertura altera o sinal coletado e o ruído.
+
+\textbf{Experimento 2: subtração de fundo.}
+Mantendo a mesma estrela, coloque a abertura de fundo em uma região limpa e depois em uma região contaminada por outra estrela ou por fundo mais brilhante. Compare os espectros extraídos. Usando
+\[
+C_{\rm estrela}=C_{\rm ap}-\frac{A_{\rm ap}}{A_{\rm fundo}}C_{\rm fundo},
+\]
+explique por que uma escolha ruim de fundo pode inclinar o contínuo ou alterar o fluxo integrado.
+
+\textbf{Experimento 3: calibração.}
+Com uma abertura de estrela e de fundo bem escolhidas, registre uma medida no modo bruto, uma com dark subtraído e uma com dark + resposta instrumental. Para cada uma, anote $\lambda_{\max}$ e calcule $T$ por Wien. Quantifique a diferença percentual entre a temperatura bruta e a temperatura calibrada:
 \[
 \frac{\Delta T}{T_{\rm cal}}=\frac{|T_{\rm bruto}-T_{\rm cal}|}{T_{\rm cal}}.
 \]
 Explique por que a calibração altera a forma do contínuo.
 
-\textbf{Experimento 2: temperatura por contínuo.}
+\textbf{Experimento 4: temperatura por contínuo.}
 Para três alvos, use o espectro calibrado, determine $\lambda_{\max}$ e calcule
 \[
 T=\frac{2{,}898\times10^6}{\lambda_{\max}(\mathrm{nm})}.
 \]
 Ordene os alvos por temperatura e compare com a aparência do espectro: qual é mais azul? qual é mais vermelho?
 
-\textbf{Experimento 3: fotometria em bandas.}
+\textbf{Experimento 5: fotometria em bandas.}
 Registre $F_B$, $F_V$ e $F_R$ para os mesmos alvos. Calcule
 \[
 B-V=-2{,}5\log_{10}(F_B/F_V).
 \]
 Faça uma tabela com $T$ e $B-V$. Verifique se objetos com $B-V$ menor são também mais quentes.
 
-\textbf{Experimento 4: velocidade radial.}
+\textbf{Experimento 6: velocidade radial.}
 Escolha uma linha, preferencialmente H$\alpha$, e registre $\lambda_{\rm obs}$. Calcule
 \[
 v_r=c\frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}.
 \]
 Informe se o alvo está se aproximando ou se afastando. Repita com outra linha e compare os valores.
 
-\textbf{Experimento 5: fluxo integrado.}
+\textbf{Experimento 7: fluxo integrado.}
 Use a coluna de fluxo relativo exportada pelo laboratório ou o valor de fluxo integrado mostrado na tabela. Compare dois alvos observados com mesma exposição e mesma redução. Explique por que maior fluxo observado não implica, sozinho, maior luminosidade intrínseca.
 \end{lessonblock}
 
 \begin{lessonblock}{Formato da entrega}
-A entrega deve conter o CSV exportado, uma tabela com pelo menos três alvos, os cálculos de $T$ por Wien, $B-V$, velocidade radial por pelo menos uma linha, uma comparação entre espectro bruto e calibrado, e uma interpretação curta respondendo: que parte da conclusão vem diretamente dos dados e que parte depende de modelo físico?
+A entrega deve conter o CSV exportado, uma tabela com pelo menos três alvos, capturas ou descrição dos raios de abertura usados, os cálculos de $T$ por Wien, $B-V$, velocidade radial por pelo menos uma linha, uma comparação entre espectro bruto e calibrado, e uma interpretação curta respondendo: que parte da conclusão vem diretamente dos dados e que parte depende de modelo físico?
 \end{lessonblock}
 \newpage
 \section*{Capítulo 4 -- Telescópios, detectores e observação multi-banda}

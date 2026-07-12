@@ -96,6 +96,12 @@
       color: var(--accent);
     }
 
+    .aperture-tool[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #18140c;
+    }
+
     .layout {
       display: grid;
       grid-template-columns: minmax(860px, 1fr) minmax(360px, 0.34fr);
@@ -133,6 +139,8 @@
       background: #070707;
       border: 1px solid var(--line);
     }
+
+    #skyField { cursor: crosshair; touch-action: none; }
 
     .metrics {
       display: grid;
@@ -286,7 +294,7 @@
       .toolbar, .view-tabs { display: grid; grid-template-columns: 1fr; }
       .button, .chip { width: 100%; text-align: left; }
       .panel { width: 100%; max-width: 100%; margin-bottom: 12px; }
-      #spectrum, #detector, #analysisChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
+      #skyField, #spectrum, #detector, #analysisChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
       h1 { font-size: 25px; line-height: 1.08; }
       p { font-size: 14px; }
       .metrics { grid-template-columns: 1fr; }
@@ -321,8 +329,15 @@
 
     <section class="layout view active" id="observationView" aria-label="Observação espectrofotométrica">
       <section class="panel">
-        <h2>Detector e espectro observado</h2>
+        <h2>Campo observado e extração espectral</h2>
         <div class="body">
+          <canvas id="skyField" width="1500" height="780" aria-label="Campo de estrelas fotografado pelo satélite"></canvas>
+          <div class="toolbar" aria-label="Ferramentas de abertura">
+            <button class="button aperture-tool" id="tool-select" type="button" data-tool="select" aria-selected="true">Escolher estrela</button>
+            <button class="button aperture-tool" id="tool-star" type="button" data-tool="star" aria-selected="false">Circular estrela</button>
+            <button class="button aperture-tool" id="tool-sky" type="button" data-tool="sky" aria-selected="false">Circular fundo</button>
+            <span class="chip" id="fieldStatus">Clique em uma estrela brilhante.</span>
+          </div>
           <canvas id="detector" width="1500" height="260" aria-label="Imagem espectral no detector"></canvas>
           <canvas id="spectrum" width="1500" height="560" aria-label="Espectro observado"></canvas>
           <div class="metrics">
@@ -350,8 +365,8 @@
         <h2>Instrumento</h2>
         <div class="body">
           <div class="control">
-            <label for="targetSelect">Alvo</label>
-            <select id="targetSelect"></select>
+            <label>Alvo selecionado no campo</label>
+            <div class="formula" id="selectedTargetReadout">Nenhuma estrela selecionada.</div>
           </div>
 
           <div class="control">
@@ -411,23 +426,31 @@
 
           <div class="tasks">
             <div class="task">
-              <strong>Experimento 1: calibração instrumental</strong>
+              <strong>Experimento 1: abertura da estrela</strong>
+              Escolha uma estrela no campo e extraia espectros com três raios de abertura. Compare λmax, fluxos BVR e fluxo integrado.
+            </div>
+            <div class="task">
+              <strong>Experimento 2: abertura de fundo</strong>
+              Posicione o fundo em uma região limpa e depois em uma região contaminada. Explique como a subtração muda o contínuo.
+            </div>
+            <div class="task">
+              <strong>Experimento 3: calibração instrumental</strong>
               Compare espectros bruto, com dark subtraído e com resposta corrigida. Quantifique como λmax e T mudam.
             </div>
             <div class="task">
-              <strong>Experimento 2: temperatura por Wien</strong>
+              <strong>Experimento 4: temperatura por Wien</strong>
               Meça λmax no contínuo calibrado e calcule T = 2,898e-3/λmax. Compare com o ajuste visual do contínuo.
             </div>
             <div class="task">
-              <strong>Experimento 3: fotometria em bandas</strong>
+              <strong>Experimento 5: fotometria em bandas</strong>
               Registre fluxos B, V e R. Calcule B−V = −2,5 log10(FB/FV) e interprete cor e temperatura.
             </div>
             <div class="task">
-              <strong>Experimento 4: velocidade radial</strong>
+              <strong>Experimento 6: velocidade radial</strong>
               Meça o centro observado de Hα, Hβ ou Na D. Calcule v ≈ c(λobs−λ0)/λ0 e indique aproximação/recessão.
             </div>
             <div class="task">
-              <strong>Experimento 5: luminosidade relativa</strong>
+              <strong>Experimento 7: luminosidade relativa</strong>
               Integre o espectro calibrado para obter um fluxo bolométrico relativo e compare dois alvos observados com a mesma exposição.
             </div>
           </div>
@@ -446,6 +469,9 @@
                   <th>alvo</th>
                   <th>redução</th>
                   <th>exp s</th>
+                  <th>r estrela px</th>
+                  <th>r fundo px</th>
+                  <th>coleta %</th>
                   <th>λmax nm</th>
                   <th>T K</th>
                   <th>FB</th>
@@ -472,11 +498,18 @@
     const LAMBDA_MIN = 360;
     const LAMBDA_MAX = 820;
     const targets = [];
+    const fieldStars = [];
     const observations = [];
     let chartMode = "continuum";
     let currentSpectrum = [];
-    let selectedTargetId = "target-1";
+    let selectedTargetId = null;
+    let activeTool = "select";
+    let starAperture = null;
+    let skyAperture = null;
+    let dragStart = null;
 
+    const skyField = document.getElementById("skyField");
+    const skyCtx = skyField.getContext("2d");
     const detector = document.getElementById("detector");
     const detectorCtx = detector.getContext("2d");
     const spectrum = document.getElementById("spectrum");
@@ -484,7 +517,6 @@
     const analysisChart = document.getElementById("analysisChart");
     const analysisCtx = analysisChart.getContext("2d");
     const tableBody = document.getElementById("tableBody");
-    const targetSelect = document.getElementById("targetSelect");
     const exposureSlider = document.getElementById("exposureSlider");
     const calibrationSelect = document.getElementById("calibrationSelect");
     const noiseSlider = document.getElementById("noiseSlider");
@@ -548,12 +580,58 @@
           scale: p.scale,
           kind: p.kind,
           absorption: 0.16 + rand() * 0.22,
+          x: 190 + rand() * 1100,
+          y: 135 + rand() * 500,
+          psf: 11 + rand() * 5,
+          mag: 1.8 + rand() * 1.8,
+          sky: 0.018 + rand() * 0.025,
         });
       });
+      selectedTargetId = targets[0].id;
+      targets.forEach(target => {
+        starAperture = starAperture || { x: target.x, y: target.y, r: target.psf * 2.1 };
+      });
+      skyAperture = { x: 1260, y: 610, r: 56 };
+      for (let i = 0; i < 130; i += 1) {
+        fieldStars.push({
+          x: 30 + rand() * (skyField.width - 60),
+          y: 38 + rand() * (skyField.height - 76),
+          r: 0.7 + rand() * 2.8,
+          color: rand() < 0.35 ? "#ffe0a5" : rand() < 0.72 ? "#e9efff" : "#b9d6ff",
+          alpha: 0.22 + rand() * 0.58,
+        });
+      }
     }
 
     function currentTarget() {
       return targets.find(t => t.id === selectedTargetId) || targets[0];
+    }
+
+    function localBackground(x, y) {
+      return 0.02 + 0.012 * Math.sin(x / 190) + 0.009 * Math.cos(y / 150) + 0.006 * Math.sin((x + y) / 240);
+    }
+
+    function apertureQuality(target) {
+      if (!target || !starAperture || !skyAperture) {
+        return { capture: 0.3, contamination: 0.12, skyResidual: 0.05, valid: false };
+      }
+      const dx = starAperture.x - target.x;
+      const dy = starAperture.y - target.y;
+      const offset = Math.hypot(dx, dy);
+      const centered = Math.exp(-0.5 * (offset / Math.max(target.psf, 1)) ** 2);
+      const encircled = 1 - Math.exp(-0.5 * (starAperture.r / Math.max(target.psf, 1)) ** 2);
+      const capture = clamp(centered * encircled, 0.03, 1);
+      const skyDistance = Math.hypot(skyAperture.x - target.x, skyAperture.y - target.y);
+      const contamination = skyDistance < skyAperture.r + target.psf * 3 ? 0.24 : 0;
+      const skyStar = localBackground(target.x, target.y);
+      const skyMeasured = localBackground(skyAperture.x, skyAperture.y) + contamination;
+      const areaRatio = (starAperture.r ** 2) / Math.max(skyAperture.r ** 2, 1);
+      return {
+        capture,
+        contamination,
+        skyResidual: (skyStar - skyMeasured) * areaRatio,
+        valid: true,
+      };
     }
 
     function lineRest() {
@@ -567,6 +645,7 @@
       const exposure = Number(exposureSlider.value);
       const noise = Number(noiseSlider.value);
       const reduction = calibrationSelect.value;
+      const aperture = apertureQuality(target);
       const points = [];
       let maxTrue = 0;
       for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
@@ -583,15 +662,104 @@
           const observed = line.lambda * (1 + target.rv / C);
           continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
         });
-        const trueFlux = continuum;
-        const rawSignal = trueFlux * response(lambda) * (exposure / 160) + darkCurrent(lambda);
-        const noisy = Math.max(0, rawSignal + (rand() - 0.5) * noise * Math.sqrt(Math.max(rawSignal, 0.03)));
+        const trueFlux = continuum * aperture.capture;
+        const skyColor = 0.018 + aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88));
+        const rawSignal = (trueFlux + skyColor) * response(lambda) * (exposure / 160) + darkCurrent(lambda);
+        const apertureNoise = noise + (1 - aperture.capture) * 0.08 + aperture.contamination * 0.18;
+        const noisy = Math.max(0, rawSignal + (rand() - 0.5) * apertureNoise * Math.sqrt(Math.max(rawSignal, 0.03)));
         let flux = noisy;
         if (reduction === "dark") flux = Math.max(0, noisy - darkCurrent(lambda));
         if (reduction === "response") flux = Math.max(0, (noisy - darkCurrent(lambda)) / response(lambda));
         points.push({ lambda, flux, trueFlux, raw: noisy, response: response(lambda) });
       }
       return points;
+    }
+
+    function canvasPoint(event, canvas) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * canvas.width / rect.width,
+        y: (event.clientY - rect.top) * canvas.height / rect.height,
+      };
+    }
+
+    function drawCircle(ctx, aperture, color, label) {
+      if (!aperture) return;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(aperture.x, aperture.y, aperture.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.font = "18px system-ui";
+      ctx.fillText(label, aperture.x + aperture.r + 8, aperture.y - aperture.r - 6);
+    }
+
+    function drawSkyField() {
+      const w = skyField.width;
+      const h = skyField.height;
+      const bg = skyCtx.createLinearGradient(0, 0, w, h);
+      bg.addColorStop(0, "#050711");
+      bg.addColorStop(0.5, "#080808");
+      bg.addColorStop(1, "#11100c");
+      skyCtx.fillStyle = bg;
+      skyCtx.fillRect(0, 0, w, h);
+      for (let x = 0; x <= w; x += 100) {
+        skyCtx.strokeStyle = "rgba(255,255,255,0.045)";
+        skyCtx.lineWidth = 1;
+        skyCtx.beginPath();
+        skyCtx.moveTo(x, 0);
+        skyCtx.lineTo(x, h);
+        skyCtx.stroke();
+      }
+      for (let y = 0; y <= h; y += 100) {
+        skyCtx.strokeStyle = "rgba(255,255,255,0.045)";
+        skyCtx.beginPath();
+        skyCtx.moveTo(0, y);
+        skyCtx.lineTo(w, y);
+        skyCtx.stroke();
+      }
+      fieldStars.forEach(star => {
+        skyCtx.globalAlpha = star.alpha;
+        skyCtx.fillStyle = star.color;
+        skyCtx.beginPath();
+        skyCtx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        skyCtx.fill();
+      });
+      skyCtx.globalAlpha = 1;
+      targets.forEach(target => {
+        const selected = target.id === selectedTargetId;
+        const radius = 6.8 - target.mag + target.scale * 2.4;
+        const glow = skyCtx.createRadialGradient(target.x, target.y, 0, target.x, target.y, target.psf * 4.2);
+        glow.addColorStop(0, target.kind === "quente" ? "rgba(180,210,255,0.95)" : target.kind === "fria" ? "rgba(255,205,135,0.95)" : "rgba(245,245,230,0.95)");
+        glow.addColorStop(0.22, "rgba(255,255,255,0.48)");
+        glow.addColorStop(1, "rgba(255,255,255,0)");
+        skyCtx.fillStyle = glow;
+        skyCtx.beginPath();
+        skyCtx.arc(target.x, target.y, target.psf * 4.2, 0, Math.PI * 2);
+        skyCtx.fill();
+        skyCtx.fillStyle = "#fff7df";
+        skyCtx.beginPath();
+        skyCtx.arc(target.x, target.y, radius, 0, Math.PI * 2);
+        skyCtx.fill();
+        if (selected) {
+          skyCtx.strokeStyle = "#d7b46a";
+          skyCtx.lineWidth = 2;
+          skyCtx.beginPath();
+          skyCtx.arc(target.x, target.y, target.psf * 5.1, 0, Math.PI * 2);
+          skyCtx.stroke();
+        }
+      });
+      drawCircle(skyCtx, starAperture, "#72a7ff", "estrela");
+      drawCircle(skyCtx, skyAperture, "#8fd18f", "fundo");
+      const target = currentTarget();
+      const q = apertureQuality(target);
+      document.getElementById("fieldStatus").textContent = target
+        ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%.`
+        : "Clique em uma estrela brilhante.";
+      document.getElementById("selectedTargetReadout").textContent = target
+        ? `${target.name}; abertura da estrela r=${fmt(starAperture?.r, 1)} px; abertura de fundo r=${fmt(skyAperture?.r, 1)} px`
+        : "Nenhuma estrela selecionada.";
     }
 
     function visibleColor(lambda) {
@@ -786,6 +954,7 @@
       document.getElementById("rvMetric").textContent = m ? `${fmt(m.rv, 0)} km/s` : "--";
       document.getElementById("exposureReadout").textContent = `${exposureSlider.value} s`;
       document.getElementById("noiseReadout").textContent = `${fmt(Number(noiseSlider.value), 2)}`;
+      drawSkyField();
     }
 
     function renderTable() {
@@ -796,6 +965,9 @@
           <td>${row.target}</td>
           <td>${row.reduction}</td>
           <td>${row.exposure}</td>
+          <td>${fmt(row.starRadius, 1)}</td>
+          <td>${fmt(row.skyRadius, 1)}</td>
+          <td>${fmt(100 * row.capture, 0)}</td>
           <td>${fmt(row.peak, 1)}</td>
           <td>${fmt(row.temp, 0)}</td>
           <td>${fmt(row.b, 4)}</td>
@@ -812,6 +984,7 @@
 
     function takeExposure() {
       currentSpectrum = makeSpectrum(currentTarget());
+      drawSkyField();
       drawDetector(currentSpectrum);
       drawSpectrumCanvas(spectrumCtx, spectrum, currentSpectrum);
       drawAnalysis();
@@ -821,10 +994,14 @@
     function recordMeasurement() {
       if (!currentSpectrum.length) takeExposure();
       const m = metrics();
+      const q = apertureQuality(currentTarget());
       observations.push({
         target: currentTarget().name,
         reduction: calibrationSelect.options[calibrationSelect.selectedIndex].text,
         exposure: Number(exposureSlider.value),
+        starRadius: starAperture ? starAperture.r : NaN,
+        skyRadius: skyAperture ? skyAperture.r : NaN,
+        capture: q.capture,
         peak: m.peak,
         temp: m.temp,
         b: m.b,
@@ -841,10 +1018,10 @@
 
     function exportCsv() {
       if (observations.length === 0) recordMeasurement();
-      const header = ["alvo", "reducao", "exposicao_s", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
+      const header = ["alvo", "reducao", "exposicao_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
       const lines = [header.join(",")];
       observations.forEach(row => {
-        lines.push([row.target, row.reduction, row.exposure, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
+        lines.push([row.target, row.reduction, row.exposure, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
           .map(value => typeof value === "number" ? value.toFixed(8) : `"${String(value).replaceAll('"', '""')}"`).join(","));
       });
       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -858,15 +1035,33 @@
       URL.revokeObjectURL(url);
     }
 
-    function populateTargets() {
-      targetSelect.innerHTML = "";
+    function chooseNearestTarget(point) {
+      let best = null;
       targets.forEach(target => {
-        const option = document.createElement("option");
-        option.value = target.id;
-        option.textContent = target.name;
-        targetSelect.appendChild(option);
+        const d = Math.hypot(point.x - target.x, point.y - target.y);
+        if (!best || d < best.distance) best = { target, distance: d };
       });
-      targetSelect.value = selectedTargetId;
+      if (best && best.distance < 70) {
+        selectedTargetId = best.target.id;
+        starAperture = { x: best.target.x, y: best.target.y, r: best.target.psf * 2.2 };
+        skyAperture = {
+          x: clamp(best.target.x + 210, 70, skyField.width - 70),
+          y: clamp(best.target.y + 125, 70, skyField.height - 70),
+          r: 58,
+        };
+        takeExposure();
+      }
+    }
+
+    function setTool(tool) {
+      activeTool = tool;
+      document.querySelectorAll(".aperture-tool").forEach(button => {
+        button.setAttribute("aria-selected", String(button.dataset.tool === tool));
+      });
+      const status = document.getElementById("fieldStatus");
+      if (tool === "select") status.textContent = "Clique em uma estrela brilhante.";
+      if (tool === "star") status.textContent = "Arraste do centro da estrela até a borda da abertura.";
+      if (tool === "sky") status.textContent = "Arraste uma abertura em região vazia para medir o fundo.";
     }
 
     document.querySelectorAll(".view-tab").forEach(button => {
@@ -887,10 +1082,39 @@
       });
     });
 
-    targetSelect.addEventListener("change", event => {
-      selectedTargetId = event.target.value;
+    document.querySelectorAll(".aperture-tool").forEach(button => {
+      button.addEventListener("click", () => setTool(button.dataset.tool));
+    });
+
+    skyField.addEventListener("pointerdown", event => {
+      const point = canvasPoint(event, skyField);
+      if (activeTool === "select") {
+        chooseNearestTarget(point);
+        return;
+      }
+      skyField.setPointerCapture(event.pointerId);
+      dragStart = point;
+      const draft = { x: point.x, y: point.y, r: 1 };
+      if (activeTool === "star") starAperture = draft;
+      if (activeTool === "sky") skyAperture = draft;
+      drawSkyField();
+    });
+
+    skyField.addEventListener("pointermove", event => {
+      if (!dragStart || activeTool === "select") return;
+      const point = canvasPoint(event, skyField);
+      const aperture = activeTool === "star" ? starAperture : skyAperture;
+      aperture.r = clamp(Math.hypot(point.x - dragStart.x, point.y - dragStart.y), 8, 160);
+      drawSkyField();
+    });
+
+    skyField.addEventListener("pointerup", event => {
+      if (!dragStart) return;
+      if (skyField.hasPointerCapture(event.pointerId)) skyField.releasePointerCapture(event.pointerId);
+      dragStart = null;
       takeExposure();
     });
+
     [exposureSlider, calibrationSelect, noiseSlider, lineSelect].forEach(input => input.addEventListener("input", takeExposure));
     document.getElementById("takeExposure").addEventListener("click", takeExposure);
     document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
@@ -901,7 +1125,6 @@
     });
 
     makeTargets();
-    populateTargets();
     exposureSlider.value = "180";
     noiseSlider.value = "0.06";
     calibrationSelect.value = "response";
