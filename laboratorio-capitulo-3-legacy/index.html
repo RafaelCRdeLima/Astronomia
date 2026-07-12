@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teste Legacy | Fotometria real</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel2: #151515;
+      --line: #343434;
+      --text: #f4f4f1;
+      --muted: #aaa69c;
+      --accent: #d7b46a;
+      --blue: #72a7ff;
+      --green: #8fd18f;
+      --orange: #e2795b;
+      --bad: #d96d6d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+    button, select, input { font: inherit; }
+    .shell { width: min(1760px, calc(100vw - 28px)); margin: 0 auto; padding: 22px 0 28px; }
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0; font-size: clamp(27px, 3.6vw, 52px); line-height: 1.02; overflow-wrap: anywhere; }
+    p { margin: 8px 0 0; color: var(--muted); line-height: 1.45; }
+    .badge, .chip {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .toolbar, .view-tabs, .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+    .button, .tab {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      padding: 9px 11px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .button:hover, .button:focus-visible, .tab:hover, .tab:focus-visible { border-color: var(--accent); outline: none; }
+    .button[aria-selected="true"], .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #18140c;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(860px, 1fr) minmax(360px, 0.35fr);
+      gap: 12px;
+      align-items: start;
+      min-width: 0;
+    }
+    .view { display: none; }
+    .view.active { display: block; }
+    .layout.view.active { display: grid; }
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #0b0b0b);
+      border: 1px solid var(--line);
+      min-width: 0;
+      overflow: hidden;
+    }
+    .panel h2 {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--accent);
+      font-size: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .body { padding: 12px 14px 14px; }
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      background: #070707;
+      border: 1px solid var(--line);
+    }
+    #fieldCanvas { cursor: crosshair; touch-action: none; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .metric { border: 1px solid var(--line); background: var(--panel2); padding: 10px; min-height: 76px; }
+    .metric small { display: block; color: var(--muted); font-size: 11px; margin-bottom: 5px; }
+    .metric strong { display: block; color: var(--text); font-size: 18px; line-height: 1.1; overflow-wrap: anywhere; }
+    label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+    select, input[type="range"] {
+      width: 100%;
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 9px;
+    }
+    input[type="range"] { padding: 0; }
+    .control { padding: 10px 0; border-bottom: 1px solid rgba(52, 52, 52, 0.72); }
+    .control:last-child { border-bottom: 0; }
+    .readout {
+      color: var(--text);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
+    }
+    .formula {
+      color: var(--muted);
+      background: #080808;
+      border: 1px solid var(--line);
+      padding: 9px;
+      line-height: 1.45;
+      font-family: "Latin Modern Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+    .table-wrap { max-height: 68vh; overflow: auto; border: 1px solid var(--line); margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 7px 8px; border-bottom: 1px solid rgba(52, 52, 52, 0.7); text-align: right; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { position: sticky; top: 0; color: var(--accent); background: #090909; z-index: 1; }
+    .tasks { display: grid; gap: 8px; margin-top: 10px; }
+    .task { border: 1px solid var(--line); padding: 10px; background: #0b0b0b; color: var(--muted); line-height: 1.35; font-size: 13px; }
+    .task strong { display: block; color: var(--text); margin-bottom: 4px; }
+    .legend { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 12px; margin-top: 8px; }
+    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+    @media (max-width: 1240px) {
+      .layout { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .shell { width: calc(100vw - 16px); }
+      header { grid-template-columns: 1fr; }
+      .badge { justify-self: start; }
+      .toolbar, .view-tabs { display: grid; grid-template-columns: 1fr; }
+      .button, .chip { width: 100%; text-align: left; }
+      .panel { width: 100%; max-width: 100%; margin-bottom: 12px; }
+      h1 { font-size: 25px; line-height: 1.08; }
+      p { font-size: 14px; }
+      .metrics { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Teste Legacy:<br>fotometria real<br>com imagem bonita</h1>
+        <p>Capítulo 3 · Radiação, cores e fotometria<br>JPEG colorido para inspeção; FITS real g/r/i para as medidas</p>
+      </div>
+      <div class="badge">Astrofísica Moderna</div>
+    </header>
+
+    <div class="toolbar">
+      <a class="button" href="../">Página principal</a>
+      <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
+      <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
+      <button class="button" id="exportCsv" type="button">Exportar CSV</button>
+      <button class="button" id="clearLog" type="button">Limpar registros</button>
+      <span class="chip">Dados: DESI Legacy Imaging Surveys DR10, filtros g/r/i</span>
+    </div>
+
+    <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
+      <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
+      <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência física</button>
+      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Caderno de dados</button>
+    </div>
+
+    <section class="layout view active" id="observationView" aria-label="Fotometria em imagem real">
+      <section class="panel">
+        <h2>Campo Legacy Survey e aberturas fotométricas</h2>
+        <div class="body">
+          <canvas id="fieldCanvas" width="1024" height="1024" aria-label="Campo real do Legacy Survey"></canvas>
+          <div class="toolbar" aria-label="Ferramentas de abertura">
+            <button class="button tool" type="button" data-tool="select" aria-selected="true">Escolher estrela</button>
+            <button class="button tool" type="button" data-tool="star" aria-selected="false">Circular estrela</button>
+            <button class="button tool" type="button" data-tool="sky" aria-selected="false">Circular fundo</button>
+            <button class="button band" type="button" data-band="visual" aria-selected="true">visual</button>
+            <button class="button band" type="button" data-band="g" aria-selected="false">g</button>
+            <button class="button band" type="button" data-band="r" aria-selected="false">r</button>
+            <button class="button band" type="button" data-band="i" aria-selected="false">i</button>
+            <span class="chip" id="fieldStatus">Carregando dados reais...</span>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <small>Fluxo g</small>
+              <strong id="gMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>Fluxo r</small>
+              <strong id="rMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>g-r</small>
+              <strong id="grMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>T aproximada</small>
+              <strong id="tempMetric">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Instrumento</h2>
+        <div class="body">
+          <div class="control">
+            <label for="fieldSelect">Campo Legacy</label>
+            <select id="fieldSelect"></select>
+          </div>
+          <div class="control">
+            <label for="stretchSlider">Contraste dos filtros científicos</label>
+            <input id="stretchSlider" type="range" min="0.25" max="3.5" step="0.05" value="0.75">
+            <div class="readout"><span id="stretchReadout">--</span><span>asinh</span></div>
+          </div>
+          <div class="control">
+            <label>Alvo e aberturas</label>
+            <div class="formula" id="apertureReadout">Escolha uma estrela e desenhe as aberturas.</div>
+          </div>
+          <div class="control">
+            <label>Fonte dos pixels</label>
+            <div class="formula" id="sourceReadout">DESI Legacy Imaging Surveys DR10.</div>
+          </div>
+          <div class="formula">
+            F = Σ estrela − (Aestrela/Afundo) Σ fundo<br>
+            g−r = −2,5 log10(Fg/Fr)<br>
+            r−i = −2,5 log10(Fr/Fi)
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" id="analysisView" aria-label="Inferência física">
+      <section class="panel">
+        <h2>Inferência física</h2>
+        <div class="tabs" role="tablist" aria-label="Gráficos">
+          <button class="tab" id="tab-fluxes" type="button" aria-selected="true">fluxos</button>
+          <button class="tab" id="tab-colors" type="button" aria-selected="false">cores</button>
+          <button class="tab" id="tab-noise" type="button" aria-selected="false">ruído</button>
+        </div>
+        <div class="body">
+          <canvas id="analysisChart" width="1500" height="560" aria-label="Gráfico de análise fotométrica"></canvas>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--blue)"></i>g</span>
+            <span><i class="dot" style="background: var(--green)"></i>r</span>
+            <span><i class="dot" style="background: var(--orange)"></i>i</span>
+            <span><i class="dot" style="background: var(--accent)"></i>cor/temperatura</span>
+          </div>
+          <div class="tasks">
+            <div class="task">
+              <strong>Experimento 1: abertura e fundo</strong>
+              Meça a mesma estrela com três raios de abertura. Para cada raio, use a mesma abertura de fundo e compare os fluxos líquidos em g, r e i.
+            </div>
+            <div class="task">
+              <strong>Experimento 2: fundo real</strong>
+              Coloque a abertura de fundo em uma região limpa e depois em uma região com estrelas fracas. Quantifique quanto g-r e r-i mudam.
+            </div>
+            <div class="task">
+              <strong>Experimento 3: cor e temperatura</strong>
+              Para pelo menos cinco estrelas, calcule g-r e r-i. Use a temperatura aproximada do painel e ordene as estrelas da mais azul à mais vermelha.
+            </div>
+            <div class="task">
+              <strong>Experimento 4: incerteza</strong>
+              Use a dispersão do fundo para comparar S/N em g, r e i. Explique em qual filtro a medida ficou mais confiável.
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" id="dataView" aria-label="Caderno de dados">
+      <section class="panel">
+        <h2>Caderno de dados</h2>
+        <div class="body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>campo</th>
+                  <th>x</th>
+                  <th>y</th>
+                  <th>r estrela</th>
+                  <th>r fundo</th>
+                  <th>Fg</th>
+                  <th>Fr</th>
+                  <th>Fi</th>
+                  <th>g-r</th>
+                  <th>r-i</th>
+                  <th>T K</th>
+                  <th>S/N g</th>
+                  <th>S/N r</th>
+                  <th>S/N i</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const bands = ["g", "r", "i"];
+    const dataBases = [
+      "data/",
+      "https://raw.githubusercontent.com/RafaelCRdeLima/Astronomia/main/laboratorio-capitulo-3-legacy/data/",
+    ];
+    const app = {
+      manifest: null,
+      field: null,
+      visual: null,
+      decoded: {},
+      displayStats: {},
+      displayBand: "visual",
+      tool: "select",
+      selected: null,
+      starAperture: null,
+      skyAperture: null,
+      dragStart: null,
+      chartMode: "fluxes",
+      rows: [],
+    };
+
+    const canvas = document.getElementById("fieldCanvas");
+    const ctx = canvas.getContext("2d");
+    const chart = document.getElementById("analysisChart");
+    const chartCtx = chart.getContext("2d");
+    const fieldSelect = document.getElementById("fieldSelect");
+    const stretchSlider = document.getElementById("stretchSlider");
+    const tableBody = document.getElementById("tableBody");
+
+    function fmt(value, digits = 2) {
+      if (!Number.isFinite(value)) return "--";
+      if (Math.abs(value) >= 10000) return value.toFixed(0);
+      if (Math.abs(value) >= 1000) return value.toFixed(1);
+      return value.toFixed(digits);
+    }
+
+    function decodeBand(encoded) {
+      const raw = atob(encoded.data);
+      const bytes = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
+      return new Float32Array(bytes.buffer);
+    }
+
+    async function fetchJsonWithFallback(fileName) {
+      let lastError = null;
+      for (const base of dataBases) {
+        try {
+          const response = await fetch(`${base}${fileName}`, { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return await response.json();
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw lastError || new Error(`Nao foi possivel carregar ${fileName}.`);
+    }
+
+    async function loadImageWithFallback(fileName) {
+      let lastError = null;
+      for (const base of dataBases) {
+        try {
+          const image = new Image();
+          image.decoding = "async";
+          image.src = `${base}${fileName}`;
+          await image.decode();
+          return image;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw lastError || new Error(`Nao foi possivel carregar ${fileName}.`);
+    }
+
+    function percentile(values, q) {
+      const sample = [];
+      const step = Math.max(1, Math.floor(values.length / 12000));
+      for (let i = 0; i < values.length; i += step) sample.push(values[i]);
+      sample.sort((a, b) => a - b);
+      const idx = Math.max(0, Math.min(sample.length - 1, Math.floor(q * (sample.length - 1))));
+      return sample[idx];
+    }
+
+    function stretch(value, band) {
+      const stats = app.displayStats[band];
+      const sky = stats ? stats.black : app.field.bands[band].p50;
+      const high = Math.max((stats ? stats.white : app.field.bands[band].p995) - sky, 1e-6);
+      const contrast = Number(stretchSlider.value);
+      const lifted = Math.max(0, value - sky);
+      return Math.max(0, Math.min(1, Math.asinh(lifted * contrast / high * 12) / Math.asinh(12)));
+    }
+
+    function drawImage() {
+      if (!app.field) return;
+      const w = app.field.width;
+      const h = app.field.height;
+      if (app.displayBand === "visual" && app.visual) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(app.visual, 0, 0, canvas.width, canvas.height);
+        drawOverlays();
+        return;
+      }
+      const img = ctx.createImageData(w, h);
+      for (let p = 0; p < w * h; p += 1) {
+        let rr, gg, bb;
+        const value = stretch(app.decoded[app.displayBand][p], app.displayBand);
+        rr = gg = bb = value;
+        img.data[4 * p] = Math.min(255, rr * 255);
+        img.data[4 * p + 1] = Math.min(255, gg * 255);
+        img.data[4 * p + 2] = Math.min(255, bb * 255);
+        img.data[4 * p + 3] = 255;
+      }
+      const tmp = document.createElement("canvas");
+      tmp.width = w; tmp.height = h;
+      tmp.getContext("2d").putImageData(img, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(tmp, 0, 0, canvas.width, canvas.height);
+      drawOverlays();
+    }
+
+    function toCanvas(point) {
+      return { x: point.x / app.field.width * canvas.width, y: point.y / app.field.height * canvas.height, r: point.r / app.field.width * canvas.width };
+    }
+
+    function drawCircle(aperture, color, label) {
+      if (!aperture) return;
+      const c = toCanvas(aperture);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.font = "18px system-ui";
+      ctx.fillText(label, c.x + c.r + 8, c.y - c.r - 6);
+    }
+
+    function drawOverlays() {
+      if (app.selected) {
+        const s = toCanvas({ ...app.selected, r: 1 });
+        ctx.fillStyle = "#72a7ff";
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      drawCircle(app.starAperture, "#72a7ff", "estrela");
+      drawCircle(app.skyAperture, "#8fd18f", "fundo");
+    }
+
+    function canvasPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * app.field.width / rect.width,
+        y: (event.clientY - rect.top) * app.field.height / rect.height,
+      };
+    }
+
+    function aperturePixels(aperture, band = "r") {
+      if (!aperture || !app.field) return [];
+      const w = app.field.width, h = app.field.height;
+      const shift = app.field.bands[band]?.shift || { dx: 0, dy: 0 };
+      const cx = aperture.x + shift.dx;
+      const cy = aperture.y + shift.dy;
+      const r2 = aperture.r * aperture.r;
+      const x0 = Math.max(0, Math.floor(cx - aperture.r));
+      const x1 = Math.min(w - 1, Math.ceil(cx + aperture.r));
+      const y0 = Math.max(0, Math.floor(cy - aperture.r));
+      const y1 = Math.min(h - 1, Math.ceil(cy + aperture.r));
+      const px = [];
+      for (let y = y0; y <= y1; y += 1) {
+        for (let x = x0; x <= x1; x += 1) {
+          if ((x - cx) ** 2 + (y - cy) ** 2 <= r2) px.push(y * w + x);
+        }
+      }
+      return px;
+    }
+
+    function stats(values) {
+      const n = values.length;
+      if (!n) return { sum: NaN, mean: NaN, sigma: NaN };
+      const sum = values.reduce((a, b) => a + b, 0);
+      const mean = sum / n;
+      const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, n - 1);
+      return { sum, mean, sigma: Math.sqrt(variance) };
+    }
+
+    function measure() {
+      if (!app.field || !app.starAperture || !app.skyAperture) return null;
+      const result = { nStar: 0, nSky: 0, fluxes: {}, sky: {}, sn: {} };
+      for (const band of bands) {
+        const starPx = aperturePixels(app.starAperture, band);
+        const skyPx = aperturePixels(app.skyAperture, band);
+        if (starPx.length < 5 || skyPx.length < 5) return null;
+        if (band === "r") { result.nStar = starPx.length; result.nSky = skyPx.length; }
+        const areaRatio = starPx.length / skyPx.length;
+        const data = app.decoded[band];
+        const star = stats(starPx.map(i => data[i]));
+        const sky = stats(skyPx.map(i => data[i]));
+        const flux = star.sum - areaRatio * sky.sum;
+        const err = sky.sigma * Math.sqrt(starPx.length + starPx.length * areaRatio);
+        result.fluxes[band] = flux;
+        result.sky[band] = sky;
+        result.sn[band] = err > 0 ? flux / err : NaN;
+      }
+      const fg = result.fluxes.g, fr = result.fluxes.r, fi = result.fluxes.i;
+      result.gr = fg > 0 && fr > 0 ? -2.5 * Math.log10(fg / fr) : NaN;
+      result.ri = fr > 0 && fi > 0 ? -2.5 * Math.log10(fr / fi) : NaN;
+      const bv = Number.isFinite(result.gr) ? 0.98 * result.gr + 0.22 : NaN;
+      result.temp = Number.isFinite(bv) ? 4600 * (1 / (0.92 * bv + 1.7) + 1 / (0.92 * bv + 0.62)) : NaN;
+      return result;
+    }
+
+    function updateReadouts() {
+      const m = measure();
+      document.getElementById("stretchReadout").textContent = fmt(Number(stretchSlider.value), 2);
+      document.getElementById("gMetric").textContent = m ? fmt(m.fluxes.g, 2) : "--";
+      document.getElementById("rMetric").textContent = m ? fmt(m.fluxes.r, 2) : "--";
+      document.getElementById("grMetric").textContent = m ? fmt(m.gr, 3) : "--";
+      document.getElementById("tempMetric").textContent = m ? `${fmt(m.temp, 0)} K` : "--";
+      const selected = app.selected ? `x=${fmt(app.selected.x, 0)}, y=${fmt(app.selected.y, 0)}` : "sem estrela marcada";
+      const star = app.starAperture ? `r estrela=${fmt(app.starAperture.r, 1)} px` : "r estrela=--";
+      const sky = app.skyAperture ? `r fundo=${fmt(app.skyAperture.r, 1)} px` : "r fundo=--";
+      document.getElementById("apertureReadout").textContent = `${selected}; ${star}; ${sky}`;
+      document.getElementById("sourceReadout").textContent = app.field ? app.field.source : "DESI Legacy Imaging Surveys DR10.";
+      document.getElementById("fieldStatus").textContent = m
+        ? `Fluxos medidos em pixels reais: g=${fmt(m.fluxes.g, 1)}, r=${fmt(m.fluxes.r, 1)}, i=${fmt(m.fluxes.i, 1)}.`
+        : "Escolha uma estrela e desenhe abertura da estrela e do fundo.";
+      drawAnalysis();
+    }
+
+    function drawAnalysis() {
+      const m = measure();
+      const w = chart.width, h = chart.height;
+      chartCtx.clearRect(0, 0, w, h);
+      chartCtx.fillStyle = "#080808";
+      chartCtx.fillRect(0, 0, w, h);
+      chartCtx.strokeStyle = "#343434";
+      chartCtx.beginPath();
+      chartCtx.moveTo(58, 28);
+      chartCtx.lineTo(58, h - 58);
+      chartCtx.lineTo(w - 26, h - 58);
+      chartCtx.stroke();
+      chartCtx.fillStyle = "#aaa69c";
+      chartCtx.font = "12px system-ui";
+      if (!m) {
+        chartCtx.fillText("sem medida: desenhe abertura da estrela e do fundo", 82, 80);
+        return;
+      }
+      if (app.chartMode === "fluxes") {
+        const values = [m.fluxes.g, m.fluxes.r, m.fluxes.i];
+        const max = Math.max(...values.map(v => Math.max(v, 0)), 1e-6);
+        const colors = ["#72a7ff", "#8fd18f", "#e2795b"];
+        ["g", "r", "i"].forEach((band, idx) => {
+          const x = 180 + idx * 210;
+          const bh = Math.max(0, values[idx]) / max * (h - 130);
+          chartCtx.fillStyle = colors[idx];
+          chartCtx.fillRect(x, h - 58 - bh, 110, bh);
+          chartCtx.fillStyle = "#f4f4f1";
+          chartCtx.fillText(band, x + 48, h - 30);
+          chartCtx.fillText(fmt(values[idx], 2), x + 8, h - 68 - bh);
+        });
+      } else if (app.chartMode === "colors") {
+        chartCtx.fillStyle = "#d7b46a";
+        chartCtx.font = "18px system-ui";
+        chartCtx.fillText(`g-r = ${fmt(m.gr, 3)}`, 120, 100);
+        chartCtx.fillText(`r-i = ${fmt(m.ri, 3)}`, 120, 145);
+        chartCtx.fillText(`T aproximada = ${fmt(m.temp, 0)} K`, 120, 190);
+        chartCtx.fillStyle = "#aaa69c";
+        chartCtx.font = "13px system-ui";
+        chartCtx.fillText("Temperatura estimada por conversão aproximada g-r → B-V → Ballesteros.", 120, 230);
+      } else {
+        const values = [m.sn.g, m.sn.r, m.sn.i];
+        const max = Math.max(...values.map(v => Math.max(v, 0)), 1e-6);
+        const colors = ["#72a7ff", "#8fd18f", "#e2795b"];
+        ["S/N g", "S/N r", "S/N i"].forEach((label, idx) => {
+          const x = 180 + idx * 210;
+          const bh = Math.max(0, values[idx]) / max * (h - 130);
+          chartCtx.fillStyle = colors[idx];
+          chartCtx.fillRect(x, h - 58 - bh, 110, bh);
+          chartCtx.fillStyle = "#f4f4f1";
+          chartCtx.fillText(label, x + 28, h - 30);
+          chartCtx.fillText(fmt(values[idx], 2), x + 22, h - 68 - bh);
+        });
+      }
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+      app.rows.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.field}</td><td>${fmt(row.x, 0)}</td><td>${fmt(row.y, 0)}</td>
+          <td>${fmt(row.rStar, 1)}</td><td>${fmt(row.rSky, 1)}</td>
+          <td>${fmt(row.Fg, 3)}</td><td>${fmt(row.Fr, 3)}</td><td>${fmt(row.Fi, 3)}</td>
+          <td>${fmt(row.gr, 3)}</td><td>${fmt(row.ri, 3)}</td><td>${fmt(row.temp, 0)}</td>
+          <td>${fmt(row.sng, 2)}</td><td>${fmt(row.snr, 2)}</td><td>${fmt(row.sni, 2)}</td>`;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function recordMeasurement() {
+      const m = measure();
+      if (!m || !app.selected) {
+        document.getElementById("fieldStatus").textContent = "Faça abertura da estrela e do fundo antes de registrar.";
+        return;
+      }
+      app.rows.push({
+        field: app.field.id, x: app.selected.x, y: app.selected.y,
+        rStar: app.starAperture.r, rSky: app.skyAperture.r,
+        Fg: m.fluxes.g, Fr: m.fluxes.r, Fi: m.fluxes.i,
+        gr: m.gr, ri: m.ri, temp: m.temp,
+        sng: m.sn.g, snr: m.sn.r, sni: m.sn.i,
+      });
+      renderTable();
+      updateReadouts();
+    }
+
+    function exportCsv() {
+      if (!app.rows.length) recordMeasurement();
+      if (!app.rows.length) return;
+      const header = ["campo","x","y","raio_estrela_px","raio_fundo_px","Fg","Fr","Fi","g-r","r-i","T_K","SN_g","SN_r","SN_i"];
+      const lines = [header.join(",")];
+      app.rows.forEach(row => {
+        lines.push([row.field,row.x,row.y,row.rStar,row.rSky,row.Fg,row.Fr,row.Fi,row.gr,row.ri,row.temp,row.sng,row.snr,row.sni]
+          .map(v => typeof v === "number" ? v.toFixed(8) : `"${String(v).replaceAll('"', '""')}"`).join(","));
+      });
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "laboratorio_capitulo_3_legacy_fotometria.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function setTool(tool) {
+      app.tool = tool;
+      document.querySelectorAll(".tool").forEach(button => button.setAttribute("aria-selected", String(button.dataset.tool === tool)));
+    }
+
+    function setBand(band) {
+      app.displayBand = band;
+      document.querySelectorAll(".band").forEach(button => button.setAttribute("aria-selected", String(button.dataset.band === band)));
+      drawImage();
+    }
+
+    async function loadField(id) {
+      document.getElementById("fieldStatus").textContent = "Carregando recorte Legacy Survey...";
+      app.field = await fetchJsonWithFallback(`${id}.json`);
+      app.visual = app.field.visualImage ? await loadImageWithFallback(app.field.visualImage) : null;
+      app.decoded = {};
+      app.displayStats = {};
+      bands.forEach(band => {
+        app.decoded[band] = decodeBand(app.field.bands[band]);
+        app.displayStats[band] = {
+          black: percentile(app.decoded[band], 0.96),
+          white: percentile(app.decoded[band], 0.9996),
+        };
+      });
+      app.selected = null;
+      app.starAperture = null;
+      app.skyAperture = null;
+      drawImage();
+      updateReadouts();
+    }
+
+    function initEvents() {
+      document.querySelectorAll(".view-tab").forEach(button => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".view-tab").forEach(tab => tab.setAttribute("aria-selected", "false"));
+          document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+          button.setAttribute("aria-selected", "true");
+          document.getElementById(button.dataset.view).classList.add("active");
+          drawAnalysis();
+        });
+      });
+      document.querySelectorAll(".tab").forEach(button => {
+        button.addEventListener("click", () => {
+          app.chartMode = button.id.replace("tab-", "");
+          document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
+          drawAnalysis();
+        });
+      });
+      document.querySelectorAll(".tool").forEach(button => button.addEventListener("click", () => setTool(button.dataset.tool)));
+      document.querySelectorAll(".band").forEach(button => button.addEventListener("click", () => setBand(button.dataset.band)));
+      fieldSelect.addEventListener("change", () => loadField(fieldSelect.value));
+      stretchSlider.addEventListener("input", () => { drawImage(); updateReadouts(); });
+      canvas.addEventListener("pointerdown", event => {
+        if (!app.field) return;
+        const point = canvasPoint(event);
+        if (app.tool === "select") {
+          app.selected = { x: point.x, y: point.y };
+          drawImage();
+          updateReadouts();
+          return;
+        }
+        app.dragStart = point;
+        const draft = { x: point.x, y: point.y, r: 1 };
+        if (app.tool === "star") app.starAperture = draft;
+        if (app.tool === "sky") app.skyAperture = draft;
+        canvas.setPointerCapture(event.pointerId);
+        drawImage();
+      });
+      canvas.addEventListener("pointermove", event => {
+        if (!app.dragStart || app.tool === "select") return;
+        const point = canvasPoint(event);
+        const aperture = app.tool === "star" ? app.starAperture : app.skyAperture;
+        aperture.r = Math.max(2, Math.min(80, Math.hypot(point.x - app.dragStart.x, point.y - app.dragStart.y)));
+        drawImage();
+      });
+      canvas.addEventListener("pointerup", event => {
+        if (!app.dragStart) return;
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+        app.dragStart = null;
+        drawImage();
+        updateReadouts();
+      });
+      document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
+      document.getElementById("exportCsv").addEventListener("click", exportCsv);
+      document.getElementById("clearLog").addEventListener("click", () => { app.rows.length = 0; renderTable(); });
+    }
+
+    async function init() {
+      initEvents();
+      app.manifest = await fetchJsonWithFallback("manifest.json");
+      fieldSelect.innerHTML = "";
+      app.manifest.fields.forEach(field => {
+        const option = document.createElement("option");
+        option.value = field.id;
+        option.textContent = field.label;
+        fieldSelect.appendChild(option);
+      });
+      await loadField(app.manifest.fields[0].id);
+    }
+
+    init().catch(error => {
+      console.error(error);
+      document.getElementById("fieldStatus").textContent = "Erro ao carregar dados Legacy Survey.";
+    });
+  </script>
+</body>
+</html>

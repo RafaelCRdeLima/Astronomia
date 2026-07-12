@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "description": "Teste com DESI Legacy Imaging Surveys DR10: JPEG colorido para visualizacao e FITS real g/r/i para fotometria.",
+  "fields": [
+    {
+      "id": "legacy-150-2",
+      "label": "Legacy Survey DR10 - RA 150.000 Dec +2.200",
+      "file": "legacy-150-2.json"
+    }
+  ]
+}
