@@ -575,7 +575,7 @@
           <div class="tasks">
             <div class="task">
               <strong>Gerar relatório em LaTeX</strong>
-              Preencha o nome do aluno, acumule os dados do experimento e clique em Gerar template. O laboratório salvará o arquivo main.tex, logos, figura do espectro, tabelas auxiliares e CSVs de dados.
+              Registre uma medida para cada estrela analisada, preencha o nome do aluno e clique em Gerar template. O laboratório salvará o arquivo main.tex, logos, figuras, tabelas auxiliares e CSVs de dados para todas as estrelas registradas.
             </div>
           </div>
           <div class="control">
@@ -1639,7 +1639,7 @@
           <td>${fmt(row.skyRadius, 1)}</td>
           <td>${fmt(100 * row.capture, 0)}</td>
           <td>${fmt(row.peak, 1)}</td>
-          <td>${fmt(row.temp, 0)}</td>
+          <td>${fmt(row.blackbodyTemp, 0)}</td>
           <td>${fmt(row.b, 4)}</td>
           <td>${fmt(row.v, 4)}</td>
           <td>${fmt(row.r, 4)}</td>
@@ -1660,23 +1660,67 @@
       updateReadouts();
     }
 
-    function recordMeasurement() {
-      if (!currentSpectrum.length) resetObservation();
-      if (observationSeconds < 0.5) {
-        document.getElementById("fieldStatus").textContent = "Inicie a aquisição e acumule fótons antes de registrar a medida.";
-        return;
-      }
+    function cloneSpectrum(points = currentSpectrum) {
+      return points.map(p => ({
+        lambda: p.lambda,
+        starFlux: p.starFlux,
+        skyFlux: p.skyFlux,
+        flux: p.flux,
+        trueFlux: p.trueFlux,
+        raw: p.raw,
+      }));
+    }
+
+    function slugify(value) {
+      return String(value || "observacao")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        || "observacao";
+    }
+
+    function lineMeasurementsForMarks(marks) {
+      if (!marks.length) return [];
+      return marks.map((mark, i) => {
+        const candidates = lineCandidates(mark.lambda);
+        const best = candidates[0] || { label: "--", lambda: NaN, rv: NaN };
+        return {
+          index: i + 1,
+          lambdaObserved: mark.lambda,
+          bestLabel: best.label,
+          restLambda: best.lambda,
+          rv: best.rv,
+        };
+      });
+    }
+
+    function makeObservationSnapshot() {
       const m = metrics();
       const q = apertureQuality(currentTarget());
-      observations.push({
-        target: currentTarget().name,
+      const sequence = observations.length + 1;
+      const targetName = currentTarget().name;
+      const slug = `${String(sequence).padStart(2, "0")}_${slugify(targetName)}`;
+      const marks = absorptionMarks.map(mark => ({ lambda: mark.lambda }));
+      return {
+        id: `${Date.now()}_${sequence}`,
+        sequence,
+        slug,
+        target: targetName,
         extraction: extractionLabel(),
         observationSeconds,
+        photonTotal,
         starRadius: starAperture ? starAperture.r : NaN,
         skyRadius: skyAperture ? skyAperture.r : NaN,
         capture: q.capture,
         peak: m.peak,
-        temp: fittingBlackbody ? Number(blackbodyTempSlider.value) : NaN,
+        wienTemp: m.temp,
+        fittingBlackbody,
+        blackbodyTemp: fittingBlackbody ? Number(blackbodyTempSlider.value) : NaN,
+        blackbodyScale: fittingBlackbody ? blackbodyScaleValue() : NaN,
+        displayLambdaMin,
+        displayLambdaMax,
         b: m.b,
         v: m.v,
         r: m.r,
@@ -1685,8 +1729,22 @@
         line: m.line.label,
         lineObserved: m.lineObserved,
         rv: m.rv,
-      });
+        marks,
+        lines: lineMeasurementsForMarks(marks),
+        spectrum: cloneSpectrum(),
+      };
+    }
+
+    function recordMeasurement() {
+      if (!currentSpectrum.length) resetObservation();
+      if (observationSeconds < 0.5) {
+        document.getElementById("fieldStatus").textContent = "Inicie a aquisição e acumule fótons antes de registrar a medida.";
+        return;
+      }
+      const observation = makeObservationSnapshot();
+      observations.push(observation);
       renderTable();
+      reportStatus.textContent = `${observations.length} observação(ões) registrada(s).`;
     }
 
     function csvValue(value) {
@@ -1714,7 +1772,7 @@
       return rows.map(row => row.map(csvValue).join(",")).join("\n");
     }
 
-    function fluxCsvRows() {
+    function fluxCsvRows(observation = null) {
       const rows = [[
         "lambda_nm",
         "fluxo_abertura_estrela",
@@ -1722,23 +1780,23 @@
         "fluxo_liquido_estrela_menos_fundo",
         "modelo_corpo_negro",
       ]];
-      const temperature = Number(blackbodyTempSlider.value);
-      const scale = blackbodyScaleValue();
-      currentSpectrum.forEach(p => {
+      const points = observation ? observation.spectrum : currentSpectrum;
+      const useModel = observation ? observation.fittingBlackbody : fittingBlackbody;
+      const temperature = observation ? observation.blackbodyTemp : Number(blackbodyTempSlider.value);
+      const scale = observation ? observation.blackbodyScale : blackbodyScaleValue();
+      points.forEach(p => {
         rows.push([
           p.lambda,
           p.starFlux,
           p.skyFlux,
           p.flux,
-          fittingBlackbody ? blackbodyFlux(p.lambda, temperature, scale) : "",
+          useModel ? blackbodyFlux(p.lambda, temperature, scale) : "",
         ]);
       });
       return rows;
     }
 
-    function blackbodyCsvRows() {
-      const m = metrics();
-      const q = apertureQuality(currentTarget());
+    function blackbodyCsvRows(observation = null) {
       return [[
         "alvo",
         "tempo_acumulado_s",
@@ -1753,23 +1811,23 @@
         "fracao_coletada",
         "semente_sessao",
       ], [
-        currentTarget().name,
-        observationSeconds,
-        fittingBlackbody ? "sim" : "nao",
-        fittingBlackbody ? Number(blackbodyTempSlider.value) : "",
-        fittingBlackbody ? blackbodyScaleValue() : "",
-        m ? m.peak : "",
-        displayLambdaMin,
-        displayLambdaMax,
-        starAperture ? starAperture.r : "",
-        skyAperture ? skyAperture.r : "",
-        q.capture,
+        observation ? observation.target : currentTarget().name,
+        observation ? observation.observationSeconds : observationSeconds,
+        (observation ? observation.fittingBlackbody : fittingBlackbody) ? "sim" : "nao",
+        (observation ? observation.fittingBlackbody : fittingBlackbody) ? (observation ? observation.blackbodyTemp : Number(blackbodyTempSlider.value)) : "",
+        (observation ? observation.fittingBlackbody : fittingBlackbody) ? (observation ? observation.blackbodyScale : blackbodyScaleValue()) : "",
+        observation ? observation.peak : metrics().peak,
+        observation ? observation.displayLambdaMin : displayLambdaMin,
+        observation ? observation.displayLambdaMax : displayLambdaMax,
+        observation ? observation.starRadius : (starAperture ? starAperture.r : ""),
+        observation ? observation.skyRadius : (skyAperture ? skyAperture.r : ""),
+        observation ? observation.capture : apertureQuality(currentTarget()).capture,
         sessionSeed,
       ]];
     }
 
-    function linesPhotometryCsvRows() {
-      const m = metrics();
+    function linesPhotometryCsvRows(observation = null) {
+      const m = observation || metrics();
       const rows = [[
         "alvo",
         "tempo_acumulado_s",
@@ -1784,23 +1842,23 @@
         "lambda_repouso_nm",
         "velocidade_radial_km_s",
       ]];
-      const marks = absorptionMarks.length ? absorptionMarks : [null];
-      marks.forEach((mark, i) => {
-        const candidates = mark ? lineCandidates(mark.lambda) : [];
-        const best = candidates[0] || { label: "", lambda: "", rv: "" };
+      const lines = observation
+        ? (observation.lines.length ? observation.lines : [null])
+        : (absorptionMarks.length ? lineMeasurementsForMarks(absorptionMarks) : [null]);
+      lines.forEach((line, i) => {
         rows.push([
-          currentTarget().name,
-          observationSeconds,
+          observation ? observation.target : currentTarget().name,
+          observation ? observation.observationSeconds : observationSeconds,
           m ? m.b : "",
           m ? m.v : "",
           m ? m.r : "",
           m ? m.bv : "",
           m ? m.bol : "",
-          mark ? i + 1 : "",
-          mark ? mark.lambda : "",
-          best.label,
-          best.lambda,
-          best.rv,
+          line ? line.index || i + 1 : "",
+          line ? line.lambdaObserved : "",
+          line ? line.bestLabel : "",
+          line ? line.restLambda : "",
+          line ? line.rv : "",
         ]);
       });
       return rows;
@@ -1853,7 +1911,11 @@
     }
 
     function latexCell(value, digits = 3) {
-      if (typeof value === "number") return Number.isFinite(value) ? fmt(value, digits) : "--";
+      if (typeof value === "number") {
+        if (!Number.isFinite(value)) return "--";
+        if (Number.isInteger(value) && Math.abs(value) < 100) return String(value);
+        return fmt(value, digits);
+      }
       if (value === null || value === undefined || value === "") return "--";
       return latexEscape(value);
     }
@@ -1862,26 +1924,23 @@
       return rows.map(row => `${row.map(cell => latexCell(cell)).join(" & ")} \\\\`).join("\n");
     }
 
-    function blackbodyLatexTable() {
-      const m = metrics();
-      const q = apertureQuality(currentTarget());
-      const rows = [
-        ["Alvo observado", currentTarget().name],
-        ["Tempo acumulado", `${fmt(observationSeconds, 1)} s`],
-        ["Temperatura ajustada", fittingBlackbody ? `${fmt(Number(blackbodyTempSlider.value), 0)} K` : "não ajustada"],
-        ["Escala do modelo", fittingBlackbody ? fmt(blackbodyScaleValue(), 4) : "não ajustada"],
-        ["λmax medido", `${fmt(m.peak, 1)} nm`],
-        ["Janela espectral", `${fmt(displayLambdaMin, 0)}--${fmt(displayLambdaMax, 0)} nm`],
-        ["Raio da abertura da estrela", starAperture ? `${fmt(starAperture.r, 1)} px` : "não definido"],
-        ["Raio da abertura de fundo", skyAperture ? `${fmt(skyAperture.r, 1)} px` : "não definido"],
-        ["Fração estimada coletada", `${fmt(100 * q.capture, 1)} %`],
-      ];
+    function summaryLatexTable() {
+      const rows = observations.map(obs => [
+        obs.sequence,
+        obs.target,
+        obs.observationSeconds,
+        obs.starRadius,
+        obs.skyRadius,
+        100 * obs.capture,
+        obs.peak,
+        obs.fittingBlackbody ? obs.blackbodyTemp : "não ajustada",
+      ]);
       return `\\begin{table}[H]
 \\centering
-\\caption{Parâmetros da aquisição e do ajuste de corpo negro.}
-\\begin{tabular}{ll}
+\\caption{Resumo das observações registradas.}
+\\begin{tabular}{rlrrrrrr}
 \\toprule
-Grandeza & Valor \\\\
+\\# & Alvo & $t$ (s) & $r_\\star$ (px) & $r_{fundo}$ (px) & coleta (\\%) & $\\lambda_{max}$ (nm) & $T$ (K) \\\\
 \\midrule
 ${latexRows(rows)}
 \\bottomrule
@@ -1890,46 +1949,207 @@ ${latexRows(rows)}
 `;
     }
 
-    function linesPhotometryLatexTable() {
-      const m = metrics();
-      const photometryRows = [
-        ["F_B", m.b],
-        ["F_V", m.v],
-        ["F_R", m.r],
-        ["B-V", m.bv],
-        ["Fluxo bolométrico relativo", m.bol],
-      ];
-      const lineRows = absorptionMarks.length
-        ? absorptionMarks.map((mark, i) => {
-            const best = lineCandidates(mark.lambda)[0] || { label: "--", lambda: NaN, rv: NaN };
-            return [i + 1, mark.lambda, best.label, best.lambda, best.rv];
-          })
-        : [["--", "--", "nenhuma linha marcada", "--", "--"]];
-
+    function photometryLatexTable() {
+      const rows = observations.map(obs => [
+        obs.sequence,
+        obs.target,
+        obs.b,
+        obs.v,
+        obs.r,
+        obs.bv,
+        obs.bol,
+      ]);
       return `\\begin{table}[H]
 \\centering
-\\caption{Fotometria sintética extraída do espectro líquido.}
-\\begin{tabular}{lr}
+\\caption{Fotometria sintética extraída dos espectros líquidos.}
+\\begin{tabular}{rlrrrrr}
 \\toprule
-Grandeza & Valor \\\\
+\\# & Alvo & $F_B$ & $F_V$ & $F_R$ & $B-V$ & Fluxo integrado \\\\
 \\midrule
-${latexRows(photometryRows)}
-\\bottomrule
-\\end{tabular}
-\\end{table}
-
-\\begin{table}[H]
-\\centering
-\\caption{Linhas de absorção marcadas no espectro.}
-\\begin{tabular}{rrlrr}
-\\toprule
-Índice & $\\lambda_{\\rm obs}$ (nm) & Identificação provável & $\\lambda_0$ (nm) & $v_r$ (km/s) \\\\
-\\midrule
-${latexRows(lineRows)}
+${latexRows(rows)}
 \\bottomrule
 \\end{tabular}
 \\end{table}
 `;
+    }
+
+    function absorptionLinesLatexTable() {
+      const rows = observations.flatMap(obs => {
+        if (!obs.lines.length) return [[obs.sequence, obs.target, "--", "--", "nenhuma linha marcada", "--", "--"]];
+        return obs.lines.map(line => [
+          obs.sequence,
+          obs.target,
+          line.index,
+          line.lambdaObserved,
+          line.bestLabel,
+          line.restLambda,
+          line.rv,
+        ]);
+      });
+      return `\\begin{table}[H]
+\\centering
+\\caption{Linhas de absorção marcadas nos espectros.}
+\\begin{tabular}{rlrrlrr}
+\\toprule
+\\# & Alvo & Linha & $\\lambda_{\\rm obs}$ (nm) & Identificação provável & $\\lambda_0$ (nm) & $v_r$ (km/s) \\\\
+\\midrule
+${latexRows(rows)}
+\\bottomrule
+\\end{tabular}
+\\end{table}
+`;
+    }
+
+    function observationSectionsLatex() {
+      return observations.map(obs => {
+        const dataPath = `dados/${obs.slug}_fluxo.csv`;
+        return `\\subsection{${latexEscape(obs.target)}}
+
+\\begin{figure}[H]
+\\centering
+\\includegraphics[width=0.95\\linewidth]{figuras/${obs.slug}_fluxo.png}
+\\caption{Fluxo por comprimento de onda de ${latexEscape(obs.target)}. A curva líquida corresponde ao fluxo da abertura da estrela menos o fundo escalado.}
+\\end{figure}
+
+Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
+
+`;
+      }).join("\n");
+    }
+
+    function allFluxCsvRows() {
+      const rows = [[
+        "observacao",
+        "alvo",
+        "lambda_nm",
+        "fluxo_abertura_estrela",
+        "fluxo_fundo_escalado",
+        "fluxo_liquido_estrela_menos_fundo",
+        "modelo_corpo_negro",
+      ]];
+      observations.forEach(obs => {
+        fluxCsvRows(obs).slice(1).forEach(row => rows.push([obs.sequence, obs.target, ...row]));
+      });
+      return rows;
+    }
+
+    function summaryCsvRows() {
+      return [[
+        "observacao",
+        "alvo",
+        "tempo_acumulado_s",
+        "raio_abertura_estrela_px",
+        "raio_abertura_fundo_px",
+        "fracao_coletada",
+        "lambda_pico_observado_nm",
+        "temperatura_corpo_negro_K",
+        "escala_corpo_negro",
+        "janela_lambda_min_nm",
+        "janela_lambda_max_nm",
+        "semente_sessao",
+      ], ...observations.map(obs => [
+        obs.sequence,
+        obs.target,
+        obs.observationSeconds,
+        obs.starRadius,
+        obs.skyRadius,
+        obs.capture,
+        obs.peak,
+        obs.fittingBlackbody ? obs.blackbodyTemp : "",
+        obs.fittingBlackbody ? obs.blackbodyScale : "",
+        obs.displayLambdaMin,
+        obs.displayLambdaMax,
+        sessionSeed,
+      ])];
+    }
+
+    function photometryCsvRows() {
+      return [[
+        "observacao",
+        "alvo",
+        "F_B",
+        "F_V",
+        "F_R",
+        "BmenosV",
+        "fluxo_bolometrico_relativo",
+      ], ...observations.map(obs => [
+        obs.sequence,
+        obs.target,
+        obs.b,
+        obs.v,
+        obs.r,
+        obs.bv,
+        obs.bol,
+      ])];
+    }
+
+    function allLinesCsvRows() {
+      const rows = [[
+        "observacao",
+        "alvo",
+        "linha_indice",
+        "lambda_observado_nm",
+        "melhor_identificacao",
+        "lambda_repouso_nm",
+        "velocidade_radial_km_s",
+      ]];
+      observations.forEach(obs => {
+        if (!obs.lines.length) {
+          rows.push([obs.sequence, obs.target, "", "", "", "", ""]);
+          return;
+        }
+        obs.lines.forEach(line => {
+          rows.push([obs.sequence, obs.target, line.index, line.lambdaObserved, line.bestLabel, line.restLambda, line.rv]);
+        });
+      });
+      return rows;
+    }
+
+    function withObservationDrawingState(observation, callback) {
+      const saved = {
+        currentSpectrum,
+        photonTotal,
+        observationSeconds,
+        fittingBlackbody,
+        displayLambdaMin,
+        displayLambdaMax,
+        blackbodyTemp: blackbodyTempSlider.value,
+        blackbodyScale: blackbodyScaleSlider.value,
+        marks: absorptionMarks.map(mark => ({ lambda: mark.lambda })),
+      };
+      currentSpectrum = observation.spectrum;
+      photonTotal = observation.photonTotal;
+      observationSeconds = observation.observationSeconds;
+      fittingBlackbody = observation.fittingBlackbody;
+      displayLambdaMin = observation.displayLambdaMin;
+      displayLambdaMax = observation.displayLambdaMax;
+      blackbodyTempSlider.value = String(observation.blackbodyTemp || saved.blackbodyTemp);
+      if (Number.isFinite(observation.blackbodyScale)) setBlackbodyScaleValue(observation.blackbodyScale);
+      absorptionMarks.length = 0;
+      observation.marks.forEach(mark => absorptionMarks.push({ lambda: mark.lambda }));
+      try {
+        return callback();
+      } finally {
+        currentSpectrum = saved.currentSpectrum;
+        photonTotal = saved.photonTotal;
+        observationSeconds = saved.observationSeconds;
+        fittingBlackbody = saved.fittingBlackbody;
+        displayLambdaMin = saved.displayLambdaMin;
+        displayLambdaMax = saved.displayLambdaMax;
+        blackbodyTempSlider.value = saved.blackbodyTemp;
+        blackbodyScaleSlider.value = saved.blackbodyScale;
+        absorptionMarks.length = 0;
+        saved.marks.forEach(mark => absorptionMarks.push({ lambda: mark.lambda }));
+      }
+    }
+
+    function observationFigureBlob(observation) {
+      const canvas = document.createElement("canvas");
+      canvas.width = spectrum.width;
+      canvas.height = spectrum.height;
+      const ctx = canvas.getContext("2d");
+      withObservationDrawingState(observation, () => drawSpectrumCanvas(ctx, canvas, observation.spectrum));
+      return canvasToBlob(canvas);
     }
 
     function canvasToBlob(canvas) {
@@ -1954,45 +2174,73 @@ ${latexRows(lineRows)}
     }
 
     async function buildReportFiles(studentName) {
-      drawSpectrumCanvas(spectrumCtx, spectrum, currentSpectrum);
-      const [template, udescLogo, cctLogo, spectrumFigure] = await Promise.all([
+      const [template, udescLogo, cctLogo] = await Promise.all([
         fetchText("../template_relatorio/main.tex"),
         fetchBlob("../template_relatorio/udesc.png"),
         fetchBlob("../template_relatorio/CCT.png"),
-        canvasToBlob(spectrum),
       ]);
       const experimentName = "Espectrofotometria estelar";
       const mainTex = template
         .replace(/\\newcommand\{\\aluno\}\{.*\}/, () => `\\newcommand{\\aluno}{\\textbf{${latexEscape(studentName)}}}`)
         .replace(/\\newcommand\{\\experimento\}\{.*\}/, () => `\\newcommand{\\experimento}{\\textbf{${latexEscape(experimentName)}}}`);
 
-      return [
+      const files = [
         { name: "main.tex", blob: new Blob([mainTex], { type: "text/x-tex;charset=utf-8" }) },
         { name: "udesc.png", blob: udescLogo },
         { name: "CCT.png", blob: cctLogo },
-        { name: "figura_fluxo_espectral.png", blob: spectrumFigure },
-        { name: "tabela_corpo_negro.tex", blob: new Blob([blackbodyLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
-        { name: "tabela_fotometria_linhas.tex", blob: new Blob([linesPhotometryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
-        { name: "dados_fluxo.csv", blob: new Blob([rowsToCsv(fluxCsvRows())], { type: "text/csv;charset=utf-8" }) },
-        { name: "parametros_corpo_negro.csv", blob: new Blob([rowsToCsv(blackbodyCsvRows())], { type: "text/csv;charset=utf-8" }) },
-        { name: "linhas_fotometria.csv", blob: new Blob([rowsToCsv(linesPhotometryCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "tabelas/tabela_resumo_observacoes.tex", blob: new Blob([summaryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "tabelas/tabela_fotometria.tex", blob: new Blob([photometryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "tabelas/tabela_linhas_absorcao.tex", blob: new Blob([absorptionLinesLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "secoes/observacoes.tex", blob: new Blob([observationSectionsLatex()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "dados/resumo_observacoes.csv", blob: new Blob([rowsToCsv(summaryCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "dados/fotometria.csv", blob: new Blob([rowsToCsv(photometryCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "dados/linhas_absorcao.csv", blob: new Blob([rowsToCsv(allLinesCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "dados/fluxos_todas_observacoes.csv", blob: new Blob([rowsToCsv(allFluxCsvRows())], { type: "text/csv;charset=utf-8" }) },
       ];
+
+      for (const observation of observations) {
+        files.push({
+          name: `dados/${observation.slug}_fluxo.csv`,
+          blob: new Blob([rowsToCsv(fluxCsvRows(observation))], { type: "text/csv;charset=utf-8" }),
+        });
+        files.push({
+          name: `dados/${observation.slug}_parametros.csv`,
+          blob: new Blob([rowsToCsv(blackbodyCsvRows(observation))], { type: "text/csv;charset=utf-8" }),
+        });
+        files.push({
+          name: `dados/${observation.slug}_linhas_fotometria.csv`,
+          blob: new Blob([rowsToCsv(linesPhotometryCsvRows(observation))], { type: "text/csv;charset=utf-8" }),
+        });
+        files.push({
+          name: `figuras/${observation.slug}_fluxo.png`,
+          blob: await observationFigureBlob(observation),
+        });
+      }
+
+      renderObservation();
+      return files;
     }
 
     async function saveReportFiles(files) {
       if (window.showDirectoryPicker) {
         const directory = await window.showDirectoryPicker({ mode: "readwrite" });
         for (const file of files) {
-          const handle = await directory.getFileHandle(file.name, { create: true });
+          const parts = file.name.split("/");
+          const filename = parts.pop();
+          let targetDirectory = directory;
+          for (const part of parts) {
+            targetDirectory = await targetDirectory.getDirectoryHandle(part, { create: true });
+          }
+          const handle = await targetDirectory.getFileHandle(filename, { create: true });
           const writable = await handle.createWritable();
           await writable.write(file.blob);
           await writable.close();
         }
-        return "Template salvo na pasta escolhida.";
+        return `${files.length} arquivos salvos na pasta escolhida.`;
       }
 
       files.forEach((file, index) => {
-        setTimeout(() => downloadBlob(file.name, file.blob), index * 150);
+        setTimeout(() => downloadBlob(file.name.replaceAll("/", "_"), file.blob), index * 150);
       });
       return "Seu navegador não abriu seletor de pasta; os arquivos foram baixados individualmente.";
     }
@@ -2004,10 +2252,9 @@ ${latexRows(lineRows)}
         studentNameInput.focus();
         return;
       }
-      if (!currentSpectrum.length) resetObservation();
-      if (observationSeconds < 0.5) {
-        reportStatus.textContent = "Acumule fótons antes de gerar o relatório.";
-        document.getElementById("fieldStatus").textContent = "Inicie a aquisição e acumule dados para o relatório.";
+      if (!observations.length) {
+        reportStatus.textContent = "Registre pelo menos uma medida antes de gerar o relatório.";
+        document.getElementById("fieldStatus").textContent = "Depois de acumular dados de uma estrela, clique em Registrar medida.";
         return;
       }
 
@@ -2160,6 +2407,7 @@ ${latexRows(lineRows)}
     document.getElementById("clearLog").addEventListener("click", () => {
       observations.length = 0;
       renderTable();
+      reportStatus.textContent = "Aguardando dados do experimento.";
     });
 
     function observeLoop(timestamp) {
