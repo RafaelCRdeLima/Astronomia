@@ -1105,8 +1105,8 @@
       expectedRates.forEach((p, i) => {
         const mean = p.rawRate * dt;
         const sigma = Math.sqrt(Math.max(mean, 0.0001)) * (0.45 + p.apertureNoise * 2.4);
-        const incoming = Math.max(0, mean + gaussianNoise() * sigma);
-        accumulatedRaw[i] += incoming;
+        const incoming = mean + gaussianNoise() * sigma;
+        accumulatedRaw[i] = Math.max(0, accumulatedRaw[i] + incoming);
         photonTotal += p.sourceRate * dt;
       });
       observationSeconds += dt;
@@ -1118,8 +1118,8 @@
       currentSpectrum = expectedRates.map((p, i) => {
         const measuredRate = accumulatedRaw[i] / t;
         let flux = measuredRate;
-        if (reductionMode === "dark") flux = Math.max(0, measuredRate - modelDarkRate(p.lambda));
-        if (reductionMode === "calibrated") flux = Math.max(0, (measuredRate - modelDarkRate(p.lambda)) / Math.max(modelResponse(p.lambda), 0.08));
+        if (reductionMode === "dark") flux = measuredRate - modelDarkRate(p.lambda);
+        if (reductionMode === "calibrated") flux = (measuredRate - modelDarkRate(p.lambda)) / Math.max(modelResponse(p.lambda), 0.08);
         return {
           lambda: p.lambda,
           flux,
