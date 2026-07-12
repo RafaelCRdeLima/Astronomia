@@ -1379,26 +1379,25 @@
       plotSeries("starFlux", "#b8c7d9", 1.1, 0.62);
       plotSeries("skyFlux", "#8fd18f", 1.1, 0.58);
       plotSeries("flux", "#72a7ff", 2.25, 1);
-      drawCanvasLabel(ctx, "estrela", padL + 16, padT + 34, {
-        color: "#dbe8f4",
-        border: "rgba(184,199,217,0.55)",
-        canvasW: w,
-        canvasH: h,
-        font: "bold 12px system-ui",
-      });
-      drawCanvasLabel(ctx, "fundo escalado", padL + 96, padT + 34, {
-        color: "#bce8bc",
-        border: "rgba(143,209,143,0.55)",
-        canvasW: w,
-        canvasH: h,
-        font: "bold 12px system-ui",
-      });
-      drawCanvasLabel(ctx, "líquido: estrela − fundo", padL + 228, padT + 34, {
-        color: "#b8d0ff",
-        border: "rgba(114,167,255,0.75)",
-        canvasW: w,
-        canvasH: h,
-        font: "bold 12px system-ui",
+      const seriesLabels = [
+        { text: "estrela", color: "#dbe8f4", border: "rgba(184,199,217,0.55)" },
+        { text: "fundo escalado", color: "#bce8bc", border: "rgba(143,209,143,0.55)" },
+        { text: "líquido: estrela − fundo", color: "#b8d0ff", border: "rgba(114,167,255,0.75)" },
+      ];
+      ctx.font = "bold 12px system-ui";
+      const labelWidths = seriesLabels.map(label => ctx.measureText(label.text).width + 14);
+      const labelGap = 10;
+      const totalLabelWidth = labelWidths.reduce((sum, width) => sum + width, 0) + labelGap * (seriesLabels.length - 1);
+      let labelX = w - padR - totalLabelWidth - 12;
+      seriesLabels.forEach((label, i) => {
+        drawCanvasLabel(ctx, label.text, labelX, padT + 34, {
+          color: label.color,
+          border: label.border,
+          canvasW: w,
+          canvasH: h,
+          font: "bold 12px system-ui",
+        });
+        labelX += labelWidths[i] + labelGap;
       });
       if (model.length) {
         ctx.strokeStyle = "#d7b46a";
