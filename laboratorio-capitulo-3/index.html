@@ -623,11 +623,28 @@
       }));
     }
 
-    function spectralColor(kind) {
-      if (kind === "quente" || kind === "balmer") return "rgba(180,210,255,0.95)";
-      if (kind === "solar") return "rgba(245,245,230,0.95)";
-      if (kind === "fria") return "rgba(255,205,135,0.95)";
-      return "rgba(255,160,105,0.95)";
+    function temperatureRgb(temperature) {
+      const t = clamp(temperature, 2500, 22000) / 100;
+      let r, g, b;
+      if (t <= 66) {
+        r = 255;
+        g = 99.4708025861 * Math.log(t) - 161.1195681661;
+        b = t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307;
+      } else {
+        r = 329.698727446 * ((t - 60) ** -0.1332047592);
+        g = 288.1221695283 * ((t - 60) ** -0.0755148492);
+        b = 255;
+      }
+      return {
+        r: Math.round(clamp(r, 0, 255)),
+        g: Math.round(clamp(g, 0, 255)),
+        b: Math.round(clamp(b, 0, 255)),
+      };
+    }
+
+    function temperatureColor(temperature, alpha = 1) {
+      const c = temperatureRgb(temperature);
+      return `rgba(${c.r},${c.g},${c.b},${alpha})`;
     }
 
     function apparentClass(kind) {
@@ -666,13 +683,14 @@
       });
       selectedTargetId = targets[0].id;
       for (let i = 0; i < 130; i += 1) {
+        const fieldTemperature = 2800 + rand() * 12000;
         fieldStars.push({
           x: 30 + rand() * (skyField.width - 60),
           y: 38 + rand() * (skyField.height - 76),
           r: 0.7 + rand() * 2.8,
-          color: rand() < 0.35 ? "#ffe0a5" : rand() < 0.72 ? "#e9efff" : "#b9d6ff",
+          color: temperatureColor(fieldTemperature, 1),
           alpha: 0.22 + rand() * 0.58,
-          temperature: 3300 + rand() * 9500,
+          temperature: fieldTemperature,
           flux: rand() < 0.82 ? 0.004 + rand() * 0.028 : 0,
           rv: -180 + rand() * 360,
         });
@@ -858,14 +876,14 @@
         const selected = target.id === selectedTargetId;
         const radius = 6.8 - target.mag + target.scale * 2.4;
         const glow = skyCtx.createRadialGradient(target.x, target.y, 0, target.x, target.y, target.psf * 4.2);
-        glow.addColorStop(0, spectralColor(target.kind));
-        glow.addColorStop(0.22, "rgba(255,255,255,0.48)");
+        glow.addColorStop(0, temperatureColor(target.temperature, 0.98));
+        glow.addColorStop(0.18, temperatureColor(target.temperature, 0.58));
         glow.addColorStop(1, "rgba(255,255,255,0)");
         skyCtx.fillStyle = glow;
         skyCtx.beginPath();
         skyCtx.arc(target.x, target.y, target.psf * 4.2, 0, Math.PI * 2);
         skyCtx.fill();
-        skyCtx.fillStyle = "#fff7df";
+        skyCtx.fillStyle = temperatureColor(target.temperature, 1);
         skyCtx.beginPath();
         skyCtx.arc(target.x, target.y, radius, 0, Math.PI * 2);
         skyCtx.fill();
