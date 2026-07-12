@@ -96,7 +96,7 @@
       color: var(--accent);
     }
 
-    .aperture-tool[aria-selected="true"] {
+    .aperture-tool[aria-selected="true"], .line-tool[aria-selected="true"] {
       border-color: var(--accent);
       color: var(--accent);
       background: #18140c;
@@ -153,7 +153,9 @@
       border: 1px solid var(--line);
     }
 
-    #skyField { cursor: crosshair; touch-action: none; }
+    #skyField, #spectrum, #analysisChart { touch-action: none; }
+    #skyField { cursor: crosshair; }
+    #spectrum.measure-lines, #analysisChart.measure-lines { cursor: crosshair; }
 
     .metrics {
       display: grid;
@@ -423,7 +425,7 @@
               <strong id="tempMetric">--</strong>
             </div>
             <div class="metric">
-              <small>v radial por Hα</small>
+              <small>v radial por linha marcada</small>
               <strong id="rvMetric">--</strong>
             </div>
           </div>
@@ -461,7 +463,16 @@
           </div>
 
           <div class="control">
-            <label for="lineSelect">Linha para Doppler</label>
+            <label>Linhas de absorção</label>
+            <div class="mode-row" role="tablist" aria-label="Ferramenta de linhas de absorção">
+              <button class="button line-tool" id="lineMeasureToggle" type="button" aria-selected="false">Medir linhas de absorção</button>
+              <button class="button" id="clearAbsorptionMarks" type="button">Limpar linhas</button>
+            </div>
+            <div class="formula" id="absorptionLinesReadout">Nenhuma linha marcada. Ative a ferramenta e clique nas quedas do espectro.</div>
+          </div>
+
+          <div class="control">
+            <label for="lineSelect">Linha de repouso para v radial</label>
             <select id="lineSelect">
               <option value="halpha">Hα 656,3 nm</option>
               <option value="hbeta">Hβ 486,1 nm</option>
@@ -633,7 +644,7 @@
             </div>
             <div class="task">
               <strong>Experimento 6: velocidade radial</strong>
-              Meça o centro observado de Hα, Hβ ou Na D. Calcule v ≈ c(λobs−λ0)/λ0 e indique aproximação/recessão.
+              Marque quedas no espectro, registre λ observado e teste identificações possíveis para Hα, Hβ ou Na D. Calcule v ≈ c(λobs−λ0)/λ0 e indique aproximação/recessão.
             </div>
             <div class="task">
               <strong>Experimento 7: luminosidade relativa</strong>
@@ -664,7 +675,7 @@
                   <th>FV</th>
                   <th>FR</th>
                   <th>B−V</th>
-                  <th>linha</th>
+                  <th>hipótese linha</th>
                   <th>λobs nm</th>
                   <th>vr km/s</th>
                 </tr>
@@ -696,7 +707,9 @@
     let chartMode = "continuum";
     let calibrationStep = "raw";
     let reductionMode = "raw";
+    let measuringLines = false;
     let currentSpectrum = [];
+    const absorptionMarks = [];
     let selectedTargetId = null;
     let activeTool = "select";
     let starAperture = null;
@@ -722,6 +735,8 @@
     const tableBody = document.getElementById("tableBody");
     const noiseSlider = document.getElementById("noiseSlider");
     const lineSelect = document.getElementById("lineSelect");
+    const lineMeasureToggle = document.getElementById("lineMeasureToggle");
+    const clearAbsorptionMarks = document.getElementById("clearAbsorptionMarks");
     const darkBaseSlider = document.getElementById("darkBaseSlider");
     const darkSlopeSlider = document.getElementById("darkSlopeSlider");
     const blueCenterSlider = document.getElementById("blueCenterSlider");
@@ -1079,6 +1094,7 @@
       accumulatedRaw = expectedRates.map(() => 0);
       observationSeconds = 0;
       photonTotal = 0;
+      absorptionMarks.length = 0;
       currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0, response: p.response }));
       lastFrameTime = null;
       renderObservation();
@@ -1250,10 +1266,10 @@
       const bv = -2.5 * Math.log10(Math.max(b, 1e-6) / Math.max(v, 1e-6));
       const bol = points.reduce((s, p, i) => i === 0 ? 0 : s + p.flux * (p.lambda - points[i - 1].lambda), 0);
       const line = lineRest();
-      const window = points.filter(p => Math.abs(p.lambda - line.lambda) < 18);
-      const minPoint = window.reduce((best, p) => p.flux < best.flux ? p : best, window[0]);
-      const rv = C * (minPoint.lambda - line.lambda) / line.lambda;
-      return { peak: peak.lambda, temp, b, v, r, bv, bol, line, lineObserved: minPoint.lambda, rv };
+      const marked = absorptionMarks[0] || null;
+      const lineObserved = marked ? marked.lambda : NaN;
+      const rv = marked ? C * (lineObserved - line.lambda) / line.lambda : NaN;
+      return { peak: peak.lambda, temp, b, v, r, bv, bol, line, lineObserved, rv };
     }
 
     function drawAxes(ctx, w, h, labels) {
@@ -1331,23 +1347,51 @@
         else ctx.lineTo(x, y);
       });
       ctx.stroke();
-      ["halpha", "hbeta", "sodium"].forEach(id => {
-        const old = lineSelect.value;
-        lineSelect.value = id;
-        const line = lineRest();
-        lineSelect.value = old;
-        const x = sx(line.lambda);
-        ctx.strokeStyle = "rgba(230,161,91,0.65)";
-        ctx.setLineDash([5, 4]);
+      absorptionMarks.forEach((mark, i) => {
+        const x = sx(mark.lambda);
+        ctx.strokeStyle = "rgba(215,180,106,0.92)";
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
         ctx.moveTo(x, padT);
         ctx.lineTo(x, h - padB);
         ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = "#e6a15b";
-        ctx.font = "11px system-ui";
-        ctx.fillText(line.label, x + 4, padT + 14);
+        ctx.fillStyle = "#d7b46a";
+        ctx.font = "12px system-ui";
+        ctx.fillText(`${i + 1}: ${fmt(mark.lambda, 1)} nm`, x + 5, padT + 17 + (i % 4) * 15);
       });
+    }
+
+    function lambdaFromCanvasPoint(event, canvas) {
+      const point = canvasPoint(event, canvas);
+      const padL = 58, padR = 26;
+      const fraction = clamp((point.x - padL) / (canvas.width - padL - padR), 0, 1);
+      return LAMBDA_MIN + fraction * (LAMBDA_MAX - LAMBDA_MIN);
+    }
+
+    function nearestLocalMinimum(lambda) {
+      if (!currentSpectrum.length) return { lambda, flux: NaN };
+      const window = currentSpectrum.filter(p => Math.abs(p.lambda - lambda) <= 10);
+      const candidates = window.length ? window : currentSpectrum;
+      const minPoint = candidates.reduce((best, p) => p.flux < best.flux ? p : best, candidates[0]);
+      return { lambda: minPoint.lambda, flux: minPoint.flux };
+    }
+
+    function markAbsorptionLine(event, canvas) {
+      if (!measuringLines || photonTotal <= 0 || observationSeconds <= 0) return;
+      const estimated = lambdaFromCanvasPoint(event, canvas);
+      const mark = nearestLocalMinimum(estimated);
+      absorptionMarks.push({ lambda: mark.lambda, flux: mark.flux });
+      absorptionMarks.sort((a, b) => a.lambda - b.lambda);
+      renderObservation();
+    }
+
+    function renderAbsorptionMarks() {
+      const node = document.getElementById("absorptionLinesReadout");
+      if (!absorptionMarks.length) {
+        node.textContent = "Nenhuma linha marcada. Ative a ferramenta e clique nas quedas do espectro.";
+        return;
+      }
+      node.textContent = absorptionMarks.map((mark, i) => `${i + 1}: ${fmt(mark.lambda, 1)} nm`).join("; ");
     }
 
     function calibrationMetrics() {
@@ -1537,17 +1581,20 @@
         const padL = 58, padR = 26, padT = 28, padB = 58;
         const w = analysisChart.width, h = analysisChart.height;
         const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
-        [m.line.lambda, m.lineObserved].forEach((lambda, i) => {
-          const x = sx(lambda);
-          analysisCtx.strokeStyle = i === 0 ? "rgba(230,161,91,0.75)" : "rgba(215,180,106,0.95)";
-          analysisCtx.lineWidth = i === 0 ? 1.5 : 2.5;
+        if (Number.isFinite(m.lineObserved)) {
+          const x = sx(m.lineObserved);
+          analysisCtx.strokeStyle = "rgba(215,180,106,0.95)";
+          analysisCtx.lineWidth = 2.5;
           analysisCtx.beginPath();
           analysisCtx.moveTo(x, padT);
           analysisCtx.lineTo(x, h - padB);
           analysisCtx.stroke();
-        });
-        analysisCtx.fillStyle = "#d7b46a";
-        analysisCtx.fillText(`${m.line.label}: ${fmt(m.lineObserved, 1)} nm, vr=${fmt(m.rv, 0)} km/s`, sx(m.lineObserved) + 8, padT + 28);
+          analysisCtx.fillStyle = "#d7b46a";
+          analysisCtx.fillText(`linha marcada: ${fmt(m.lineObserved, 1)} nm; se for ${m.line.label}, vr=${fmt(m.rv, 0)} km/s`, x + 8, padT + 28);
+        } else {
+          analysisCtx.fillStyle = "#aaa69c";
+          analysisCtx.fillText("marque uma queda no espectro para medir λ observado", padL + 18, padT + 42);
+        }
       }
     }
 
@@ -1588,6 +1635,7 @@
         `Dark RMS=${fmt(cm.darkRms, 3)}; resposta χ=${fmt(cm.responseRms, 3)}; padrão calibrado RMS=${fmt(cm.calibratedRms, 3)}.`;
       document.getElementById("calibrationSummary").textContent =
         `Modelo atual: dark a=${fmt(Number(darkBaseSlider.value), 3)}, b=${Number(darkSlopeSlider.value).toFixed(6)}, corte azul=${fmt(Number(blueCenterSlider.value), 0)} nm, corte vermelho=${fmt(Number(redCenterSlider.value), 0)} nm.`;
+      renderAbsorptionMarks();
       drawSkyField();
     }
 
@@ -1657,7 +1705,7 @@
     function exportCsv() {
       if (observations.length === 0) recordMeasurement();
       if (observations.length === 0) return;
-      const header = ["alvo", "reducao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
+      const header = ["alvo", "reducao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "hipotese_linha", "lambda_obs_nm", "vr_km_s"];
       const lines = [header.join(",")];
       observations.forEach(row => {
         lines.push([row.target, row.reduction, row.observationSeconds, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
@@ -1696,6 +1744,16 @@
       if (tool === "select") status.textContent = "Clique em uma estrela brilhante.";
       if (tool === "star") status.textContent = "Arraste do centro da estrela até a borda da abertura.";
       if (tool === "sky") status.textContent = "Arraste uma abertura em região vazia para medir o fundo.";
+    }
+
+    function setMeasuringLines(enabled) {
+      measuringLines = enabled;
+      lineMeasureToggle.setAttribute("aria-selected", String(enabled));
+      spectrum.classList.toggle("measure-lines", enabled);
+      analysisChart.classList.toggle("measure-lines", enabled);
+      document.getElementById("fieldStatus").textContent = enabled
+        ? "Clique nas quedas do espectro para marcar comprimentos de onda."
+        : "Ferramenta de linhas desligada.";
     }
 
     function setCalibrationStep(step) {
@@ -1773,6 +1831,9 @@
       resetObservation();
     });
 
+    spectrum.addEventListener("pointerdown", event => markAbsorptionLine(event, spectrum));
+    analysisChart.addEventListener("pointerdown", event => markAbsorptionLine(event, analysisChart));
+
     document.querySelectorAll(".reduction-mode").forEach(button => {
       button.addEventListener("click", () => setReductionMode(button.dataset.reduction));
     });
@@ -1781,6 +1842,11 @@
         updateSpectrumFromAccumulator();
         renderObservation();
       });
+    });
+    lineMeasureToggle.addEventListener("click", () => setMeasuringLines(!measuringLines));
+    clearAbsorptionMarks.addEventListener("click", () => {
+      absorptionMarks.length = 0;
+      renderObservation();
     });
     lineSelect.addEventListener("input", renderObservation);
     noiseSlider.addEventListener("input", resetObservation);
