@@ -404,7 +404,7 @@
               </div>
               <div class="control">
                 <label for="blackbodyScaleSlider">Escala</label>
-                <input id="blackbodyScaleSlider" type="range" min="-3" max="0.7" step="0.01" value="0">
+                <input id="blackbodyScaleSlider" type="range" min="-3" max="0.7" step="0.002" value="0">
                 <div class="readout"><span id="blackbodyScaleReadout">--</span><span>amplitude</span></div>
               </div>
             </div>
@@ -602,7 +602,7 @@
     }
 
     function setBlackbodyScaleValue(scale) {
-      blackbodyScaleSlider.value = String(Math.log10(clamp(scale, 0.001, 5)).toFixed(2));
+      blackbodyScaleSlider.value = String(Math.log10(clamp(scale, 0.001, 5)).toFixed(3));
     }
 
     function blackbodyPoints() {
@@ -1098,7 +1098,7 @@
         return;
       }
       const model = fittingBlackbody ? blackbodyPoints() : [];
-      const values = points.map(p => p.flux).concat(model.map(p => p.flux));
+      const values = points.map(p => p.flux);
       const minY = Math.min(0, ...values);
       const maxY = Math.max(...values, 0.001) * 1.08;
       const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
