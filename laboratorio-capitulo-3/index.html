@@ -542,12 +542,12 @@
               <div class="slider-grid">
                 <div class="control">
                   <label for="darkBaseSlider">Dark base</label>
-                  <input id="darkBaseSlider" type="range" min="0.005" max="0.050" step="0.001" value="0.018">
+                  <input id="darkBaseSlider" type="range" min="0.005" max="0.050" step="0.001" value="0.025">
                   <div class="readout"><span id="darkBaseReadout">--</span><span>e-/s</span></div>
                 </div>
                 <div class="control">
                   <label for="darkSlopeSlider">Inclinação térmica</label>
-                  <input id="darkSlopeSlider" type="range" min="0.000005" max="0.000070" step="0.000001" value="0.000020">
+                  <input id="darkSlopeSlider" type="range" min="0.000005" max="0.000070" step="0.000001" value="0.000035">
                   <div class="readout"><span id="darkSlopeReadout">--</span><span>e-/s/nm</span></div>
                 </div>
               </div>
@@ -558,17 +558,17 @@
               <div class="slider-grid">
                 <div class="control">
                   <label for="blueCenterSlider">Corte azul</label>
-                  <input id="blueCenterSlider" type="range" min="330" max="440" step="1" value="360">
+                  <input id="blueCenterSlider" type="range" min="200" max="360" step="1" value="245">
                   <div class="readout"><span id="blueCenterReadout">--</span><span>nm</span></div>
                 </div>
                 <div class="control">
                   <label for="redCenterSlider">Corte vermelho</label>
-                  <input id="redCenterSlider" type="range" min="650" max="1050" step="1" value="920">
+                  <input id="redCenterSlider" type="range" min="1600" max="2300" step="5" value="2100">
                   <div class="readout"><span id="redCenterReadout">--</span><span>nm</span></div>
                 </div>
                 <div class="control">
                   <label for="rippleSlider">Ondulação do sensor</label>
-                  <input id="rippleSlider" type="range" min="0" max="0.140" step="0.005" value="0.030">
+                  <input id="rippleSlider" type="range" min="0" max="0.140" step="0.005" value="0.080">
                   <div class="readout"><span id="rippleReadout">--</span><span>amplitude</span></div>
                 </div>
               </div>
@@ -697,8 +697,8 @@
     const SIM_SECONDS_PER_REAL_SECOND = 16;
     const TRUE_DARK_BASE = 0.025;
     const TRUE_DARK_SLOPE = 0.000035;
-    const TRUE_BLUE_CENTER = 385;
-    const TRUE_RED_CENTER = 790;
+    const TRUE_BLUE_CENTER = 245;
+    const TRUE_RED_CENTER = 2100;
     const TRUE_RIPPLE = 0.08;
     const STANDARD_TEMP = 9600;
     const targets = [];
@@ -772,10 +772,10 @@
     }
 
     function response(lambda) {
-      const blueCut = 1 / (1 + Math.exp(-(lambda - TRUE_BLUE_CENTER) / 18));
-      const redCut = 1 / (1 + Math.exp((lambda - TRUE_RED_CENTER) / 24));
+      const blueCut = 1 / (1 + Math.exp(-(lambda - TRUE_BLUE_CENTER) / 28));
+      const redCut = 1 / (1 + Math.exp((lambda - TRUE_RED_CENTER) / 95));
       const ripple = 1 + TRUE_RIPPLE * Math.sin(lambda / 43) - 0.05 * Math.cos(lambda / 67);
-      return clamp(blueCut * redCut * ripple, 0.06, 1.15);
+      return clamp(blueCut * redCut * ripple, 0.12, 1.15);
     }
 
     function darkCurrent(lambda) {
@@ -794,10 +794,10 @@
       const blueCenter = Number(blueCenterSlider.value);
       const redCenter = Number(redCenterSlider.value);
       const rippleAmp = Number(rippleSlider.value);
-      const blueCut = 1 / (1 + Math.exp(-(lambda - blueCenter) / 18));
-      const redCut = 1 / (1 + Math.exp((lambda - redCenter) / 24));
+      const blueCut = 1 / (1 + Math.exp(-(lambda - blueCenter) / 28));
+      const redCut = 1 / (1 + Math.exp((lambda - redCenter) / 95));
       const ripple = 1 + rippleAmp * Math.sin(lambda / 43) - 0.05 * Math.cos(lambda / 67);
-      return clamp(blueCut * redCut * ripple, 0.03, 1.25);
+      return clamp(blueCut * redCut * ripple, 0.08, 1.25);
     }
 
     function standardFlux(lambda) {
@@ -825,7 +825,7 @@
         const measured = known * response(lambda) + trueDarkRate(lambda);
         const darkSubtracted = Math.max(0, measured - modelDarkRate(lambda));
         const model = known * modelResponse(lambda);
-        points.push({ lambda, measured, darkSubtracted, known, model, calibrated: darkSubtracted / Math.max(modelResponse(lambda), 0.03) });
+        points.push({ lambda, measured, darkSubtracted, known, model, calibrated: darkSubtracted / Math.max(modelResponse(lambda), 0.08) });
       }
       return points;
     }
@@ -1119,7 +1119,7 @@
         const measuredRate = accumulatedRaw[i] / t;
         let flux = measuredRate;
         if (reductionMode === "dark") flux = Math.max(0, measuredRate - modelDarkRate(p.lambda));
-        if (reductionMode === "calibrated") flux = Math.max(0, (measuredRate - modelDarkRate(p.lambda)) / Math.max(modelResponse(p.lambda), 0.03));
+        if (reductionMode === "calibrated") flux = Math.max(0, (measuredRate - modelDarkRate(p.lambda)) / Math.max(modelResponse(p.lambda), 0.08));
         return {
           lambda: p.lambda,
           flux,
