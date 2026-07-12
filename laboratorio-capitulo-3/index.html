@@ -949,6 +949,12 @@
       ctx.fillRect(0, 0, w, h);
       drawAxes(ctx, w, h, { x: "λ (nm)", y: mode === "response" ? "resposta" : "fluxo" });
       const padL = 58, padR = 26, padT = 28, padB = 44;
+      if (photonTotal <= 0 || observationSeconds <= 0) {
+        ctx.fillStyle = "#aaa69c";
+        ctx.font = "15px system-ui";
+        ctx.fillText("sem fótons acumulados: clique em Iniciar aquisição", padL + 18, padT + 46);
+        return;
+      }
       const maxY = Math.max(...points.map(p => p.flux), 0.001) * 1.08;
       const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
       const sy = value => padT + (1 - value / maxY) * (h - padT - padB);
@@ -993,6 +999,14 @@
       detectorCtx.clearRect(0, 0, w, h);
       detectorCtx.fillStyle = "#050505";
       detectorCtx.fillRect(0, 0, w, h);
+      if (photonTotal <= 0 || observationSeconds <= 0) {
+        detectorCtx.strokeStyle = "rgba(215,180,106,0.28)";
+        detectorCtx.strokeRect(0.5, h * 0.28 + 0.5, w - 1, h * 0.42);
+        detectorCtx.fillStyle = "#aaa69c";
+        detectorCtx.font = "12px system-ui";
+        detectorCtx.fillText("detector zerado: nenhum fóton registrado", 12, 24);
+        return;
+      }
       const maxY = Math.max(...points.map(p => p.flux), 0.001);
       points.forEach((p, i) => {
         const x = (i / points.length) * w;
