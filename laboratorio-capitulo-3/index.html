@@ -404,7 +404,7 @@
               </div>
               <div class="control">
                 <label for="blackbodyScaleSlider">Escala</label>
-                <input id="blackbodyScaleSlider" type="range" min="0" max="5" step="0.01" value="1">
+                <input id="blackbodyScaleSlider" type="range" min="-3" max="0.7" step="0.01" value="0">
                 <div class="readout"><span id="blackbodyScaleReadout">--</span><span>amplitude</span></div>
               </div>
             </div>
@@ -597,9 +597,17 @@
       return scale * planckShape(lambda, temperature) / norm;
     }
 
+    function blackbodyScaleValue() {
+      return 10 ** Number(blackbodyScaleSlider.value);
+    }
+
+    function setBlackbodyScaleValue(scale) {
+      blackbodyScaleSlider.value = String(Math.log10(clamp(scale, 0.001, 5)).toFixed(2));
+    }
+
     function blackbodyPoints() {
       const temperature = Number(blackbodyTempSlider.value);
-      const scale = Number(blackbodyScaleSlider.value);
+      const scale = blackbodyScaleValue();
       const points = [];
       for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 4) {
         points.push({ lambda, flux: blackbodyFlux(lambda, temperature, scale) });
@@ -613,7 +621,7 @@
       if (!visible.length) return 1;
       const peak = visible.reduce((best, p) => p.flux > best.flux ? p : best, visible[0]);
       const shape = blackbodyFlux(peak.lambda, temperature, 1);
-      return clamp(peak.flux / Math.max(shape, 1e-6), 0.02, 5);
+      return clamp(peak.flux / Math.max(shape, 1e-6), 0.001, 5);
     }
 
     function gaussian(x, mu, sigma) {
@@ -1299,7 +1307,7 @@
       blackbodyToggle.setAttribute("aria-selected", String(fittingBlackbody));
       blackbodyControls.hidden = !fittingBlackbody;
       document.getElementById("blackbodyTempReadout").textContent = fmt(Number(blackbodyTempSlider.value), 0);
-      document.getElementById("blackbodyScaleReadout").textContent = fmt(Number(blackbodyScaleSlider.value), 2);
+      document.getElementById("blackbodyScaleReadout").textContent = fmt(blackbodyScaleValue(), 3);
       renderAbsorptionMarks();
       drawSkyField();
     }
@@ -1432,7 +1440,7 @@
       fittingBlackbody = enabled;
       if (enabled) {
         const initialTemp = Number(blackbodyTempSlider.value);
-        blackbodyScaleSlider.value = String(estimateBlackbodyScale(initialTemp).toFixed(2));
+        setBlackbodyScaleValue(estimateBlackbodyScale(initialTemp));
       }
       renderObservation();
     }
