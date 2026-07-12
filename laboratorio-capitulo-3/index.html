@@ -157,6 +157,66 @@
     #skyField { cursor: crosshair; }
     #spectrum.measure-lines, #analysisChart.measure-lines { cursor: crosshair; }
 
+    .spectrum-acquisition {
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 10px;
+      align-items: stretch;
+      margin-top: 10px;
+    }
+
+    .satellite-toggle {
+      border: 1px solid var(--line);
+      background: #080808;
+      color: var(--muted);
+      padding: 8px;
+      cursor: pointer;
+      display: grid;
+      grid-template-rows: auto auto;
+      align-content: start;
+      gap: 10px;
+      align-items: start;
+      justify-items: center;
+      min-height: 210px;
+    }
+
+    .satellite-toggle:hover, .satellite-toggle:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .satellite-toggle img {
+      width: min(116px, 100%);
+      max-height: 150px;
+      object-fit: contain;
+      filter: grayscale(1) contrast(1.08) brightness(0.62);
+      opacity: 0.72;
+      transition: filter 160ms ease, opacity 160ms ease, transform 160ms ease;
+    }
+
+    .satellite-toggle.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: #11100c;
+      box-shadow: inset 0 0 0 1px rgba(215,180,106,0.18), 0 0 20px rgba(215,180,106,0.12);
+    }
+
+    .satellite-toggle.active img {
+      filter: none;
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+
+    .satellite-status {
+      width: 100%;
+      border-top: 1px solid rgba(52, 52, 52, 0.9);
+      padding-top: 8px;
+      font-size: 12px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
     .metrics {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -305,6 +365,9 @@
       .button, .chip { width: 100%; text-align: left; }
       .panel { width: 100%; max-width: 100%; margin-bottom: 12px; }
       #skyField, #spectrum, #detector, #analysisChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
+      .spectrum-acquisition { grid-template-columns: 1fr; }
+      .satellite-toggle { min-height: 150px; }
+      .satellite-toggle img { max-height: 94px; }
       h1 { font-size: 25px; line-height: 1.08; }
       p { font-size: 14px; }
       .metrics { grid-template-columns: 1fr; }
@@ -324,7 +387,6 @@
     <div class="toolbar">
       <a class="button" href="../">Página principal</a>
       <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
-      <button class="button" id="observeToggle" type="button">Iniciar aquisição</button>
       <button class="button" id="resetDetector" type="button">Zerar detector</button>
       <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
       <button class="button" id="exportCsv" type="button">Exportar CSV</button>
@@ -350,7 +412,13 @@
             <span class="chip" id="fieldStatus">Clique em uma estrela brilhante.</span>
           </div>
           <canvas id="detector" width="1500" height="260" aria-label="Imagem espectral no detector"></canvas>
-          <canvas id="spectrum" width="1500" height="560" aria-label="Espectro observado"></canvas>
+          <div class="spectrum-acquisition">
+            <button class="satellite-toggle" id="satelliteToggle" type="button" aria-pressed="false" aria-label="Iniciar aquisição de fótons pelo satélite">
+              <img src="../assets/satelite.png" alt="">
+              <span class="satellite-status" id="satelliteStatus">pausado</span>
+            </button>
+            <canvas id="spectrum" width="1500" height="560" aria-label="Espectro observado"></canvas>
+          </div>
           <div class="metrics">
             <div class="metric">
               <small>Objeto observado</small>
@@ -556,6 +624,8 @@
     const detectorCtx = detector.getContext("2d");
     const spectrum = document.getElementById("spectrum");
     const spectrumCtx = spectrum.getContext("2d");
+    const satelliteToggle = document.getElementById("satelliteToggle");
+    const satelliteStatus = document.getElementById("satelliteStatus");
     const analysisChart = document.getElementById("analysisChart");
     const analysisCtx = analysisChart.getContext("2d");
     const tableBody = document.getElementById("tableBody");
@@ -1233,7 +1303,7 @@
       if (photonTotal <= 0 || observationSeconds <= 0) {
         ctx.fillStyle = "#aaa69c";
         ctx.font = "15px system-ui";
-        ctx.fillText("sem fótons acumulados: clique em Iniciar aquisição", padL + 18, padT + 46);
+        ctx.fillText("sem fótons acumulados: clique no satélite para iniciar a aquisição", padL + 18, padT + 46);
         return;
       }
       const plotted = shownPoints(points);
@@ -1460,8 +1530,11 @@
       document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
       document.getElementById("acquisitionReadout").textContent = isObserving
         ? "Detector recebendo fótons continuamente; o espectro extraído muda enquanto a contagem cresce."
-        : "Aquisição pausada; escolha o alvo, desenhe a abertura da estrela e uma abertura de fundo.";
-      document.getElementById("observeToggle").textContent = isObserving ? "Pausar aquisição" : "Iniciar aquisição";
+        : "Aquisição pausada; escolha o alvo, desenhe a abertura da estrela e uma abertura de fundo. Clique no satélite ao lado do espectro para iniciar.";
+      satelliteToggle.classList.toggle("active", isObserving);
+      satelliteToggle.setAttribute("aria-pressed", String(isObserving));
+      satelliteToggle.setAttribute("aria-label", isObserving ? "Pausar aquisição de fótons pelo satélite" : "Iniciar aquisição de fótons pelo satélite");
+      satelliteStatus.textContent = isObserving ? "coletando" : "pausado";
       blackbodyToggle.setAttribute("aria-selected", String(fittingBlackbody));
       blackbodyControls.hidden = !fittingBlackbody;
       document.getElementById("blackbodyTempReadout").textContent = fmt(Number(blackbodyTempSlider.value), 0);
@@ -1678,7 +1751,7 @@
     });
     lambdaMinSlider.addEventListener("input", () => setDisplayRange("min"));
     lambdaMaxSlider.addEventListener("input", () => setDisplayRange("max"));
-    document.getElementById("observeToggle").addEventListener("click", () => {
+    satelliteToggle.addEventListener("click", () => {
       isObserving = !isObserving;
       if (isObserving) fittingBlackbody = false;
       lastFrameTime = null;
