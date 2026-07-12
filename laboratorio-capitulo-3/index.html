@@ -314,7 +314,8 @@
     <div class="toolbar">
       <a class="button" href="../">Página principal</a>
       <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
-      <button class="button" id="takeExposure" type="button">Obter exposição</button>
+      <button class="button" id="observeToggle" type="button">Pausar aquisição</button>
+      <button class="button" id="resetDetector" type="button">Zerar detector</button>
       <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
       <button class="button" id="exportCsv" type="button">Exportar CSV</button>
       <button class="button" id="clearLog" type="button">Limpar registros</button>
@@ -370,9 +371,9 @@
           </div>
 
           <div class="control">
-            <label for="exposureSlider">Tempo de exposição</label>
-            <input id="exposureSlider" type="range" min="10" max="600" step="10">
-            <div class="readout"><span id="exposureReadout">-- s</span><span>contagens</span></div>
+            <label>Aquisição contínua de fótons</label>
+            <div class="formula" id="acquisitionReadout">Detector acumulando fótons.</div>
+            <div class="readout"><span id="timeReadout">-- s acumulados</span><span id="photonReadout">-- fótons</span></div>
           </div>
 
           <div class="control">
@@ -451,7 +452,7 @@
             </div>
             <div class="task">
               <strong>Experimento 7: luminosidade relativa</strong>
-              Integre o espectro calibrado para obter um fluxo bolométrico relativo e compare dois alvos observados com a mesma exposição.
+              Integre o espectro calibrado para obter um fluxo bolométrico relativo e compare dois alvos registrados com tempo acumulado parecido.
             </div>
           </div>
         </div>
@@ -468,7 +469,7 @@
                 <tr>
                   <th>alvo</th>
                   <th>redução</th>
-                  <th>exp s</th>
+                  <th>t acum s</th>
                   <th>r estrela px</th>
                   <th>r fundo px</th>
                   <th>coleta %</th>
@@ -497,6 +498,7 @@
     const HC_EV_NM = 1239.841984;
     const LAMBDA_MIN = 360;
     const LAMBDA_MAX = 820;
+    const SIM_SECONDS_PER_REAL_SECOND = 16;
     const targets = [];
     const fieldStars = [];
     const observations = [];
@@ -507,6 +509,12 @@
     let starAperture = null;
     let skyAperture = null;
     let dragStart = null;
+    let isObserving = true;
+    let lastFrameTime = null;
+    let observationSeconds = 0;
+    let photonTotal = 0;
+    let expectedRates = [];
+    let accumulatedRaw = [];
 
     const skyField = document.getElementById("skyField");
     const skyCtx = skyField.getContext("2d");
@@ -517,7 +525,6 @@
     const analysisChart = document.getElementById("analysisChart");
     const analysisCtx = analysisChart.getContext("2d");
     const tableBody = document.getElementById("tableBody");
-    const exposureSlider = document.getElementById("exposureSlider");
     const calibrationSelect = document.getElementById("calibrationSelect");
     const noiseSlider = document.getElementById("noiseSlider");
     const lineSelect = document.getElementById("lineSelect");
@@ -641,10 +648,13 @@
       return { id: "halpha", label: "Hα", lambda: 656.28 };
     }
 
-    function makeSpectrum(target) {
-      const exposure = Number(exposureSlider.value);
-      const noise = Number(noiseSlider.value);
-      const reduction = calibrationSelect.value;
+    function gaussianNoise() {
+      const u1 = Math.max(rand(), 1e-9);
+      const u2 = Math.max(rand(), 1e-9);
+      return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    }
+
+    function makeExpectedRates(target) {
       const aperture = apertureQuality(target);
       const points = [];
       let maxTrue = 0;
@@ -664,15 +674,47 @@
         });
         const trueFlux = continuum * aperture.capture;
         const skyColor = 0.018 + aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88));
-        const rawSignal = (trueFlux + skyColor) * response(lambda) * (exposure / 160) + darkCurrent(lambda);
-        const apertureNoise = noise + (1 - aperture.capture) * 0.08 + aperture.contamination * 0.18;
-        const noisy = Math.max(0, rawSignal + (rand() - 0.5) * apertureNoise * Math.sqrt(Math.max(rawSignal, 0.03)));
-        let flux = noisy;
-        if (reduction === "dark") flux = Math.max(0, noisy - darkCurrent(lambda));
-        if (reduction === "response") flux = Math.max(0, (noisy - darkCurrent(lambda)) / response(lambda));
-        points.push({ lambda, flux, trueFlux, raw: noisy, response: response(lambda) });
+        const resp = response(lambda);
+        const darkRate = darkCurrent(lambda) * 0.018;
+        const sourceRate = Math.max(0.0001, (trueFlux + skyColor) * resp * 0.09);
+        const apertureNoise = Number(noiseSlider.value) + (1 - aperture.capture) * 0.08 + aperture.contamination * 0.18;
+        points.push({ lambda, trueFlux, response: resp, darkRate, rawRate: sourceRate + darkRate, apertureNoise });
       }
       return points;
+    }
+
+    function resetObservation() {
+      expectedRates = makeExpectedRates(currentTarget());
+      accumulatedRaw = expectedRates.map(() => 0);
+      observationSeconds = 0;
+      photonTotal = 0;
+      currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0, response: p.response }));
+      renderObservation();
+    }
+
+    function addPhotons(dt) {
+      if (!expectedRates.length) resetObservation();
+      expectedRates.forEach((p, i) => {
+        const mean = p.rawRate * dt;
+        const sigma = Math.sqrt(Math.max(mean, 0.0001)) * (0.45 + p.apertureNoise * 2.4);
+        const incoming = Math.max(0, mean + gaussianNoise() * sigma);
+        accumulatedRaw[i] += incoming;
+        photonTotal += incoming;
+      });
+      observationSeconds += dt;
+      updateSpectrumFromAccumulator();
+    }
+
+    function updateSpectrumFromAccumulator() {
+      const reduction = calibrationSelect.value;
+      const t = Math.max(observationSeconds, 0.001);
+      currentSpectrum = expectedRates.map((p, i) => {
+        const measuredRate = accumulatedRaw[i] / t;
+        let flux = measuredRate;
+        if (reduction === "dark") flux = Math.max(0, measuredRate - p.darkRate);
+        if (reduction === "response") flux = Math.max(0, (measuredRate - p.darkRate) / p.response);
+        return { lambda: p.lambda, flux, trueFlux: p.trueFlux, raw: measuredRate, response: p.response };
+      });
     }
 
     function canvasPoint(event, canvas) {
@@ -947,12 +989,17 @@
 
     function updateReadouts() {
       const target = currentTarget();
-      const m = metrics();
+      const m = observationSeconds > 0.2 ? metrics() : null;
       document.getElementById("targetMetric").textContent = target.name;
       document.getElementById("peakMetric").textContent = m ? `${fmt(m.peak, 0)} nm` : "--";
       document.getElementById("tempMetric").textContent = m ? `${fmt(m.temp, 0)} K` : "--";
       document.getElementById("rvMetric").textContent = m ? `${fmt(m.rv, 0)} km/s` : "--";
-      document.getElementById("exposureReadout").textContent = `${exposureSlider.value} s`;
+      document.getElementById("timeReadout").textContent = `${fmt(observationSeconds, 1)} s acumulados`;
+      document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
+      document.getElementById("acquisitionReadout").textContent = isObserving
+        ? "Detector recebendo fótons continuamente; o espectro muda enquanto a contagem cresce."
+        : "Aquisição pausada; os dados acumulados permanecem disponíveis para registro.";
+      document.getElementById("observeToggle").textContent = isObserving ? "Pausar aquisição" : "Iniciar aquisição";
       document.getElementById("noiseReadout").textContent = `${fmt(Number(noiseSlider.value), 2)}`;
       drawSkyField();
     }
@@ -964,7 +1011,7 @@
         tr.innerHTML = `
           <td>${row.target}</td>
           <td>${row.reduction}</td>
-          <td>${row.exposure}</td>
+          <td>${fmt(row.observationSeconds, 1)}</td>
           <td>${fmt(row.starRadius, 1)}</td>
           <td>${fmt(row.skyRadius, 1)}</td>
           <td>${fmt(100 * row.capture, 0)}</td>
@@ -982,8 +1029,7 @@
       });
     }
 
-    function takeExposure() {
-      currentSpectrum = makeSpectrum(currentTarget());
+    function renderObservation() {
       drawSkyField();
       drawDetector(currentSpectrum);
       drawSpectrumCanvas(spectrumCtx, spectrum, currentSpectrum);
@@ -992,13 +1038,14 @@
     }
 
     function recordMeasurement() {
-      if (!currentSpectrum.length) takeExposure();
+      if (!currentSpectrum.length) resetObservation();
+      if (observationSeconds < 0.5) addPhotons(0.5);
       const m = metrics();
       const q = apertureQuality(currentTarget());
       observations.push({
         target: currentTarget().name,
         reduction: calibrationSelect.options[calibrationSelect.selectedIndex].text,
-        exposure: Number(exposureSlider.value),
+        observationSeconds,
         starRadius: starAperture ? starAperture.r : NaN,
         skyRadius: skyAperture ? skyAperture.r : NaN,
         capture: q.capture,
@@ -1018,10 +1065,10 @@
 
     function exportCsv() {
       if (observations.length === 0) recordMeasurement();
-      const header = ["alvo", "reducao", "exposicao_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
+      const header = ["alvo", "reducao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
       const lines = [header.join(",")];
       observations.forEach(row => {
-        lines.push([row.target, row.reduction, row.exposure, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
+        lines.push([row.target, row.reduction, row.observationSeconds, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
           .map(value => typeof value === "number" ? value.toFixed(8) : `"${String(value).replaceAll('"', '""')}"`).join(","));
       });
       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -1049,7 +1096,7 @@
           y: clamp(best.target.y + 125, 70, skyField.height - 70),
           r: 58,
         };
-        takeExposure();
+        resetObservation();
       }
     }
 
@@ -1112,11 +1159,21 @@
       if (!dragStart) return;
       if (skyField.hasPointerCapture(event.pointerId)) skyField.releasePointerCapture(event.pointerId);
       dragStart = null;
-      takeExposure();
+      resetObservation();
     });
 
-    [exposureSlider, calibrationSelect, noiseSlider, lineSelect].forEach(input => input.addEventListener("input", takeExposure));
-    document.getElementById("takeExposure").addEventListener("click", takeExposure);
+    calibrationSelect.addEventListener("input", () => {
+      updateSpectrumFromAccumulator();
+      renderObservation();
+    });
+    lineSelect.addEventListener("input", renderObservation);
+    noiseSlider.addEventListener("input", resetObservation);
+    document.getElementById("observeToggle").addEventListener("click", () => {
+      isObserving = !isObserving;
+      lastFrameTime = null;
+      updateReadouts();
+    });
+    document.getElementById("resetDetector").addEventListener("click", resetObservation);
     document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
     document.getElementById("clearLog").addEventListener("click", () => {
@@ -1124,11 +1181,22 @@
       renderTable();
     });
 
+    function observeLoop(timestamp) {
+      if (lastFrameTime === null) lastFrameTime = timestamp;
+      const dtReal = Math.min((timestamp - lastFrameTime) / 1000, 0.25);
+      lastFrameTime = timestamp;
+      if (isObserving) {
+        addPhotons(dtReal * SIM_SECONDS_PER_REAL_SECOND);
+        renderObservation();
+      }
+      window.requestAnimationFrame(observeLoop);
+    }
+
     makeTargets();
-    exposureSlider.value = "180";
     noiseSlider.value = "0.06";
     calibrationSelect.value = "response";
-    takeExposure();
+    resetObservation();
+    window.requestAnimationFrame(observeLoop);
   </script>
 </body>
 </html>
