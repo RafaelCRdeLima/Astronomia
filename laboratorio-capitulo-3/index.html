@@ -319,7 +319,7 @@
       <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
       <button class="button" id="exportCsv" type="button">Exportar CSV</button>
       <button class="button" id="clearLog" type="button">Limpar registros</button>
-      <span class="chip">Observáveis: contagens por comprimento de onda, 120–1400 nm</span>
+      <span class="chip">Observáveis: contagens por comprimento de onda, 200–2000 nm</span>
     </div>
 
     <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
@@ -496,8 +496,8 @@
     const C = 299792.458;
     const WIEN = 2.897771955e6;
     const HC_EV_NM = 1239.841984;
-    const LAMBDA_MIN = 120;
-    const LAMBDA_MAX = 1400;
+    const LAMBDA_MIN = 200;
+    const LAMBDA_MAX = 2000;
     const SIM_SECONDS_PER_REAL_SECOND = 16;
     const targets = [];
     const fieldStars = [];
@@ -960,7 +960,7 @@
       ctx.fillText(labels.x, w - 155, h - 12);
       if (labels.x.includes("λ")) {
         const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
-        [150, 250, 400, 550, 700, 900, 1200, 1400].forEach(lambda => {
+        [200, 400, 550, 700, 1000, 1500, 2000].forEach(lambda => {
           const x = sx(lambda);
           ctx.strokeStyle = "rgba(170,166,156,0.35)";
           ctx.beginPath();
@@ -971,11 +971,11 @@
           ctx.fillText(String(lambda), x - 12, h - padB + 20);
         });
         ctx.fillStyle = "#8a82ff";
-        ctx.fillText("UV", sx(230) - 8, h - padB + 36);
+        ctx.fillText("UV", sx(300) - 8, h - padB + 36);
         ctx.fillStyle = "#72a7ff";
         ctx.fillText("visível", sx(515) - 18, h - padB + 36);
         ctx.fillStyle = "#e2795b";
-        ctx.fillText("IR", sx(1000) - 8, h - padB + 36);
+        ctx.fillText("IR", sx(1250) - 8, h - padB + 36);
       }
     }
 
@@ -1006,7 +1006,7 @@
       ctx.globalAlpha = 1;
       ctx.fillStyle = "#aaa69c";
       ctx.font = "11px system-ui";
-      ctx.fillText("UV", sx(135), padT + 14);
+      ctx.fillText("UV", sx(220), padT + 14);
       ctx.fillText("visível", sx(500), padT + 14);
       ctx.fillText("IR próximo", sx(850), padT + 14);
       ctx.globalAlpha = 1;
