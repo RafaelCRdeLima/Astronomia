@@ -459,6 +459,207 @@ v_{\rm esc}=\sqrt{\frac{2GM}{R}}.
 Para a Terra, $v_{\rm esc}\simeq11{,}2\,\mathrm{km\,s^{-1}}$. Para uma anã branca com massa solar e raio terrestre, a mesma fórmula daria milhares de quilômetros por segundo. A equação é newtoniana, mas já aponta para o regime em que relatividade e compactação se tornam inevitáveis.
 \end{lessonblock}
 
+\begin{lessonblock}{Do céu observado à órbita}
+O laboratório deste capítulo não mostra a órbita vista de cima. Ele mostra o que um observador mede no céu: direções. Por isso é essencial separar três tipos de grandezas:
+\begin{itemize}
+\item \textbf{coordenadas eclípticas} $(\lambda,\beta)$: longitude e latitude medidas em relação ao plano da órbita da Terra;
+\item \textbf{coordenadas equatoriais} $(\alpha,\delta)$: ascensão reta e declinação, úteis para localizar objetos em catálogos e telescópios;
+\item \textbf{coordenadas horizontais} $(A,h)$: azimute e altura, que dependem do local, da hora sideral e da latitude do observador.
+\end{itemize}
+O mesmo planeta tem praticamente a mesma longitude eclíptica geocêntrica em uma data dada, mas sua altura no horizonte muda quando mudamos a hora ou a latitude. Assim, $\lambda(t)$ é boa para estudar a dinâmica orbital, enquanto $h(t)$ e $A(t)$ respondem à pergunta observacional: \textit{dá para ver esse objeto agora?}
+
+No céu local, a altura $h$ de um objeto com ascensão reta $\alpha$ e declinação $\delta$ é dada por
+\[
+\sin h=\sin\phi\,\sin\delta+\cos\phi\,\cos\delta\,\cos H,
+\]
+onde $\phi$ é a latitude do observador e $H$ é o ângulo horário:
+\[
+H=\theta_{\rm LST}-\alpha.
+\]
+Aqui $\theta_{\rm LST}$ é a hora sideral local. Um objeto está acima do horizonte quando $h>0^\circ$. Essa equação explica por que um planeta pode estar em posição orbital interessante e, ainda assim, não ser observável para um dado observador.
+\end{lessonblock}
+
+\textbf{Exemplo: janela de observação.} Suponha um planeta com $\delta=10^\circ$, observado de Joinville, aproximadamente $\phi=-26^\circ$. Se no instante considerado $H=0^\circ$, então
+\[
+\sin h=\sin(-26^\circ)\sin(10^\circ)+\cos(-26^\circ)\cos(10^\circ)\cos(0^\circ).
+\]
+Numericamente, $\sin h\simeq -0{,}076+0{,}885=0{,}809$, logo $h\simeq54^\circ$. O planeta está alto no céu. Se seis horas siderais depois $H=90^\circ$, o termo com cosseno desaparece:
+\[
+\sin h\simeq \sin(-26^\circ)\sin(10^\circ)\simeq -0{,}076,
+\]
+então $h\simeq -4{,}4^\circ$: o mesmo planeta estaria abaixo do horizonte. O laboratório permite verificar esse efeito variando a hora sideral.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Elongação, oposição e conjunção}
+A \textbf{elongação solar} $E$ é a separação angular aparente entre o planeta e o Sol no céu. Em termos de longitudes eclípticas geocêntricas, uma aproximação útil quando as latitudes eclípticas são pequenas é
+\[
+E\simeq |\lambda_p-\lambda_\odot|,
+\]
+tomando o menor ângulo entre $0^\circ$ e $180^\circ$. Na prática, use
+\[
+E=\left|\operatorname{wrap}_{180}(\lambda_p-\lambda_\odot)\right|,
+\]
+onde $\operatorname{wrap}_{180}$ recoloca a diferença angular no intervalo $[-180^\circ,180^\circ]$.
+
+Para planetas externos, uma \textbf{oposição} ocorre quando $E\simeq180^\circ$: Sol e planeta aparecem em lados opostos do céu. A oposição é especialmente importante porque o planeta tende a estar mais brilhante e observável por boa parte da noite. Uma \textbf{conjunção} ocorre quando $E\simeq0^\circ$: planeta e Sol aparecem quase na mesma direção, o que dificulta ou impossibilita a observação visual.
+
+Para planetas internos, como Mercúrio e Vênus, a elongação nunca chega a $180^\circ$. Eles ficam sempre angularmente próximos do Sol. A maior elongação é uma pista geométrica do tamanho de sua órbita.
+\end{lessonblock}
+
+\textbf{Exemplo: identificando oposição em uma tabela.} Imagine que, para Marte, o laboratório exportou:
+\[
+\begin{array}{c|c}
+\text{dia} & E\\
+\hline
+720 & 171^\circ\\
+735 & 178^\circ\\
+750 & 176^\circ
+\end{array}
+\]
+A melhor estimativa discreta da oposição é dia $735$. Se a oposição seguinte ocorre no dia $1515$, então o período sinódico estimado é
+\[
+S=1515-735=780\ \text{dias}=2{,}14\ \text{anos}.
+\]
+Esse número não é o período orbital de Marte em torno do Sol; é o tempo entre configurações Terra--Sol--Marte parecidas vistas da Terra.
+
+\begin{lessonblock}{Período sinódico e período sideral}
+O período sideral $P$ é o período orbital real em relação às estrelas distantes. O período sinódico $S$ é o tempo para que a configuração aparente observada da Terra se repita, por exemplo de uma oposição à próxima. Para movimentos médios circulares, a velocidade angular média é
+\[
+n=\frac{2\pi}{P}.
+\]
+Para um planeta externo, a Terra, mais interna, ``alcança'' o planeta. A taxa relativa é
+\[
+n_\oplus-n_p=\frac{2\pi}{S}.
+\]
+Como $P_\oplus=1$ ano,
+\[
+\frac{1}{S}=1-\frac{1}{P_p}.
+\]
+Reorganizando,
+\[
+\frac{1}{P_p}=1-\frac{1}{S}
+\quad\Rightarrow\quad
+P_p=\frac{1}{1-1/S},
+\]
+com $P_p$ e $S$ em anos. Para planetas internos, a ordem se inverte:
+\[
+\frac{1}{S}=\frac{1}{P_p}-1
+\quad\Rightarrow\quad
+\frac{1}{P_p}=1+\frac{1}{S}.
+\]
+No laboratório, use a forma de planeta externo para Marte, Júpiter e Saturno.
+\end{lessonblock}
+
+\textbf{Exemplo: período de Marte a partir de oposições.} Usando $S=2{,}14$ anos,
+\[
+\frac{1}{P}=1-\frac{1}{2{,}14}=1-0{,}467=0{,}533.
+\]
+Portanto,
+\[
+P\simeq1{,}88\ \text{anos}.
+\]
+Esse valor é próximo do período sideral real de Marte. O ponto didático é importante: medindo apenas datas de oposição, que são observáveis angulares, chegamos a uma propriedade orbital heliocêntrica.
+
+\begin{lessonblock}{Lei de Kepler em unidades astronômicas}
+Para planetas orbitando o Sol, é muito conveniente usar anos, unidades astronômicas e massas solares. Nestas unidades,
+\[
+P^2=a^3
+\]
+para objetos de massa desprezível comparada ao Sol. Assim,
+\[
+a=P^{2/3}.
+\]
+Essa forma é a que aparece no roteiro do laboratório. Ela é uma versão adimensional da terceira lei:
+\[
+P^2=\frac{4\pi^2a^3}{GM_\odot}.
+\]
+Quando usamos $P=1\,\mathrm{ano}$ e $a=1\,\mathrm{UA}$ para a Terra, o fator $4\pi^2/(GM_\odot)$ fica automaticamente embutido na escolha de unidades.
+\end{lessonblock}
+
+\textbf{Exemplo: semieixo maior de Marte.} Com $P=1{,}88$ anos,
+\[
+a=P^{2/3}=1{,}88^{2/3}.
+\]
+Uma forma prática é calcular primeiro $P^2$:
+\[
+P^2\simeq3{,}53.
+\]
+Como $a^3=P^2$, queremos a raiz cúbica de $3{,}53$:
+\[
+a\simeq1{,}52\ \mathrm{UA}.
+\]
+O laboratório deve levar a um valor próximo disso se as oposições forem bem escolhidas.
+
+\begin{lessonblock}{Movimento direto e retrógrado}
+Quando acompanhamos a longitude eclíptica $\lambda(t)$ de um planeta externo, normalmente ela aumenta com o tempo em relação ao fundo de estrelas. Esse é o movimento direto. Perto da oposição, porém, a Terra passa o planeta por dentro da órbita. A direção aparente pode inverter por algumas semanas ou meses: é o movimento retrógrado.
+
+Em uma tabela discreta, calcule diferenças sucessivas:
+\[
+\Delta\lambda_i=\lambda_{i+1}-\lambda_i.
+\]
+Como longitude é angular, trate a passagem por $0^\circ$ com cuidado usando novamente uma diferença embrulhada:
+\[
+\Delta\lambda_i=\operatorname{wrap}_{180}(\lambda_{i+1}-\lambda_i).
+\]
+Se $\Delta\lambda_i>0$, o movimento naquele intervalo é direto; se $\Delta\lambda_i<0$, é retrógrado. O gráfico $\lambda(t)$ deve mostrar uma mudança de inclinação nos intervalos retrógrados.
+\end{lessonblock}
+
+\textbf{Exemplo: detectando retrogradação.} Considere observações de Marte:
+\[
+\begin{array}{c|c|c}
+\text{dia} & \lambda & \Delta\lambda\\
+\hline
+0 & 142^\circ & \\
+30 & 150^\circ & +8^\circ\\
+60 & 154^\circ & +4^\circ\\
+90 & 151^\circ & -3^\circ\\
+120 & 146^\circ & -5^\circ\\
+150 & 148^\circ & +2^\circ
+\end{array}
+\]
+O intervalo entre os dias 60 e 120 é retrógrado. Em uma entrega, não basta dizer ``Marte voltou'': indique os intervalos e os valores de $\Delta\lambda$ que sustentam a conclusão.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Maior elongação de planetas internos}
+Para um planeta interno em órbita circular, a maior elongação ocorre quando a linha de visada Terra--planeta é tangente à órbita do planeta. No triângulo Sol--Terra--planeta, o ângulo no planeta é $90^\circ$. Se a distância Terra--Sol é $1\,\mathrm{UA}$ e o raio orbital do planeta é $a$, então
+\[
+\sin E_{\max}\simeq \frac{a}{1\,\mathrm{UA}}.
+\]
+Logo,
+\[
+a\simeq \sin E_{\max}\ \mathrm{UA}.
+\]
+Essa dedução é aproximada: órbitas reais são elípticas e inclinadas, mas a relação captura a geometria básica.
+\end{lessonblock}
+
+\textbf{Exemplo: órbita de Vênus por maior elongação.} Se o laboratório mostra $E_{\max}\simeq46^\circ$, então
+\[
+a\simeq\sin 46^\circ\simeq0{,}72\ \mathrm{UA}.
+\]
+Para Mercúrio, uma maior elongação típica de $23^\circ$ dá
+\[
+a\simeq\sin 23^\circ\simeq0{,}39\ \mathrm{UA}.
+\]
+Assim, mesmo sem ver a órbita de cima, a geometria angular já indica que Vênus orbita mais longe do Sol do que Mercúrio.
+
+\begin{lessonblock}{Como apresentar contas com dados do laboratório}
+Para cada grandeza estimada, deixe claro:
+\begin{enumerate}
+\item quais colunas do CSV foram usadas;
+\item quais observações foram selecionadas;
+\item qual equação foi aplicada;
+\item em que unidade está o resultado;
+\item qual é a interpretação física.
+\end{enumerate}
+Um bom padrão de tabela para o teste de Kepler é:
+\[
+\begin{array}{c|c|c|c|c}
+\text{planeta} & S\ (\text{anos}) & P\ (\text{anos}) & a=P^{2/3}\ (\mathrm{UA}) & P^2/a^3\\
+\hline
+\text{Marte} & 2{,}14 & 1{,}88 & 1{,}52 & 1{,}00
+\end{array}
+\]
+Se os dados forem aproximados, $P^2/a^3$ não precisa dar exatamente $1$, mas deve ficar próximo. Diferenças grandes indicam erro de unidade, oposição mal identificada ou confusão entre período sinódico e sideral.
+\end{lessonblock}
+
 \subsection*{Laboratório}
 \addcontentsline{toc}{subsection}{Laboratório -- Capítulo 2}
 O laboratório interativo deste capítulo está disponível em:
