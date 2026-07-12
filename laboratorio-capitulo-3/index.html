@@ -657,10 +657,6 @@
         });
       });
       selectedTargetId = targets[0].id;
-      targets.forEach(target => {
-        starAperture = starAperture || { x: target.x, y: target.y, r: target.psf * 2.1 };
-      });
-      skyAperture = { x: 1260, y: 610, r: 56 };
       for (let i = 0; i < 130; i += 1) {
         fieldStars.push({
           x: 30 + rand() * (skyField.width - 60),
@@ -668,6 +664,9 @@
           r: 0.7 + rand() * 2.8,
           color: rand() < 0.35 ? "#ffe0a5" : rand() < 0.72 ? "#e9efff" : "#b9d6ff",
           alpha: 0.22 + rand() * 0.58,
+          temperature: 3300 + rand() * 9500,
+          flux: rand() < 0.82 ? 0.004 + rand() * 0.028 : 0,
+          rv: -180 + rand() * 360,
         });
       }
     }
@@ -682,7 +681,7 @@
 
     function apertureQuality(target) {
       if (!target || !starAperture || !skyAperture) {
-        return { capture: 0.3, contamination: 0.12, skyResidual: 0.05, valid: false };
+        return { capture: 0, contamination: 0.16, skyResidual: 0.04, confusionStar: 0, confusionSky: 0, valid: false };
       }
       const dx = starAperture.x - target.x;
       const dy = starAperture.y - target.y;
@@ -695,9 +694,21 @@
       const skyStar = localBackground(target.x, target.y);
       const skyMeasured = localBackground(skyAperture.x, skyAperture.y) + contamination;
       const areaRatio = (starAperture.r ** 2) / Math.max(skyAperture.r ** 2, 1);
+      const confusionStar = fieldStars.reduce((sum, star) => {
+        const d = Math.hypot(star.x - starAperture.x, star.y - starAperture.y);
+        const inside = d < starAperture.r + star.r * 2.5 ? 1 : 0;
+        return sum + inside * star.flux;
+      }, 0);
+      const confusionSky = fieldStars.reduce((sum, star) => {
+        const d = Math.hypot(star.x - skyAperture.x, star.y - skyAperture.y);
+        const inside = d < skyAperture.r + star.r * 2.5 ? 1 : 0;
+        return sum + inside * star.flux;
+      }, 0);
       return {
         capture,
         contamination,
+        confusionStar,
+        confusionSky,
         skyResidual: (skyStar - skyMeasured) * areaRatio,
         valid: true,
       };
@@ -729,7 +740,16 @@
           continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
         });
         const trueFlux = continuum * aperture.capture;
-        const skyColor = 0.018 + aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88));
+        const confusionShape = fieldStars.reduce((sum, star) => {
+          if (!star.flux) return sum;
+          const starNorm = Math.max(planckShape(normLambda, star.temperature), 1e-30);
+          const shiftedNa = 589.0 * (1 + star.rv / C);
+          const shape = planckShape(lambda, star.temperature) / starNorm;
+          const lineDip = 1 - 0.18 * gaussian(lambda, shiftedNa, 4.2);
+          return sum + star.flux * shape * lineDip;
+        }, 0);
+        const confusionResidual = (aperture.confusionStar - aperture.confusionSky * (starAperture ? (starAperture.r ** 2) / Math.max(skyAperture?.r ** 2 || 1, 1) : 0)) * confusionShape;
+        const skyColor = 0.018 + aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88)) + Math.max(0, confusionResidual);
         const resp = response(lambda);
         const darkRate = darkCurrent(lambda) * 0.018;
         const sourceRate = Math.max(0.0001, (trueFlux + skyColor) * resp * 0.09);
@@ -841,11 +861,10 @@
         skyCtx.arc(target.x, target.y, radius, 0, Math.PI * 2);
         skyCtx.fill();
         if (selected) {
-          skyCtx.strokeStyle = "#d7b46a";
-          skyCtx.lineWidth = 2;
+          skyCtx.fillStyle = "#72a7ff";
           skyCtx.beginPath();
-          skyCtx.arc(target.x, target.y, target.psf * 5.1, 0, Math.PI * 2);
-          skyCtx.stroke();
+          skyCtx.arc(target.x, target.y, 4.2, 0, Math.PI * 2);
+          skyCtx.fill();
         }
       });
       drawCircle(skyCtx, starAperture, "#72a7ff", "estrela");
@@ -853,10 +872,10 @@
       const target = currentTarget();
       const q = apertureQuality(target);
       document.getElementById("fieldStatus").textContent = target
-        ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%.`
+        ? (q.valid ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%.` : `Alvo: ${target.name}. Desenhe abertura da estrela e do fundo.`)
         : "Clique em uma estrela brilhante.";
       document.getElementById("selectedTargetReadout").textContent = target
-        ? `${target.name}; abertura da estrela r=${fmt(starAperture?.r, 1)} px; abertura de fundo r=${fmt(skyAperture?.r, 1)} px`
+        ? `${target.name}; abertura da estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; abertura de fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px`
         : "Nenhuma estrela selecionada.";
     }
 
@@ -1146,12 +1165,6 @@
       });
       if (best && best.distance < 70) {
         selectedTargetId = best.target.id;
-        starAperture = { x: best.target.x, y: best.target.y, r: best.target.psf * 2.2 };
-        skyAperture = {
-          x: clamp(best.target.x + 210, 70, skyField.width - 70),
-          y: clamp(best.target.y + 125, 70, skyField.height - 70),
-          r: 58,
-        };
         resetObservation();
       }
     }
