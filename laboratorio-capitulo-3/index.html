@@ -336,7 +336,7 @@
       <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
       <button class="button" id="exportCsv" type="button">Exportar CSV</button>
       <button class="button" id="clearLog" type="button">Limpar registros</button>
-      <span class="chip">Observáveis: contagens por comprimento de onda, 200–2000 nm</span>
+      <span class="chip">Observáveis: contagens por comprimento de onda; janela ajustável</span>
     </div>
 
     <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
@@ -391,6 +391,15 @@
             <label>Aquisição contínua de fótons</label>
             <div class="formula" id="acquisitionReadout">Aquisição pausada. Escolha o alvo e as aberturas antes de iniciar.</div>
             <div class="readout"><span id="timeReadout">-- s acumulados</span><span id="photonReadout">-- fótons</span></div>
+          </div>
+
+          <div class="control">
+            <label>Janela espectral observada</label>
+            <input id="lambdaMinSlider" type="range" min="90" max="2420" step="10" value="200">
+            <div class="readout"><span>λ mínimo</span><span><span id="lambdaMinReadout">200</span> nm</span></div>
+            <input id="lambdaMaxSlider" type="range" min="170" max="2500" step="10" value="2000">
+            <div class="readout"><span>λ máximo</span><span><span id="lambdaMaxReadout">2000</span> nm</span></div>
+            <div class="formula">A simulação guarda fótons de 90 a 2500 nm. Estes controles mudam apenas a região mostrada e usada para λ pico.</div>
           </div>
 
           <div class="control">
@@ -524,8 +533,9 @@
     const C = 299792.458;
     const WIEN = 2.897771955e6;
     const HC_EV_NM = 1239.841984;
-    const LAMBDA_MIN = 200;
-    const LAMBDA_MAX = 2000;
+    const LAMBDA_MIN = 90;
+    const LAMBDA_MAX = 2500;
+    const MIN_DISPLAY_SPAN = 80;
     const SIM_SECONDS_PER_REAL_SECOND = 16;
     const targets = [];
     const fieldStars = [];
@@ -546,6 +556,8 @@
     let photonTotal = 0;
     let expectedRates = [];
     let accumulatedRaw = [];
+    let displayLambdaMin = 200;
+    let displayLambdaMax = 2000;
 
     const skyField = document.getElementById("skyField");
     const skyCtx = skyField.getContext("2d");
@@ -563,6 +575,8 @@
     const blackbodyControls = document.getElementById("blackbodyControls");
     const blackbodyTempSlider = document.getElementById("blackbodyTempSlider");
     const blackbodyScaleSlider = document.getElementById("blackbodyScaleSlider");
+    const lambdaMinSlider = document.getElementById("lambdaMinSlider");
+    const lambdaMaxSlider = document.getElementById("lambdaMaxSlider");
 
     function mulberry32(seed) {
       return function rand() {
@@ -587,6 +601,43 @@
       return value.toFixed(digits);
     }
 
+    function shownPoints(points) {
+      return points.filter(p => p.lambda >= displayLambdaMin && p.lambda <= displayLambdaMax);
+    }
+
+    function lambdaToX(lambda, w, padL = 58, padR = 26) {
+      const fraction = (lambda - displayLambdaMin) / Math.max(displayLambdaMax - displayLambdaMin, 1);
+      return padL + fraction * (w - padL - padR);
+    }
+
+    function wavelengthTicks() {
+      const span = displayLambdaMax - displayLambdaMin;
+      const steps = [10, 20, 50, 100, 200, 500];
+      const step = steps.find(candidate => span / candidate <= 7) || 500;
+      const ticks = [];
+      const start = Math.ceil(displayLambdaMin / step) * step;
+      for (let lambda = start; lambda <= displayLambdaMax; lambda += step) {
+        ticks.push(lambda);
+      }
+      if (!ticks.length || Math.abs(ticks[0] - displayLambdaMin) > step * 0.55) ticks.unshift(displayLambdaMin);
+      if (Math.abs(ticks[ticks.length - 1] - displayLambdaMax) > step * 0.55) ticks.push(displayLambdaMax);
+      return ticks;
+    }
+
+    function setDisplayRange(changed) {
+      let min = Number(lambdaMinSlider.value);
+      let max = Number(lambdaMaxSlider.value);
+      if (max - min < MIN_DISPLAY_SPAN) {
+        if (changed === "min") min = max - MIN_DISPLAY_SPAN;
+        else max = min + MIN_DISPLAY_SPAN;
+      }
+      displayLambdaMin = clamp(min, LAMBDA_MIN, LAMBDA_MAX - MIN_DISPLAY_SPAN);
+      displayLambdaMax = clamp(max, displayLambdaMin + MIN_DISPLAY_SPAN, LAMBDA_MAX);
+      lambdaMinSlider.value = String(displayLambdaMin);
+      lambdaMaxSlider.value = String(displayLambdaMax);
+      renderObservation();
+    }
+
     function planckShape(lambdaNm, temperature) {
       const x = 1.4387769e7 / (lambdaNm * temperature);
       return 1 / (Math.pow(lambdaNm, 5) * Math.expm1(x));
@@ -609,7 +660,7 @@
       const temperature = Number(blackbodyTempSlider.value);
       const scale = blackbodyScaleValue();
       const points = [];
-      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 4) {
+      for (let lambda = displayLambdaMin; lambda <= displayLambdaMax; lambda += 4) {
         points.push({ lambda, flux: blackbodyFlux(lambda, temperature, scale) });
       }
       return points;
@@ -617,7 +668,7 @@
 
     function estimateBlackbodyScale(temperature) {
       if (!currentSpectrum.length) return 1;
-      const visible = currentSpectrum.filter(p => p.lambda >= 420 && p.lambda <= 750 && p.flux > 0);
+      const visible = shownPoints(currentSpectrum).filter(p => p.flux > 0);
       if (!visible.length) return 1;
       const peak = visible.reduce((best, p) => p.flux > best.flux ? p : best, visible[0]);
       const shape = blackbodyFlux(peak.lambda, temperature, 1);
@@ -807,7 +858,6 @@
       const normLambda = 550;
       const normTrue = Math.max(planckShape(normLambda, target.temperature), 1e-30);
       let continuum = target.scale * planckShape(lambda, target.temperature) / normTrue;
-      continuum = Math.min(continuum, 4.8);
       target.lines.forEach(line => {
         const observed = line.lambda * (1 + target.rv / C);
         continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
@@ -1031,8 +1081,10 @@
 
     function metrics(points = currentSpectrum) {
       if (!points.length) return null;
-      const smoothed = points.map((p, i) => {
-        const slice = points.slice(Math.max(0, i - 3), Math.min(points.length, i + 4));
+      const displayed = shownPoints(points);
+      const peakPoints = displayed.length ? displayed : points;
+      const smoothed = peakPoints.map((p, i) => {
+        const slice = peakPoints.slice(Math.max(0, i - 3), Math.min(peakPoints.length, i + 4));
         return { lambda: p.lambda, flux: slice.reduce((s, q) => s + q.flux, 0) / slice.length };
       });
       const peak = smoothed.reduce((best, p) => p.flux > best.flux ? p : best, smoothed[0]);
@@ -1063,8 +1115,8 @@
       ctx.fillText(labels.y, 12, 20);
       ctx.fillText(labels.x, w - 155, h - 12);
       if (labels.x.includes("λ")) {
-        const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
-        [200, 400, 550, 700, 1000, 1500, 2000].forEach(lambda => {
+        const sx = lambda => lambdaToX(lambda, w, padL, padR);
+        wavelengthTicks().forEach(lambda => {
           const x = sx(lambda);
           ctx.strokeStyle = "rgba(170,166,156,0.35)";
           ctx.beginPath();
@@ -1074,12 +1126,16 @@
           ctx.fillStyle = "#aaa69c";
           ctx.fillText(String(lambda), x - 12, h - padB + 20);
         });
-        ctx.fillStyle = "#8a82ff";
-        ctx.fillText("UV", sx(300) - 8, h - padB + 36);
-        ctx.fillStyle = "#72a7ff";
-        ctx.fillText("visível", sx(515) - 18, h - padB + 36);
-        ctx.fillStyle = "#e2795b";
-        ctx.fillText("IR", sx(1250) - 8, h - padB + 36);
+        const labelsByBand = [
+          { lambda: 250, text: "UV", color: "#8a82ff" },
+          { lambda: 540, text: "visível", color: "#72a7ff" },
+          { lambda: 1250, text: "IR", color: "#e2795b" },
+        ];
+        labelsByBand.forEach(band => {
+          if (band.lambda < displayLambdaMin || band.lambda > displayLambdaMax) return;
+          ctx.fillStyle = band.color;
+          ctx.fillText(band.text, sx(band.lambda) - 12, h - padB + 36);
+        });
       }
     }
 
@@ -1097,13 +1153,14 @@
         ctx.fillText("sem fótons acumulados: clique em Iniciar aquisição", padL + 18, padT + 46);
         return;
       }
+      const plotted = shownPoints(points);
       const model = fittingBlackbody ? blackbodyPoints() : [];
-      const values = points.map(p => p.flux);
+      const values = plotted.map(p => p.flux);
       const minY = Math.min(0, ...values);
       const maxY = Math.max(...values, 0.001) * 1.08;
-      const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+      const sx = lambda => lambdaToX(lambda, w, padL, padR);
       const sy = value => padT + (1 - (value - minY) / Math.max(maxY - minY, 1e-8)) * (h - padT - padB);
-      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 5) {
+      for (let lambda = displayLambdaMin; lambda <= displayLambdaMax; lambda += 5) {
         if (lambda < 380) ctx.fillStyle = "rgb(52,48,116)";
         else if (lambda > 760) ctx.fillStyle = "rgb(92,24,22)";
         else ctx.fillStyle = visibleColor(lambda);
@@ -1113,14 +1170,20 @@
       ctx.globalAlpha = 1;
       ctx.fillStyle = "#aaa69c";
       ctx.font = "11px system-ui";
-      ctx.fillText("UV", sx(220), padT + 14);
-      ctx.fillText("visível", sx(500), padT + 14);
-      ctx.fillText("IR próximo", sx(850), padT + 14);
+      [
+        { lambda: 220, text: "UV" },
+        { lambda: 500, text: "visível" },
+        { lambda: 850, text: "IR próximo" },
+      ].forEach(label => {
+        if (label.lambda >= displayLambdaMin && label.lambda <= displayLambdaMax) {
+          ctx.fillText(label.text, sx(label.lambda), padT + 14);
+        }
+      });
       ctx.globalAlpha = 1;
       ctx.strokeStyle = "#72a7ff";
       ctx.lineWidth = 1.6;
       ctx.beginPath();
-      points.forEach((p, i) => {
+      plotted.forEach((p, i) => {
         const x = sx(p.lambda);
         const y = clamp(sy(p.flux), padT, h - padB);
         if (i === 0) ctx.moveTo(x, y);
@@ -1140,9 +1203,10 @@
         ctx.stroke();
         ctx.fillStyle = "#d7b46a";
         ctx.font = "12px system-ui";
-        ctx.fillText(`corpo negro: ${fmt(Number(blackbodyTempSlider.value), 0)} K`, sx(760), padT + 32);
+        ctx.fillText(`corpo negro: ${fmt(Number(blackbodyTempSlider.value), 0)} K`, sx(clamp(760, displayLambdaMin, displayLambdaMax)), padT + 32);
       }
       absorptionMarks.forEach((mark, i) => {
+        if (mark.lambda < displayLambdaMin || mark.lambda > displayLambdaMax) return;
         const x = sx(mark.lambda);
         ctx.strokeStyle = "rgba(215,180,106,0.92)";
         ctx.lineWidth = 1.8;
@@ -1160,7 +1224,7 @@
       const point = canvasPoint(event, canvas);
       const padL = 58, padR = 26;
       const fraction = clamp((point.x - padL) / (canvas.width - padL - padR), 0, 1);
-      return LAMBDA_MIN + fraction * (LAMBDA_MAX - LAMBDA_MIN);
+      return displayLambdaMin + fraction * (displayLambdaMax - displayLambdaMin);
     }
 
     function nearestLocalMinimum(lambda) {
@@ -1195,7 +1259,8 @@
       const padL = 58, padR = 26;
       const bandTop = h * 0.28;
       const bandHeight = h * 0.42;
-      const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+      const sx = lambda => lambdaToX(lambda, w, padL, padR);
+      const plotted = shownPoints(points);
       detectorCtx.clearRect(0, 0, w, h);
       detectorCtx.fillStyle = "#050505";
       detectorCtx.fillRect(0, 0, w, h);
@@ -1207,9 +1272,9 @@
         detectorCtx.fillText("detector zerado: nenhum fóton registrado", padL, 24);
         return;
       }
-      const maxY = Math.max(...points.map(p => p.flux), 0.001);
-      points.forEach((p, i) => {
-        const next = points[i + 1] || { lambda: p.lambda + 2 };
+      const maxY = Math.max(...plotted.map(p => p.flux), 0.001);
+      plotted.forEach((p, i) => {
+        const next = plotted[i + 1] || { lambda: p.lambda + 2 };
         const x = sx(p.lambda);
         const width = Math.max(1, sx(next.lambda) - x + 0.6);
         const intensity = clamp(p.flux / maxY, 0, 1);
@@ -1232,8 +1297,7 @@
         const m = metrics();
         const padL = 58, padR = 26, padT = 28, padB = 58;
         const w = analysisChart.width, h = analysisChart.height;
-        const maxY = Math.max(...currentSpectrum.map(p => p.flux), 0.001) * 1.08;
-        const x = padL + ((m.peak - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+        const x = lambdaToX(m.peak, w, padL, padR);
         analysisCtx.strokeStyle = "rgba(215,180,106,0.9)";
         analysisCtx.lineWidth = 2;
         analysisCtx.beginPath();
@@ -1273,7 +1337,7 @@
         const m = metrics();
         const padL = 58, padR = 26, padT = 28, padB = 58;
         const w = analysisChart.width, h = analysisChart.height;
-        const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+        const sx = lambda => lambdaToX(lambda, w, padL, padR);
         if (Number.isFinite(m.lineObserved)) {
           const x = sx(m.lineObserved);
           analysisCtx.strokeStyle = "rgba(215,180,106,0.95)";
@@ -1308,6 +1372,8 @@
       blackbodyControls.hidden = !fittingBlackbody;
       document.getElementById("blackbodyTempReadout").textContent = fmt(Number(blackbodyTempSlider.value), 0);
       document.getElementById("blackbodyScaleReadout").textContent = fmt(blackbodyScaleValue(), 3);
+      document.getElementById("lambdaMinReadout").textContent = displayLambdaMin.toFixed(0);
+      document.getElementById("lambdaMaxReadout").textContent = displayLambdaMax.toFixed(0);
       renderAbsorptionMarks();
       drawSkyField();
     }
@@ -1516,6 +1582,8 @@
     blackbodyScaleSlider.addEventListener("input", () => {
       renderObservation();
     });
+    lambdaMinSlider.addEventListener("input", () => setDisplayRange("min"));
+    lambdaMaxSlider.addEventListener("input", () => setDisplayRange("max"));
     lineSelect.addEventListener("input", renderObservation);
     document.getElementById("observeToggle").addEventListener("click", () => {
       isObserving = !isObserving;
