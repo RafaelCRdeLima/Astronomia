@@ -1191,6 +1191,45 @@
       ctx.fillText(text, bx + padX, by + height - padY - 2);
     }
 
+    function drawAbsorptionBadge(ctx, label, x, y) {
+      ctx.fillStyle = "rgba(5,5,5,0.92)";
+      ctx.strokeStyle = "rgba(215,180,106,0.95)";
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(x, y, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = "#ffe3a0";
+      ctx.font = "bold 13px system-ui";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(label, x, y + 0.5);
+      ctx.textAlign = "start";
+      ctx.textBaseline = "alphabetic";
+    }
+
+    function drawAbsorptionLegend(ctx, marks, w, padR, padT) {
+      if (!marks.length) return;
+      const rows = marks.map(entry => `${entry.index + 1}: ${fmt(entry.mark.lambda, 1)} nm`);
+      ctx.font = "bold 15px system-ui";
+      const width = Math.max(150, ...rows.map(row => ctx.measureText(row).width + 24));
+      const rowHeight = 23;
+      const height = 31 + rows.length * rowHeight;
+      const x = w - padR - width - 12;
+      const y = padT + 18;
+      ctx.fillStyle = "rgba(5,5,5,0.92)";
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = "rgba(215,180,106,0.7)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+      ctx.fillStyle = "#d7b46a";
+      ctx.fillText("linhas marcadas", x + 12, y + 21);
+      rows.forEach((row, i) => {
+        ctx.fillStyle = "#ffe3a0";
+        ctx.fillText(row, x + 12, y + 46 + i * rowHeight);
+      });
+    }
+
     function drawSpectrumCanvas(ctx, canvas, points, mode = "spectrum") {
       const w = canvas.width;
       const h = canvas.height;
@@ -1257,7 +1296,11 @@
           canvasH: h,
         });
       }
-      absorptionMarks.forEach((mark, i) => {
+      const visibleMarks = absorptionMarks
+        .map((mark, index) => ({ mark, index }))
+        .filter(entry => entry.mark.lambda >= displayLambdaMin && entry.mark.lambda <= displayLambdaMax);
+      visibleMarks.forEach((entry, i) => {
+        const mark = entry.mark;
         if (mark.lambda < displayLambdaMin || mark.lambda > displayLambdaMax) return;
         const x = sx(mark.lambda);
         ctx.strokeStyle = "rgba(215,180,106,0.92)";
@@ -1266,14 +1309,9 @@
         ctx.moveTo(x, padT);
         ctx.lineTo(x, h - padB);
         ctx.stroke();
-        const labelX = x + (i % 2 === 0 ? 8 : -122);
-        const labelY = padT + 72 + (i % 5) * 32;
-        drawCanvasLabel(ctx, `${i + 1}: ${fmt(mark.lambda, 1)} nm`, labelX, labelY, {
-          color: "#ffe3a0",
-          canvasW: w,
-          canvasH: h,
-        });
+        drawAbsorptionBadge(ctx, String(entry.index + 1), clamp(x, padL + 12, w - padR - 12), padT + 17 + (i % 3) * 29);
       });
+      drawAbsorptionLegend(ctx, visibleMarks, w, padR, padT);
     }
 
     function lambdaFromCanvasPoint(event, canvas) {
