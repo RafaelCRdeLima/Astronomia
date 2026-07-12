@@ -314,7 +314,7 @@
     <div class="toolbar">
       <a class="button" href="../">Página principal</a>
       <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
-      <button class="button" id="observeToggle" type="button">Pausar aquisição</button>
+      <button class="button" id="observeToggle" type="button">Iniciar aquisição</button>
       <button class="button" id="resetDetector" type="button">Zerar detector</button>
       <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
       <button class="button" id="exportCsv" type="button">Exportar CSV</button>
@@ -372,7 +372,7 @@
 
           <div class="control">
             <label>Aquisição contínua de fótons</label>
-            <div class="formula" id="acquisitionReadout">Detector acumulando fótons.</div>
+            <div class="formula" id="acquisitionReadout">Aquisição pausada. Escolha o alvo e as aberturas antes de iniciar.</div>
             <div class="readout"><span id="timeReadout">-- s acumulados</span><span id="photonReadout">-- fótons</span></div>
           </div>
 
@@ -509,7 +509,7 @@
     let starAperture = null;
     let skyAperture = null;
     let dragStart = null;
-    let isObserving = true;
+    let isObserving = false;
     let lastFrameTime = null;
     let observationSeconds = 0;
     let photonTotal = 0;
@@ -628,6 +628,14 @@
       if (kind === "solar") return "rgba(245,245,230,0.95)";
       if (kind === "fria") return "rgba(255,205,135,0.95)";
       return "rgba(255,160,105,0.95)";
+    }
+
+    function apparentClass(kind) {
+      if (kind === "quente") return "azulada, linhas de H/He possíveis";
+      if (kind === "balmer") return "branco-azulada, Balmer forte";
+      if (kind === "solar") return "amarela, metais visíveis";
+      if (kind === "fria") return "alaranjada, metais fortes";
+      return "avermelhada, bandas largas";
     }
 
     function makeTargets() {
@@ -765,6 +773,7 @@
       observationSeconds = 0;
       photonTotal = 0;
       currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0, response: p.response }));
+      lastFrameTime = null;
       renderObservation();
     }
 
@@ -875,7 +884,7 @@
         ? (q.valid ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%.` : `Alvo: ${target.name}. Desenhe abertura da estrela e do fundo.`)
         : "Clique em uma estrela brilhante.";
       document.getElementById("selectedTargetReadout").textContent = target
-        ? `${target.name}; abertura da estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; abertura de fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px`
+        ? `${target.name}; x=${fmt(target.x, 0)} px, y=${fmt(target.y, 0)} px; classe aparente: ${apparentClass(target.kind)}; abertura estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px`
         : "Nenhuma estrela selecionada.";
     }
 
@@ -1073,7 +1082,7 @@
       document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
       document.getElementById("acquisitionReadout").textContent = isObserving
         ? "Detector recebendo fótons continuamente; o espectro muda enquanto a contagem cresce."
-        : "Aquisição pausada; os dados acumulados permanecem disponíveis para registro.";
+        : "Aquisição pausada; escolha o alvo, desenhe as aberturas e clique em Iniciar aquisição.";
       document.getElementById("observeToggle").textContent = isObserving ? "Pausar aquisição" : "Iniciar aquisição";
       document.getElementById("noiseReadout").textContent = `${fmt(Number(noiseSlider.value), 2)}`;
       drawSkyField();
@@ -1114,7 +1123,10 @@
 
     function recordMeasurement() {
       if (!currentSpectrum.length) resetObservation();
-      if (observationSeconds < 0.5) addPhotons(0.5);
+      if (observationSeconds < 0.5) {
+        document.getElementById("fieldStatus").textContent = "Inicie a aquisição e acumule fótons antes de registrar a medida.";
+        return;
+      }
       const m = metrics();
       const q = apertureQuality(currentTarget());
       observations.push({
@@ -1140,6 +1152,7 @@
 
     function exportCsv() {
       if (observations.length === 0) recordMeasurement();
+      if (observations.length === 0) return;
       const header = ["alvo", "reducao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
       const lines = [header.join(",")];
       observations.forEach(row => {
@@ -1165,6 +1178,7 @@
       });
       if (best && best.distance < 70) {
         selectedTargetId = best.target.id;
+        isObserving = false;
         resetObservation();
       }
     }
