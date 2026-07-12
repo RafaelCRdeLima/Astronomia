@@ -519,7 +519,7 @@
               <button class="sky-action" id="toggleMapFullscreen" type="button">Tela cheia</button>
             </div>
             <div class="sky-measure" id="mapMeasure">Régua: clique em dois pontos</div>
-            <div class="sky-tip">O mapa mostra longitude e latitude eclípticas aparentes. Registre várias noites e procure padrões.</div>
+            <div class="sky-tip">O mapa mostra o céu local em azimute e altura. A eclíptica muda com latitude e hora sideral.</div>
           </div>
           <div class="metrics">
             <div class="metric">
@@ -533,6 +533,10 @@
             <div class="metric">
               <small>Ascensão reta</small>
               <strong id="raMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>Azimute</small>
+              <strong id="azMetric">--</strong>
             </div>
             <div class="metric">
               <small>Altura no horizonte</small>
@@ -575,7 +579,7 @@
           </div>
 
           <div class="formula">
-            Observáveis: λ, β, α, δ, altura, elongação solar.<br>
+            Observáveis: λ, β, α, δ, azimute, altura, elongação solar.<br>
             Planeta externo: 1/P = 1 - 1/S &nbsp; ; &nbsp; a/AU = P<sup>2/3</sup>.<br>
             Planeta interno: a/AU ≃ sin(E<sub>max</sub>).
           </div>
@@ -635,6 +639,7 @@
                   <th>β deg</th>
                   <th>α h</th>
                   <th>δ deg</th>
+                  <th>azimute</th>
                   <th>altura</th>
                   <th>elong.</th>
                 </tr>
@@ -769,6 +774,19 @@
       return Math.asin(clamp(sinAlt, -1, 1)) * RAD;
     }
 
+    function equatorialToHorizontal(raHours, decDeg) {
+      const lat = Number(latitudeSlider.value) * DEG;
+      const dec = decDeg * DEG;
+      const H = (Number(hourSlider.value) - raHours) * 15 * DEG;
+      const sinAlt = Math.sin(lat) * Math.sin(dec) + Math.cos(lat) * Math.cos(dec) * Math.cos(H);
+      const alt = Math.asin(clamp(sinAlt, -1, 1));
+      const az = Math.atan2(
+        -Math.sin(H),
+        Math.tan(dec) * Math.cos(lat) - Math.sin(lat) * Math.cos(H)
+      );
+      return { alt: alt * RAD, az: normDeg(az * RAD) };
+    }
+
     function currentDay() {
       return Number(daySlider.value);
     }
@@ -782,28 +800,42 @@
       const eq = eclipticToEquatorial(geo.lambda, geo.beta);
       const sun = sunVector(day);
       const elongation = Math.abs(wrap180(geo.lambda - sun.lambda));
-      return { ...geo, ...eq, alt: altitude(eq.ra, eq.dec), elongation };
+      const horizontal = equatorialToHorizontal(eq.ra, eq.dec);
+      return { ...geo, ...eq, ...horizontal, elongation };
     }
 
-    function skyToScreen(lambda, beta) {
-      const x = 34 + (normDeg(lambda) / 360) * (sky.width - 68);
-      const y = sky.height / 2 - (beta / 45) * (sky.height * 0.76);
+    function skyToScreen(az, alt) {
+      const top = 30;
+      const bottom = 48;
+      const minAlt = -10;
+      const maxAlt = 90;
+      const x = 34 + (normDeg(az) / 360) * (sky.width - 68);
+      const y = top + ((maxAlt - alt) / (maxAlt - minAlt)) * (sky.height - top - bottom);
       return { x, y };
     }
 
     function screenToSky(x, y) {
-      const lambda = normDeg(((x - 34) / (sky.width - 68)) * 360);
-      const beta = ((sky.height / 2 - y) / (sky.height * 0.76)) * 45;
-      return { lambda, beta };
+      const top = 30;
+      const bottom = 48;
+      const minAlt = -10;
+      const maxAlt = 90;
+      const az = normDeg(((x - 34) / (sky.width - 68)) * 360);
+      const alt = maxAlt - ((y - top) / (sky.height - top - bottom)) * (maxAlt - minAlt);
+      return { az, alt: clamp(alt, minAlt, maxAlt) };
     }
 
     function angularDistance(a, b) {
-      const l1 = a.lambda * DEG;
-      const b1 = a.beta * DEG;
-      const l2 = b.lambda * DEG;
-      const b2 = b.beta * DEG;
-      const cosD = Math.sin(b1) * Math.sin(b2) + Math.cos(b1) * Math.cos(b2) * Math.cos(l1 - l2);
+      const az1 = a.az * DEG;
+      const alt1 = a.alt * DEG;
+      const az2 = b.az * DEG;
+      const alt2 = b.alt * DEG;
+      const cosD = Math.sin(alt1) * Math.sin(alt2) + Math.cos(alt1) * Math.cos(alt2) * Math.cos(az1 - az2);
       return Math.acos(clamp(cosD, -1, 1)) * RAD;
+    }
+
+    function eclipticSkyPoint(lambda, beta = 0) {
+      const eq = eclipticToEquatorial(lambda, beta);
+      return equatorialToHorizontal(eq.ra, eq.dec);
     }
 
     function populateStars() {
@@ -830,37 +862,65 @@
 
       ctx.strokeStyle = "rgba(170,166,156,0.16)";
       ctx.lineWidth = 1;
-      for (let lambda = 0; lambda <= 360; lambda += 30) {
-        const p = skyToScreen(lambda, 0);
+      for (let az = 0; az <= 360; az += 30) {
+        const p = skyToScreen(az, 0);
         ctx.beginPath();
-        ctx.moveTo(p.x, 0);
-        ctx.lineTo(p.x, sky.height);
+        ctx.moveTo(p.x, 30);
+        ctx.lineTo(p.x, sky.height - 48);
         ctx.stroke();
         ctx.fillStyle = "rgba(170,166,156,0.65)";
         ctx.font = "11px system-ui";
-        ctx.fillText(`${lambda}°`, p.x + 4, 21);
+        ctx.fillText(`${az}°`, p.x + 4, 21);
       }
-      for (let beta = -30; beta <= 30; beta += 10) {
-        const p = skyToScreen(0, beta);
+      for (let alt = 0; alt <= 90; alt += 15) {
+        const p = skyToScreen(0, alt);
         ctx.beginPath();
         ctx.moveTo(0, p.y);
         ctx.lineTo(sky.width, p.y);
         ctx.stroke();
         ctx.fillStyle = "rgba(170,166,156,0.65)";
-        ctx.fillText(`${beta > 0 ? "+" : ""}${beta}°`, 10, p.y - 4);
+        ctx.fillText(`${alt}°`, 10, p.y - 4);
       }
 
-      const e0 = skyToScreen(0, 0);
-      const e1 = skyToScreen(360, 0);
+      const horizon = skyToScreen(0, 0);
+      ctx.strokeStyle = "rgba(170,166,156,0.38)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, horizon.y);
+      ctx.lineTo(sky.width, horizon.y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(170,166,156,0.7)";
+      ctx.font = "12px system-ui";
+      ctx.fillText("horizonte", 10, horizon.y + 17);
+
       ctx.strokeStyle = "rgba(215,180,106,0.55)";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(e0.x, e0.y);
-      ctx.lineTo(e1.x, e1.y);
+      let started = false;
+      let previous = null;
+      for (let lambda = 0; lambda <= 360; lambda += 2) {
+        const horizontal = eclipticSkyPoint(lambda, 0);
+        const p = skyToScreen(horizontal.az, horizontal.alt);
+        if (!started || (previous && Math.abs(p.x - previous.x) > sky.width * 0.5)) {
+          ctx.moveTo(p.x, p.y);
+          started = true;
+        } else {
+          ctx.lineTo(p.x, p.y);
+        }
+        previous = p;
+      }
       ctx.stroke();
+      const eLabel = eclipticSkyPoint(120, 0);
+      const eText = skyToScreen(eLabel.az, eLabel.alt);
+      ctx.fillStyle = "rgba(215,180,106,0.82)";
+      ctx.font = "12px system-ui";
+      ctx.fillText("eclíptica", eText.x + 8, eText.y - 8);
 
       fixedStars.forEach(star => {
-        const p = skyToScreen(star.lambda, star.beta);
+        const eq = eclipticToEquatorial(star.lambda, star.beta);
+        const horizontal = equatorialToHorizontal(eq.ra, eq.dec);
+        if (horizontal.alt < -2) return;
+        const p = skyToScreen(horizontal.az, horizontal.alt);
         ctx.fillStyle = `rgba(255,255,255,${star.alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, star.size, 0, TAU);
@@ -868,7 +928,9 @@
       });
 
       const sun = sunVector(currentDay());
-      const sunPos = skyToScreen(sun.lambda, 0);
+      const sunEq = eclipticToEquatorial(sun.lambda, 0);
+      const sunHorizontal = equatorialToHorizontal(sunEq.ra, sunEq.dec);
+      const sunPos = skyToScreen(sunHorizontal.az, sunHorizontal.alt);
       ctx.fillStyle = "#f2d271";
       ctx.shadowColor = "#f2d271";
       ctx.shadowBlur = 16;
@@ -882,7 +944,7 @@
 
       planets.forEach(body => {
         const app = apparent(body);
-        const p = skyToScreen(app.lambda, app.beta);
+        const p = skyToScreen(app.az, app.alt);
         ctx.fillStyle = body.color;
         ctx.shadowColor = body.color;
         ctx.shadowBlur = body.id === selectedPlanet ? 16 : 7;
@@ -949,6 +1011,7 @@
       document.getElementById("selectedMetric").textContent = body.name;
       document.getElementById("lambdaMetric").textContent = `${fmt(app.lambda, 2)}°`;
       document.getElementById("raMetric").textContent = `${fmt(app.ra, 2)} h`;
+      document.getElementById("azMetric").textContent = `${fmt(app.az, 1)}°`;
       document.getElementById("altMetric").textContent = `${fmt(app.alt, 1)}°`;
       document.getElementById("dateReadout").textContent = dayLabel(currentDay());
       document.getElementById("hourReadout").textContent = `${fmt(Number(hourSlider.value), 1)} h`;
@@ -968,6 +1031,7 @@
           <td>${fmt(row.beta, 2)}</td>
           <td>${fmt(row.ra, 2)}</td>
           <td>${fmt(row.dec, 2)}</td>
+          <td>${fmt(row.az, 1)}</td>
           <td>${fmt(row.alt, 1)}</td>
           <td>${fmt(row.elongation, 1)}</td>
         `;
@@ -994,6 +1058,7 @@
         beta: app.beta,
         ra: app.ra,
         dec: app.dec,
+        az: app.az,
         alt: app.alt,
         elongation: app.elongation,
       });
@@ -1002,10 +1067,10 @@
 
     function exportCsv() {
       if (observations.length === 0) recordObservation();
-      const header = ["dia", "data", "planeta", "lambda_deg", "beta_deg", "ra_h", "dec_deg", "altura_deg", "elongacao_deg"];
+      const header = ["dia", "data", "planeta", "lambda_deg", "beta_deg", "ra_h", "dec_deg", "azimute_deg", "altura_deg", "elongacao_deg"];
       const lines = [header.join(",")];
       observations.forEach(row => {
-        lines.push([row.day, row.date, row.planet, row.lambda, row.beta, row.ra, row.dec, row.alt, row.elongation]
+        lines.push([row.day, row.date, row.planet, row.lambda, row.beta, row.ra, row.dec, row.az, row.alt, row.elongation]
           .map(value => typeof value === "number" ? value.toFixed(8) : value).join(","));
       });
       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -1139,7 +1204,7 @@
       let bestD = Infinity;
       planets.forEach(planet => {
         const app = apparent(planet);
-        const p = skyToScreen(app.lambda, app.beta);
+        const p = skyToScreen(app.az, app.alt);
         const d = Math.hypot(p.x - x, p.y - y);
         if (d < bestD) {
           bestD = d;
