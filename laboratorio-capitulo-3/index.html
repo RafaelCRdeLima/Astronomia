@@ -259,6 +259,14 @@
 
     input[type="range"] { width: 100%; }
 
+    input[type="text"] {
+      width: 100%;
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 10px;
+    }
+
     .control {
       padding: 10px 0;
       border-bottom: 1px solid rgba(52, 52, 52, 0.72);
@@ -397,7 +405,7 @@
     <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
       <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
       <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência física</button>
-      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Caderno de dados</button>
+      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Template de Relatório</button>
     </div>
 
     <section class="layout view active" id="observationView" aria-label="Observação espectrofotométrica">
@@ -560,10 +568,24 @@
       </section>
     </section>
 
-    <section class="view" id="dataView" aria-label="Caderno de dados">
+    <section class="view" id="dataView" aria-label="Template de relatório">
       <section class="panel">
-        <h2>Caderno de dados</h2>
+        <h2>Template de Relatório</h2>
         <div class="body">
+          <div class="tasks">
+            <div class="task">
+              <strong>Gerar relatório em LaTeX</strong>
+              Preencha o nome do aluno, acumule os dados do experimento e clique em Gerar template. O laboratório salvará o arquivo main.tex, logos, figura do espectro, tabelas auxiliares e CSVs de dados.
+            </div>
+          </div>
+          <div class="control">
+            <label for="studentNameInput">Nome do aluno</label>
+            <input id="studentNameInput" type="text" placeholder="Digite o nome completo">
+          </div>
+          <div class="mode-row">
+            <button class="button" id="generateTemplate" type="button">Gerar template</button>
+            <span class="chip" id="reportStatus">Aguardando dados do experimento.</span>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -651,6 +673,8 @@
     const blackbodyScaleSlider = document.getElementById("blackbodyScaleSlider");
     const lambdaMinSlider = document.getElementById("lambdaMinSlider");
     const lambdaMaxSlider = document.getElementById("lambdaMaxSlider");
+    const studentNameInput = document.getElementById("studentNameInput");
+    const reportStatus = document.getElementById("reportStatus");
 
     function mulberry32(seed) {
       return function rand() {
@@ -1671,8 +1695,11 @@
     }
 
     function downloadCsv(filename, rows) {
-      const lines = rows.map(row => row.map(csvValue).join(","));
-      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const blob = new Blob([rowsToCsv(rows)], { type: "text/csv;charset=utf-8" });
+      downloadBlob(filename, blob);
+    }
+
+    function downloadBlob(filename, blob) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -1683,7 +1710,11 @@
       URL.revokeObjectURL(url);
     }
 
-    function exportFluxCsv() {
+    function rowsToCsv(rows) {
+      return rows.map(row => row.map(csvValue).join(",")).join("\n");
+    }
+
+    function fluxCsvRows() {
       const rows = [[
         "lambda_nm",
         "fluxo_abertura_estrela",
@@ -1702,13 +1733,13 @@
           fittingBlackbody ? blackbodyFlux(p.lambda, temperature, scale) : "",
         ]);
       });
-      downloadCsv("laboratorio_3_fluxo_por_comprimento_de_onda.csv", rows);
+      return rows;
     }
 
-    function exportBlackbodyCsv() {
+    function blackbodyCsvRows() {
       const m = metrics();
       const q = apertureQuality(currentTarget());
-      const rows = [[
+      return [[
         "alvo",
         "tempo_acumulado_s",
         "ajuste_ativo",
@@ -1735,10 +1766,9 @@
         q.capture,
         sessionSeed,
       ]];
-      downloadCsv("laboratorio_3_parametros_corpo_negro.csv", rows);
     }
 
-    function exportLinesPhotometryCsv() {
+    function linesPhotometryCsvRows() {
       const m = metrics();
       const rows = [[
         "alvo",
@@ -1773,7 +1803,19 @@
           best.rv,
         ]);
       });
-      downloadCsv("laboratorio_3_linhas_e_fotometria.csv", rows);
+      return rows;
+    }
+
+    function exportFluxCsv() {
+      downloadCsv("laboratorio_3_fluxo_por_comprimento_de_onda.csv", fluxCsvRows());
+    }
+
+    function exportBlackbodyCsv() {
+      downloadCsv("laboratorio_3_parametros_corpo_negro.csv", blackbodyCsvRows());
+    }
+
+    function exportLinesPhotometryCsv() {
+      downloadCsv("laboratorio_3_linhas_e_fotometria.csv", linesPhotometryCsvRows());
     }
 
     function exportCsv() {
@@ -1785,6 +1827,200 @@
       exportFluxCsv();
       setTimeout(exportBlackbodyCsv, 120);
       setTimeout(exportLinesPhotometryCsv, 240);
+    }
+
+    function latexEscape(value) {
+      const text = String(value ?? "")
+        .replaceAll("λ", "lambda")
+        .replaceAll("α", "alpha")
+        .replaceAll("β", "beta")
+        .replaceAll("γ", "gamma")
+        .replaceAll("δ", "delta")
+        .replaceAll("−", "-");
+      const replacements = {
+        "\\": "\\textbackslash{}",
+        "{": "\\{",
+        "}": "\\}",
+        "$": "\\$",
+        "&": "\\&",
+        "%": "\\%",
+        "#": "\\#",
+        "_": "\\_",
+        "~": "\\textasciitilde{}",
+        "^": "\\textasciicircum{}",
+      };
+      return text.replace(/[\\{}$&%#_~^]/g, char => replacements[char]);
+    }
+
+    function latexCell(value, digits = 3) {
+      if (typeof value === "number") return Number.isFinite(value) ? fmt(value, digits) : "--";
+      if (value === null || value === undefined || value === "") return "--";
+      return latexEscape(value);
+    }
+
+    function latexRows(rows) {
+      return rows.map(row => `${row.map(cell => latexCell(cell)).join(" & ")} \\\\`).join("\n");
+    }
+
+    function blackbodyLatexTable() {
+      const m = metrics();
+      const q = apertureQuality(currentTarget());
+      const rows = [
+        ["Alvo observado", currentTarget().name],
+        ["Tempo acumulado", `${fmt(observationSeconds, 1)} s`],
+        ["Temperatura ajustada", fittingBlackbody ? `${fmt(Number(blackbodyTempSlider.value), 0)} K` : "não ajustada"],
+        ["Escala do modelo", fittingBlackbody ? fmt(blackbodyScaleValue(), 4) : "não ajustada"],
+        ["λmax medido", `${fmt(m.peak, 1)} nm`],
+        ["Janela espectral", `${fmt(displayLambdaMin, 0)}--${fmt(displayLambdaMax, 0)} nm`],
+        ["Raio da abertura da estrela", starAperture ? `${fmt(starAperture.r, 1)} px` : "não definido"],
+        ["Raio da abertura de fundo", skyAperture ? `${fmt(skyAperture.r, 1)} px` : "não definido"],
+        ["Fração estimada coletada", `${fmt(100 * q.capture, 1)} %`],
+      ];
+      return `\\begin{table}[H]
+\\centering
+\\caption{Parâmetros da aquisição e do ajuste de corpo negro.}
+\\begin{tabular}{ll}
+\\toprule
+Grandeza & Valor \\\\
+\\midrule
+${latexRows(rows)}
+\\bottomrule
+\\end{tabular}
+\\end{table}
+`;
+    }
+
+    function linesPhotometryLatexTable() {
+      const m = metrics();
+      const photometryRows = [
+        ["F_B", m.b],
+        ["F_V", m.v],
+        ["F_R", m.r],
+        ["B-V", m.bv],
+        ["Fluxo bolométrico relativo", m.bol],
+      ];
+      const lineRows = absorptionMarks.length
+        ? absorptionMarks.map((mark, i) => {
+            const best = lineCandidates(mark.lambda)[0] || { label: "--", lambda: NaN, rv: NaN };
+            return [i + 1, mark.lambda, best.label, best.lambda, best.rv];
+          })
+        : [["--", "--", "nenhuma linha marcada", "--", "--"]];
+
+      return `\\begin{table}[H]
+\\centering
+\\caption{Fotometria sintética extraída do espectro líquido.}
+\\begin{tabular}{lr}
+\\toprule
+Grandeza & Valor \\\\
+\\midrule
+${latexRows(photometryRows)}
+\\bottomrule
+\\end{tabular}
+\\end{table}
+
+\\begin{table}[H]
+\\centering
+\\caption{Linhas de absorção marcadas no espectro.}
+\\begin{tabular}{rrlrr}
+\\toprule
+Índice & $\\lambda_{\\rm obs}$ (nm) & Identificação provável & $\\lambda_0$ (nm) & $v_r$ (km/s) \\\\
+\\midrule
+${latexRows(lineRows)}
+\\bottomrule
+\\end{tabular}
+\\end{table}
+`;
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+          if (blob) resolve(blob);
+          else reject(new Error("Não foi possível gerar a figura PNG do espectro."));
+        }, "image/png");
+      });
+    }
+
+    async function fetchBlob(path) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`Não foi possível carregar ${path}`);
+      return response.blob();
+    }
+
+    async function fetchText(path) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`Não foi possível carregar ${path}`);
+      return response.text();
+    }
+
+    async function buildReportFiles(studentName) {
+      drawSpectrumCanvas(spectrumCtx, spectrum, currentSpectrum);
+      const [template, udescLogo, cctLogo, spectrumFigure] = await Promise.all([
+        fetchText("../template_relatorio/main.tex"),
+        fetchBlob("../template_relatorio/udesc.png"),
+        fetchBlob("../template_relatorio/CCT.png"),
+        canvasToBlob(spectrum),
+      ]);
+      const experimentName = "Espectrofotometria estelar";
+      const mainTex = template
+        .replace(/\\newcommand\{\\aluno\}\{.*\}/, () => `\\newcommand{\\aluno}{\\textbf{${latexEscape(studentName)}}}`)
+        .replace(/\\newcommand\{\\experimento\}\{.*\}/, () => `\\newcommand{\\experimento}{\\textbf{${latexEscape(experimentName)}}}`);
+
+      return [
+        { name: "main.tex", blob: new Blob([mainTex], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "udesc.png", blob: udescLogo },
+        { name: "CCT.png", blob: cctLogo },
+        { name: "figura_fluxo_espectral.png", blob: spectrumFigure },
+        { name: "tabela_corpo_negro.tex", blob: new Blob([blackbodyLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "tabela_fotometria_linhas.tex", blob: new Blob([linesPhotometryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "dados_fluxo.csv", blob: new Blob([rowsToCsv(fluxCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "parametros_corpo_negro.csv", blob: new Blob([rowsToCsv(blackbodyCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "linhas_fotometria.csv", blob: new Blob([rowsToCsv(linesPhotometryCsvRows())], { type: "text/csv;charset=utf-8" }) },
+      ];
+    }
+
+    async function saveReportFiles(files) {
+      if (window.showDirectoryPicker) {
+        const directory = await window.showDirectoryPicker({ mode: "readwrite" });
+        for (const file of files) {
+          const handle = await directory.getFileHandle(file.name, { create: true });
+          const writable = await handle.createWritable();
+          await writable.write(file.blob);
+          await writable.close();
+        }
+        return "Template salvo na pasta escolhida.";
+      }
+
+      files.forEach((file, index) => {
+        setTimeout(() => downloadBlob(file.name, file.blob), index * 150);
+      });
+      return "Seu navegador não abriu seletor de pasta; os arquivos foram baixados individualmente.";
+    }
+
+    async function generateReportTemplate() {
+      const studentName = studentNameInput.value.trim();
+      if (!studentName) {
+        reportStatus.textContent = "Digite o nome do aluno antes de gerar.";
+        studentNameInput.focus();
+        return;
+      }
+      if (!currentSpectrum.length) resetObservation();
+      if (observationSeconds < 0.5) {
+        reportStatus.textContent = "Acumule fótons antes de gerar o relatório.";
+        document.getElementById("fieldStatus").textContent = "Inicie a aquisição e acumule dados para o relatório.";
+        return;
+      }
+
+      try {
+        reportStatus.textContent = "Gerando arquivos do relatório...";
+        const files = await buildReportFiles(studentName);
+        reportStatus.textContent = await saveReportFiles(files);
+      } catch (error) {
+        reportStatus.textContent = error.name === "AbortError"
+          ? "Salvamento cancelado."
+          : "Não foi possível gerar o template. Verifique se a página está publicada/servida por HTTP.";
+        console.error(error);
+      }
     }
 
     function chooseNearestTarget(point) {
@@ -1920,6 +2156,7 @@
     document.getElementById("resetDetector").addEventListener("click", resetObservation);
     document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
+    document.getElementById("generateTemplate").addEventListener("click", generateReportTemplate);
     document.getElementById("clearLog").addEventListener("click", () => {
       observations.length = 0;
       renderTable();

@@ -1,0 +1,127 @@
+\documentclass[12pt,a4paper]{article}
+
+%-------------------------------------------------
+% PACOTES
+%-------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{float}
+
+\geometry{a4paper, margin=2.5cm}
+
+%-------------------------------------------------
+% DADOS DO RELATÓRIO
+%-------------------------------------------------
+
+\newcommand{\aluno}{\textbf{Nome do Aluno}}
+\newcommand{\experimento}{\textbf{Espectrofotometria estelar}}
+
+\newcommand{\disciplina}{Astronomia}
+\newcommand{\professor}{Prof. Dr. Rafael C. R. de Lima}
+\newcommand{\datarelatorio}{\today}
+
+%=================================================
+
+\begin{document}
+
+%-------------------------------------------------
+% CABEÇALHO
+%-------------------------------------------------
+
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+\includegraphics[width=0.60\linewidth]{udesc.png}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.55\textwidth}
+\centering
+\textbf{UNIVERSIDADE DO ESTADO DE SANTA CATARINA}\\
+Centro de Ciências Tecnológicas -- CCT
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.20\textwidth}
+\raggedleft
+\includegraphics[width=0.85\linewidth]{CCT.png}
+\end{minipage}
+
+\vspace{1cm}
+
+\begin{center}
+{\Large\textbf{Relatório de Experimento}}\\[0.5cm]
+{\Large\experimento}
+\end{center}
+
+\vspace{0.8cm}
+
+\textbf{Aluno:} \aluno\\
+\textbf{Disciplina:} \disciplina\\
+\textbf{Professor:} \professor\\
+\textbf{Data:} \datarelatorio
+
+\vspace{1cm}
+
+%=================================================
+\section{Introdução}
+
+Escreva aqui o objetivo do experimento e descreva brevemente como o espectro foi obtido a partir da abertura da estrela e da abertura de fundo.
+
+%=================================================
+\section{Teoria}
+
+Escreva aqui a teoria usada para interpretar o contínuo espectral, a fotometria e as linhas de absorção.
+
+\begin{equation}
+\lambda_{\max}T = 2{,}898\times 10^{-3}\ {\rm m\,K}.
+\end{equation}
+
+\begin{equation}
+B - V = -2{,}5\log_{10}\left(\frac{F_B}{F_V}\right).
+\end{equation}
+
+\begin{equation}
+\frac{v_r}{c}\simeq \frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}.
+\end{equation}
+
+
+
+%=================================================
+\section{Dados}
+
+O gráfico abaixo foi exportado diretamente do laboratório após a aquisição dos fótons.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{figura_fluxo_espectral.png}
+\caption{Fluxo por comprimento de onda obtido no laboratório. A curva líquida corresponde ao fluxo da abertura da estrela menos o fundo escalado.}
+\end{figure}
+
+\input{tabela_corpo_negro.tex}
+
+\input{tabela_fotometria_linhas.tex}
+
+%=================================================
+\section{Cálculos}
+
+Apresente aqui os cálculos feitos com os dados exportados. Use o arquivo \texttt{dados\_fluxo.csv} para consultar os valores de fluxo por comprimento de onda.
+
+%=================================================
+\section{Discussão}
+
+Discuta se o contínuo observado é compatível com o corpo negro ajustado, quais linhas de absorção foram identificadas e como o fundo escolhido afetou o espectro líquido.
+
+%=================================================
+\section{Conclusão}
+
+Escreva aqui as principais conclusões do experimento.
+
+
+
+\end{document}
