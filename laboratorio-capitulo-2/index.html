@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Laboratório 2 | Órbitas, massa central e leis de Kepler</title>
+  <title>Laboratório 2 | Observações planetárias e leis de Kepler</title>
   <style>
     :root {
       --bg: #050505;
@@ -40,7 +40,7 @@
     }
 
     .shell {
-      width: min(1500px, calc(100vw - 28px));
+      width: min(1760px, calc(100vw - 28px));
       margin: 0 auto;
       padding: 22px 0 28px;
     }
@@ -76,7 +76,8 @@
       white-space: nowrap;
     }
 
-    .toolbar {
+    .toolbar,
+    .view-tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -85,7 +86,8 @@
     }
 
     .button,
-    .tab {
+    .tab,
+    .sky-action {
       border: 1px solid var(--line);
       color: var(--text);
       background: var(--panel);
@@ -97,17 +99,37 @@
     .button:hover,
     .button:focus-visible,
     .tab:hover,
-    .tab:focus-visible {
+    .tab:focus-visible,
+    .sky-action:hover,
+    .sky-action:focus-visible {
       border-color: var(--accent);
       outline: none;
     }
 
+    .view-tab[aria-selected="true"],
+    .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     .layout {
       display: grid;
-      grid-template-columns: minmax(430px, 1.1fr) minmax(330px, 0.82fr) minmax(440px, 1.03fr);
+      grid-template-columns: minmax(860px, 1fr) minmax(360px, 0.32fr);
       gap: 12px;
       align-items: start;
       min-width: 0;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .layout.view.active {
+      display: grid;
     }
 
     .panel {
@@ -138,32 +160,71 @@
       border: 1px solid var(--line);
     }
 
-    .orbit-wrap {
+    .sky-wrap {
       position: relative;
       min-width: 0;
       overflow: hidden;
     }
 
-    .orbit-tip {
+    .sky-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .sky-action {
+      background: rgba(5, 5, 5, 0.8);
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+
+    .sky-wrap.map-fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: #050505;
+      padding: 12px;
+      display: grid;
+      align-items: stretch;
+    }
+
+    .sky-wrap.map-fullscreen canvas {
+      width: 100%;
+      height: calc(100vh - 24px);
+      object-fit: contain;
+    }
+
+    .sky-tip,
+    .sky-measure {
       position: absolute;
       left: 12px;
-      right: 12px;
-      bottom: 12px;
-      width: calc(100% - 24px);
       color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-      overflow-wrap: anywhere;
-      white-space: normal;
       background: rgba(5, 5, 5, 0.78);
       border: 1px solid var(--line);
       padding: 7px 8px;
+      font-size: 12px;
+      line-height: 1.35;
       pointer-events: none;
+      z-index: 2;
+    }
+
+    .sky-measure {
+      top: 12px;
+      color: var(--accent);
+    }
+
+    .sky-tip {
+      right: 12px;
+      bottom: 12px;
+      overflow-wrap: anywhere;
     }
 
     .metrics {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
       margin-top: 10px;
     }
@@ -185,7 +246,7 @@
     .metric strong {
       display: block;
       color: var(--text);
-      font-size: 20px;
+      font-size: 19px;
       line-height: 1.1;
     }
 
@@ -248,22 +309,18 @@
       color: var(--muted);
       padding: 8px 9px;
       font-size: 12px;
-    }
-
-    .tab[aria-selected="true"] {
-      border-color: var(--accent);
-      color: var(--accent);
+      background: #0b0b0b;
     }
 
     .chart {
       width: 100%;
-      height: 250px;
+      height: 420px;
       border: 1px solid var(--line);
       background: #080808;
     }
 
     .table-wrap {
-      max-height: 330px;
+      max-height: 68vh;
       overflow: auto;
       border: 1px solid var(--line);
       margin-top: 10px;
@@ -294,6 +351,10 @@
       color: var(--accent);
       background: #090909;
       z-index: 1;
+    }
+
+    tr.selected td {
+      background: rgba(215, 180, 106, 0.12);
     }
 
     .tasks {
@@ -337,11 +398,11 @@
 
     @media (max-width: 1240px) {
       .layout {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
       }
 
-      .analysis-panel {
-        grid-column: 1 / -1;
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -350,13 +411,22 @@
         width: calc(100vw - 16px);
       }
 
-      header,
-      .layout {
+      header {
         grid-template-columns: 1fr;
       }
 
       .layout {
         display: block;
+      }
+
+      .view-tabs {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .view-tabs .button {
+        width: 100%;
+        text-align: left;
       }
 
       .panel {
@@ -365,10 +435,16 @@
         margin-bottom: 12px;
       }
 
-      #orbitCanvas,
+      #sky,
       .chart {
         width: calc(100vw - 48px);
         max-width: calc(100vw - 48px);
+      }
+
+      .sky-actions {
+        top: 48px;
+        left: 12px;
+        right: auto;
       }
 
       h1 {
@@ -385,6 +461,8 @@
       }
 
       .toolbar {
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 7px;
       }
 
@@ -392,6 +470,12 @@
       .chip {
         padding: 8px 9px;
         font-size: 13px;
+      }
+
+      .toolbar .button,
+      .toolbar .chip {
+        width: 100%;
+        text-align: left;
       }
 
       .metrics {
@@ -404,8 +488,8 @@
   <main class="shell">
     <header>
       <div>
-        <h1>Laboratório 2:<br>Órbitas e massa central</h1>
-        <p>Capítulo 2 · Mecânica celeste<br>Gravitação newtoniana e leis de Kepler</p>
+        <h1>Laboratório 2:<br>Tycho, Kepler<br>e o céu observado</h1>
+        <p>Capítulo 2 · Mecânica celeste<br>Medidas angulares, períodos e leis de Kepler</p>
       </div>
       <div class="badge">Astrofísica Moderna</div>
     </header>
@@ -413,135 +497,146 @@
     <div class="toolbar">
       <a class="button" href="../">Página principal</a>
       <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
-      <button class="button" id="playPause" type="button">Pausar</button>
+      <button class="button" id="recordObservation" type="button">Registrar observação</button>
       <button class="button" id="exportCsv" type="button">Exportar CSV</button>
-      <button class="button" id="reset" type="button">Restaurar sistema</button>
-      <span class="chip">Unidades: AU, ano, Msun</span>
+      <button class="button" id="clearLog" type="button">Limpar registros</button>
+      <span class="chip">Observáveis: ângulos no céu</span>
     </div>
 
-    <section class="layout" aria-label="Dashboard do laboratório">
+    <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
+      <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
+      <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência de Kepler</button>
+      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Caderno de dados</button>
+    </div>
+
+    <section class="layout view active" id="observationView" aria-label="Dashboard de observação">
       <section class="panel">
-        <h2>Sistema orbital</h2>
+        <h2>Céu observado</h2>
         <div class="body">
-          <div class="orbit-wrap">
-            <canvas id="orbitCanvas" width="780" height="540" aria-label="Simulação orbital"></canvas>
-            <div class="orbit-tip">A trilha clara mostra a órbita. A região dourada marca áreas varridas iguais.</div>
+          <div class="sky-wrap">
+            <canvas id="sky" width="1500" height="860" aria-label="Mapa do céu com planetas"></canvas>
+            <div class="sky-actions">
+              <button class="sky-action" id="toggleMapFullscreen" type="button">Tela cheia</button>
+            </div>
+            <div class="sky-measure" id="mapMeasure">Régua: clique em dois pontos</div>
+            <div class="sky-tip">O mapa mostra longitude e latitude eclípticas aparentes. Registre várias noites e procure padrões.</div>
           </div>
           <div class="metrics">
             <div class="metric">
-              <small>Período orbital</small>
-              <strong id="periodMetric">--</strong>
+              <small>Objeto selecionado</small>
+              <strong id="selectedMetric">--</strong>
             </div>
             <div class="metric">
-              <small>Massa inferida por Kepler</small>
-              <strong id="massInferMetric">--</strong>
+              <small>Longitude eclíptica</small>
+              <strong id="lambdaMetric">--</strong>
             </div>
             <div class="metric">
-              <small>Excentricidade</small>
-              <strong id="eccMetric">--</strong>
+              <small>Ascensão reta</small>
+              <strong id="raMetric">--</strong>
             </div>
             <div class="metric">
-              <small>Energia específica</small>
-              <strong id="energyMetric">--</strong>
+              <small>Altura no horizonte</small>
+              <strong id="altMetric">--</strong>
             </div>
           </div>
         </div>
       </section>
 
       <section class="panel">
-        <h2>Controles físicos</h2>
+        <h2>Instrumentos de observação</h2>
         <div class="body">
           <div class="control">
-            <label for="preset">Sistema observado</label>
-            <select id="preset">
-              <option value="earth">Planeta tipo Terra</option>
-              <option value="mars">Planeta externo excêntrico</option>
-              <option value="binary">Estrela em binária larga</option>
-              <option value="comet">Cometa de alta excentricidade</option>
-              <option value="escape">Teste de escape</option>
-            </select>
+            <label for="planetSelect">Planeta observado</label>
+            <select id="planetSelect"></select>
           </div>
 
           <div class="control">
-            <label for="mass">Massa central</label>
-            <input id="mass" type="range" min="0.25" max="5" step="0.01">
-            <div class="readout"><span id="massReadout">-- Msun</span><span>M</span></div>
+            <label for="daySlider">Data da observação</label>
+            <input id="daySlider" type="range" min="0" max="2200" step="1">
+            <div class="readout"><span id="dateReadout">--</span><span>dias desde início</span></div>
           </div>
 
           <div class="control">
-            <label for="semiMajor">Semieixo maior</label>
-            <input id="semiMajor" type="range" min="0.25" max="12" step="0.01">
-            <div class="readout"><span id="semiMajorReadout">-- AU</span><span>a</span></div>
+            <label for="hourSlider">Hora sideral local</label>
+            <input id="hourSlider" type="range" min="0" max="24" step="0.1">
+            <div class="readout"><span id="hourReadout">-- h</span><span>meridiano local</span></div>
           </div>
 
           <div class="control">
-            <label for="eccentricity">Excentricidade</label>
-            <input id="eccentricity" type="range" min="0" max="0.92" step="0.01">
-            <div class="readout"><span id="eccReadout">--</span><span>e</span></div>
+            <label for="latitudeSlider">Latitude do observador</label>
+            <input id="latitudeSlider" type="range" min="-45" max="65" step="1">
+            <div class="readout"><span id="latitudeReadout">--°</span><span>horizonte</span></div>
           </div>
 
           <div class="control">
-            <label for="phase">Tempo orbital</label>
-            <input id="phase" type="range" min="0" max="1" step="0.001">
-            <div class="readout"><span id="phaseReadout">-- yr</span><span>t</span></div>
-          </div>
-
-          <div class="control">
-            <label for="velocityFactor">Velocidade inicial no periastro</label>
-            <input id="velocityFactor" type="range" min="0.35" max="1.65" step="0.01">
-            <div class="readout"><span id="velocityReadout">-- v circ</span><span>modo escape</span></div>
+            <label>Régua angular</label>
+            <div class="readout"><span id="angularMeasureReadout">clique em dois pontos</span><span>separação</span></div>
+            <button class="button" id="clearMeasure" type="button">Limpar régua</button>
           </div>
 
           <div class="formula">
-            P² = 4π²a³ / GM &nbsp; → &nbsp; em AU, ano, Msun: M = a³/P²<br>
-            e = (rₐ - rₚ)/(rₐ + rₚ)<br>
-            ε = v²/2 - GM/r &nbsp; ; &nbsp; G = 4π²
+            Observáveis: λ, β, α, δ, altura, elongação solar.<br>
+            Planeta externo: 1/P = 1 - 1/S &nbsp; ; &nbsp; a/AU = P<sup>2/3</sup>.<br>
+            Planeta interno: a/AU ≃ sin(E<sub>max</sub>).
           </div>
         </div>
       </section>
+    </section>
 
-      <section class="panel analysis-panel">
-        <h2>Análise dos dados</h2>
+    <section class="view" id="analysisView" aria-label="Inferência de Kepler">
+      <section class="panel">
+        <h2>Inferência de Kepler</h2>
         <div class="tabs" role="tablist" aria-label="Visualizações">
-          <button class="tab" id="tab-radius" type="button" aria-selected="true">r(t)</button>
-          <button class="tab" id="tab-speed" type="button" aria-selected="false">v(t)</button>
-          <button class="tab" id="tab-area" type="button" aria-selected="false">área/tempo</button>
+          <button class="tab" id="tab-longitude" type="button" aria-selected="true">longitude × tempo</button>
+          <button class="tab" id="tab-elongation" type="button" aria-selected="false">elongação</button>
           <button class="tab" id="tab-kepler" type="button" aria-selected="false">P² × a³</button>
         </div>
         <div class="body">
-          <canvas class="chart" id="chart" width="820" height="420" aria-label="Gráfico dos dados orbitais"></canvas>
+          <canvas class="chart" id="chart" width="1300" height="520" aria-label="Gráfico de inferência"></canvas>
           <div class="legend">
-            <span><i class="dot" style="background: var(--blue)"></i>dados exportáveis</span>
-            <span><i class="dot" style="background: var(--accent)"></i>ponto atual</span>
-            <span><i class="dot" style="background: var(--orange)"></i>referência teórica</span>
+            <span><i class="dot" style="background: var(--blue)"></i>modelo heliocêntrico</span>
+            <span><i class="dot" style="background: var(--accent)"></i>registros do aluno</span>
+            <span><i class="dot" style="background: var(--orange)"></i>referência kepleriana</span>
           </div>
 
           <div class="tasks">
             <div class="task">
-              <strong>Experimento 1</strong>
-              Meça P e a. Calcule M = a³/P² e compare com a massa central usada no laboratório.
+              <strong>Experimento 1: caderno de Tycho</strong>
+              Registre a longitude de Marte a cada 20 ou 30 dias por alguns anos. Identifique quando ele entra em movimento retrógrado.
             </div>
             <div class="task">
-              <strong>Experimento 2</strong>
-              Meça rₚ e rₐ. Calcule e = (rₐ-rₚ)/(rₐ+rₚ) e compare com o controle.
+              <strong>Experimento 2: período sinódico</strong>
+              Use duas oposições sucessivas de Marte, Júpiter ou Saturno. Meça S e calcule P por 1/P = 1 - 1/S.
             </div>
             <div class="task">
-              <strong>Experimento 3</strong>
-              Use a tabela para mostrar que ΔA/Δt é aproximadamente constante na órbita elíptica.
+              <strong>Experimento 3: terceira lei</strong>
+              Para planetas externos, calcule a = P^(2/3). Faça P² contra a³ e verifique se a razão fica próxima de 1 em unidades solares.
+            </div>
+            <div class="task">
+              <strong>Experimento 4: planetas internos</strong>
+              Para Mercúrio ou Vênus, registre várias datas e encontre a maior elongação solar Emax. Estime a ≃ sin(Emax).
             </div>
           </div>
+        </div>
+      </section>
+    </section>
 
+    <section class="view" id="dataView" aria-label="Caderno de dados">
+      <section class="panel">
+        <h2>Caderno de dados</h2>
+        <div class="body">
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>t yr</th>
-                  <th>x AU</th>
-                  <th>y AU</th>
-                  <th>r AU</th>
-                  <th>v AU/yr</th>
-                  <th>ε</th>
-                  <th>ΔA/Δt</th>
+                  <th>data</th>
+                  <th>planeta</th>
+                  <th>λ deg</th>
+                  <th>β deg</th>
+                  <th>α h</th>
+                  <th>δ deg</th>
+                  <th>altura</th>
+                  <th>elong.</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -554,274 +649,424 @@
 
   <script>
     const TAU = Math.PI * 2;
-    const G = 4 * Math.PI * Math.PI;
-    const canvas = document.getElementById("orbitCanvas");
-    const ctx = canvas.getContext("2d");
+    const DEG = Math.PI / 180;
+    const RAD = 180 / Math.PI;
+    const OBLIQUITY = 23.44 * DEG;
+    const planets = [
+      { id: "mercury", name: "Mercúrio", a: 0.387, e: 0.206, P: 0.241, color: "#c8c0ad", size: 4, L0: 70 },
+      { id: "venus", name: "Vênus", a: 0.723, e: 0.007, P: 0.615, color: "#f1d08a", size: 6, L0: 145 },
+      { id: "mars", name: "Marte", a: 1.524, e: 0.093, P: 1.881, color: "#e2795b", size: 6, L0: 35 },
+      { id: "jupiter", name: "Júpiter", a: 5.203, e: 0.049, P: 11.86, color: "#d8b482", size: 8, L0: 250 },
+      { id: "saturn", name: "Saturno", a: 9.537, e: 0.057, P: 29.46, color: "#d8c799", size: 7, L0: 310 },
+    ];
+    const fixedStars = [];
+    const observations = [];
+    const measurePoints = [];
+    let selectedPlanet = "mars";
+    let chartMode = "longitude";
+
+    const sky = document.getElementById("sky");
+    const skyWrap = sky.closest(".sky-wrap");
+    const ctx = sky.getContext("2d");
     const chart = document.getElementById("chart");
     const chartCtx = chart.getContext("2d");
     const tableBody = document.getElementById("tableBody");
-    const preset = document.getElementById("preset");
-    const mass = document.getElementById("mass");
-    const semiMajor = document.getElementById("semiMajor");
-    const eccentricity = document.getElementById("eccentricity");
-    const phase = document.getElementById("phase");
-    const velocityFactor = document.getElementById("velocityFactor");
+    const planetSelect = document.getElementById("planetSelect");
+    const daySlider = document.getElementById("daySlider");
+    const hourSlider = document.getElementById("hourSlider");
+    const latitudeSlider = document.getElementById("latitudeSlider");
 
-    let chartMode = "radius";
-    let playing = true;
-    let lastTime = performance.now();
+    function mulberry32(seed) {
+      return function rand() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
 
-    const presets = {
-      earth: { M: 1, a: 1, e: 0.02, f: 1, phase: 0 },
-      mars: { M: 1, a: 1.52, e: 0.21, f: 1, phase: 0 },
-      binary: { M: 2.2, a: 8, e: 0.38, f: 1, phase: 0 },
-      comet: { M: 1, a: 7, e: 0.82, f: 1, phase: 0 },
-      escape: { M: 1, a: 1, e: 0, f: 1.45, phase: 0 },
-    };
+    const rand = mulberry32(20260217);
 
     function clamp(value, min, max) {
       return Math.max(min, Math.min(max, value));
+    }
+
+    function normDeg(deg) {
+      return ((deg % 360) + 360) % 360;
+    }
+
+    function wrap180(deg) {
+      const v = normDeg(deg + 180) - 180;
+      return v === -180 ? 180 : v;
     }
 
     function fmt(value, digits = 2) {
       if (!Number.isFinite(value)) return "--";
       if (Math.abs(value) >= 1000) return value.toFixed(0);
       if (Math.abs(value) >= 100) return value.toFixed(1);
-      if (Math.abs(value) < 0.01 && value !== 0) return value.toExponential(2);
       return value.toFixed(digits);
     }
 
-    function state() {
-      const M = Number(mass.value);
-      const a = Number(semiMajor.value);
-      const e = Number(eccentricity.value);
-      const phaseValue = Number(phase.value);
-      const vf = Number(velocityFactor.value);
-      const P = Math.sqrt(a ** 3 / M);
-      return { M, a, e, phaseValue, vf, P };
+    function dayLabel(day) {
+      const d = Math.round(day);
+      const year = Math.floor(d / 365) + 1;
+      const dayOfYear = d % 365;
+      return `ano ${year}, dia ${dayOfYear + 1}`;
     }
 
-    function solveEccentricAnomaly(meanAnomaly, e) {
-      let E = e < 0.8 ? meanAnomaly : Math.PI;
-      for (let i = 0; i < 8; i++) {
-        E -= (E - e * Math.sin(E) - meanAnomaly) / (1 - e * Math.cos(E));
-      }
+    function solveKepler(M, e) {
+      let E = e < 0.8 ? M : Math.PI;
+      for (let i = 0; i < 8; i++) E -= (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
       return E;
     }
 
-    function ellipticalPoint(s, fraction) {
-      const Mmean = TAU * fraction;
-      const E = solveEccentricAnomaly(Mmean, s.e);
-      const x = s.a * (Math.cos(E) - s.e);
-      const y = s.a * Math.sqrt(1 - s.e ** 2) * Math.sin(E);
-      const r = Math.hypot(x, y);
-      const speed = Math.sqrt(G * s.M * (2 / r - 1 / s.a));
-      const energy = -G * s.M / (2 * s.a);
-      const h = Math.sqrt(G * s.M * s.a * (1 - s.e ** 2));
-      const areaRate = h / 2;
-      return { x, y, r, speed, energy, areaRate, t: fraction * s.P };
+    function heliocentricBody(body, day) {
+      const M = ((body.L0 * DEG) + TAU * (day / 365.25) / body.P) % TAU;
+      const E = solveKepler(M, body.e);
+      const x = body.a * (Math.cos(E) - body.e);
+      const y = body.a * Math.sqrt(1 - body.e ** 2) * Math.sin(E);
+      return { x, y, r: Math.hypot(x, y), trueLongitude: normDeg(Math.atan2(y, x) * RAD) };
     }
 
-    function escapePoint(s, fraction) {
-      const rp = s.a;
-      const vc = Math.sqrt(G * s.M / rp);
-      const vp = s.vf * vc;
-      const energy = 0.5 * vp ** 2 - G * s.M / rp;
-      const h = rp * vp;
-      const angle = fraction * TAU;
-      const effectiveE = Math.sqrt(Math.max(0, 1 + 2 * energy * h ** 2 / ((G * s.M) ** 2)));
-      const denominator = 1 + effectiveE * Math.cos(angle);
-      const r = denominator > 0.08 ? h ** 2 / (G * s.M * denominator) : 24;
-      const x = r * Math.cos(angle);
-      const y = r * Math.sin(angle);
-      const speed = Math.sqrt(Math.max(0, 2 * (energy + G * s.M / r)));
-      return { x, y, r, speed, energy, areaRate: h / 2, t: fraction * 2.5 };
+    function earthPosition(day) {
+      const earth = { a: 1, e: 0.017, P: 1, L0: 100 };
+      return heliocentricBody(earth, day);
     }
 
-    function currentIsEscape() {
-      return preset.value === "escape";
+    function geoVector(body, day) {
+      const earth = earthPosition(day);
+      const obj = heliocentricBody(body, day);
+      const x = obj.x - earth.x;
+      const y = obj.y - earth.y;
+      const dist = Math.hypot(x, y);
+      const lambda = normDeg(Math.atan2(y, x) * RAD);
+      const beta = 1.4 * Math.sin((day / 365.25 / body.P) * TAU + body.L0 * DEG) / Math.sqrt(body.a);
+      return { x, y, dist, lambda, beta, heliocentric: obj };
     }
 
-    function pointAt(fraction) {
-      const s = state();
-      return currentIsEscape() ? escapePoint(s, fraction) : ellipticalPoint(s, fraction);
+    function sunVector(day) {
+      const earth = earthPosition(day);
+      return { lambda: normDeg(Math.atan2(-earth.y, -earth.x) * RAD), beta: 0 };
     }
 
-    function sampleOrbit(count = 96) {
-      const rows = [];
-      for (let i = 0; i <= count; i++) {
-        rows.push(pointAt(i / count));
+    function eclipticToEquatorial(lambdaDeg, betaDeg) {
+      const l = lambdaDeg * DEG;
+      const b = betaDeg * DEG;
+      const sinDec = Math.sin(b) * Math.cos(OBLIQUITY) + Math.cos(b) * Math.sin(OBLIQUITY) * Math.sin(l);
+      const dec = Math.asin(sinDec);
+      const y = Math.sin(l) * Math.cos(OBLIQUITY) - Math.tan(b) * Math.sin(OBLIQUITY);
+      const x = Math.cos(l);
+      const ra = normDeg(Math.atan2(y, x) * RAD) / 15;
+      return { ra, dec: dec * RAD };
+    }
+
+    function altitude(raHours, decDeg) {
+      const lat = Number(latitudeSlider.value) * DEG;
+      const dec = decDeg * DEG;
+      const lst = Number(hourSlider.value);
+      const H = (lst - raHours) * 15 * DEG;
+      const sinAlt = Math.sin(lat) * Math.sin(dec) + Math.cos(lat) * Math.cos(dec) * Math.cos(H);
+      return Math.asin(clamp(sinAlt, -1, 1)) * RAD;
+    }
+
+    function currentDay() {
+      return Number(daySlider.value);
+    }
+
+    function selectedBody() {
+      return planets.find(p => p.id === selectedPlanet) || planets[2];
+    }
+
+    function apparent(body, day = currentDay()) {
+      const geo = geoVector(body, day);
+      const eq = eclipticToEquatorial(geo.lambda, geo.beta);
+      const sun = sunVector(day);
+      const elongation = Math.abs(wrap180(geo.lambda - sun.lambda));
+      return { ...geo, ...eq, alt: altitude(eq.ra, eq.dec), elongation };
+    }
+
+    function skyToScreen(lambda, beta) {
+      const x = 34 + (normDeg(lambda) / 360) * (sky.width - 68);
+      const y = sky.height / 2 - (beta / 45) * (sky.height * 0.76);
+      return { x, y };
+    }
+
+    function screenToSky(x, y) {
+      const lambda = normDeg(((x - 34) / (sky.width - 68)) * 360);
+      const beta = ((sky.height / 2 - y) / (sky.height * 0.76)) * 45;
+      return { lambda, beta };
+    }
+
+    function angularDistance(a, b) {
+      const l1 = a.lambda * DEG;
+      const b1 = a.beta * DEG;
+      const l2 = b.lambda * DEG;
+      const b2 = b.beta * DEG;
+      const cosD = Math.sin(b1) * Math.sin(b2) + Math.cos(b1) * Math.cos(b2) * Math.cos(l1 - l2);
+      return Math.acos(clamp(cosD, -1, 1)) * RAD;
+    }
+
+    function populateStars() {
+      for (let i = 0; i < 170; i++) {
+        fixedStars.push({
+          lambda: rand() * 360,
+          beta: -28 + rand() * 56,
+          alpha: 0.16 + rand() * 0.45,
+          size: 0.7 + rand() * 1.4,
+        });
       }
-      return rows;
     }
 
-    function syncReadouts() {
-      const s = state();
-      const p = pointAt(s.phaseValue);
-      const rp = s.a * (1 - s.e);
-      const ra = s.a * (1 + s.e);
-      const inferredMass = s.a ** 3 / s.P ** 2;
-      document.getElementById("massReadout").textContent = `${fmt(s.M, 2)} Msun`;
-      document.getElementById("semiMajorReadout").textContent = `${fmt(s.a, 2)} AU`;
-      document.getElementById("eccReadout").textContent = fmt(s.e, 2);
-      document.getElementById("phaseReadout").textContent = `${fmt(p.t, 3)} yr`;
-      document.getElementById("velocityReadout").textContent = `${fmt(s.vf, 2)} v circ`;
-      document.getElementById("periodMetric").textContent = currentIsEscape() ? "aberta" : `${fmt(s.P, 3)} yr`;
-      document.getElementById("massInferMetric").textContent = currentIsEscape() ? "não ligada" : `${fmt(inferredMass, 3)} Msun`;
-      document.getElementById("eccMetric").textContent = currentIsEscape() ? `e > 1` : `${fmt((ra - rp) / (ra + rp), 3)}`;
-      document.getElementById("energyMetric").textContent = `${fmt(p.energy, 3)} AU²/yr²`;
-    }
-
-    function drawBackground() {
+    function drawSky() {
+      ctx.clearRect(0, 0, sky.width, sky.height);
       ctx.fillStyle = "#050505";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      const glow = ctx.createRadialGradient(canvas.width * 0.5, canvas.height * 0.5, 10, canvas.width * 0.5, canvas.height * 0.5, canvas.width * 0.65);
-      glow.addColorStop(0, "#172238");
-      glow.addColorStop(0.55, "#09101b");
+      ctx.fillRect(0, 0, sky.width, sky.height);
+      const glow = ctx.createRadialGradient(sky.width * 0.5, sky.height * 0.45, 20, sky.width * 0.5, sky.height * 0.45, sky.width * 0.72);
+      glow.addColorStop(0, "#172342");
+      glow.addColorStop(0.55, "#091020");
       glow.addColorStop(1, "#050505");
       ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < 130; i++) {
-        const x = (i * 193.7) % canvas.width;
-        const y = (i * 117.3) % canvas.height;
-        ctx.fillStyle = `rgba(255,255,255,${0.06 + ((i * 19) % 45) / 260})`;
-        ctx.fillRect(x, y, 1, 1);
+      ctx.fillRect(0, 0, sky.width, sky.height);
+
+      ctx.strokeStyle = "rgba(170,166,156,0.16)";
+      ctx.lineWidth = 1;
+      for (let lambda = 0; lambda <= 360; lambda += 30) {
+        const p = skyToScreen(lambda, 0);
+        ctx.beginPath();
+        ctx.moveTo(p.x, 0);
+        ctx.lineTo(p.x, sky.height);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(170,166,156,0.65)";
+        ctx.font = "11px system-ui";
+        ctx.fillText(`${lambda}°`, p.x + 4, 21);
+      }
+      for (let beta = -30; beta <= 30; beta += 10) {
+        const p = skyToScreen(0, beta);
+        ctx.beginPath();
+        ctx.moveTo(0, p.y);
+        ctx.lineTo(sky.width, p.y);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(170,166,156,0.65)";
+        ctx.fillText(`${beta > 0 ? "+" : ""}${beta}°`, 10, p.y - 4);
+      }
+
+      const e0 = skyToScreen(0, 0);
+      const e1 = skyToScreen(360, 0);
+      ctx.strokeStyle = "rgba(215,180,106,0.55)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(e0.x, e0.y);
+      ctx.lineTo(e1.x, e1.y);
+      ctx.stroke();
+
+      fixedStars.forEach(star => {
+        const p = skyToScreen(star.lambda, star.beta);
+        ctx.fillStyle = `rgba(255,255,255,${star.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, star.size, 0, TAU);
+        ctx.fill();
+      });
+
+      const sun = sunVector(currentDay());
+      const sunPos = skyToScreen(sun.lambda, 0);
+      ctx.fillStyle = "#f2d271";
+      ctx.shadowColor = "#f2d271";
+      ctx.shadowBlur = 16;
+      ctx.beginPath();
+      ctx.arc(sunPos.x, sunPos.y, 8, 0, TAU);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = "#f2d271";
+      ctx.font = "12px system-ui";
+      ctx.fillText("Sol", sunPos.x + 10, sunPos.y - 8);
+
+      planets.forEach(body => {
+        const app = apparent(body);
+        const p = skyToScreen(app.lambda, app.beta);
+        ctx.fillStyle = body.color;
+        ctx.shadowColor = body.color;
+        ctx.shadowBlur = body.id === selectedPlanet ? 16 : 7;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, body.size, 0, TAU);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        if (body.id === selectedPlanet) {
+          ctx.strokeStyle = "rgba(215,180,106,0.95)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, body.size + 8, 0, TAU);
+          ctx.stroke();
+        }
+        ctx.fillStyle = "#ddd8c9";
+        ctx.font = "12px system-ui";
+        ctx.fillText(body.name, p.x + 10, p.y + 4);
+      });
+
+      if (measurePoints.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(215,180,106,0.95)";
+        ctx.fillStyle = "rgba(215,180,106,0.95)";
+        ctx.lineWidth = 2;
+        if (measurePoints.length === 2) {
+          ctx.beginPath();
+          ctx.moveTo(measurePoints[0].x, measurePoints[0].y);
+          ctx.lineTo(measurePoints[1].x, measurePoints[1].y);
+          ctx.stroke();
+        }
+        measurePoints.forEach((point, index) => {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 5, 0, TAU);
+          ctx.fill();
+          ctx.fillStyle = "#050505";
+          ctx.font = "bold 11px system-ui";
+          ctx.fillText(index === 0 ? "A" : "B", point.x - 4, point.y + 4);
+          ctx.fillStyle = "rgba(215,180,106,0.95)";
+        });
+        ctx.restore();
       }
     }
 
-    function drawOrbit() {
-      const s = state();
-      const rows = sampleOrbit(180);
-      const maxR = Math.max(...rows.map(row => Math.hypot(row.x, row.y)), s.a * (1 + s.e), 1);
-      const scale = Math.min(canvas.width, canvas.height) * 0.33 / maxR;
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const toScreen = p => ({ x: cx + p.x * scale, y: cy - p.y * scale });
-      drawBackground();
-
-      ctx.strokeStyle = "rgba(114,167,255,0.52)";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      rows.forEach((row, index) => {
-        const q = toScreen(row);
-        if (index === 0) ctx.moveTo(q.x, q.y);
-        else ctx.lineTo(q.x, q.y);
-      });
-      if (!currentIsEscape()) ctx.closePath();
-      ctx.stroke();
-
-      const current = pointAt(s.phaseValue);
-      const currentScreen = toScreen(current);
-      const previous = pointAt(clamp(s.phaseValue - 0.055, 0, 1));
-      const previousScreen = toScreen(previous);
-      ctx.fillStyle = "rgba(215,180,106,0.18)";
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(previousScreen.x, previousScreen.y);
-      ctx.lineTo(currentScreen.x, currentScreen.y);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = "rgba(215,180,106,0.55)";
-      ctx.stroke();
-
-      ctx.fillStyle = "#f0cc78";
-      ctx.shadowColor = "#f0cc78";
-      ctx.shadowBlur = 18;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 10, 0, TAU);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-
-      ctx.fillStyle = "#72a7ff";
-      ctx.shadowColor = "#72a7ff";
-      ctx.shadowBlur = 12;
-      ctx.beginPath();
-      ctx.arc(currentScreen.x, currentScreen.y, 6, 0, TAU);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-
-      ctx.strokeStyle = "rgba(244,244,241,0.28)";
-      ctx.setLineDash([4, 5]);
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(currentScreen.x, currentScreen.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      ctx.fillStyle = "#aaa69c";
-      ctx.font = "12px system-ui";
-      ctx.fillText(`r = ${fmt(current.r, 2)} AU`, currentScreen.x + 10, currentScreen.y - 10);
-      if (!currentIsEscape()) {
-        ctx.fillText(`P = ${fmt(s.P, 3)} yr`, 14, 22);
-        ctx.fillText(`rₚ = ${fmt(s.a * (1 - s.e), 2)} AU · rₐ = ${fmt(s.a * (1 + s.e), 2)} AU`, 14, 42);
-      } else {
-        ctx.fillText(`v₀/vcirc = ${fmt(s.vf, 2)} · vesc/vcirc = ${fmt(Math.sqrt(2), 3)}`, 14, 22);
-        ctx.fillText(current.energy >= 0 ? "trajetória aberta: ε ≥ 0" : "trajetória ligada: ε < 0", 14, 42);
+    function updateMeasureReadout() {
+      const readout = document.getElementById("angularMeasureReadout");
+      const floating = document.getElementById("mapMeasure");
+      if (measurePoints.length < 2) {
+        const text = measurePoints.length === 0 ? "clique em dois pontos" : "ponto A marcado";
+        readout.textContent = text;
+        floating.textContent = `Régua: ${text}`;
+        return;
       }
+      const a = screenToSky(measurePoints[0].x, measurePoints[0].y);
+      const b = screenToSky(measurePoints[1].x, measurePoints[1].y);
+      const deg = angularDistance(a, b);
+      const text = `${fmt(deg, 2)}° = ${fmt(deg * 60, 1)} arcmin`;
+      readout.textContent = text;
+      floating.textContent = `Régua AB: ${text}`;
+    }
+
+    function updateReadouts() {
+      const body = selectedBody();
+      const app = apparent(body);
+      document.getElementById("selectedMetric").textContent = body.name;
+      document.getElementById("lambdaMetric").textContent = `${fmt(app.lambda, 2)}°`;
+      document.getElementById("raMetric").textContent = `${fmt(app.ra, 2)} h`;
+      document.getElementById("altMetric").textContent = `${fmt(app.alt, 1)}°`;
+      document.getElementById("dateReadout").textContent = dayLabel(currentDay());
+      document.getElementById("hourReadout").textContent = `${fmt(Number(hourSlider.value), 1)} h`;
+      document.getElementById("latitudeReadout").textContent = `${fmt(Number(latitudeSlider.value), 0)}°`;
+      updateMeasureReadout();
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+      observations.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        tr.className = index === observations.length - 1 ? "selected" : "";
+        tr.innerHTML = `
+          <td>${row.date}</td>
+          <td>${row.planet}</td>
+          <td>${fmt(row.lambda, 2)}</td>
+          <td>${fmt(row.beta, 2)}</td>
+          <td>${fmt(row.ra, 2)}</td>
+          <td>${fmt(row.dec, 2)}</td>
+          <td>${fmt(row.alt, 1)}</td>
+          <td>${fmt(row.elongation, 1)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function render() {
+      updateReadouts();
+      drawSky();
+      drawChart();
+      renderTable();
+    }
+
+    function recordObservation() {
+      const body = selectedBody();
+      const app = apparent(body);
+      observations.push({
+        day: currentDay(),
+        date: dayLabel(currentDay()),
+        planet: body.name,
+        planetId: body.id,
+        lambda: app.lambda,
+        beta: app.beta,
+        ra: app.ra,
+        dec: app.dec,
+        alt: app.alt,
+        elongation: app.elongation,
+      });
+      render();
+    }
+
+    function exportCsv() {
+      if (observations.length === 0) recordObservation();
+      const header = ["dia", "data", "planeta", "lambda_deg", "beta_deg", "ra_h", "dec_deg", "altura_deg", "elongacao_deg"];
+      const lines = [header.join(",")];
+      observations.forEach(row => {
+        lines.push([row.day, row.date, row.planet, row.lambda, row.beta, row.ra, row.dec, row.alt, row.elongation]
+          .map(value => typeof value === "number" ? value.toFixed(8) : value).join(","));
+      });
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "laboratorio_capitulo_2_observacoes.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     }
 
     function drawAxes(ctx2, w, h, labels) {
       ctx2.strokeStyle = "#343434";
       ctx2.lineWidth = 1;
       ctx2.beginPath();
-      ctx2.moveTo(56, 24);
-      ctx2.lineTo(56, h - 42);
-      ctx2.lineTo(w - 20, h - 42);
+      ctx2.moveTo(60, 28);
+      ctx2.lineTo(60, h - 46);
+      ctx2.lineTo(w - 24, h - 46);
       ctx2.stroke();
       ctx2.fillStyle = "#aaa69c";
       ctx2.font = "12px system-ui";
-      ctx2.fillText(labels.y, 10, 18);
-      ctx2.fillText(labels.x, w - 132, h - 12);
+      ctx2.fillText(labels.y, 12, 20);
+      ctx2.fillText(labels.x, w - 152, h - 14);
+    }
+
+    function plotPoint(ctx2, x, y, color, r = 4) {
+      ctx2.fillStyle = color;
+      ctx2.beginPath();
+      ctx2.arc(x, y, r, 0, TAU);
+      ctx2.fill();
     }
 
     function drawChart() {
       const w = chart.width;
       const h = chart.height;
+      chartCtx.clearRect(0, 0, w, h);
       chartCtx.fillStyle = "#080808";
       chartCtx.fillRect(0, 0, w, h);
-      const padL = 56;
-      const padR = 20;
-      const padT = 24;
-      const padB = 42;
-      let rows = sampleOrbit(80);
-      let points;
-      let labels;
-      if (chartMode === "radius") {
-        points = rows.map(row => ({ x: row.t, y: row.r }));
-        labels = { x: "tempo (yr)", y: "r (AU)" };
-      } else if (chartMode === "speed") {
-        points = rows.map(row => ({ x: row.t, y: row.speed }));
-        labels = { x: "tempo (yr)", y: "v (AU/yr)" };
-      } else if (chartMode === "area") {
-        points = rows.map(row => ({ x: row.t, y: row.areaRate }));
-        labels = { x: "tempo (yr)", y: "ΔA/Δt" };
+      const padL = 60, padR = 24, padT = 28, padB = 46;
+      let points = [];
+      let labels = { x: "tempo (dias)", y: "longitude" };
+      const body = selectedBody();
+      if (chartMode === "longitude") {
+        for (let d = 0; d <= 2200; d += 12) points.push({ x: d, y: apparent(body, d).lambda });
+        labels = { x: "tempo (dias)", y: `λ ${body.name}` };
+      } else if (chartMode === "elongation") {
+        for (let d = 0; d <= 2200; d += 12) points.push({ x: d, y: apparent(body, d).elongation });
+        labels = { x: "tempo (dias)", y: "elongação" };
       } else {
-        const s = state();
-        points = [0.65, 0.9, 1.2, 1.7, 2.4, 3.5, 5.1, 7.5, 10].map(a => {
-          const P = Math.sqrt(a ** 3 / s.M);
-          return { x: a ** 3, y: P ** 2 };
-        });
+        points = planets.filter(p => p.a > 1).map(p => ({ x: p.a ** 3, y: p.P ** 2, name: p.name }));
         labels = { x: "a³ (AU³)", y: "P² (yr²)" };
       }
-
       drawAxes(chartCtx, w, h, labels);
       const minX = Math.min(...points.map(p => p.x));
       const maxX = Math.max(...points.map(p => p.x));
-      const minY = Math.min(...points.map(p => p.y));
-      const maxY = Math.max(...points.map(p => p.y));
+      const minY = chartMode === "longitude" ? 0 : Math.min(...points.map(p => p.y), 0);
+      const maxY = chartMode === "longitude" ? 360 : Math.max(...points.map(p => p.y));
       const sx = value => padL + ((value - minX) / Math.max(0.001, maxX - minX)) * (w - padL - padR);
       const sy = value => padT + (1 - (value - minY) / Math.max(0.001, maxY - minY)) * (h - padT - padB);
-
-      if (chartMode === "kepler") {
-        chartCtx.strokeStyle = "rgba(230,161,91,0.6)";
-        chartCtx.beginPath();
-        points.forEach((p, i) => {
-          if (i === 0) chartCtx.moveTo(sx(p.x), sy(p.y));
-          else chartCtx.lineTo(sx(p.x), sy(p.y));
-        });
-        chartCtx.stroke();
-      }
-
       chartCtx.strokeStyle = "#72a7ff";
       chartCtx.lineWidth = 1.5;
       chartCtx.beginPath();
@@ -830,103 +1075,111 @@
         else chartCtx.lineTo(sx(p.x), sy(p.y));
       });
       chartCtx.stroke();
+      points.forEach(p => plotPoint(chartCtx, sx(p.x), sy(p.y), "#72a7ff", 2.4));
 
-      points.forEach(p => {
-        chartCtx.fillStyle = "#72a7ff";
+      if (chartMode === "kepler") {
+        chartCtx.strokeStyle = "rgba(230,161,91,0.72)";
+        chartCtx.setLineDash([6, 5]);
         chartCtx.beginPath();
-        chartCtx.arc(sx(p.x), sy(p.y), 3.4, 0, TAU);
-        chartCtx.fill();
+        chartCtx.moveTo(sx(minX), sy(minX));
+        chartCtx.lineTo(sx(maxX), sy(maxX));
+        chartCtx.stroke();
+        chartCtx.setLineDash([]);
+      }
+
+      observations.filter(row => row.planetId === body.id || chartMode === "kepler").forEach(row => {
+        if (chartMode === "longitude") plotPoint(chartCtx, sx(row.day), sy(row.lambda), "#d7b46a", 5);
+        if (chartMode === "elongation") plotPoint(chartCtx, sx(row.day), sy(row.elongation), "#d7b46a", 5);
       });
+    }
 
-      if (chartMode !== "kepler") {
-        const current = pointAt(state().phaseValue);
-        const y = chartMode === "radius" ? current.r : chartMode === "speed" ? current.speed : current.areaRate;
-        chartCtx.fillStyle = "#d7b46a";
-        chartCtx.beginPath();
-        chartCtx.arc(sx(current.t), sy(y), 6, 0, TAU);
-        chartCtx.fill();
+    function setMapFullscreen(enabled) {
+      skyWrap.classList.toggle("map-fullscreen", enabled);
+      document.getElementById("toggleMapFullscreen").textContent = enabled ? "Voltar" : "Tela cheia";
+      drawSky();
+    }
+
+    async function toggleMapFullscreen() {
+      const willEnter = !skyWrap.classList.contains("map-fullscreen");
+      if (willEnter) {
+        setMapFullscreen(true);
+        if (skyWrap.requestFullscreen) {
+          try {
+            await skyWrap.requestFullscreen();
+          } catch (error) {
+            setMapFullscreen(true);
+          }
+        }
+      } else {
+        if (document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
+        setMapFullscreen(false);
       }
     }
 
-    function renderTable() {
-      const rows = sampleOrbit(24);
-      tableBody.innerHTML = "";
-      rows.forEach(row => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${fmt(row.t, 3)}</td>
-          <td>${fmt(row.x, 3)}</td>
-          <td>${fmt(row.y, 3)}</td>
-          <td>${fmt(row.r, 3)}</td>
-          <td>${fmt(row.speed, 3)}</td>
-          <td>${fmt(row.energy, 3)}</td>
-          <td>${fmt(row.areaRate, 3)}</td>
-        `;
-        tableBody.appendChild(tr);
+    function populateSelect() {
+      planetSelect.innerHTML = "";
+      planets.forEach(planet => {
+        const option = document.createElement("option");
+        option.value = planet.id;
+        option.textContent = planet.name;
+        planetSelect.appendChild(option);
       });
+      planetSelect.value = selectedPlanet;
     }
 
-    function render() {
-      syncReadouts();
-      drawOrbit();
-      drawChart();
-      renderTable();
-    }
-
-    function applyPreset(name) {
-      const p = presets[name];
-      mass.value = p.M;
-      semiMajor.value = p.a;
-      eccentricity.value = p.e;
-      velocityFactor.value = p.f;
-      phase.value = p.phase;
-      velocityFactor.disabled = name !== "escape";
+    sky.addEventListener("click", event => {
+      const rect = sky.getBoundingClientRect();
+      const sx = sky.width / rect.width;
+      const sy = sky.height / rect.height;
+      const x = (event.clientX - rect.left) * sx;
+      const y = (event.clientY - rect.top) * sy;
+      if (measurePoints.length === 2) measurePoints.length = 0;
+      measurePoints.push({ x, y });
+      let best = null;
+      let bestD = Infinity;
+      planets.forEach(planet => {
+        const app = apparent(planet);
+        const p = skyToScreen(app.lambda, app.beta);
+        const d = Math.hypot(p.x - x, p.y - y);
+        if (d < bestD) {
+          bestD = d;
+          best = planet;
+        }
+      });
+      if (best && bestD < 28) selectedPlanet = best.id;
+      planetSelect.value = selectedPlanet;
       render();
-    }
-
-    function exportCsv() {
-      const rows = sampleOrbit(96);
-      const header = ["t_yr", "x_AU", "y_AU", "r_AU", "v_AU_per_yr", "specific_energy_AU2_per_yr2", "area_rate_AU2_per_yr", "M_Msun", "a_AU", "e"];
-      const s = state();
-      const lines = [header.join(",")];
-      rows.forEach(row => {
-        lines.push([
-          row.t, row.x, row.y, row.r, row.speed, row.energy, row.areaRate, s.M, s.a, currentIsEscape() ? "open" : s.e,
-        ].map(value => typeof value === "number" ? value.toFixed(8) : value).join(","));
-      });
-      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "laboratorio_capitulo_2_orbita.csv";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function tick(now) {
-      const dt = Math.min(0.04, (now - lastTime) / 1000);
-      lastTime = now;
-      if (playing) {
-        const current = Number(phase.value);
-        phase.value = (current + dt * 0.045) % 1;
-        render();
-      }
-      requestAnimationFrame(tick);
-    }
-
-    preset.addEventListener("change", () => applyPreset(preset.value));
-    [mass, semiMajor, eccentricity, phase, velocityFactor].forEach(input => input.addEventListener("input", render));
-    document.getElementById("playPause").addEventListener("click", event => {
-      playing = !playing;
-      event.currentTarget.textContent = playing ? "Pausar" : "Animar";
     });
+
+    planetSelect.addEventListener("change", event => {
+      selectedPlanet = event.target.value;
+      render();
+    });
+    [daySlider, hourSlider, latitudeSlider].forEach(input => input.addEventListener("input", render));
+    document.getElementById("recordObservation").addEventListener("click", recordObservation);
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
-    document.getElementById("reset").addEventListener("click", () => applyPreset(preset.value));
-    document.getElementById("tab-radius").addEventListener("click", () => setChart("radius"));
-    document.getElementById("tab-speed").addEventListener("click", () => setChart("speed"));
-    document.getElementById("tab-area").addEventListener("click", () => setChart("area"));
+    document.getElementById("clearLog").addEventListener("click", () => {
+      observations.length = 0;
+      render();
+    });
+    document.getElementById("clearMeasure").addEventListener("click", () => {
+      measurePoints.length = 0;
+      render();
+    });
+    document.getElementById("toggleMapFullscreen").addEventListener("click", toggleMapFullscreen);
+    document.addEventListener("fullscreenchange", () => setMapFullscreen(document.fullscreenElement === skyWrap));
+
+    document.querySelectorAll(".view-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".view-tab").forEach(tab => tab.setAttribute("aria-selected", "false"));
+        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+        button.setAttribute("aria-selected", "true");
+        document.getElementById(button.dataset.view).classList.add("active");
+        drawChart();
+      });
+    });
+    document.getElementById("tab-longitude").addEventListener("click", () => setChart("longitude"));
+    document.getElementById("tab-elongation").addEventListener("click", () => setChart("elongation"));
     document.getElementById("tab-kepler").addEventListener("click", () => setChart("kepler"));
 
     function setChart(mode) {
@@ -935,8 +1188,12 @@
       drawChart();
     }
 
-    applyPreset("earth");
-    requestAnimationFrame(tick);
+    populateStars();
+    populateSelect();
+    daySlider.value = "0";
+    hourSlider.value = "22";
+    latitudeSlider.value = "-27";
+    render();
   </script>
 </body>
 </html>

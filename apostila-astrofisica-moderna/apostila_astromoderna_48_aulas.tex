@@ -467,41 +467,49 @@ O laboratório interativo deste capítulo está disponível em:
 \url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-2/}
 \end{center}
 
-Neste laboratório você observará um sistema orbital simulado em unidades astronômicas: distância em UA, tempo em anos e massa em massas solares. O objetivo é usar medidas de órbita para inferir massa, testar as leis de Kepler e decidir se uma trajetória é ligada ou de escape.
+Neste laboratório você trabalhará como um observador pré-telescópico ou do início da astronomia moderna. O painel não entrega a órbita vista de cima: ele mostra posições aparentes de planetas no céu, como longitude e latitude eclípticas, ascensão reta, declinação, altura e elongação solar. A tarefa é construir, a partir dessas medidas angulares, a evidência que levou às leis de Kepler.
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
-\textbf{Preparação dos dados.} Abra o laboratório, escolha um sistema observado e exporte o CSV. O arquivo contém tempo, posição, raio orbital, velocidade, energia específica e taxa de área varrida. Use pelo menos três configurações diferentes: uma órbita quase circular, uma órbita elíptica e o modo de escape.
+\textbf{Preparação dos dados.} Abra o laboratório, escolha um planeta, varie a data da observação e use \textit{Registrar observação}. Repita o procedimento por muitas datas. O CSV exportado contém data, planeta, longitude e latitude eclípticas, ascensão reta, declinação, altura e elongação solar. Use a régua angular do mapa para medir separações no céu sempre que precisar comparar duas posições.
 
-\textbf{Experimento 1: massa central pela terceira lei de Kepler.}
-Para uma órbita ligada, meça o semieixo maior $a$ e o período $P$. Em unidades de UA, ano e massa solar, use:
+\textbf{Experimento 1: caderno de observações de Marte.}
+Registre a longitude eclíptica de Marte a cada 20 ou 30 dias durante pelo menos três anos simulados. Faça um gráfico $\lambda(t)$. Identifique intervalos de movimento direto e movimento retrógrado. Explique por que uma descrição geocêntrica simples exigiria um movimento aparente complicado.
+
+\textbf{Experimento 2: período sinódico e período sideral.}
+Para Marte, Júpiter ou Saturno, encontre duas oposições sucessivas, isto é, datas em que a elongação solar fica próxima de $180^\circ$. A diferença entre essas datas é o período sinódico $S$. Para um planeta externo, calcule o período sideral:
 \[
-\frac{M}{M_\odot}=\frac{a^3}{P^2}.
+\frac{1}{P}=1-\frac{1}{S},
 \]
-Calcule a massa central para pelo menos três valores de $a$. Compare com a massa escolhida no controle do laboratório e registre o erro percentual.
+com $P$ e $S$ em anos. Compare seu $P$ com o valor inferido visualmente pela repetição do padrão no gráfico $\lambda(t)$.
 
-\textbf{Experimento 2: excentricidade orbital.}
-Na órbita elíptica, determine o periastro $r_p$ e o apoastro $r_a$ a partir da tabela ou do gráfico $r(t)$. Calcule:
+\textbf{Experimento 3: terceira lei de Kepler.}
+Use o período sideral obtido para planetas externos e estime o semieixo maior relativo:
 \[
-e=\frac{r_a-r_p}{r_a+r_p}.
+a=P^{2/3},
 \]
-Compare com o valor exibido no laboratório. Interprete fisicamente o que muda na órbita quando $e$ aumenta.
+em unidades de UA quando $P$ está em anos. Monte uma tabela com $P$, $P^2$, $a$ e $a^3$ para pelo menos Marte, Júpiter e Saturno. Verifique numericamente se $P^2/a^3$ é aproximadamente constante.
 
-\textbf{Experimento 3: segunda lei de Kepler.}
-Use a coluna $\Delta A/\Delta t$ do CSV para verificar se a taxa de área varrida permanece aproximadamente constante. Calcule a média, o maior desvio percentual em relação à média e explique por que a velocidade orbital aumenta perto do periastro.
-
-\textbf{Experimento 4: energia orbital.}
-Para três situações diferentes, use a energia específica:
+\textbf{Experimento 4: planetas internos e maior elongação.}
+Para Mercúrio ou Vênus, registre a elongação solar em muitas datas. Encontre a maior elongação $E_{\max}$. Para uma órbita aproximadamente circular interna, estime:
 \[
-\epsilon=\frac{v^2}{2}-\frac{GM}{r}.
+a\simeq\sin(E_{\max}).
 \]
-Classifique cada caso como órbita ligada ($\epsilon<0$), escape parabólico aproximado ($\epsilon\simeq0$) ou trajetória aberta ($\epsilon>0$). No modo de escape, compare a velocidade inicial com $v_{\rm esc}=\sqrt{2GM/r}$.
+Compare Mercúrio e Vênus. Qual deles fica mais distante angularmente do Sol no céu? O que isso indica sobre seu raio orbital?
 
-\textbf{Experimento 5: gráfico de Kepler.}
-Gere uma tabela com pelo menos cinco valores de $a$ para a mesma massa central. Para cada caso, meça $P$, calcule $a^3$ e $P^2$, e faça um gráfico $P^2$ versus $a^3$. A inclinação esperada é $1/M$ quando as unidades são UA, ano e $M_\odot$. Interprete a inclinação encontrada.
+\textbf{Experimento 5: altura, ascensão reta e janela observacional.}
+Escolha um planeta e varie a hora sideral local e a latitude do observador. Registre ascensão reta, declinação e altura. Determine em que horários o planeta está acima do horizonte. Interprete por que uma posição orbital favorável não garante observação se o objeto estiver baixo ou abaixo do horizonte.
 \end{lessonblock}
 
 \begin{lessonblock}{Formato da entrega}
-A entrega deve conter uma tabela com as configurações usadas, um gráfico $P^2$ versus $a^3$, um gráfico $r(t)$ de uma órbita elíptica, os cálculos de massa, excentricidade, energia e taxa de área, sempre com unidades. A conclusão deve responder: como uma órbita observada permite medir massa sem tocar no corpo central?
+A entrega deve conter o caderno de dados exportado, um gráfico $\lambda(t)$ para Marte, uma estimativa de período sinódico e sideral para pelo menos um planeta externo, uma tabela testando $P^2/a^3$, uma estimativa de $a$ por maior elongação para Mercúrio ou Vênus, e uma interpretação curta respondendo: como medidas puramente angulares podem revelar a arquitetura orbital do Sistema Solar?
+\end{lessonblock}
+
+\begin{lessonblock}{Extensão quantitativa: massa solar}
+Depois de obter $a$ e $P$, a terceira lei na forma dimensional permite inferir a massa central:
+\[
+M_\odot=\frac{4\pi^2a^3}{GP^2}.
+\]
+Use $a=1\,\mathrm{UA}$ e $P=1\,\mathrm{ano}$ para recuperar a escala de massa do Sol. Essa etapa mostra a ponte entre astronomia de posição e dinâmica gravitacional.
 \end{lessonblock}
 \newpage
 \section*{Capítulo 3 -- Radiação, corpo negro e espectros}
