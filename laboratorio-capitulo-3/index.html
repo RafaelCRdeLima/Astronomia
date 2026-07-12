@@ -1505,31 +1505,37 @@
     function drawDetector(points) {
       const w = detector.width;
       const h = detector.height;
+      const padL = 58, padR = 26;
+      const bandTop = h * 0.28;
+      const bandHeight = h * 0.42;
+      const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
       detectorCtx.clearRect(0, 0, w, h);
       detectorCtx.fillStyle = "#050505";
       detectorCtx.fillRect(0, 0, w, h);
       if (photonTotal <= 0 || observationSeconds <= 0) {
         detectorCtx.strokeStyle = "rgba(215,180,106,0.28)";
-        detectorCtx.strokeRect(0.5, h * 0.28 + 0.5, w - 1, h * 0.42);
+        detectorCtx.strokeRect(padL + 0.5, bandTop + 0.5, w - padL - padR, bandHeight);
         detectorCtx.fillStyle = "#aaa69c";
         detectorCtx.font = "12px system-ui";
-        detectorCtx.fillText("detector zerado: nenhum fóton registrado", 12, 24);
+        detectorCtx.fillText("detector zerado: nenhum fóton registrado", padL, 24);
         return;
       }
       const maxY = Math.max(...points.map(p => p.flux), 0.001);
       points.forEach((p, i) => {
-        const x = (i / points.length) * w;
+        const next = points[i + 1] || { lambda: p.lambda + 2 };
+        const x = sx(p.lambda);
+        const width = Math.max(1, sx(next.lambda) - x + 0.6);
         const intensity = clamp(p.flux / maxY, 0, 1);
         detectorCtx.fillStyle = visibleColor(p.lambda);
         detectorCtx.globalAlpha = 0.18 + 0.75 * intensity;
-        detectorCtx.fillRect(x, h * 0.28, Math.ceil(w / points.length) + 1, h * 0.42);
+        detectorCtx.fillRect(x, bandTop, width, bandHeight);
       });
       detectorCtx.globalAlpha = 1;
       detectorCtx.strokeStyle = "rgba(215,180,106,0.45)";
-      detectorCtx.strokeRect(0.5, h * 0.28 + 0.5, w - 1, h * 0.42);
+      detectorCtx.strokeRect(padL + 0.5, bandTop + 0.5, w - padL - padR, bandHeight);
       detectorCtx.fillStyle = "#aaa69c";
       detectorCtx.font = "12px system-ui";
-      detectorCtx.fillText("imagem espectral: azul → vermelho, brilho = contagens no detector", 12, 24);
+      detectorCtx.fillText("imagem espectral alinhada ao eixo λ do gráfico abaixo", padL, 24);
     }
 
     function drawAnalysis() {
