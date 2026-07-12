@@ -884,60 +884,64 @@ O laboratório interativo deste capítulo está disponível em:
 \url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-3/}
 \end{center}
 
-Neste laboratório você atua como um observador trabalhando com imagens reais do Sloan Digital Sky Survey (SDSS). O painel mostra recortes de campos observados nos filtros $g$, $r$ e $i$. A tarefa não é receber a temperatura pronta: primeiro você deve escolher uma estrela, desenhar uma abertura sobre o alvo, desenhar uma abertura de céu em uma região de fundo, medir os fluxos líquidos em cada filtro e então transformar esses fluxos em cores, temperatura aproximada e incerteza.
+Neste laboratório você atua como um observador que obtém espectros de estrelas desconhecidas a partir de um campo artificial controlado. A simulação não entrega diretamente temperatura ou velocidade: primeiro você deve escolher uma estrela, desenhar uma abertura sobre ela, desenhar outra abertura em uma região de fundo, iniciar a aquisição de fótons e esperar o detector acumular contagens. O espectro muda dinamicamente durante a observação, como aconteceria em uma exposição real.
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
-\textbf{Experimento 1: imagem científica em filtros.}
-Escolha um dos campos SDSS e alterne entre os filtros $g$, $r$ e $i$. Selecione uma estrela bem isolada. Anote qualitativamente em qual filtro ela parece mais brilhante. Essa comparação visual é apenas uma hipótese inicial: a resposta quantitativa deve vir da fotometria de abertura.
+\textbf{Experimento 1: aquisição de fótons.}
+Escolha uma estrela brilhante, desenhe uma abertura sobre ela e desenhe uma abertura de fundo em uma região sem estrelas. Antes de iniciar a aquisição, anote que o detector está zerado. Clique em \textit{Iniciar aquisição} e registre como o espectro muda após aproximadamente $5\,\mathrm{s}$, $15\,\mathrm{s}$ e $30\,\mathrm{s}$ de tempo acumulado. Explique por que o espectro fica menos irregular quando mais fótons são coletados.
 
-\textbf{Experimento 2: fotometria de abertura.}
-Com a ferramenta de abertura da estrela, circule o alvo. Com a ferramenta de fundo, circule uma região próxima sem estrela brilhante. Para cada filtro, o laboratório calcula
+\textbf{Experimento 2: extração por abertura.}
+Para a mesma estrela, use três raios de abertura: pequeno, adequado e grande. Para cada raio, mantenha a mesma abertura de fundo e registre $\lambda_{\max}$, $F_B$, $F_V$, $F_R$ e o fluxo integrado. Use a estimativa
 \[
-F_{\rm estrela}=C_{\rm ap}-\frac{A_{\rm ap}}{A_{\rm fundo}}C_{\rm fundo},
+C_{\rm estrela}=C_{\rm ap}-\frac{A_{\rm ap}}{A_{\rm fundo}}C_{\rm fundo}
 \]
-em que $C_{\rm ap}$ é a soma dos pixels na abertura da estrela, $C_{\rm fundo}$ é a soma dos pixels na abertura de céu e $A_{\rm ap}/A_{\rm fundo}$ corrige a diferença de áreas. Registre $F_g$, $F_r$ e $F_i$ para a estrela escolhida.
+para interpretar como a escolha da abertura altera o sinal coletado, o fundo subtraído e o ruído.
 
-\textbf{Experimento 3: escolha do raio.}
-Meça a mesma estrela com três raios de abertura: pequeno, intermediário e grande. Mantenha a mesma abertura de fundo. Faça uma tabela com $F_g$, $F_r$, $F_i$, $g-r$ e $r-i$ para os três casos. Explique numericamente por que uma abertura pequena perde fluxo e por que uma abertura grande pode aumentar o ruído.
+\textbf{Experimento 3: subtração de fundo.}
+Mantendo a mesma estrela e a mesma abertura do alvo, coloque a abertura de fundo em uma região limpa e depois em uma região contaminada por uma estrela fraca. Compare os espectros extraídos. Quantifique a diferença percentual no fluxo integrado e explique por que uma escolha ruim de fundo altera o contínuo.
 
-\textbf{Experimento 4: fundo real.}
-Mantendo a mesma abertura da estrela, escolha primeiro uma região de fundo limpa e depois uma região contaminada por estrelas fracas ou por fundo mais irregular. Compare os fluxos líquidos. Calcule a diferença percentual em $F_r$:
+\textbf{Experimento 4: calibração instrumental.}
+Para uma abertura bem escolhida, compare o espectro bruto, o espectro com dark subtraído e o espectro com dark + resposta instrumental corrigidos. Para cada caso, registre $\lambda_{\max}$ e calcule
 \[
-\frac{\Delta F_r}{F_{r,\rm limpo}}=
-\frac{|F_{r,\rm contaminado}-F_{r,\rm limpo}|}{F_{r,\rm limpo}}.
+T=\frac{2{,}898\times10^6}{\lambda_{\max}(\mathrm{nm})}\ \mathrm{K}.
 \]
-Interprete: o erro veio do alvo ou da escolha do céu?
+Compare as temperaturas obtidas e explique por que calibração não é detalhe estético: ela muda a forma física do contínuo.
 
-\textbf{Experimento 5: índices de cor.}
-Para pelo menos cinco estrelas, registre uma medida no caderno de dados. Usando os fluxos exportados, calcule
+\textbf{Experimento 5: temperatura por Wien.}
+Escolha três estrelas com cores visivelmente diferentes. Para cada uma, acumule fótons por tempo semelhante, use o espectro calibrado, determine $\lambda_{\max}$ e calcule $T$ pela lei de Wien. Ordene os alvos por temperatura. A estrela mais azul ficou com maior temperatura? A mais avermelhada ficou com menor temperatura?
+
+\textbf{Experimento 6: fotometria em bandas.}
+Para os mesmos alvos, registre $F_B$, $F_V$ e $F_R$. Calcule
 \[
-\begin{aligned}
-g-r&=-2{,}5\log_{10}(F_g/F_r),\\
-r-i&=-2{,}5\log_{10}(F_r/F_i).
-\end{aligned}
+B-V=-2{,}5\log_{10}(F_B/F_V).
 \]
-Ordene as estrelas por $g-r$. Quais são relativamente mais azuis? Quais são relativamente mais vermelhas?
+Compare $B-V$ com a temperatura estimada por Wien. Explique por que $B-V$ menor indica objeto relativamente mais azul e, em geral, mais quente.
 
-\textbf{Experimento 6: temperatura aproximada.}
-O painel estima uma temperatura a partir de uma conversão aproximada entre $g-r$ e $B-V$, seguida de uma relação empírica de cor--temperatura. Use os valores exportados para comparar suas estrelas. A temperatura maior corresponde sempre ao menor $g-r$? Discuta possíveis desvios: ruído, abertura, fundo, saturação e diferenças entre uma estrela real e um corpo negro ideal.
-
-\textbf{Experimento 7: incerteza e sinal-ruído.}
-Use os valores de S/N em $g$, $r$ e $i$. Para uma estrela brilhante e uma estrela fraca, compare em qual filtro a medida é mais confiável. Explique usando a dispersão do fundo: uma medida com fluxo alto, mas fundo muito variável, pode ser menos precisa do que parece.
+\textbf{Experimento 7: linhas espectrais e velocidade radial.}
+Escolha uma linha, preferencialmente H$\alpha$, H$\beta$ ou Na D. Registre $\lambda_{\rm obs}$ e calcule
+\[
+v_r\simeq c\frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}.
+\]
+Informe se o alvo está se aproximando ou se afastando. Repita com outra linha quando possível e compare os valores.
 
 \textbf{Experimento 8: interpretação física.}
-Escolha duas estrelas com cores bem diferentes. Para cada uma, entregue $F_g$, $F_r$, $F_i$, $g-r$, $r-i$, $T$ aproximada e S/N. Escreva uma interpretação curta separando três níveis:
+Escolha duas estrelas e escreva uma cadeia de inferência:
 \[
-\text{pixels medidos} \;\longrightarrow\; \text{fluxos e cores} \;\longrightarrow\; \text{temperatura inferida}.
+\text{fótons acumulados} \;\longrightarrow\; \text{espectro reduzido} \;\longrightarrow\; \text{temperatura, cor e velocidade radial}.
 \]
-Essa separação é essencial: o detector mede contagens; temperatura é uma inferência baseada em modelo.
+Indique o que foi medido diretamente e o que depende de modelo físico.
 \end{lessonblock}
 
 \begin{lessonblock}{Formato da entrega}
-A entrega deve conter o CSV exportado pelo laboratório, uma tabela com pelo menos cinco estrelas, os raios de abertura usados, os cálculos de $g-r$ e $r-i$, a temperatura aproximada indicada ou recalculada, uma comparação entre duas escolhas de fundo e uma interpretação curta sobre o que é observação direta e o que é inferência física.
+A entrega deve conter o CSV exportado pelo laboratório, uma tabela com pelo menos três alvos, os raios de abertura usados, o tempo acumulado de aquisição, os cálculos de $T$ por Wien, $B-V$, velocidade radial por pelo menos uma linha e uma interpretação curta separando observação direta de inferência física.
 \end{lessonblock}
 
-\begin{lessonblock}{Observação sobre os dados}
-Os campos usados no painel vêm de imagens reais reduzidas do SDSS DR12. Eles não são desenhos sintéticos: há fundo, ruído, estrelas fracas, pixels ruins e pequenas imperfeições de alinhamento entre filtros. Esses detalhes fazem parte do exercício, pois forçam escolhas semelhantes às de uma redução fotométrica real.
+\begin{lessonblock}{Extensão opcional: Laboratório 3b}
+Uma versão complementar com imagens reais do SDSS está disponível em:
+\begin{center}
+\url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-3b/}
+\end{center}
+Ela pode ser usada depois do laboratório artificial para comparar uma simulação controlada com fotometria de abertura em dados reais.
 \end{lessonblock}
 \newpage
 \section*{Capítulo 4 -- Telescópios, detectores e observação multi-banda}

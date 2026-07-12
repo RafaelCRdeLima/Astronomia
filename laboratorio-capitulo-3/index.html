@@ -3,31 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Laboratório 3 | Fotometria SDSS real</title>
+  <title>Laboratório 3 | Espectrofotometria estelar</title>
   <style>
     :root {
       --bg: #050505;
       --panel: #101010;
-      --panel2: #151515;
+      --panel-2: #151515;
       --line: #343434;
       --text: #f4f4f1;
       --muted: #aaa69c;
       --accent: #d7b46a;
       --blue: #72a7ff;
-      --green: #8fd18f;
-      --orange: #e2795b;
+      --cyan: #64d7d2;
+      --orange: #e6a15b;
       --bad: #d96d6d;
+      --good: #8fd18f;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
+      min-height: 100vh;
       color: var(--text);
       background: var(--bg);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overflow-x: hidden;
     }
-    button, select, input { font: inherit; }
-    .shell { width: min(1760px, calc(100vw - 28px)); margin: 0 auto; padding: 22px 0 28px; }
+
+    button, input, select { font: inherit; }
+
+    .shell {
+      width: min(1760px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 22px 0 28px;
+    }
+
     header {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -36,8 +47,20 @@
       padding-bottom: 16px;
       border-bottom: 1px solid var(--line);
     }
-    h1 { margin: 0; font-size: clamp(27px, 3.6vw, 52px); line-height: 1.02; overflow-wrap: anywhere; }
-    p { margin: 8px 0 0; color: var(--muted); line-height: 1.45; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 3.6vw, 52px);
+      line-height: 1.02;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
     .badge, .chip {
       color: var(--accent);
       border: 1px solid var(--line);
@@ -45,6 +68,7 @@
       font-size: 12px;
       white-space: nowrap;
     }
+
     .toolbar, .view-tabs, .tabs {
       display: flex;
       flex-wrap: wrap;
@@ -52,6 +76,7 @@
       margin: 14px 0;
       align-items: center;
     }
+
     .button, .tab {
       border: 1px solid var(--line);
       color: var(--text);
@@ -60,28 +85,42 @@
       cursor: pointer;
       text-decoration: none;
     }
-    .button:hover, .button:focus-visible, .tab:hover, .tab:focus-visible { border-color: var(--accent); outline: none; }
-    .button[aria-selected="true"], .tab[aria-selected="true"] {
+
+    .button:hover, .button:focus-visible, .tab:hover, .tab:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .view-tab[aria-selected="true"], .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .aperture-tool[aria-selected="true"] {
       border-color: var(--accent);
       color: var(--accent);
       background: #18140c;
     }
+
     .layout {
       display: grid;
-      grid-template-columns: minmax(860px, 1fr) minmax(360px, 0.35fr);
+      grid-template-columns: minmax(860px, 1fr) minmax(360px, 0.34fr);
       gap: 12px;
       align-items: start;
       min-width: 0;
     }
+
     .view { display: none; }
     .view.active { display: block; }
     .layout.view.active { display: grid; }
+
     .panel {
       background: linear-gradient(180deg, var(--panel), #0b0b0b);
       border: 1px solid var(--line);
       min-width: 0;
       overflow: hidden;
     }
+
     .panel h2 {
       margin: 0;
       padding: 12px 14px;
@@ -89,7 +128,9 @@
       font-size: 16px;
       border-bottom: 1px solid var(--line);
     }
+
     .body { padding: 12px 14px 14px; }
+
     canvas {
       display: block;
       width: 100%;
@@ -98,27 +139,60 @@
       background: #070707;
       border: 1px solid var(--line);
     }
-    #fieldCanvas { cursor: crosshair; touch-action: none; }
+
+    #skyField { cursor: crosshair; touch-action: none; }
+
     .metrics {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
       margin-top: 10px;
     }
-    .metric { border: 1px solid var(--line); background: var(--panel2); padding: 10px; min-height: 76px; }
-    .metric small { display: block; color: var(--muted); font-size: 11px; margin-bottom: 5px; }
-    .metric strong { display: block; color: var(--text); font-size: 18px; line-height: 1.1; overflow-wrap: anywhere; }
-    label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
-    select, input[type="range"] {
-      width: 100%;
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 10px;
+      min-height: 72px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    select, input[type="range"] { width: 100%; }
+
+    select {
       color: var(--text);
       background: #0d0d0d;
       border: 1px solid var(--line);
       padding: 9px;
     }
-    input[type="range"] { padding: 0; }
-    .control { padding: 10px 0; border-bottom: 1px solid rgba(52, 52, 52, 0.72); }
+
+    .control {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.72);
+    }
+
     .control:last-child { border-bottom: 0; }
+
     .readout {
       color: var(--text);
       font-size: 13px;
@@ -127,6 +201,7 @@
       gap: 12px;
       margin-top: 5px;
     }
+
     .formula {
       color: var(--muted);
       background: #080808;
@@ -137,20 +212,81 @@
       font-size: 12px;
       overflow-x: auto;
     }
-    .table-wrap { max-height: 68vh; overflow: auto; border: 1px solid var(--line); margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th, td { padding: 7px 8px; border-bottom: 1px solid rgba(52, 52, 52, 0.7); text-align: right; white-space: nowrap; }
+
+    .table-wrap {
+      max-height: 68vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.7);
+      text-align: right;
+      white-space: nowrap;
+    }
+
     th:first-child, td:first-child { text-align: left; }
-    th { position: sticky; top: 0; color: var(--accent); background: #090909; z-index: 1; }
-    .tasks { display: grid; gap: 8px; margin-top: 10px; }
-    .task { border: 1px solid var(--line); padding: 10px; background: #0b0b0b; color: var(--muted); line-height: 1.35; font-size: 13px; }
-    .task strong { display: block; color: var(--text); margin-bottom: 4px; }
-    .legend { display: flex; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 12px; margin-top: 8px; }
-    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+    th {
+      position: sticky;
+      top: 0;
+      color: var(--accent);
+      background: #090909;
+      z-index: 1;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .task {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #0b0b0b;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .task strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
     @media (max-width: 1240px) {
       .layout { grid-template-columns: 1fr; }
       .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
+
     @media (max-width: 760px) {
       .shell { width: calc(100vw - 16px); }
       header { grid-template-columns: 1fr; }
@@ -158,6 +294,7 @@
       .toolbar, .view-tabs { display: grid; grid-template-columns: 1fr; }
       .button, .chip { width: 100%; text-align: left; }
       .panel { width: 100%; max-width: 100%; margin-bottom: 12px; }
+      #skyField, #spectrum, #detector, #analysisChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
       h1 { font-size: 25px; line-height: 1.08; }
       p { font-size: 14px; }
       .metrics { grid-template-columns: 1fr; }
@@ -168,8 +305,8 @@
   <main class="shell">
     <header>
       <div>
-        <h1>Laboratório 3:<br>fotometria real<br>em campos SDSS</h1>
-        <p>Capítulo 3 · Radiação, cores e fotometria<br>Imagem real, fundo real, abertura e índices g-r/r-i</p>
+        <h1>Laboratório 3:<br>luz, temperatura<br>e espectros</h1>
+        <p>Capítulo 3 · Radiação, corpo negro e espectroscopia<br>Fotometria, calibração, linhas e velocidade radial</p>
       </div>
       <div class="badge">Astrofísica Moderna</div>
     </header>
@@ -177,10 +314,12 @@
     <div class="toolbar">
       <a class="button" href="../">Página principal</a>
       <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
+      <button class="button" id="observeToggle" type="button">Iniciar aquisição</button>
+      <button class="button" id="resetDetector" type="button">Zerar detector</button>
       <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
       <button class="button" id="exportCsv" type="button">Exportar CSV</button>
       <button class="button" id="clearLog" type="button">Limpar registros</button>
-      <span class="chip">Dados: SDSS DR12 corrected frames, filtros g/r/i</span>
+      <span class="chip">Observáveis: contagens por comprimento de onda</span>
     </div>
 
     <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
@@ -189,36 +328,35 @@
       <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Caderno de dados</button>
     </div>
 
-    <section class="layout view active" id="observationView" aria-label="Fotometria em imagem real">
+    <section class="layout view active" id="observationView" aria-label="Observação espectrofotométrica">
       <section class="panel">
-        <h2>Campo real SDSS e aberturas fotométricas</h2>
+        <h2>Campo observado e extração espectral</h2>
         <div class="body">
-          <canvas id="fieldCanvas" width="1024" height="1024" aria-label="Campo estelar real do SDSS"></canvas>
+          <canvas id="skyField" width="1500" height="780" aria-label="Campo de estrelas fotografado pelo satélite"></canvas>
           <div class="toolbar" aria-label="Ferramentas de abertura">
-            <button class="button tool" type="button" data-tool="select" aria-selected="true">Escolher estrela</button>
-            <button class="button tool" type="button" data-tool="star" aria-selected="false">Circular estrela</button>
-            <button class="button tool" type="button" data-tool="sky" aria-selected="false">Circular fundo</button>
-            <button class="button band" type="button" data-band="g" aria-selected="false">g</button>
-            <button class="button band" type="button" data-band="r" aria-selected="true">r</button>
-            <button class="button band" type="button" data-band="i" aria-selected="false">i</button>
-            <span class="chip" id="fieldStatus">Carregando dados reais...</span>
+            <button class="button aperture-tool" id="tool-select" type="button" data-tool="select" aria-selected="true">Escolher estrela</button>
+            <button class="button aperture-tool" id="tool-star" type="button" data-tool="star" aria-selected="false">Circular estrela</button>
+            <button class="button aperture-tool" id="tool-sky" type="button" data-tool="sky" aria-selected="false">Circular fundo</button>
+            <span class="chip" id="fieldStatus">Clique em uma estrela brilhante.</span>
           </div>
+          <canvas id="detector" width="1500" height="260" aria-label="Imagem espectral no detector"></canvas>
+          <canvas id="spectrum" width="1500" height="560" aria-label="Espectro observado"></canvas>
           <div class="metrics">
             <div class="metric">
-              <small>Fluxo g</small>
-              <strong id="gMetric">--</strong>
+              <small>Objeto observado</small>
+              <strong id="targetMetric">--</strong>
             </div>
             <div class="metric">
-              <small>Fluxo r</small>
-              <strong id="rMetric">--</strong>
+              <small>λ pico medido</small>
+              <strong id="peakMetric">--</strong>
             </div>
             <div class="metric">
-              <small>g-r</small>
-              <strong id="grMetric">--</strong>
-            </div>
-            <div class="metric">
-              <small>T aproximada</small>
+              <small>T por Wien</small>
               <strong id="tempMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>v radial por Hα</small>
+              <strong id="rvMetric">--</strong>
             </div>
           </div>
         </div>
@@ -228,26 +366,44 @@
         <h2>Instrumento</h2>
         <div class="body">
           <div class="control">
-            <label for="fieldSelect">Campo SDSS</label>
-            <select id="fieldSelect"></select>
+            <label>Alvo selecionado no campo</label>
+            <div class="formula" id="selectedTargetReadout">Nenhuma estrela selecionada.</div>
           </div>
+
           <div class="control">
-            <label for="stretchSlider">Contraste da imagem</label>
-            <input id="stretchSlider" type="range" min="0.25" max="3.5" step="0.05" value="0.75">
-            <div class="readout"><span id="stretchReadout">--</span><span>asinh</span></div>
+            <label>Aquisição contínua de fótons</label>
+            <div class="formula" id="acquisitionReadout">Aquisição pausada. Escolha o alvo e as aberturas antes de iniciar.</div>
+            <div class="readout"><span id="timeReadout">-- s acumulados</span><span id="photonReadout">-- fótons</span></div>
           </div>
+
           <div class="control">
-            <label>Alvo e aberturas</label>
-            <div class="formula" id="apertureReadout">Escolha uma estrela e desenhe as aberturas.</div>
+            <label for="calibrationSelect">Redução dos dados</label>
+            <select id="calibrationSelect">
+              <option value="raw">bruto: sinal + dark + resposta</option>
+              <option value="dark">subtrair dark</option>
+              <option value="response">dark + resposta instrumental</option>
+            </select>
           </div>
+
           <div class="control">
-            <label>Fonte dos pixels</label>
-            <div class="formula" id="sourceReadout">SDSS DR12 corrected frames.</div>
+            <label for="noiseSlider">Ruído atmosférico/instrumental</label>
+            <input id="noiseSlider" type="range" min="0" max="0.22" step="0.01">
+            <div class="readout"><span id="noiseReadout">--</span><span>S/N</span></div>
           </div>
+
+          <div class="control">
+            <label for="lineSelect">Linha para Doppler</label>
+            <select id="lineSelect">
+              <option value="halpha">Hα 656,3 nm</option>
+              <option value="hbeta">Hβ 486,1 nm</option>
+              <option value="sodium">Na D 589,0 nm</option>
+            </select>
+          </div>
+
           <div class="formula">
-            F = Σ estrela − (Aestrela/Afundo) Σ fundo<br>
-            g−r = −2,5 log10(Fg/Fr)<br>
-            r−i = −2,5 log10(Fr/Fi)
+            E=hc/λ ; λmax T = 2,898e-3 m K<br>
+            Fbol≈∫Fλ dλ ; F=σT⁴(R/d)²<br>
+            v/c≈Δλ/λ0
           </div>
         </div>
       </section>
@@ -257,34 +413,46 @@
       <section class="panel">
         <h2>Inferência física</h2>
         <div class="tabs" role="tablist" aria-label="Gráficos">
-          <button class="tab" id="tab-fluxes" type="button" aria-selected="true">fluxos</button>
-          <button class="tab" id="tab-colors" type="button" aria-selected="false">cores</button>
-          <button class="tab" id="tab-noise" type="button" aria-selected="false">ruído</button>
+          <button class="tab" id="tab-continuum" type="button" aria-selected="true">contínuo</button>
+          <button class="tab" id="tab-photometry" type="button" aria-selected="false">fotometria</button>
+          <button class="tab" id="tab-lines" type="button" aria-selected="false">linhas</button>
         </div>
         <div class="body">
-          <canvas id="analysisChart" width="1500" height="560" aria-label="Gráfico de análise fotométrica"></canvas>
+          <canvas id="analysisChart" width="1500" height="560" aria-label="Gráfico de análise"></canvas>
           <div class="legend">
-            <span><i class="dot" style="background: var(--blue)"></i>g</span>
-            <span><i class="dot" style="background: var(--green)"></i>r</span>
-            <span><i class="dot" style="background: var(--orange)"></i>i</span>
-            <span><i class="dot" style="background: var(--accent)"></i>cor/temperatura</span>
+            <span><i class="dot" style="background: var(--blue)"></i>dados calibrados</span>
+            <span><i class="dot" style="background: var(--accent)"></i>modelo ajustável</span>
+            <span><i class="dot" style="background: var(--orange)"></i>filtros/linhas</span>
           </div>
+
           <div class="tasks">
             <div class="task">
-              <strong>Experimento 1: abertura e fundo</strong>
-              Meça a mesma estrela com três raios de abertura. Para cada raio, use a mesma abertura de fundo e compare os fluxos líquidos em g, r e i.
+              <strong>Experimento 1: abertura da estrela</strong>
+              Escolha uma estrela no campo e extraia espectros com três raios de abertura. Compare λmax, fluxos BVR e fluxo integrado.
             </div>
             <div class="task">
-              <strong>Experimento 2: fundo real</strong>
-              Coloque a abertura de fundo em uma região limpa e depois em uma região com estrelas fracas. Quantifique quanto g-r e r-i mudam.
+              <strong>Experimento 2: abertura de fundo</strong>
+              Posicione o fundo em uma região limpa e depois em uma região contaminada. Explique como a subtração muda o contínuo.
             </div>
             <div class="task">
-              <strong>Experimento 3: cor e temperatura</strong>
-              Para pelo menos cinco estrelas, calcule g-r e r-i. Use a temperatura aproximada do painel e ordene as estrelas da mais azul à mais vermelha.
+              <strong>Experimento 3: calibração instrumental</strong>
+              Compare espectros bruto, com dark subtraído e com resposta corrigida. Quantifique como λmax e T mudam.
             </div>
             <div class="task">
-              <strong>Experimento 4: incerteza</strong>
-              Use a dispersão do fundo para comparar S/N em g, r e i. Explique em qual filtro a medida ficou mais confiável.
+              <strong>Experimento 4: temperatura por Wien</strong>
+              Meça λmax no contínuo calibrado e calcule T = 2,898e-3/λmax. Compare com o ajuste visual do contínuo.
+            </div>
+            <div class="task">
+              <strong>Experimento 5: fotometria em bandas</strong>
+              Registre fluxos B, V e R. Calcule B−V = −2,5 log10(FB/FV) e interprete cor e temperatura.
+            </div>
+            <div class="task">
+              <strong>Experimento 6: velocidade radial</strong>
+              Meça o centro observado de Hα, Hβ ou Na D. Calcule v ≈ c(λobs−λ0)/λ0 e indique aproximação/recessão.
+            </div>
+            <div class="task">
+              <strong>Experimento 7: luminosidade relativa</strong>
+              Integre o espectro calibrado para obter um fluxo bolométrico relativo e compare dois alvos registrados com tempo acumulado parecido.
             </div>
           </div>
         </div>
@@ -299,20 +467,21 @@
             <table>
               <thead>
                 <tr>
-                  <th>campo</th>
-                  <th>x</th>
-                  <th>y</th>
-                  <th>r estrela</th>
-                  <th>r fundo</th>
-                  <th>Fg</th>
-                  <th>Fr</th>
-                  <th>Fi</th>
-                  <th>g-r</th>
-                  <th>r-i</th>
+                  <th>alvo</th>
+                  <th>redução</th>
+                  <th>t acum s</th>
+                  <th>r estrela px</th>
+                  <th>r fundo px</th>
+                  <th>coleta %</th>
+                  <th>λmax nm</th>
                   <th>T K</th>
-                  <th>S/N g</th>
-                  <th>S/N r</th>
-                  <th>S/N i</th>
+                  <th>FB</th>
+                  <th>FV</th>
+                  <th>FR</th>
+                  <th>B−V</th>
+                  <th>linha</th>
+                  <th>λobs nm</th>
+                  <th>vr km/s</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -324,33 +493,57 @@
   </main>
 
   <script>
-    const bands = ["g", "r", "i"];
-    const dataBases = [
-      "data/",
-      "https://raw.githubusercontent.com/RafaelCRdeLima/Astronomia/main/laboratorio-capitulo-3/data/",
-    ];
-    const app = {
-      manifest: null,
-      field: null,
-      decoded: {},
-      displayStats: {},
-      displayBand: "r",
-      tool: "select",
-      selected: null,
-      starAperture: null,
-      skyAperture: null,
-      dragStart: null,
-      chartMode: "fluxes",
-      rows: [],
-    };
+    const C = 299792.458;
+    const WIEN = 2.897771955e6;
+    const HC_EV_NM = 1239.841984;
+    const LAMBDA_MIN = 360;
+    const LAMBDA_MAX = 820;
+    const SIM_SECONDS_PER_REAL_SECOND = 16;
+    const targets = [];
+    const fieldStars = [];
+    const observations = [];
+    let chartMode = "continuum";
+    let currentSpectrum = [];
+    let selectedTargetId = null;
+    let activeTool = "select";
+    let starAperture = null;
+    let skyAperture = null;
+    let dragStart = null;
+    let isObserving = false;
+    let lastFrameTime = null;
+    let observationSeconds = 0;
+    let photonTotal = 0;
+    let expectedRates = [];
+    let accumulatedRaw = [];
 
-    const canvas = document.getElementById("fieldCanvas");
-    const ctx = canvas.getContext("2d");
-    const chart = document.getElementById("analysisChart");
-    const chartCtx = chart.getContext("2d");
-    const fieldSelect = document.getElementById("fieldSelect");
-    const stretchSlider = document.getElementById("stretchSlider");
+    const skyField = document.getElementById("skyField");
+    const skyCtx = skyField.getContext("2d");
+    const detector = document.getElementById("detector");
+    const detectorCtx = detector.getContext("2d");
+    const spectrum = document.getElementById("spectrum");
+    const spectrumCtx = spectrum.getContext("2d");
+    const analysisChart = document.getElementById("analysisChart");
+    const analysisCtx = analysisChart.getContext("2d");
     const tableBody = document.getElementById("tableBody");
+    const calibrationSelect = document.getElementById("calibrationSelect");
+    const noiseSlider = document.getElementById("noiseSlider");
+    const lineSelect = document.getElementById("lineSelect");
+
+    function mulberry32(seed) {
+      return function rand() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    const sessionSeed = Math.floor(Date.now() % 100000000) ^ Math.floor(Math.random() * 1000000);
+    const rand = mulberry32(sessionSeed);
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
 
     function fmt(value, digits = 2) {
       if (!Number.isFinite(value)) return "--";
@@ -359,389 +552,792 @@
       return value.toFixed(digits);
     }
 
-    function decodeBand(encoded) {
-      const raw = atob(encoded.data);
-      const bytes = new Uint8Array(raw.length);
-      for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
-      return new Float32Array(bytes.buffer);
+    function planckShape(lambdaNm, temperature) {
+      const x = 1.4387769e7 / (lambdaNm * temperature);
+      return 1 / (Math.pow(lambdaNm, 5) * Math.expm1(x));
     }
 
-    async function fetchJsonWithFallback(fileName) {
-      let lastError = null;
-      for (const base of dataBases) {
-        try {
-          const response = await fetch(`${base}${fileName}`, { cache: "no-store" });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          return await response.json();
-        } catch (error) {
-          lastError = error;
-        }
+    function response(lambda) {
+      const blueCut = 1 / (1 + Math.exp(-(lambda - 385) / 18));
+      const redCut = 1 / (1 + Math.exp((lambda - 790) / 24));
+      const ripple = 1 + 0.08 * Math.sin(lambda / 43) - 0.05 * Math.cos(lambda / 67);
+      return clamp(blueCut * redCut * ripple, 0.06, 1.15);
+    }
+
+    function darkCurrent(lambda) {
+      return 0.025 + 0.000035 * (lambda - LAMBDA_MIN);
+    }
+
+    function gaussian(x, mu, sigma) {
+      return Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
+    }
+
+    function makeLineSet(kind) {
+      const jitter = amount => (rand() - 0.5) * amount;
+      const scale = 0.75 + rand() * 0.75;
+      const sets = {
+        quente: [
+          { lambda: 410.17, sigma: 3.4, depth: 0.18 * scale },
+          { lambda: 434.05, sigma: 3.2, depth: 0.22 * scale },
+          { lambda: 486.13, sigma: 3.3, depth: 0.30 * scale },
+          { lambda: 656.28, sigma: 3.7, depth: 0.22 * scale },
+          { lambda: 447.1, sigma: 2.4, depth: 0.16 * scale },
+        ],
+        balmer: [
+          { lambda: 410.17, sigma: 4.2, depth: 0.28 * scale },
+          { lambda: 434.05, sigma: 4.0, depth: 0.34 * scale },
+          { lambda: 486.13, sigma: 4.2, depth: 0.42 * scale },
+          { lambda: 656.28, sigma: 4.8, depth: 0.36 * scale },
+        ],
+        solar: [
+          { lambda: 393.37, sigma: 2.6, depth: 0.30 * scale },
+          { lambda: 396.85, sigma: 2.6, depth: 0.25 * scale },
+          { lambda: 430.0, sigma: 7.5, depth: 0.13 * scale },
+          { lambda: 486.13, sigma: 2.8, depth: 0.13 * scale },
+          { lambda: 517.0, sigma: 3.8, depth: 0.18 * scale },
+          { lambda: 589.0, sigma: 3.0, depth: 0.25 * scale },
+          { lambda: 656.28, sigma: 3.2, depth: 0.12 * scale },
+        ],
+        fria: [
+          { lambda: 430.0, sigma: 8.5, depth: 0.16 * scale },
+          { lambda: 517.0, sigma: 4.8, depth: 0.24 * scale },
+          { lambda: 589.0, sigma: 3.6, depth: 0.38 * scale },
+          { lambda: 656.28, sigma: 2.8, depth: 0.08 * scale },
+          { lambda: 705.0, sigma: 18.0, depth: 0.18 * scale },
+          { lambda: 760.0, sigma: 22.0, depth: 0.16 * scale },
+        ],
+        muitoFria: [
+          { lambda: 516.0, sigma: 7.0, depth: 0.22 * scale },
+          { lambda: 589.0, sigma: 4.0, depth: 0.42 * scale },
+          { lambda: 620.0, sigma: 18.0, depth: 0.18 * scale },
+          { lambda: 705.0, sigma: 24.0, depth: 0.34 * scale },
+          { lambda: 760.0, sigma: 28.0, depth: 0.30 * scale },
+        ],
+      };
+      return sets[kind].map(line => ({
+        lambda: [410.17, 434.05, 486.13, 589.0, 656.28].some(rest => Math.abs(rest - line.lambda) < 0.02)
+          ? line.lambda
+          : line.lambda + jitter(0.7),
+        sigma: line.sigma * (0.85 + rand() * 0.35),
+        depth: clamp(line.depth * (0.85 + rand() * 0.35), 0.04, 0.62),
+      }));
+    }
+
+    function temperatureRgb(temperature) {
+      const t = clamp(temperature, 2500, 22000) / 100;
+      let r, g, b;
+      if (t <= 66) {
+        r = 255;
+        g = 99.4708025861 * Math.log(t) - 161.1195681661;
+        b = t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307;
+      } else {
+        r = 329.698727446 * ((t - 60) ** -0.1332047592);
+        g = 288.1221695283 * ((t - 60) ** -0.0755148492);
+        b = 255;
       }
-      throw lastError || new Error(`Nao foi possivel carregar ${fileName}.`);
-    }
-
-    function percentile(values, q) {
-      const sample = [];
-      const step = Math.max(1, Math.floor(values.length / 12000));
-      for (let i = 0; i < values.length; i += step) sample.push(values[i]);
-      sample.sort((a, b) => a - b);
-      const idx = Math.max(0, Math.min(sample.length - 1, Math.floor(q * (sample.length - 1))));
-      return sample[idx];
-    }
-
-    function stretch(value, band) {
-      const stats = app.displayStats[band];
-      const sky = stats ? stats.black : app.field.bands[band].p50;
-      const high = Math.max((stats ? stats.white : app.field.bands[band].p995) - sky, 1e-6);
-      const contrast = Number(stretchSlider.value);
-      const lifted = Math.max(0, value - sky);
-      return Math.max(0, Math.min(1, Math.asinh(lifted * contrast / high * 12) / Math.asinh(12)));
-    }
-
-    function drawImage() {
-      if (!app.field) return;
-      const w = app.field.width;
-      const h = app.field.height;
-      const img = ctx.createImageData(w, h);
-      const gData = app.decoded.g, rData = app.decoded.r, iData = app.decoded.i;
-      for (let p = 0; p < w * h; p += 1) {
-        let rr, gg, bb;
-        const value = stretch(app.decoded[app.displayBand][p], app.displayBand);
-        rr = gg = bb = value;
-        img.data[4 * p] = Math.min(255, rr * 255);
-        img.data[4 * p + 1] = Math.min(255, gg * 255);
-        img.data[4 * p + 2] = Math.min(255, bb * 255);
-        img.data[4 * p + 3] = 255;
-      }
-      const tmp = document.createElement("canvas");
-      tmp.width = w; tmp.height = h;
-      tmp.getContext("2d").putImageData(img, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(tmp, 0, 0, canvas.width, canvas.height);
-      drawOverlays();
-    }
-
-    function toCanvas(point) {
-      return { x: point.x / app.field.width * canvas.width, y: point.y / app.field.height * canvas.height, r: point.r / app.field.width * canvas.width };
-    }
-
-    function drawCircle(aperture, color, label) {
-      if (!aperture) return;
-      const c = toCanvas(aperture);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.fillStyle = color;
-      ctx.font = "18px system-ui";
-      ctx.fillText(label, c.x + c.r + 8, c.y - c.r - 6);
-    }
-
-    function drawOverlays() {
-      if (app.selected) {
-        const s = toCanvas({ ...app.selected, r: 1 });
-        ctx.fillStyle = "#72a7ff";
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, 5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      drawCircle(app.starAperture, "#72a7ff", "estrela");
-      drawCircle(app.skyAperture, "#8fd18f", "fundo");
-    }
-
-    function canvasPoint(event) {
-      const rect = canvas.getBoundingClientRect();
       return {
-        x: (event.clientX - rect.left) * app.field.width / rect.width,
-        y: (event.clientY - rect.top) * app.field.height / rect.height,
+        r: Math.round(clamp(r, 0, 255)),
+        g: Math.round(clamp(g, 0, 255)),
+        b: Math.round(clamp(b, 0, 255)),
       };
     }
 
-    function aperturePixels(aperture, band = "r") {
-      if (!aperture || !app.field) return [];
-      const w = app.field.width, h = app.field.height;
-      const shift = app.field.bands[band]?.shift || { dx: 0, dy: 0 };
-      const cx = aperture.x + shift.dx;
-      const cy = aperture.y + shift.dy;
-      const r2 = aperture.r * aperture.r;
-      const x0 = Math.max(0, Math.floor(cx - aperture.r));
-      const x1 = Math.min(w - 1, Math.ceil(cx + aperture.r));
-      const y0 = Math.max(0, Math.floor(cy - aperture.r));
-      const y1 = Math.min(h - 1, Math.ceil(cy + aperture.r));
-      const px = [];
-      for (let y = y0; y <= y1; y += 1) {
-        for (let x = x0; x <= x1; x += 1) {
-          if ((x - cx) ** 2 + (y - cy) ** 2 <= r2) px.push(y * w + x);
+    function temperatureColor(temperature, alpha = 1) {
+      const c = temperatureRgb(temperature);
+      return `rgba(${c.r},${c.g},${c.b},${alpha})`;
+    }
+
+    function apparentClass(kind) {
+      if (kind === "quente") return "azulada, linhas de H/He possíveis";
+      if (kind === "balmer") return "branco-azulada, Balmer forte";
+      if (kind === "solar") return "amarela, metais visíveis";
+      if (kind === "fria") return "alaranjada, metais fortes";
+      return "avermelhada, bandas largas";
+    }
+
+    function makeTargets() {
+      const presets = [
+        { name: "Estrela A", t: 3300 + rand() * 700, rv: -120 + rand() * 240, scale: 0.75 + rand() * 0.9, kind: "muitoFria" },
+        { name: "Estrela B", t: 4200 + rand() * 850, rv: -120 + rand() * 240, scale: 0.8 + rand() * 1.0, kind: "fria" },
+        { name: "Estrela C", t: 5400 + rand() * 900, rv: -140 + rand() * 280, scale: 0.7 + rand() * 1.2, kind: "solar" },
+        { name: "Estrela D", t: 6800 + rand() * 1200, rv: -160 + rand() * 320, scale: 0.7 + rand() * 1.1, kind: "balmer" },
+        { name: "Estrela E", t: 9500 + rand() * 3200, rv: -220 + rand() * 440, scale: 0.65 + rand() * 1.25, kind: "quente" },
+        { name: "Estrela F", t: 14500 + rand() * 6500, rv: -260 + rand() * 520, scale: 0.55 + rand() * 1.35, kind: "quente" },
+      ];
+      presets.forEach((p, i) => {
+        targets.push({
+          id: `target-${i + 1}`,
+          name: p.name,
+          temperature: p.t,
+          rv: p.rv,
+          scale: p.scale,
+          kind: p.kind,
+          absorption: 0.85 + rand() * 0.35,
+          lines: makeLineSet(p.kind),
+          x: 190 + rand() * 1100,
+          y: 135 + rand() * 500,
+          psf: 11 + rand() * 5,
+          mag: 1.8 + rand() * 1.8,
+          sky: 0.018 + rand() * 0.025,
+        });
+      });
+      selectedTargetId = targets[0].id;
+      for (let i = 0; i < 130; i += 1) {
+        const fieldTemperature = 2800 + rand() * 12000;
+        fieldStars.push({
+          x: 30 + rand() * (skyField.width - 60),
+          y: 38 + rand() * (skyField.height - 76),
+          r: 0.7 + rand() * 2.8,
+          color: temperatureColor(fieldTemperature, 1),
+          alpha: 0.22 + rand() * 0.58,
+          temperature: fieldTemperature,
+          flux: rand() < 0.82 ? 0.004 + rand() * 0.028 : 0,
+          rv: -180 + rand() * 360,
+        });
+      }
+    }
+
+    function currentTarget() {
+      return targets.find(t => t.id === selectedTargetId) || targets[0];
+    }
+
+    function localBackground(x, y) {
+      return 0.02 + 0.012 * Math.sin(x / 190) + 0.009 * Math.cos(y / 150) + 0.006 * Math.sin((x + y) / 240);
+    }
+
+    function apertureQuality(target) {
+      if (!target || !starAperture || !skyAperture) {
+        return { capture: 0, contamination: 0.16, skyResidual: 0.04, confusionStar: 0, confusionSky: 0, valid: false };
+      }
+      const dx = starAperture.x - target.x;
+      const dy = starAperture.y - target.y;
+      const offset = Math.hypot(dx, dy);
+      const centered = Math.exp(-0.5 * (offset / Math.max(target.psf, 1)) ** 2);
+      const encircled = 1 - Math.exp(-0.5 * (starAperture.r / Math.max(target.psf, 1)) ** 2);
+      const capture = clamp(centered * encircled, 0.03, 1);
+      const skyDistance = Math.hypot(skyAperture.x - target.x, skyAperture.y - target.y);
+      const contamination = skyDistance < skyAperture.r + target.psf * 3 ? 0.24 : 0;
+      const skyStar = localBackground(target.x, target.y);
+      const skyMeasured = localBackground(skyAperture.x, skyAperture.y) + contamination;
+      const areaRatio = (starAperture.r ** 2) / Math.max(skyAperture.r ** 2, 1);
+      const confusionStar = fieldStars.reduce((sum, star) => {
+        const d = Math.hypot(star.x - starAperture.x, star.y - starAperture.y);
+        const inside = d < starAperture.r + star.r * 2.5 ? 1 : 0;
+        return sum + inside * star.flux;
+      }, 0);
+      const confusionSky = fieldStars.reduce((sum, star) => {
+        const d = Math.hypot(star.x - skyAperture.x, star.y - skyAperture.y);
+        const inside = d < skyAperture.r + star.r * 2.5 ? 1 : 0;
+        return sum + inside * star.flux;
+      }, 0);
+      return {
+        capture,
+        contamination,
+        confusionStar,
+        confusionSky,
+        skyResidual: (skyStar - skyMeasured) * areaRatio,
+        valid: true,
+      };
+    }
+
+    function lineRest() {
+      const id = lineSelect.value;
+      if (id === "hbeta") return { id, label: "Hβ", lambda: 486.13 };
+      if (id === "sodium") return { id, label: "Na D", lambda: 589.0 };
+      return { id: "halpha", label: "Hα", lambda: 656.28 };
+    }
+
+    function gaussianNoise() {
+      const u1 = Math.max(rand(), 1e-9);
+      const u2 = Math.max(rand(), 1e-9);
+      return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    }
+
+    function makeExpectedRates(target) {
+      const aperture = apertureQuality(target);
+      const points = [];
+      const normLambda = 550;
+      const normTrue = Math.max(planckShape(normLambda, target.temperature), 1e-30);
+      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
+        let continuum = target.scale * planckShape(lambda, target.temperature) / normTrue;
+        continuum = Math.min(continuum, 4.8);
+        target.lines.forEach(line => {
+          const observed = line.lambda * (1 + target.rv / C);
+          continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
+        });
+        const trueFlux = continuum * aperture.capture;
+        const confusionShape = fieldStars.reduce((sum, star) => {
+          if (!star.flux) return sum;
+          const starNorm = Math.max(planckShape(normLambda, star.temperature), 1e-30);
+          const shiftedNa = 589.0 * (1 + star.rv / C);
+          const shape = planckShape(lambda, star.temperature) / starNorm;
+          const lineDip = 1 - 0.18 * gaussian(lambda, shiftedNa, 4.2);
+          return sum + star.flux * shape * lineDip;
+        }, 0);
+        const confusionResidual = (aperture.confusionStar - aperture.confusionSky * (starAperture ? (starAperture.r ** 2) / Math.max(skyAperture?.r ** 2 || 1, 1) : 0)) * confusionShape;
+        const skyColor = 0.018 + aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88)) + Math.max(0, confusionResidual);
+        const resp = response(lambda);
+        const darkRate = darkCurrent(lambda) * 0.018;
+        const sourceRate = Math.max(0.0001, (trueFlux + skyColor) * resp * 0.09);
+        const apertureNoise = Number(noiseSlider.value) + (1 - aperture.capture) * 0.08 + aperture.contamination * 0.18;
+        points.push({ lambda, trueFlux, response: resp, darkRate, rawRate: sourceRate + darkRate, apertureNoise });
+      }
+      return points;
+    }
+
+    function resetObservation() {
+      expectedRates = makeExpectedRates(currentTarget());
+      accumulatedRaw = expectedRates.map(() => 0);
+      observationSeconds = 0;
+      photonTotal = 0;
+      currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0, response: p.response }));
+      lastFrameTime = null;
+      renderObservation();
+    }
+
+    function addPhotons(dt) {
+      if (!expectedRates.length) resetObservation();
+      expectedRates.forEach((p, i) => {
+        const mean = p.rawRate * dt;
+        const sigma = Math.sqrt(Math.max(mean, 0.0001)) * (0.45 + p.apertureNoise * 2.4);
+        const incoming = Math.max(0, mean + gaussianNoise() * sigma);
+        accumulatedRaw[i] += incoming;
+        photonTotal += incoming;
+      });
+      observationSeconds += dt;
+      updateSpectrumFromAccumulator();
+    }
+
+    function updateSpectrumFromAccumulator() {
+      const reduction = calibrationSelect.value;
+      const t = Math.max(observationSeconds, 0.001);
+      currentSpectrum = expectedRates.map((p, i) => {
+        const measuredRate = accumulatedRaw[i] / t;
+        let flux = measuredRate;
+        if (reduction === "dark") flux = Math.max(0, measuredRate - p.darkRate);
+        if (reduction === "response") flux = Math.max(0, (measuredRate - p.darkRate) / p.response);
+        return { lambda: p.lambda, flux, trueFlux: p.trueFlux, raw: measuredRate, response: p.response };
+      });
+    }
+
+    function canvasPoint(event, canvas) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * canvas.width / rect.width,
+        y: (event.clientY - rect.top) * canvas.height / rect.height,
+      };
+    }
+
+    function drawCircle(ctx, aperture, color, label) {
+      if (!aperture) return;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(aperture.x, aperture.y, aperture.r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.font = "18px system-ui";
+      ctx.fillText(label, aperture.x + aperture.r + 8, aperture.y - aperture.r - 6);
+    }
+
+    function drawSkyField() {
+      const w = skyField.width;
+      const h = skyField.height;
+      const bg = skyCtx.createLinearGradient(0, 0, w, h);
+      bg.addColorStop(0, "#050711");
+      bg.addColorStop(0.5, "#080808");
+      bg.addColorStop(1, "#11100c");
+      skyCtx.fillStyle = bg;
+      skyCtx.fillRect(0, 0, w, h);
+      for (let x = 0; x <= w; x += 100) {
+        skyCtx.strokeStyle = "rgba(255,255,255,0.045)";
+        skyCtx.lineWidth = 1;
+        skyCtx.beginPath();
+        skyCtx.moveTo(x, 0);
+        skyCtx.lineTo(x, h);
+        skyCtx.stroke();
+      }
+      for (let y = 0; y <= h; y += 100) {
+        skyCtx.strokeStyle = "rgba(255,255,255,0.045)";
+        skyCtx.beginPath();
+        skyCtx.moveTo(0, y);
+        skyCtx.lineTo(w, y);
+        skyCtx.stroke();
+      }
+      fieldStars.forEach(star => {
+        skyCtx.globalAlpha = star.alpha;
+        skyCtx.fillStyle = star.color;
+        skyCtx.beginPath();
+        skyCtx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        skyCtx.fill();
+      });
+      skyCtx.globalAlpha = 1;
+      targets.forEach(target => {
+        const selected = target.id === selectedTargetId;
+        const radius = 6.8 - target.mag + target.scale * 2.4;
+        const glow = skyCtx.createRadialGradient(target.x, target.y, 0, target.x, target.y, target.psf * 4.2);
+        glow.addColorStop(0, temperatureColor(target.temperature, 0.98));
+        glow.addColorStop(0.18, temperatureColor(target.temperature, 0.58));
+        glow.addColorStop(1, "rgba(255,255,255,0)");
+        skyCtx.fillStyle = glow;
+        skyCtx.beginPath();
+        skyCtx.arc(target.x, target.y, target.psf * 4.2, 0, Math.PI * 2);
+        skyCtx.fill();
+        skyCtx.fillStyle = temperatureColor(target.temperature, 1);
+        skyCtx.beginPath();
+        skyCtx.arc(target.x, target.y, radius, 0, Math.PI * 2);
+        skyCtx.fill();
+        if (selected) {
+          skyCtx.fillStyle = "#72a7ff";
+          skyCtx.beginPath();
+          skyCtx.arc(target.x, target.y, 4.2, 0, Math.PI * 2);
+          skyCtx.fill();
         }
+      });
+      drawCircle(skyCtx, starAperture, "#72a7ff", "estrela");
+      drawCircle(skyCtx, skyAperture, "#8fd18f", "fundo");
+      const target = currentTarget();
+      const q = apertureQuality(target);
+      document.getElementById("fieldStatus").textContent = target
+        ? (q.valid ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%.` : `Alvo: ${target.name}. Desenhe abertura da estrela e do fundo.`)
+        : "Clique em uma estrela brilhante.";
+      document.getElementById("selectedTargetReadout").textContent = target
+        ? `${target.name}; x=${fmt(target.x, 0)} px, y=${fmt(target.y, 0)} px; classe aparente: ${apparentClass(target.kind)}; abertura estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px`
+        : "Nenhuma estrela selecionada.";
+    }
+
+    function visibleColor(lambda) {
+      const t = clamp((lambda - 380) / 400, 0, 1);
+      const r = Math.round(255 * clamp(Math.sin(Math.PI * (t - 0.05)), 0, 1));
+      const g = Math.round(220 * clamp(Math.sin(Math.PI * (t + 0.18)), 0, 1));
+      const b = Math.round(255 * clamp(Math.sin(Math.PI * (1.05 - t)), 0, 1));
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function integrateBand(points, center, width) {
+      let sum = 0;
+      let norm = 0;
+      points.forEach(p => {
+        const w = gaussian(p.lambda, center, width / 2.35);
+        sum += p.flux * w;
+        norm += w;
+      });
+      return norm > 0 ? sum / norm : 0;
+    }
+
+    function metrics(points = currentSpectrum) {
+      if (!points.length) return null;
+      const smoothed = points.map((p, i) => {
+        const slice = points.slice(Math.max(0, i - 3), Math.min(points.length, i + 4));
+        return { lambda: p.lambda, flux: slice.reduce((s, q) => s + q.flux, 0) / slice.length };
+      });
+      const peak = smoothed.reduce((best, p) => p.flux > best.flux ? p : best, smoothed[0]);
+      const temp = WIEN / peak.lambda;
+      const b = integrateBand(points, 440, 90);
+      const v = integrateBand(points, 550, 85);
+      const r = integrateBand(points, 700, 130);
+      const bv = -2.5 * Math.log10(Math.max(b, 1e-6) / Math.max(v, 1e-6));
+      const bol = points.reduce((s, p, i) => i === 0 ? 0 : s + p.flux * (p.lambda - points[i - 1].lambda), 0);
+      const line = lineRest();
+      const window = points.filter(p => Math.abs(p.lambda - line.lambda) < 18);
+      const minPoint = window.reduce((best, p) => p.flux < best.flux ? p : best, window[0]);
+      const rv = C * (minPoint.lambda - line.lambda) / line.lambda;
+      return { peak: peak.lambda, temp, b, v, r, bv, bol, line, lineObserved: minPoint.lambda, rv };
+    }
+
+    function drawAxes(ctx, w, h, labels) {
+      const padL = 58, padR = 26, padT = 28, padB = 58;
+      ctx.strokeStyle = "#343434";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padL, padT);
+      ctx.lineTo(padL, h - padB);
+      ctx.lineTo(w - padR, h - padB);
+      ctx.stroke();
+      ctx.fillStyle = "#aaa69c";
+      ctx.font = "12px system-ui";
+      ctx.fillText(labels.y, 12, 20);
+      ctx.fillText(labels.x, w - 155, h - 12);
+      if (labels.x.includes("λ")) {
+        const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+        [360, 400, 500, 600, 700, 820].forEach(lambda => {
+          const x = sx(lambda);
+          ctx.strokeStyle = "rgba(170,166,156,0.35)";
+          ctx.beginPath();
+          ctx.moveTo(x, h - padB);
+          ctx.lineTo(x, h - padB + 5);
+          ctx.stroke();
+          ctx.fillStyle = "#aaa69c";
+          ctx.fillText(String(lambda), x - 12, h - padB + 20);
+        });
+        ctx.fillStyle = "#72a7ff";
+        ctx.fillText("azul", sx(430) - 12, h - padB + 36);
+        ctx.fillStyle = "#e2795b";
+        ctx.fillText("vermelho", sx(690) - 24, h - padB + 36);
       }
-      return px;
     }
 
-    function stats(values) {
-      const n = values.length;
-      if (!n) return { sum: NaN, mean: NaN, sigma: NaN };
-      const sum = values.reduce((a, b) => a + b, 0);
-      const mean = sum / n;
-      const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, n - 1);
-      return { sum, mean, sigma: Math.sqrt(variance) };
-    }
-
-    function measure() {
-      if (!app.field || !app.starAperture || !app.skyAperture) return null;
-      const result = { nStar: 0, nSky: 0, fluxes: {}, sky: {}, sn: {} };
-      for (const band of bands) {
-        const starPx = aperturePixels(app.starAperture, band);
-        const skyPx = aperturePixels(app.skyAperture, band);
-        if (starPx.length < 5 || skyPx.length < 5) return null;
-        if (band === "r") { result.nStar = starPx.length; result.nSky = skyPx.length; }
-        const areaRatio = starPx.length / skyPx.length;
-        const data = app.decoded[band];
-        const star = stats(starPx.map(i => data[i]));
-        const sky = stats(skyPx.map(i => data[i]));
-        const flux = star.sum - areaRatio * sky.sum;
-        const err = sky.sigma * Math.sqrt(starPx.length + starPx.length * areaRatio);
-        result.fluxes[band] = flux;
-        result.sky[band] = sky;
-        result.sn[band] = err > 0 ? flux / err : NaN;
+    function drawSpectrumCanvas(ctx, canvas, points, mode = "spectrum") {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#080808";
+      ctx.fillRect(0, 0, w, h);
+      drawAxes(ctx, w, h, { x: "λ (nm)", y: mode === "response" ? "resposta" : "fluxo" });
+      const padL = 58, padR = 26, padT = 28, padB = 58;
+      if (photonTotal <= 0 || observationSeconds <= 0) {
+        ctx.fillStyle = "#aaa69c";
+        ctx.font = "15px system-ui";
+        ctx.fillText("sem fótons acumulados: clique em Iniciar aquisição", padL + 18, padT + 46);
+        return;
       }
-      const fg = result.fluxes.g, fr = result.fluxes.r, fi = result.fluxes.i;
-      result.gr = fg > 0 && fr > 0 ? -2.5 * Math.log10(fg / fr) : NaN;
-      result.ri = fr > 0 && fi > 0 ? -2.5 * Math.log10(fr / fi) : NaN;
-      const bv = Number.isFinite(result.gr) ? 0.98 * result.gr + 0.22 : NaN;
-      result.temp = Number.isFinite(bv) ? 4600 * (1 / (0.92 * bv + 1.7) + 1 / (0.92 * bv + 0.62)) : NaN;
-      return result;
+      const maxY = Math.max(...points.map(p => p.flux), 0.001) * 1.08;
+      const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+      const sy = value => padT + (1 - value / maxY) * (h - padT - padB);
+      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 5) {
+        if (lambda < 380) ctx.fillStyle = "rgb(52,48,116)";
+        else if (lambda > 760) ctx.fillStyle = "rgb(92,24,22)";
+        else ctx.fillStyle = visibleColor(lambda);
+        ctx.globalAlpha = 0.13;
+        ctx.fillRect(sx(lambda), padT, Math.max(1, sx(lambda + 5) - sx(lambda)), h - padT - padB);
+      }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "#aaa69c";
+      ctx.font = "11px system-ui";
+      ctx.fillText("UV próx.", sx(365), padT + 14);
+      ctx.fillText("IR próx.", sx(770), padT + 14);
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "#72a7ff";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        const x = sx(p.lambda);
+        const y = clamp(sy(p.flux), padT, h - padB);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ["halpha", "hbeta", "sodium"].forEach(id => {
+        const old = lineSelect.value;
+        lineSelect.value = id;
+        const line = lineRest();
+        lineSelect.value = old;
+        const x = sx(line.lambda);
+        ctx.strokeStyle = "rgba(230,161,91,0.65)";
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, padT);
+        ctx.lineTo(x, h - padB);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#e6a15b";
+        ctx.font = "11px system-ui";
+        ctx.fillText(line.label, x + 4, padT + 14);
+      });
     }
 
-    function updateReadouts() {
-      const m = measure();
-      document.getElementById("stretchReadout").textContent = fmt(Number(stretchSlider.value), 2);
-      document.getElementById("gMetric").textContent = m ? fmt(m.fluxes.g, 2) : "--";
-      document.getElementById("rMetric").textContent = m ? fmt(m.fluxes.r, 2) : "--";
-      document.getElementById("grMetric").textContent = m ? fmt(m.gr, 3) : "--";
-      document.getElementById("tempMetric").textContent = m ? `${fmt(m.temp, 0)} K` : "--";
-      const selected = app.selected ? `x=${fmt(app.selected.x, 0)}, y=${fmt(app.selected.y, 0)}` : "sem estrela marcada";
-      const star = app.starAperture ? `r estrela=${fmt(app.starAperture.r, 1)} px` : "r estrela=--";
-      const sky = app.skyAperture ? `r fundo=${fmt(app.skyAperture.r, 1)} px` : "r fundo=--";
-      document.getElementById("apertureReadout").textContent = `${selected}; ${star}; ${sky}`;
-      document.getElementById("sourceReadout").textContent = app.field ? app.field.source : "SDSS DR12 corrected frames.";
-      document.getElementById("fieldStatus").textContent = m
-        ? `Fluxos medidos em pixels reais: g=${fmt(m.fluxes.g, 1)}, r=${fmt(m.fluxes.r, 1)}, i=${fmt(m.fluxes.i, 1)}.`
-        : "Escolha uma estrela e desenhe abertura da estrela e do fundo.";
-      drawAnalysis();
+    function drawDetector(points) {
+      const w = detector.width;
+      const h = detector.height;
+      detectorCtx.clearRect(0, 0, w, h);
+      detectorCtx.fillStyle = "#050505";
+      detectorCtx.fillRect(0, 0, w, h);
+      if (photonTotal <= 0 || observationSeconds <= 0) {
+        detectorCtx.strokeStyle = "rgba(215,180,106,0.28)";
+        detectorCtx.strokeRect(0.5, h * 0.28 + 0.5, w - 1, h * 0.42);
+        detectorCtx.fillStyle = "#aaa69c";
+        detectorCtx.font = "12px system-ui";
+        detectorCtx.fillText("detector zerado: nenhum fóton registrado", 12, 24);
+        return;
+      }
+      const maxY = Math.max(...points.map(p => p.flux), 0.001);
+      points.forEach((p, i) => {
+        const x = (i / points.length) * w;
+        const intensity = clamp(p.flux / maxY, 0, 1);
+        detectorCtx.fillStyle = visibleColor(p.lambda);
+        detectorCtx.globalAlpha = 0.18 + 0.75 * intensity;
+        detectorCtx.fillRect(x, h * 0.28, Math.ceil(w / points.length) + 1, h * 0.42);
+      });
+      detectorCtx.globalAlpha = 1;
+      detectorCtx.strokeStyle = "rgba(215,180,106,0.45)";
+      detectorCtx.strokeRect(0.5, h * 0.28 + 0.5, w - 1, h * 0.42);
+      detectorCtx.fillStyle = "#aaa69c";
+      detectorCtx.font = "12px system-ui";
+      detectorCtx.fillText("imagem espectral: azul → vermelho, brilho = contagens no detector", 12, 24);
     }
 
     function drawAnalysis() {
-      const m = measure();
-      const w = chart.width, h = chart.height;
-      chartCtx.clearRect(0, 0, w, h);
-      chartCtx.fillStyle = "#080808";
-      chartCtx.fillRect(0, 0, w, h);
-      chartCtx.strokeStyle = "#343434";
-      chartCtx.beginPath();
-      chartCtx.moveTo(58, 28);
-      chartCtx.lineTo(58, h - 58);
-      chartCtx.lineTo(w - 26, h - 58);
-      chartCtx.stroke();
-      chartCtx.fillStyle = "#aaa69c";
-      chartCtx.font = "12px system-ui";
-      if (!m) {
-        chartCtx.fillText("sem medida: desenhe abertura da estrela e do fundo", 82, 80);
-        return;
-      }
-      if (app.chartMode === "fluxes") {
-        const values = [m.fluxes.g, m.fluxes.r, m.fluxes.i];
-        const max = Math.max(...values.map(v => Math.max(v, 0)), 1e-6);
-        const colors = ["#72a7ff", "#8fd18f", "#e2795b"];
-        ["g", "r", "i"].forEach((band, idx) => {
-          const x = 180 + idx * 210;
-          const bh = Math.max(0, values[idx]) / max * (h - 130);
-          chartCtx.fillStyle = colors[idx];
-          chartCtx.fillRect(x, h - 58 - bh, 110, bh);
-          chartCtx.fillStyle = "#f4f4f1";
-          chartCtx.fillText(band, x + 48, h - 30);
-          chartCtx.fillText(fmt(values[idx], 2), x + 8, h - 68 - bh);
+      if (!currentSpectrum.length) return;
+      if (chartMode === "continuum") {
+        drawSpectrumCanvas(analysisCtx, analysisChart, currentSpectrum);
+        const m = metrics();
+        const padL = 58, padR = 26, padT = 28, padB = 58;
+        const w = analysisChart.width, h = analysisChart.height;
+        const maxY = Math.max(...currentSpectrum.map(p => p.flux), 0.001) * 1.08;
+        const x = padL + ((m.peak - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+        analysisCtx.strokeStyle = "rgba(215,180,106,0.9)";
+        analysisCtx.lineWidth = 2;
+        analysisCtx.beginPath();
+        analysisCtx.moveTo(x, padT);
+        analysisCtx.lineTo(x, h - padB);
+        analysisCtx.stroke();
+        analysisCtx.fillStyle = "#d7b46a";
+        analysisCtx.fillText(`λmax ${fmt(m.peak, 0)} nm`, x + 8, padT + 30);
+      } else if (chartMode === "photometry") {
+        const m = metrics();
+        const bars = [
+          { label: "B", value: m.b, color: "#72a7ff" },
+          { label: "V", value: m.v, color: "#8fd18f" },
+          { label: "R", value: m.r, color: "#e2795b" },
+        ];
+        const ctx = analysisCtx, w = analysisChart.width, h = analysisChart.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#080808";
+        ctx.fillRect(0, 0, w, h);
+        drawAxes(ctx, w, h, { x: "filtro", y: "fluxo médio" });
+        const max = Math.max(...bars.map(b => b.value), 0.001);
+        const padB = 58;
+        bars.forEach((bar, i) => {
+          const x = 170 + i * 170;
+          const bh = (bar.value / max) * (h - 110);
+          ctx.fillStyle = bar.color;
+          ctx.fillRect(x, h - padB - bh, 90, bh);
+          ctx.fillStyle = "#f4f4f1";
+          ctx.fillText(bar.label, x + 38, h - 34);
+          ctx.fillText(fmt(bar.value, 3), x + 12, h - padB - 8 - bh);
         });
-      } else if (app.chartMode === "colors") {
-        chartCtx.fillStyle = "#d7b46a";
-        chartCtx.font = "18px system-ui";
-        chartCtx.fillText(`g-r = ${fmt(m.gr, 3)}`, 120, 100);
-        chartCtx.fillText(`r-i = ${fmt(m.ri, 3)}`, 120, 145);
-        chartCtx.fillText(`T aproximada = ${fmt(m.temp, 0)} K`, 120, 190);
-        chartCtx.fillStyle = "#aaa69c";
-        chartCtx.font = "13px system-ui";
-        chartCtx.fillText("Temperatura estimada por conversão aproximada SDSS g-r → B-V → Ballesteros.", 120, 230);
+        ctx.fillStyle = "#d7b46a";
+        ctx.font = "15px system-ui";
+        ctx.fillText(`B−V = ${fmt(m.bv, 2)}`, 690, 95);
       } else {
-        const values = [m.sn.g, m.sn.r, m.sn.i];
-        const max = Math.max(...values.map(v => Math.max(v, 0)), 1e-6);
-        const colors = ["#72a7ff", "#8fd18f", "#e2795b"];
-        ["S/N g", "S/N r", "S/N i"].forEach((label, idx) => {
-          const x = 180 + idx * 210;
-          const bh = Math.max(0, values[idx]) / max * (h - 130);
-          chartCtx.fillStyle = colors[idx];
-          chartCtx.fillRect(x, h - 58 - bh, 110, bh);
-          chartCtx.fillStyle = "#f4f4f1";
-          chartCtx.fillText(label, x + 28, h - 30);
-          chartCtx.fillText(fmt(values[idx], 2), x + 22, h - 68 - bh);
+        drawSpectrumCanvas(analysisCtx, analysisChart, currentSpectrum);
+        const m = metrics();
+        const padL = 58, padR = 26, padT = 28, padB = 58;
+        const w = analysisChart.width, h = analysisChart.height;
+        const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+        [m.line.lambda, m.lineObserved].forEach((lambda, i) => {
+          const x = sx(lambda);
+          analysisCtx.strokeStyle = i === 0 ? "rgba(230,161,91,0.75)" : "rgba(215,180,106,0.95)";
+          analysisCtx.lineWidth = i === 0 ? 1.5 : 2.5;
+          analysisCtx.beginPath();
+          analysisCtx.moveTo(x, padT);
+          analysisCtx.lineTo(x, h - padB);
+          analysisCtx.stroke();
         });
+        analysisCtx.fillStyle = "#d7b46a";
+        analysisCtx.fillText(`${m.line.label}: ${fmt(m.lineObserved, 1)} nm, vr=${fmt(m.rv, 0)} km/s`, sx(m.lineObserved) + 8, padT + 28);
       }
+    }
+
+    function updateReadouts() {
+      const target = currentTarget();
+      const m = observationSeconds > 0.2 ? metrics() : null;
+      document.getElementById("targetMetric").textContent = target.name;
+      document.getElementById("peakMetric").textContent = m ? `${fmt(m.peak, 0)} nm` : "--";
+      document.getElementById("tempMetric").textContent = m ? `${fmt(m.temp, 0)} K` : "--";
+      document.getElementById("rvMetric").textContent = m ? `${fmt(m.rv, 0)} km/s` : "--";
+      document.getElementById("timeReadout").textContent = `${fmt(observationSeconds, 1)} s acumulados`;
+      document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
+      document.getElementById("acquisitionReadout").textContent = isObserving
+        ? "Detector recebendo fótons continuamente; o espectro muda enquanto a contagem cresce."
+        : "Aquisição pausada; escolha o alvo, desenhe as aberturas e clique em Iniciar aquisição.";
+      document.getElementById("observeToggle").textContent = isObserving ? "Pausar aquisição" : "Iniciar aquisição";
+      document.getElementById("noiseReadout").textContent = `${fmt(Number(noiseSlider.value), 2)}`;
+      drawSkyField();
     }
 
     function renderTable() {
       tableBody.innerHTML = "";
-      app.rows.forEach(row => {
+      observations.forEach(row => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${row.field}</td><td>${fmt(row.x, 0)}</td><td>${fmt(row.y, 0)}</td>
-          <td>${fmt(row.rStar, 1)}</td><td>${fmt(row.rSky, 1)}</td>
-          <td>${fmt(row.Fg, 3)}</td><td>${fmt(row.Fr, 3)}</td><td>${fmt(row.Fi, 3)}</td>
-          <td>${fmt(row.gr, 3)}</td><td>${fmt(row.ri, 3)}</td><td>${fmt(row.temp, 0)}</td>
-          <td>${fmt(row.sng, 2)}</td><td>${fmt(row.snr, 2)}</td><td>${fmt(row.sni, 2)}</td>`;
+          <td>${row.target}</td>
+          <td>${row.reduction}</td>
+          <td>${fmt(row.observationSeconds, 1)}</td>
+          <td>${fmt(row.starRadius, 1)}</td>
+          <td>${fmt(row.skyRadius, 1)}</td>
+          <td>${fmt(100 * row.capture, 0)}</td>
+          <td>${fmt(row.peak, 1)}</td>
+          <td>${fmt(row.temp, 0)}</td>
+          <td>${fmt(row.b, 4)}</td>
+          <td>${fmt(row.v, 4)}</td>
+          <td>${fmt(row.r, 4)}</td>
+          <td>${fmt(row.bv, 3)}</td>
+          <td>${row.line}</td>
+          <td>${fmt(row.lineObserved, 2)}</td>
+          <td>${fmt(row.rv, 1)}</td>
+        `;
         tableBody.appendChild(tr);
       });
     }
 
-    function recordMeasurement() {
-      const m = measure();
-      if (!m || !app.selected) {
-        document.getElementById("fieldStatus").textContent = "Faça abertura da estrela e do fundo antes de registrar.";
-        return;
-      }
-      app.rows.push({
-        field: app.field.id, x: app.selected.x, y: app.selected.y,
-        rStar: app.starAperture.r, rSky: app.skyAperture.r,
-        Fg: m.fluxes.g, Fr: m.fluxes.r, Fi: m.fluxes.i,
-        gr: m.gr, ri: m.ri, temp: m.temp,
-        sng: m.sn.g, snr: m.sn.r, sni: m.sn.i,
-      });
-      renderTable();
+    function renderObservation() {
+      drawSkyField();
+      drawDetector(currentSpectrum);
+      drawSpectrumCanvas(spectrumCtx, spectrum, currentSpectrum);
+      drawAnalysis();
       updateReadouts();
     }
 
+    function recordMeasurement() {
+      if (!currentSpectrum.length) resetObservation();
+      if (observationSeconds < 0.5) {
+        document.getElementById("fieldStatus").textContent = "Inicie a aquisição e acumule fótons antes de registrar a medida.";
+        return;
+      }
+      const m = metrics();
+      const q = apertureQuality(currentTarget());
+      observations.push({
+        target: currentTarget().name,
+        reduction: calibrationSelect.options[calibrationSelect.selectedIndex].text,
+        observationSeconds,
+        starRadius: starAperture ? starAperture.r : NaN,
+        skyRadius: skyAperture ? skyAperture.r : NaN,
+        capture: q.capture,
+        peak: m.peak,
+        temp: m.temp,
+        b: m.b,
+        v: m.v,
+        r: m.r,
+        bv: m.bv,
+        bol: m.bol,
+        line: m.line.label,
+        lineObserved: m.lineObserved,
+        rv: m.rv,
+      });
+      renderTable();
+    }
+
     function exportCsv() {
-      if (!app.rows.length) recordMeasurement();
-      if (!app.rows.length) return;
-      const header = ["campo","x","y","raio_estrela_px","raio_fundo_px","Fg","Fr","Fi","g-r","r-i","T_K","SN_g","SN_r","SN_i"];
+      if (observations.length === 0) recordMeasurement();
+      if (observations.length === 0) return;
+      const header = ["alvo", "reducao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
       const lines = [header.join(",")];
-      app.rows.forEach(row => {
-        lines.push([row.field,row.x,row.y,row.rStar,row.rSky,row.Fg,row.Fr,row.Fi,row.gr,row.ri,row.temp,row.sng,row.snr,row.sni]
-          .map(v => typeof v === "number" ? v.toFixed(8) : `"${String(v).replaceAll('"', '""')}"`).join(","));
+      observations.forEach(row => {
+        lines.push([row.target, row.reduction, row.observationSeconds, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
+          .map(value => typeof value === "number" ? value.toFixed(8) : `"${String(value).replaceAll('"', '""')}"`).join(","));
       });
       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "laboratorio_capitulo_3_sdss_fotometria.csv";
+      a.download = "laboratorio_capitulo_3_espectrofotometria.csv";
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
     }
 
+    function chooseNearestTarget(point) {
+      let best = null;
+      targets.forEach(target => {
+        const d = Math.hypot(point.x - target.x, point.y - target.y);
+        if (!best || d < best.distance) best = { target, distance: d };
+      });
+      if (best && best.distance < 70) {
+        selectedTargetId = best.target.id;
+        isObserving = false;
+        resetObservation();
+      }
+    }
+
     function setTool(tool) {
-      app.tool = tool;
-      document.querySelectorAll(".tool").forEach(button => button.setAttribute("aria-selected", String(button.dataset.tool === tool)));
+      activeTool = tool;
+      document.querySelectorAll(".aperture-tool").forEach(button => {
+        button.setAttribute("aria-selected", String(button.dataset.tool === tool));
+      });
+      const status = document.getElementById("fieldStatus");
+      if (tool === "select") status.textContent = "Clique em uma estrela brilhante.";
+      if (tool === "star") status.textContent = "Arraste do centro da estrela até a borda da abertura.";
+      if (tool === "sky") status.textContent = "Arraste uma abertura em região vazia para medir o fundo.";
     }
 
-    function setBand(band) {
-      app.displayBand = band;
-      document.querySelectorAll(".band").forEach(button => button.setAttribute("aria-selected", String(button.dataset.band === band)));
-      drawImage();
-    }
-
-    async function loadField(id) {
-      document.getElementById("fieldStatus").textContent = "Carregando recorte SDSS...";
-      app.field = await fetchJsonWithFallback(`${id}.json`);
-      app.decoded = {};
-      app.displayStats = {};
-      bands.forEach(band => {
-        app.decoded[band] = decodeBand(app.field.bands[band]);
-        app.displayStats[band] = {
-          black: percentile(app.decoded[band], 0.96),
-          white: percentile(app.decoded[band], 0.9996),
-        };
+    document.querySelectorAll(".view-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".view-tab").forEach(tab => tab.setAttribute("aria-selected", "false"));
+        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+        button.setAttribute("aria-selected", "true");
+        document.getElementById(button.dataset.view).classList.add("active");
+        drawAnalysis();
       });
-      app.selected = null;
-      app.starAperture = null;
-      app.skyAperture = null;
-      drawImage();
-      updateReadouts();
-    }
-
-    function initEvents() {
-      document.querySelectorAll(".view-tab").forEach(button => {
-        button.addEventListener("click", () => {
-          document.querySelectorAll(".view-tab").forEach(tab => tab.setAttribute("aria-selected", "false"));
-          document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
-          button.setAttribute("aria-selected", "true");
-          document.getElementById(button.dataset.view).classList.add("active");
-          drawAnalysis();
-        });
-      });
-      document.querySelectorAll(".tab").forEach(button => {
-        button.addEventListener("click", () => {
-          app.chartMode = button.id.replace("tab-", "");
-          document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
-          drawAnalysis();
-        });
-      });
-      document.querySelectorAll(".tool").forEach(button => button.addEventListener("click", () => setTool(button.dataset.tool)));
-      document.querySelectorAll(".band").forEach(button => button.addEventListener("click", () => setBand(button.dataset.band)));
-      fieldSelect.addEventListener("change", () => loadField(fieldSelect.value));
-      stretchSlider.addEventListener("input", () => { drawImage(); updateReadouts(); });
-      canvas.addEventListener("pointerdown", event => {
-        if (!app.field) return;
-        const point = canvasPoint(event);
-        if (app.tool === "select") {
-          app.selected = { x: point.x, y: point.y };
-          drawImage();
-          updateReadouts();
-          return;
-        }
-        app.dragStart = point;
-        const draft = { x: point.x, y: point.y, r: 1 };
-        if (app.tool === "star") app.starAperture = draft;
-        if (app.tool === "sky") app.skyAperture = draft;
-        canvas.setPointerCapture(event.pointerId);
-        drawImage();
-      });
-      canvas.addEventListener("pointermove", event => {
-        if (!app.dragStart || app.tool === "select") return;
-        const point = canvasPoint(event);
-        const aperture = app.tool === "star" ? app.starAperture : app.skyAperture;
-        aperture.r = Math.max(2, Math.min(80, Math.hypot(point.x - app.dragStart.x, point.y - app.dragStart.y)));
-        drawImage();
-      });
-      canvas.addEventListener("pointerup", event => {
-        if (!app.dragStart) return;
-        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
-        app.dragStart = null;
-        drawImage();
-        updateReadouts();
-      });
-      document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
-      document.getElementById("exportCsv").addEventListener("click", exportCsv);
-      document.getElementById("clearLog").addEventListener("click", () => { app.rows.length = 0; renderTable(); });
-    }
-
-    async function init() {
-      initEvents();
-      app.manifest = await fetchJsonWithFallback("manifest.json");
-      fieldSelect.innerHTML = "";
-      app.manifest.fields.forEach(field => {
-        const option = document.createElement("option");
-        option.value = field.id;
-        option.textContent = field.label;
-        fieldSelect.appendChild(option);
-      });
-      await loadField(app.manifest.fields[0].id);
-    }
-
-    init().catch(error => {
-      console.error(error);
-      document.getElementById("fieldStatus").textContent = "Erro ao carregar dados SDSS.";
     });
+
+    document.querySelectorAll(".tab").forEach(button => {
+      button.addEventListener("click", () => {
+        chartMode = button.id.replace("tab-", "");
+        document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
+        drawAnalysis();
+      });
+    });
+
+    document.querySelectorAll(".aperture-tool").forEach(button => {
+      button.addEventListener("click", () => setTool(button.dataset.tool));
+    });
+
+    skyField.addEventListener("pointerdown", event => {
+      const point = canvasPoint(event, skyField);
+      if (activeTool === "select") {
+        chooseNearestTarget(point);
+        return;
+      }
+      skyField.setPointerCapture(event.pointerId);
+      dragStart = point;
+      const draft = { x: point.x, y: point.y, r: 1 };
+      if (activeTool === "star") starAperture = draft;
+      if (activeTool === "sky") skyAperture = draft;
+      drawSkyField();
+    });
+
+    skyField.addEventListener("pointermove", event => {
+      if (!dragStart || activeTool === "select") return;
+      const point = canvasPoint(event, skyField);
+      const aperture = activeTool === "star" ? starAperture : skyAperture;
+      aperture.r = clamp(Math.hypot(point.x - dragStart.x, point.y - dragStart.y), 8, 160);
+      drawSkyField();
+    });
+
+    skyField.addEventListener("pointerup", event => {
+      if (!dragStart) return;
+      if (skyField.hasPointerCapture(event.pointerId)) skyField.releasePointerCapture(event.pointerId);
+      dragStart = null;
+      resetObservation();
+    });
+
+    calibrationSelect.addEventListener("input", () => {
+      updateSpectrumFromAccumulator();
+      renderObservation();
+    });
+    lineSelect.addEventListener("input", renderObservation);
+    noiseSlider.addEventListener("input", resetObservation);
+    document.getElementById("observeToggle").addEventListener("click", () => {
+      isObserving = !isObserving;
+      lastFrameTime = null;
+      updateReadouts();
+    });
+    document.getElementById("resetDetector").addEventListener("click", resetObservation);
+    document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
+    document.getElementById("exportCsv").addEventListener("click", exportCsv);
+    document.getElementById("clearLog").addEventListener("click", () => {
+      observations.length = 0;
+      renderTable();
+    });
+
+    function observeLoop(timestamp) {
+      if (lastFrameTime === null) lastFrameTime = timestamp;
+      const dtReal = Math.min((timestamp - lastFrameTime) / 1000, 0.25);
+      lastFrameTime = timestamp;
+      if (isObserving) {
+        addPhotons(dtReal * SIM_SECONDS_PER_REAL_SECOND);
+        renderObservation();
+      }
+      window.requestAnimationFrame(observeLoop);
+    }
+
+    makeTargets();
+    noiseSlider.value = "0.06";
+    calibrationSelect.value = "response";
+    resetObservation();
+    window.requestAnimationFrame(observeLoop);
   </script>
 </body>
 </html>
