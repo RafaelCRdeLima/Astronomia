@@ -952,39 +952,78 @@
       return 0.02 + 0.012 * Math.sin(x / 190) + 0.009 * Math.cos(y / 150) + 0.006 * Math.sin((x + y) / 240);
     }
 
+    function apertureCapture(aperture, source) {
+      if (!aperture || !source) return 0;
+      const psf = Math.max(source.psf || source.r || 1, 1);
+      const offset = Math.hypot(aperture.x - source.x, aperture.y - source.y);
+      if (offset > aperture.r + 4 * psf) return 0;
+      const encircled = 1 - Math.exp(-0.5 * (aperture.r / psf) ** 2);
+      const edgeDistance = aperture.r - offset;
+      const edgeFraction = 1 / (1 + Math.exp(-edgeDistance / Math.max(0.85 * psf, 0.5)));
+      return clamp(encircled * edgeFraction, 0, 1);
+    }
+
+    function apertureArea(aperture) {
+      return aperture ? Math.PI * aperture.r ** 2 : 0;
+    }
+
     function apertureQuality(target) {
       if (!target || !starAperture || !skyAperture) {
-        return { capture: 0, contamination: 0.16, skyResidual: 0.04, confusionStar: 0, confusionSky: 0, valid: false };
+        return { capture: 0, contamination: 0.16, skyResidual: 0.04, confusionStar: 0, confusionSky: 0, areaPenalty: 0.1, valid: false };
       }
-      const dx = starAperture.x - target.x;
-      const dy = starAperture.y - target.y;
-      const offset = Math.hypot(dx, dy);
-      const centered = Math.exp(-0.5 * (offset / Math.max(target.psf, 1)) ** 2);
-      const encircled = 1 - Math.exp(-0.5 * (starAperture.r / Math.max(target.psf, 1)) ** 2);
-      const capture = clamp(centered * encircled, 0.03, 1);
+      const capture = apertureCapture(starAperture, target);
       const skyDistance = Math.hypot(skyAperture.x - target.x, skyAperture.y - target.y);
       const contamination = skyDistance < skyAperture.r + target.psf * 3 ? 0.24 : 0;
-      const skyStar = localBackground(target.x, target.y);
+      const skyStar = localBackground(starAperture.x, starAperture.y);
       const skyMeasured = localBackground(skyAperture.x, skyAperture.y) + contamination;
-      const areaRatio = (starAperture.r ** 2) / Math.max(skyAperture.r ** 2, 1);
+      const areaRatio = apertureArea(starAperture) / Math.max(apertureArea(skyAperture), 1);
       const confusionStar = fieldStars.reduce((sum, star) => {
-        const d = Math.hypot(star.x - starAperture.x, star.y - starAperture.y);
-        const inside = d < starAperture.r + star.r * 2.5 ? 1 : 0;
-        return sum + inside * star.flux;
+        return sum + apertureCapture(starAperture, star) * star.flux;
       }, 0);
       const confusionSky = fieldStars.reduce((sum, star) => {
-        const d = Math.hypot(star.x - skyAperture.x, star.y - skyAperture.y);
-        const inside = d < skyAperture.r + star.r * 2.5 ? 1 : 0;
-        return sum + inside * star.flux;
+        return sum + apertureCapture(skyAperture, star) * star.flux;
       }, 0);
       return {
         capture,
         contamination,
         confusionStar,
         confusionSky,
-        skyResidual: (skyStar - skyMeasured) * areaRatio,
+        skyResidual: (skyStar - skyMeasured) * areaRatio * clamp(starAperture.r / 32, 0.25, 5),
+        areaPenalty: clamp(Math.sqrt(apertureArea(starAperture)) / 80, 0.08, 2.8),
         valid: true,
       };
+    }
+
+    function targetFluxAt(target, lambda) {
+      const normLambda = 550;
+      const normTrue = Math.max(planckShape(normLambda, target.temperature), 1e-30);
+      let continuum = target.scale * planckShape(lambda, target.temperature) / normTrue;
+      continuum = Math.min(continuum, 4.8);
+      target.lines.forEach(line => {
+        const observed = line.lambda * (1 + target.rv / C);
+        continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
+      });
+      return continuum;
+    }
+
+    function fieldStarFluxAt(star, lambda) {
+      if (!star.flux) return 0;
+      const normLambda = 550;
+      const starNorm = Math.max(planckShape(normLambda, star.temperature), 1e-30);
+      const shiftedNa = 589.0 * (1 + star.rv / C);
+      const shape = planckShape(lambda, star.temperature) / starNorm;
+      const lineDip = 1 - 0.18 * gaussian(lambda, shiftedNa, 4.2);
+      return star.flux * shape * lineDip;
+    }
+
+    function apertureComment(target, q) {
+      if (!q.valid) return "desenhe abertura da estrela e abertura de fundo";
+      if (q.capture < 0.03) return "abertura fora do alvo: só fundo/dark deve restar";
+      if (starAperture.r < target.psf * 0.9) return "abertura pequena: perde fluxo da estrela";
+      if (starAperture.r > target.psf * 3.2) return "abertura grande: entra mais fundo e mais contaminantes";
+      if (q.contamination > 0.1) return "fundo contaminado: a subtração pode remover luz da estrela";
+      if (q.capture > 0.65) return "abertura bem posicionada";
+      return "abertura parcial: revise centro e raio";
     }
 
     function lineRest() {
@@ -1003,31 +1042,34 @@
     function makeExpectedRates(target) {
       const aperture = apertureQuality(target);
       const points = [];
-      const normLambda = 550;
-      const normTrue = Math.max(planckShape(normLambda, target.temperature), 1e-30);
+      const areaRatio = starAperture && skyAperture ? apertureArea(starAperture) / Math.max(apertureArea(skyAperture), 1) : 0;
       for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
-        let continuum = target.scale * planckShape(lambda, target.temperature) / normTrue;
-        continuum = Math.min(continuum, 4.8);
-        target.lines.forEach(line => {
-          const observed = line.lambda * (1 + target.rv / C);
-          continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
-        });
-        const trueFlux = continuum * aperture.capture;
-        const confusionShape = fieldStars.reduce((sum, star) => {
-          if (!star.flux) return sum;
-          const starNorm = Math.max(planckShape(normLambda, star.temperature), 1e-30);
-          const shiftedNa = 589.0 * (1 + star.rv / C);
-          const shape = planckShape(lambda, star.temperature) / starNorm;
-          const lineDip = 1 - 0.18 * gaussian(lambda, shiftedNa, 4.2);
-          return sum + star.flux * shape * lineDip;
+        const selectedFlux = targetFluxAt(target, lambda) * apertureCapture(starAperture, target);
+        const targetFluxInStar = targets.reduce((sum, source) => {
+          return sum + targetFluxAt(source, lambda) * apertureCapture(starAperture, source);
         }, 0);
-        const confusionResidual = (aperture.confusionStar - aperture.confusionSky * (starAperture ? (starAperture.r ** 2) / Math.max(skyAperture?.r ** 2 || 1, 1) : 0)) * confusionShape;
-        const skyColor = 0.018 + aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88)) + Math.max(0, confusionResidual);
+        const targetFluxInSky = targets.reduce((sum, source) => {
+          return sum + targetFluxAt(source, lambda) * apertureCapture(skyAperture, source);
+        }, 0);
+        const fieldFluxInStar = fieldStars.reduce((sum, star) => {
+          return sum + fieldStarFluxAt(star, lambda) * apertureCapture(starAperture, star);
+        }, 0);
+        const fieldFluxInSky = fieldStars.reduce((sum, star) => {
+          return sum + fieldStarFluxAt(star, lambda) * apertureCapture(skyAperture, star);
+        }, 0);
+        const skyResidual = aperture.valid ? aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88)) : 0;
+        const extractedStellarFlux = targetFluxInStar - areaRatio * targetFluxInSky;
+        const extractedFieldFlux = fieldFluxInStar - areaRatio * fieldFluxInSky;
+        const trueFlux = Math.max(0, extractedStellarFlux + extractedFieldFlux + skyResidual);
         const resp = response(lambda);
         const darkRate = darkCurrent(lambda) * 0.018;
-        const sourceRate = Math.max(0.0001, (trueFlux + skyColor) * resp * 0.09);
-        const apertureNoise = Number(noiseSlider.value) + (1 - aperture.capture) * 0.08 + aperture.contamination * 0.18;
-        points.push({ lambda, trueFlux, response: resp, darkRate, rawRate: sourceRate + darkRate, apertureNoise });
+        const sourceRate = Math.max(0, trueFlux * resp * 0.09);
+        const apertureNoise = Number(noiseSlider.value)
+          + (1 - aperture.capture) * 0.08
+          + aperture.contamination * 0.18
+          + aperture.areaPenalty * 0.04
+          + Math.max(0, extractedFieldFlux) * 0.05;
+        points.push({ lambda, trueFlux: selectedFlux, response: resp, darkRate, sourceRate, rawRate: sourceRate + darkRate, apertureNoise });
       }
       return points;
     }
@@ -1049,7 +1091,7 @@
         const sigma = Math.sqrt(Math.max(mean, 0.0001)) * (0.45 + p.apertureNoise * 2.4);
         const incoming = Math.max(0, mean + gaussianNoise() * sigma);
         accumulatedRaw[i] += incoming;
-        photonTotal += incoming;
+        photonTotal += p.sourceRate * dt;
       });
       observationSeconds += dt;
       updateSpectrumFromAccumulator();
@@ -1168,10 +1210,10 @@
       const target = currentTarget();
       const q = apertureQuality(target);
       document.getElementById("fieldStatus").textContent = target
-        ? (q.valid ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%.` : `Alvo: ${target.name}. Desenhe abertura da estrela e do fundo.`)
+        ? (q.valid ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%; ${apertureComment(target, q)}.` : `Alvo: ${target.name}. Desenhe abertura da estrela e do fundo.`)
         : "Clique em uma estrela brilhante.";
       document.getElementById("selectedTargetReadout").textContent = target
-        ? `${target.name}; x=${fmt(target.x, 0)} px, y=${fmt(target.y, 0)} px; classe aparente: ${apparentClass(target.kind)}; abertura estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px`
+        ? `${target.name}; x=${fmt(target.x, 0)} px, y=${fmt(target.y, 0)} px; classe aparente: ${apparentClass(target.kind)}; abertura estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px; captura=${fmt(100 * q.capture, 0)}%; ruído de área=${fmt(q.areaPenalty, 2)}`
         : "Nenhuma estrela selecionada.";
     }
 
