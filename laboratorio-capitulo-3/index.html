@@ -102,6 +102,12 @@
       background: #18140c;
     }
 
+    .fit-tool[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #18140c;
+    }
+
     .mode-row {
       display: flex;
       flex-wrap: wrap;
@@ -221,6 +227,8 @@
       font-size: 12px;
       overflow-x: auto;
     }
+
+    .fit-controls[hidden] { display: none; }
 
     .table-wrap {
       max-height: 68vh;
@@ -360,7 +368,7 @@
               <strong id="peakMetric">--</strong>
             </div>
             <div class="metric">
-              <small>T por Wien</small>
+              <small>T corpo-negro</small>
               <strong id="tempMetric">--</strong>
             </div>
             <div class="metric">
@@ -383,6 +391,23 @@
             <label>Aquisição contínua de fótons</label>
             <div class="formula" id="acquisitionReadout">Aquisição pausada. Escolha o alvo e as aberturas antes de iniciar.</div>
             <div class="readout"><span id="timeReadout">-- s acumulados</span><span id="photonReadout">-- fótons</span></div>
+          </div>
+
+          <div class="control">
+            <label>Modelo de corpo negro</label>
+            <button class="button fit-tool" id="blackbodyToggle" type="button" aria-selected="false">Ajustar corpo-negro</button>
+            <div class="fit-controls" id="blackbodyControls" hidden>
+              <div class="control">
+                <label for="blackbodyTempSlider">Temperatura</label>
+                <input id="blackbodyTempSlider" type="range" min="2500" max="22000" step="50" value="5800">
+                <div class="readout"><span id="blackbodyTempReadout">--</span><span>K</span></div>
+              </div>
+              <div class="control">
+                <label for="blackbodyScaleSlider">Escala</label>
+                <input id="blackbodyScaleSlider" type="range" min="0" max="5" step="0.01" value="1">
+                <div class="readout"><span id="blackbodyScaleReadout">--</span><span>amplitude</span></div>
+              </div>
+            </div>
           </div>
 
           <div class="control">
@@ -442,8 +467,8 @@
               Compare espectros extraídos com uma abertura de fundo limpa e com uma abertura de fundo contaminada. Quantifique como λmax, T e fluxo integrado mudam.
             </div>
             <div class="task">
-              <strong>Experimento 4: temperatura por Wien</strong>
-              Meça λmax no contínuo extraído e calcule T = 2,898e-3/λmax. Compare com o ajuste visual do contínuo.
+              <strong>Experimento 4: corpo negro</strong>
+              Pause a aquisição, ative Ajustar corpo-negro e varie temperatura e escala até a curva acompanhar o contínuo observado. Registre a temperatura obtida.
             </div>
             <div class="task">
               <strong>Experimento 5: fotometria em bandas</strong>
@@ -477,7 +502,7 @@
                   <th>r fundo px</th>
                   <th>coleta %</th>
                   <th>λmax nm</th>
-                  <th>T K</th>
+                  <th>T ajuste K</th>
                   <th>FB</th>
                   <th>FV</th>
                   <th>FR</th>
@@ -507,6 +532,7 @@
     const observations = [];
     let chartMode = "continuum";
     let measuringLines = false;
+    let fittingBlackbody = false;
     let currentSpectrum = [];
     const absorptionMarks = [];
     let selectedTargetId = null;
@@ -533,6 +559,10 @@
     const lineSelect = document.getElementById("lineSelect");
     const lineMeasureToggle = document.getElementById("lineMeasureToggle");
     const clearAbsorptionMarks = document.getElementById("clearAbsorptionMarks");
+    const blackbodyToggle = document.getElementById("blackbodyToggle");
+    const blackbodyControls = document.getElementById("blackbodyControls");
+    const blackbodyTempSlider = document.getElementById("blackbodyTempSlider");
+    const blackbodyScaleSlider = document.getElementById("blackbodyScaleSlider");
 
     function mulberry32(seed) {
       return function rand() {
@@ -560,6 +590,30 @@
     function planckShape(lambdaNm, temperature) {
       const x = 1.4387769e7 / (lambdaNm * temperature);
       return 1 / (Math.pow(lambdaNm, 5) * Math.expm1(x));
+    }
+
+    function blackbodyFlux(lambda, temperature, scale) {
+      const norm = Math.max(planckShape(550, temperature), 1e-30);
+      return scale * planckShape(lambda, temperature) / norm;
+    }
+
+    function blackbodyPoints() {
+      const temperature = Number(blackbodyTempSlider.value);
+      const scale = Number(blackbodyScaleSlider.value);
+      const points = [];
+      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 4) {
+        points.push({ lambda, flux: blackbodyFlux(lambda, temperature, scale) });
+      }
+      return points;
+    }
+
+    function estimateBlackbodyScale(temperature) {
+      if (!currentSpectrum.length) return 1;
+      const visible = currentSpectrum.filter(p => p.lambda >= 420 && p.lambda <= 750 && p.flux > 0);
+      if (!visible.length) return 1;
+      const peak = visible.reduce((best, p) => p.flux > best.flux ? p : best, visible[0]);
+      const shape = blackbodyFlux(peak.lambda, temperature, 1);
+      return clamp(peak.flux / Math.max(shape, 1e-6), 0.02, 5);
     }
 
     function gaussian(x, mu, sigma) {
@@ -826,6 +880,7 @@
       observationSeconds = 0;
       photonTotal = 0;
       absorptionMarks.length = 0;
+      fittingBlackbody = false;
       currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0 }));
       lastFrameTime = null;
       renderObservation();
@@ -1034,9 +1089,12 @@
         ctx.fillText("sem fótons acumulados: clique em Iniciar aquisição", padL + 18, padT + 46);
         return;
       }
-      const maxY = Math.max(...points.map(p => p.flux), 0.001) * 1.08;
+      const model = fittingBlackbody ? blackbodyPoints() : [];
+      const values = points.map(p => p.flux).concat(model.map(p => p.flux));
+      const minY = Math.min(0, ...values);
+      const maxY = Math.max(...values, 0.001) * 1.08;
       const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
-      const sy = value => padT + (1 - value / maxY) * (h - padT - padB);
+      const sy = value => padT + (1 - (value - minY) / Math.max(maxY - minY, 1e-8)) * (h - padT - padB);
       for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 5) {
         if (lambda < 380) ctx.fillStyle = "rgb(52,48,116)";
         else if (lambda > 760) ctx.fillStyle = "rgb(92,24,22)";
@@ -1061,6 +1119,21 @@
         else ctx.lineTo(x, y);
       });
       ctx.stroke();
+      if (model.length) {
+        ctx.strokeStyle = "#d7b46a";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        model.forEach((p, i) => {
+          const x = sx(p.lambda);
+          const y = clamp(sy(p.flux), padT, h - padB);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.fillStyle = "#d7b46a";
+        ctx.font = "12px system-ui";
+        ctx.fillText(`corpo negro: ${fmt(Number(blackbodyTempSlider.value), 0)} K`, sx(760), padT + 32);
+      }
       absorptionMarks.forEach((mark, i) => {
         const x = sx(mark.lambda);
         ctx.strokeStyle = "rgba(215,180,106,0.92)";
@@ -1215,7 +1288,7 @@
       const m = observationSeconds > 0.2 ? metrics() : null;
       document.getElementById("targetMetric").textContent = target.name;
       document.getElementById("peakMetric").textContent = m ? `${fmt(m.peak, 0)} nm` : "--";
-      document.getElementById("tempMetric").textContent = m ? `${fmt(m.temp, 0)} K` : "--";
+      document.getElementById("tempMetric").textContent = fittingBlackbody ? `${fmt(Number(blackbodyTempSlider.value), 0)} K` : "--";
       document.getElementById("rvMetric").textContent = m ? `${fmt(m.rv, 0)} km/s` : "--";
       document.getElementById("timeReadout").textContent = `${fmt(observationSeconds, 1)} s acumulados`;
       document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
@@ -1223,6 +1296,10 @@
         ? "Detector recebendo fótons continuamente; o espectro extraído muda enquanto a contagem cresce."
         : "Aquisição pausada; escolha o alvo, desenhe a abertura da estrela e uma abertura de fundo.";
       document.getElementById("observeToggle").textContent = isObserving ? "Pausar aquisição" : "Iniciar aquisição";
+      blackbodyToggle.setAttribute("aria-selected", String(fittingBlackbody));
+      blackbodyControls.hidden = !fittingBlackbody;
+      document.getElementById("blackbodyTempReadout").textContent = fmt(Number(blackbodyTempSlider.value), 0);
+      document.getElementById("blackbodyScaleReadout").textContent = fmt(Number(blackbodyScaleSlider.value), 2);
       renderAbsorptionMarks();
       drawSkyField();
     }
@@ -1276,7 +1353,7 @@
         skyRadius: skyAperture ? skyAperture.r : NaN,
         capture: q.capture,
         peak: m.peak,
-        temp: m.temp,
+        temp: fittingBlackbody ? Number(blackbodyTempSlider.value) : NaN,
         b: m.b,
         v: m.v,
         r: m.r,
@@ -1292,7 +1369,7 @@
     function exportCsv() {
       if (observations.length === 0) recordMeasurement();
       if (observations.length === 0) return;
-      const header = ["alvo", "extracao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "hipotese_linha", "lambda_obs_nm", "vr_km_s"];
+      const header = ["alvo", "extracao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_ajuste_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "hipotese_linha", "lambda_obs_nm", "vr_km_s"];
       const lines = [header.join(",")];
       observations.forEach(row => {
         lines.push([row.target, row.extraction, row.observationSeconds, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
@@ -1341,6 +1418,23 @@
       document.getElementById("fieldStatus").textContent = enabled
         ? "Clique nas quedas do espectro para marcar comprimentos de onda."
         : "Ferramenta de linhas desligada.";
+    }
+
+    function setBlackbodyFit(enabled) {
+      if (enabled && isObserving) {
+        document.getElementById("fieldStatus").textContent = "Pause a aquisição antes de ajustar o corpo negro.";
+        return;
+      }
+      if (enabled && observationSeconds < 0.5) {
+        document.getElementById("fieldStatus").textContent = "Acumule dados antes de ajustar o corpo negro.";
+        return;
+      }
+      fittingBlackbody = enabled;
+      if (enabled) {
+        const initialTemp = Number(blackbodyTempSlider.value);
+        blackbodyScaleSlider.value = String(estimateBlackbodyScale(initialTemp).toFixed(2));
+      }
+      renderObservation();
     }
 
     function activateView(viewId) {
@@ -1407,9 +1501,17 @@
       absorptionMarks.length = 0;
       renderObservation();
     });
+    blackbodyToggle.addEventListener("click", () => setBlackbodyFit(!fittingBlackbody));
+    blackbodyTempSlider.addEventListener("input", () => {
+      renderObservation();
+    });
+    blackbodyScaleSlider.addEventListener("input", () => {
+      renderObservation();
+    });
     lineSelect.addEventListener("input", renderObservation);
     document.getElementById("observeToggle").addEventListener("click", () => {
       isObserving = !isObserving;
+      if (isObserving) fittingBlackbody = false;
       lastFrameTime = null;
       updateReadouts();
     });
