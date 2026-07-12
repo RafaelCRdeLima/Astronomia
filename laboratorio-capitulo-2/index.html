@@ -805,59 +805,60 @@
     }
 
     function eclipticDisplayGeometry() {
-      const lat = Number(latitudeSlider.value);
-      const hour = Number(hourSlider.value);
-      const day = currentDay();
-      const sun = sunVector(day);
-      const base = clamp(90 - Math.abs(lat), 18, 86);
-      const seasonalTilt = 8 * Math.sin((sun.lambda - 90) * DEG);
-      const hourFlip = Math.cos(((hour - 18) / 24) * TAU) >= 0 ? 1 : -1;
-      const hemisphereFlip = lat < 0 ? -1 : 1;
-      const angle = hemisphereFlip * hourFlip * clamp(base + seasonalTilt, 12, 86) * DEG;
-      const scale = (sky.width - 140) / 170;
+      const sun = sunVector(currentDay());
+      const sunEq = eclipticToEquatorial(sun.lambda, 0);
+      const sunHorizontal = equatorialToHorizontal(sunEq.ra, sunEq.dec);
+      const scale = Math.min((sky.width - 140) / 170, (sky.height - 88) / 100);
       return {
         cx: sky.width * 0.52,
-        cy: sky.height * 0.49,
         horizonY: sky.height * 0.78,
-        angle,
         scale,
         lambda0: sun.lambda,
-        ux: Math.cos(angle),
-        uy: -Math.sin(angle),
-        nx: -Math.sin(angle),
-        ny: -Math.cos(angle),
+        az0: sunHorizontal.az,
+        alt0: sunHorizontal.alt,
+        azScale: Math.max(0.35, Math.cos(clamp(sunHorizontal.alt, -75, 75) * DEG)),
       };
     }
 
     function skyToScreen(lambda, beta = 0) {
       const g = eclipticDisplayGeometry();
-      const along = wrap180(lambda - g.lambda0) * g.scale;
-      const across = beta * g.scale * 1.6;
+      const eq = eclipticToEquatorial(lambda, beta);
+      const horizontal = equatorialToHorizontal(eq.ra, eq.dec);
+      return horizontalToScreen(horizontal.az, horizontal.alt, g);
+    }
+
+    function horizontalToScreen(az, alt, geometry = eclipticDisplayGeometry()) {
+      const azOffset = wrap180(az - geometry.az0);
       return {
-        x: g.cx + along * g.ux + across * g.nx,
-        y: g.cy + along * g.uy + across * g.ny,
+        x: geometry.cx + azOffset * geometry.scale * geometry.azScale,
+        y: geometry.horizonY - alt * geometry.scale,
       };
     }
 
     function screenToSky(x, y) {
       const g = eclipticDisplayGeometry();
-      const dx = x - g.cx;
-      const dy = y - g.cy;
-      const along = dx * g.ux + dy * g.uy;
-      const across = dx * g.nx + dy * g.ny;
       return {
-        lambda: normDeg(g.lambda0 + along / g.scale),
-        beta: across / (g.scale * 1.6),
+        az: normDeg(g.az0 + (x - g.cx) / (g.scale * g.azScale)),
+        alt: (g.horizonY - y) / g.scale,
       };
     }
 
     function angularDistance(a, b) {
-      const l1 = a.lambda * DEG;
-      const b1 = a.beta * DEG;
-      const l2 = b.lambda * DEG;
-      const b2 = b.beta * DEG;
-      const cosD = Math.sin(b1) * Math.sin(b2) + Math.cos(b1) * Math.cos(b2) * Math.cos(l1 - l2);
+      const az1 = a.az * DEG;
+      const alt1 = a.alt * DEG;
+      const az2 = b.az * DEG;
+      const alt2 = b.alt * DEG;
+      const cosD = Math.sin(alt1) * Math.sin(alt2) + Math.cos(alt1) * Math.cos(alt2) * Math.cos(az1 - az2);
       return Math.acos(clamp(cosD, -1, 1)) * RAD;
+    }
+
+    function localEclipticAngle(geometry) {
+      const p1 = skyToScreen(normDeg(geometry.lambda0 - 0.7), 0);
+      const p2 = skyToScreen(normDeg(geometry.lambda0 + 0.7), 0);
+      let angle = Math.atan2(-(p2.y - p1.y), p2.x - p1.x) * RAD;
+      while (angle > 90) angle -= 180;
+      while (angle < -90) angle += 180;
+      return angle;
     }
 
     function eclipticSkyPoint(lambda, beta = 0) {
@@ -900,43 +901,41 @@
 
       ctx.strokeStyle = "rgba(170,166,156,0.14)";
       ctx.lineWidth = 1;
-      for (let beta = -20; beta <= 20; beta += 10) {
+      for (let alt = 15; alt <= 75; alt += 15) {
+        const y = g.horizonY - alt * g.scale;
+        if (y < 30 || y > sky.height - 28) continue;
         ctx.beginPath();
-        let started = false;
-        for (let offset = -95; offset <= 95; offset += 5) {
-          const p = skyToScreen(normDeg(g.lambda0 + offset), beta);
-          if (!started) {
-            ctx.moveTo(p.x, p.y);
-            started = true;
-          } else {
-            ctx.lineTo(p.x, p.y);
-          }
-        }
+        ctx.moveTo(0, y);
+        ctx.lineTo(sky.width, y);
         ctx.stroke();
-        const label = skyToScreen(normDeg(g.lambda0 - 92), beta);
         ctx.fillStyle = "rgba(170,166,156,0.55)";
         ctx.font = "11px system-ui";
-        ctx.fillText(`${beta > 0 ? "+" : ""}${beta}°`, label.x, label.y - 5);
+        ctx.fillText(`h=${alt}°`, 12, y - 5);
       }
-      for (let offset = -90; offset <= 90; offset += 30) {
-        const p1 = skyToScreen(normDeg(g.lambda0 + offset), -18);
-        const p2 = skyToScreen(normDeg(g.lambda0 + offset), 18);
+      for (let azOffset = -90; azOffset <= 90; azOffset += 30) {
+        const x = g.cx + azOffset * g.scale * g.azScale;
+        if (x < 0 || x > sky.width) continue;
         ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
+        ctx.moveTo(x, 30);
+        ctx.lineTo(x, sky.height - 30);
         ctx.stroke();
-        const label = skyToScreen(normDeg(g.lambda0 + offset), -23);
         ctx.fillStyle = "rgba(170,166,156,0.55)";
-        ctx.fillText(`${offset > 0 ? "+" : ""}${offset}°`, label.x - 10, label.y + 12);
+        ctx.fillText(`${azOffset > 0 ? "+" : ""}${azOffset}° az`, x + 4, 22);
       }
 
       ctx.strokeStyle = "rgba(215,180,106,0.55)";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      for (let offset = -100; offset <= 100; offset += 5) {
+      let eclipticStarted = false;
+      for (let offset = -120; offset <= 120; offset += 2) {
         const p = skyToScreen(normDeg(g.lambda0 + offset), 0);
-        if (offset === -100) {
+        if (p.x < -80 || p.x > sky.width + 80 || p.y < -80 || p.y > sky.height + 80) {
+          eclipticStarted = false;
+          continue;
+        }
+        if (!eclipticStarted) {
           ctx.moveTo(p.x, p.y);
+          eclipticStarted = true;
         } else {
           ctx.lineTo(p.x, p.y);
         }
@@ -946,7 +945,7 @@
       ctx.fillStyle = "rgba(215,180,106,0.82)";
       ctx.font = "12px system-ui";
       ctx.fillText("eclíptica", eText.x + 8, eText.y - 8);
-      ctx.fillText(`inclinação ${fmt(g.angle * RAD, 0)}°`, eText.x + 8, eText.y + 8);
+      ctx.fillText(`inclinação ${fmt(localEclipticAngle(g), 0)}°`, eText.x + 8, eText.y + 8);
 
       fixedStars.forEach(star => {
         const p = skyToScreen(star.lambda, star.beta);
@@ -972,7 +971,7 @@
 
       planets.forEach(body => {
         const app = apparent(body);
-        const p = skyToScreen(app.lambda, app.beta);
+        const p = horizontalToScreen(app.az, app.alt, g);
         ctx.fillStyle = body.color;
         ctx.shadowColor = body.color;
         ctx.shadowBlur = body.id === selectedPlanet ? 16 : 7;
@@ -1232,7 +1231,7 @@
       let bestD = Infinity;
       planets.forEach(planet => {
         const app = apparent(planet);
-        const p = skyToScreen(app.lambda, app.beta);
+        const p = horizontalToScreen(app.az, app.alt);
         const d = Math.hypot(p.x - x, p.y - y);
         if (d < bestD) {
           bestD = d;
@@ -1283,9 +1282,10 @@
 
     populateStars();
     populateSelect();
-    daySlider.value = "0";
-    hourSlider.value = "22";
-    latitudeSlider.value = "-27";
+    const query = new URLSearchParams(window.location.search);
+    daySlider.value = query.get("day") || "0";
+    hourSlider.value = query.get("hour") || "22";
+    latitudeSlider.value = query.get("lat") || "-27";
     render();
   </script>
 </body>
