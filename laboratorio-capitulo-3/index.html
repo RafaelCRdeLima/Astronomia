@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratório 3 | Espectrofotometria estelar</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel-2: #151515;
+      --line: #343434;
+      --text: #f4f4f1;
+      --muted: #aaa69c;
+      --accent: #d7b46a;
+      --blue: #72a7ff;
+      --cyan: #64d7d2;
+      --orange: #e6a15b;
+      --bad: #d96d6d;
+      --good: #8fd18f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button, input, select { font: inherit; }
+
+    .shell {
+      width: min(1760px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 22px 0 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 3.6vw, 52px);
+      line-height: 1.02;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .badge, .chip {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toolbar, .view-tabs, .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .button, .tab {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      padding: 9px 11px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .button:hover, .button:focus-visible, .tab:hover, .tab:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .view-tab[aria-selected="true"], .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(860px, 1fr) minmax(360px, 0.34fr);
+      gap: 12px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+    .layout.view.active { display: grid; }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #0b0b0b);
+      border: 1px solid var(--line);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--accent);
+      font-size: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .body { padding: 12px 14px 14px; }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      background: #070707;
+      border: 1px solid var(--line);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 10px;
+      min-height: 72px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    select, input[type="range"] { width: 100%; }
+
+    select {
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 9px;
+    }
+
+    .control {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.72);
+    }
+
+    .control:last-child { border-bottom: 0; }
+
+    .readout {
+      color: var(--text);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
+    }
+
+    .formula {
+      color: var(--muted);
+      background: #080808;
+      border: 1px solid var(--line);
+      padding: 9px;
+      line-height: 1.45;
+      font-family: "Latin Modern Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .table-wrap {
+      max-height: 68vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.7);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child, td:first-child { text-align: left; }
+
+    th {
+      position: sticky;
+      top: 0;
+      color: var(--accent);
+      background: #090909;
+      z-index: 1;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .task {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #0b0b0b;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .task strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 1240px) {
+      .layout { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .shell { width: calc(100vw - 16px); }
+      header { grid-template-columns: 1fr; }
+      .badge { justify-self: start; }
+      .toolbar, .view-tabs { display: grid; grid-template-columns: 1fr; }
+      .button, .chip { width: 100%; text-align: left; }
+      .panel { width: 100%; max-width: 100%; margin-bottom: 12px; }
+      #spectrum, #detector, #analysisChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
+      h1 { font-size: 25px; line-height: 1.08; }
+      p { font-size: 14px; }
+      .metrics { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Laboratório 3:<br>luz, temperatura<br>e espectros</h1>
+        <p>Capítulo 3 · Radiação, corpo negro e espectroscopia<br>Fotometria, calibração, linhas e velocidade radial</p>
+      </div>
+      <div class="badge">Astrofísica Moderna</div>
+    </header>
+
+    <div class="toolbar">
+      <a class="button" href="../">Página principal</a>
+      <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
+      <button class="button" id="takeExposure" type="button">Obter exposição</button>
+      <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
+      <button class="button" id="exportCsv" type="button">Exportar CSV</button>
+      <button class="button" id="clearLog" type="button">Limpar registros</button>
+      <span class="chip">Observáveis: contagens por comprimento de onda</span>
+    </div>
+
+    <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
+      <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
+      <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência física</button>
+      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Caderno de dados</button>
+    </div>
+
+    <section class="layout view active" id="observationView" aria-label="Observação espectrofotométrica">
+      <section class="panel">
+        <h2>Detector e espectro observado</h2>
+        <div class="body">
+          <canvas id="detector" width="1500" height="260" aria-label="Imagem espectral no detector"></canvas>
+          <canvas id="spectrum" width="1500" height="560" aria-label="Espectro observado"></canvas>
+          <div class="metrics">
+            <div class="metric">
+              <small>Objeto observado</small>
+              <strong id="targetMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>λ pico medido</small>
+              <strong id="peakMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>T por Wien</small>
+              <strong id="tempMetric">--</strong>
+            </div>
+            <div class="metric">
+              <small>v radial por Hα</small>
+              <strong id="rvMetric">--</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Instrumento</h2>
+        <div class="body">
+          <div class="control">
+            <label for="targetSelect">Alvo</label>
+            <select id="targetSelect"></select>
+          </div>
+
+          <div class="control">
+            <label for="exposureSlider">Tempo de exposição</label>
+            <input id="exposureSlider" type="range" min="10" max="600" step="10">
+            <div class="readout"><span id="exposureReadout">-- s</span><span>contagens</span></div>
+          </div>
+
+          <div class="control">
+            <label for="calibrationSelect">Redução dos dados</label>
+            <select id="calibrationSelect">
+              <option value="raw">bruto: sinal + dark + resposta</option>
+              <option value="dark">subtrair dark</option>
+              <option value="response">dark + resposta instrumental</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="noiseSlider">Ruído atmosférico/instrumental</label>
+            <input id="noiseSlider" type="range" min="0" max="0.22" step="0.01">
+            <div class="readout"><span id="noiseReadout">--</span><span>S/N</span></div>
+          </div>
+
+          <div class="control">
+            <label for="lineSelect">Linha para Doppler</label>
+            <select id="lineSelect">
+              <option value="halpha">Hα 656,3 nm</option>
+              <option value="hbeta">Hβ 486,1 nm</option>
+              <option value="sodium">Na D 589,0 nm</option>
+            </select>
+          </div>
+
+          <div class="formula">
+            E=hc/λ ; λmax T = 2,898e-3 m K<br>
+            Fbol≈∫Fλ dλ ; F=σT⁴(R/d)²<br>
+            v/c≈Δλ/λ0
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" id="analysisView" aria-label="Inferência física">
+      <section class="panel">
+        <h2>Inferência física</h2>
+        <div class="tabs" role="tablist" aria-label="Gráficos">
+          <button class="tab" id="tab-continuum" type="button" aria-selected="true">contínuo</button>
+          <button class="tab" id="tab-photometry" type="button" aria-selected="false">fotometria</button>
+          <button class="tab" id="tab-lines" type="button" aria-selected="false">linhas</button>
+        </div>
+        <div class="body">
+          <canvas id="analysisChart" width="1500" height="560" aria-label="Gráfico de análise"></canvas>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--blue)"></i>dados calibrados</span>
+            <span><i class="dot" style="background: var(--accent)"></i>modelo ajustável</span>
+            <span><i class="dot" style="background: var(--orange)"></i>filtros/linhas</span>
+          </div>
+
+          <div class="tasks">
+            <div class="task">
+              <strong>Experimento 1: calibração instrumental</strong>
+              Compare espectros bruto, com dark subtraído e com resposta corrigida. Quantifique como λmax e T mudam.
+            </div>
+            <div class="task">
+              <strong>Experimento 2: temperatura por Wien</strong>
+              Meça λmax no contínuo calibrado e calcule T = 2,898e-3/λmax. Compare com o ajuste visual do contínuo.
+            </div>
+            <div class="task">
+              <strong>Experimento 3: fotometria em bandas</strong>
+              Registre fluxos B, V e R. Calcule B−V = −2,5 log10(FB/FV) e interprete cor e temperatura.
+            </div>
+            <div class="task">
+              <strong>Experimento 4: velocidade radial</strong>
+              Meça o centro observado de Hα, Hβ ou Na D. Calcule v ≈ c(λobs−λ0)/λ0 e indique aproximação/recessão.
+            </div>
+            <div class="task">
+              <strong>Experimento 5: luminosidade relativa</strong>
+              Integre o espectro calibrado para obter um fluxo bolométrico relativo e compare dois alvos observados com a mesma exposição.
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" id="dataView" aria-label="Caderno de dados">
+      <section class="panel">
+        <h2>Caderno de dados</h2>
+        <div class="body">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>alvo</th>
+                  <th>redução</th>
+                  <th>exp s</th>
+                  <th>λmax nm</th>
+                  <th>T K</th>
+                  <th>FB</th>
+                  <th>FV</th>
+                  <th>FR</th>
+                  <th>B−V</th>
+                  <th>linha</th>
+                  <th>λobs nm</th>
+                  <th>vr km/s</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const C = 299792.458;
+    const WIEN = 2.897771955e6;
+    const HC_EV_NM = 1239.841984;
+    const LAMBDA_MIN = 360;
+    const LAMBDA_MAX = 820;
+    const targets = [];
+    const observations = [];
+    let chartMode = "continuum";
+    let currentSpectrum = [];
+    let selectedTargetId = "target-1";
+
+    const detector = document.getElementById("detector");
+    const detectorCtx = detector.getContext("2d");
+    const spectrum = document.getElementById("spectrum");
+    const spectrumCtx = spectrum.getContext("2d");
+    const analysisChart = document.getElementById("analysisChart");
+    const analysisCtx = analysisChart.getContext("2d");
+    const tableBody = document.getElementById("tableBody");
+    const targetSelect = document.getElementById("targetSelect");
+    const exposureSlider = document.getElementById("exposureSlider");
+    const calibrationSelect = document.getElementById("calibrationSelect");
+    const noiseSlider = document.getElementById("noiseSlider");
+    const lineSelect = document.getElementById("lineSelect");
+
+    function mulberry32(seed) {
+      return function rand() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    const sessionSeed = Math.floor(Date.now() % 100000000) ^ Math.floor(Math.random() * 1000000);
+    const rand = mulberry32(sessionSeed);
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function fmt(value, digits = 2) {
+      if (!Number.isFinite(value)) return "--";
+      if (Math.abs(value) >= 10000) return value.toFixed(0);
+      if (Math.abs(value) >= 1000) return value.toFixed(1);
+      return value.toFixed(digits);
+    }
+
+    function planckShape(lambdaNm, temperature) {
+      const x = 1.4387769e7 / (lambdaNm * temperature);
+      return 1 / (Math.pow(lambdaNm, 5) * Math.expm1(x));
+    }
+
+    function response(lambda) {
+      const blueCut = 1 / (1 + Math.exp(-(lambda - 385) / 18));
+      const redCut = 1 / (1 + Math.exp((lambda - 790) / 24));
+      const ripple = 1 + 0.08 * Math.sin(lambda / 43) - 0.05 * Math.cos(lambda / 67);
+      return clamp(blueCut * redCut * ripple, 0.06, 1.15);
+    }
+
+    function darkCurrent(lambda) {
+      return 0.025 + 0.000035 * (lambda - LAMBDA_MIN);
+    }
+
+    function gaussian(x, mu, sigma) {
+      return Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
+    }
+
+    function makeTargets() {
+      const presets = [
+        { name: "Estrela A", t: 4200 + rand() * 900, rv: -80 + rand() * 160, scale: 0.9 + rand() * 1.1, kind: "fria" },
+        { name: "Estrela B", t: 5600 + rand() * 1000, rv: -120 + rand() * 240, scale: 0.8 + rand() * 1.3, kind: "solar" },
+        { name: "Estrela C", t: 8500 + rand() * 6000, rv: -180 + rand() * 360, scale: 0.7 + rand() * 1.6, kind: "quente" },
+      ];
+      presets.forEach((p, i) => {
+        targets.push({
+          id: `target-${i + 1}`,
+          name: p.name,
+          temperature: p.t,
+          rv: p.rv,
+          scale: p.scale,
+          kind: p.kind,
+          absorption: 0.16 + rand() * 0.22,
+        });
+      });
+    }
+
+    function currentTarget() {
+      return targets.find(t => t.id === selectedTargetId) || targets[0];
+    }
+
+    function lineRest() {
+      const id = lineSelect.value;
+      if (id === "hbeta") return { id, label: "Hβ", lambda: 486.13 };
+      if (id === "sodium") return { id, label: "Na D", lambda: 589.0 };
+      return { id: "halpha", label: "Hα", lambda: 656.28 };
+    }
+
+    function makeSpectrum(target) {
+      const exposure = Number(exposureSlider.value);
+      const noise = Number(noiseSlider.value);
+      const reduction = calibrationSelect.value;
+      const points = [];
+      let maxTrue = 0;
+      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
+        maxTrue = Math.max(maxTrue, planckShape(lambda, target.temperature));
+      }
+      const lines = [
+        { lambda: 656.28, sigma: 3.2, depth: target.kind === "quente" ? 0.34 : 0.18 },
+        { lambda: 486.13, sigma: 2.9, depth: target.kind === "quente" ? 0.30 : 0.10 },
+        { lambda: 589.0, sigma: 2.4, depth: target.kind === "fria" ? 0.33 : 0.12 },
+      ];
+      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
+        let continuum = target.scale * planckShape(lambda, target.temperature) / maxTrue;
+        lines.forEach(line => {
+          const observed = line.lambda * (1 + target.rv / C);
+          continuum *= 1 - line.depth * target.absorption * gaussian(lambda, observed, line.sigma);
+        });
+        const trueFlux = continuum;
+        const rawSignal = trueFlux * response(lambda) * (exposure / 160) + darkCurrent(lambda);
+        const noisy = Math.max(0, rawSignal + (rand() - 0.5) * noise * Math.sqrt(Math.max(rawSignal, 0.03)));
+        let flux = noisy;
+        if (reduction === "dark") flux = Math.max(0, noisy - darkCurrent(lambda));
+        if (reduction === "response") flux = Math.max(0, (noisy - darkCurrent(lambda)) / response(lambda));
+        points.push({ lambda, flux, trueFlux, raw: noisy, response: response(lambda) });
+      }
+      return points;
+    }
+
+    function visibleColor(lambda) {
+      const t = clamp((lambda - 380) / 400, 0, 1);
+      const r = Math.round(255 * clamp(Math.sin(Math.PI * (t - 0.05)), 0, 1));
+      const g = Math.round(220 * clamp(Math.sin(Math.PI * (t + 0.18)), 0, 1));
+      const b = Math.round(255 * clamp(Math.sin(Math.PI * (1.05 - t)), 0, 1));
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function integrateBand(points, center, width) {
+      let sum = 0;
+      let norm = 0;
+      points.forEach(p => {
+        const w = gaussian(p.lambda, center, width / 2.35);
+        sum += p.flux * w;
+        norm += w;
+      });
+      return norm > 0 ? sum / norm : 0;
+    }
+
+    function metrics(points = currentSpectrum) {
+      if (!points.length) return null;
+      const smoothed = points.map((p, i) => {
+        const slice = points.slice(Math.max(0, i - 3), Math.min(points.length, i + 4));
+        return { lambda: p.lambda, flux: slice.reduce((s, q) => s + q.flux, 0) / slice.length };
+      });
+      const peak = smoothed.reduce((best, p) => p.flux > best.flux ? p : best, smoothed[0]);
+      const temp = WIEN / peak.lambda;
+      const b = integrateBand(points, 440, 90);
+      const v = integrateBand(points, 550, 85);
+      const r = integrateBand(points, 700, 130);
+      const bv = -2.5 * Math.log10(Math.max(b, 1e-6) / Math.max(v, 1e-6));
+      const bol = points.reduce((s, p, i) => i === 0 ? 0 : s + p.flux * (p.lambda - points[i - 1].lambda), 0);
+      const line = lineRest();
+      const window = points.filter(p => Math.abs(p.lambda - line.lambda) < 18);
+      const minPoint = window.reduce((best, p) => p.flux < best.flux ? p : best, window[0]);
+      const rv = C * (minPoint.lambda - line.lambda) / line.lambda;
+      return { peak: peak.lambda, temp, b, v, r, bv, bol, line, lineObserved: minPoint.lambda, rv };
+    }
+
+    function drawAxes(ctx, w, h, labels) {
+      ctx.strokeStyle = "#343434";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(58, 28);
+      ctx.lineTo(58, h - 44);
+      ctx.lineTo(w - 26, h - 44);
+      ctx.stroke();
+      ctx.fillStyle = "#aaa69c";
+      ctx.font = "12px system-ui";
+      ctx.fillText(labels.y, 12, 20);
+      ctx.fillText(labels.x, w - 155, h - 12);
+    }
+
+    function drawSpectrumCanvas(ctx, canvas, points, mode = "spectrum") {
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#080808";
+      ctx.fillRect(0, 0, w, h);
+      drawAxes(ctx, w, h, { x: "λ (nm)", y: mode === "response" ? "resposta" : "fluxo" });
+      const padL = 58, padR = 26, padT = 28, padB = 44;
+      const maxY = Math.max(...points.map(p => p.flux), 0.001) * 1.08;
+      const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+      const sy = value => padT + (1 - value / maxY) * (h - padT - padB);
+      for (let lambda = 380; lambda <= 760; lambda += 5) {
+        ctx.fillStyle = visibleColor(lambda);
+        ctx.globalAlpha = 0.13;
+        ctx.fillRect(sx(lambda), padT, Math.max(1, sx(lambda + 5) - sx(lambda)), h - padT - padB);
+      }
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "#72a7ff";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        const x = sx(p.lambda);
+        const y = sy(p.flux);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ["halpha", "hbeta", "sodium"].forEach(id => {
+        const old = lineSelect.value;
+        lineSelect.value = id;
+        const line = lineRest();
+        lineSelect.value = old;
+        const x = sx(line.lambda);
+        ctx.strokeStyle = "rgba(230,161,91,0.65)";
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, padT);
+        ctx.lineTo(x, h - padB);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#e6a15b";
+        ctx.font = "11px system-ui";
+        ctx.fillText(line.label, x + 4, padT + 14);
+      });
+    }
+
+    function drawDetector(points) {
+      const w = detector.width;
+      const h = detector.height;
+      detectorCtx.clearRect(0, 0, w, h);
+      detectorCtx.fillStyle = "#050505";
+      detectorCtx.fillRect(0, 0, w, h);
+      const maxY = Math.max(...points.map(p => p.flux), 0.001);
+      points.forEach((p, i) => {
+        const x = (i / points.length) * w;
+        const intensity = clamp(p.flux / maxY, 0, 1);
+        detectorCtx.fillStyle = visibleColor(p.lambda);
+        detectorCtx.globalAlpha = 0.18 + 0.75 * intensity;
+        detectorCtx.fillRect(x, h * 0.28, Math.ceil(w / points.length) + 1, h * 0.42);
+      });
+      detectorCtx.globalAlpha = 1;
+      detectorCtx.strokeStyle = "rgba(215,180,106,0.45)";
+      detectorCtx.strokeRect(0.5, h * 0.28 + 0.5, w - 1, h * 0.42);
+      detectorCtx.fillStyle = "#aaa69c";
+      detectorCtx.font = "12px system-ui";
+      detectorCtx.fillText("imagem espectral: azul → vermelho, brilho = contagens no detector", 12, 24);
+    }
+
+    function drawAnalysis() {
+      if (!currentSpectrum.length) return;
+      if (chartMode === "continuum") {
+        drawSpectrumCanvas(analysisCtx, analysisChart, currentSpectrum);
+        const m = metrics();
+        const padL = 58, padR = 26, padT = 28, padB = 44;
+        const w = analysisChart.width, h = analysisChart.height;
+        const maxY = Math.max(...currentSpectrum.map(p => p.flux), 0.001) * 1.08;
+        const x = padL + ((m.peak - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+        analysisCtx.strokeStyle = "rgba(215,180,106,0.9)";
+        analysisCtx.lineWidth = 2;
+        analysisCtx.beginPath();
+        analysisCtx.moveTo(x, padT);
+        analysisCtx.lineTo(x, h - padB);
+        analysisCtx.stroke();
+        analysisCtx.fillStyle = "#d7b46a";
+        analysisCtx.fillText(`λmax ${fmt(m.peak, 0)} nm`, x + 8, padT + 30);
+      } else if (chartMode === "photometry") {
+        const m = metrics();
+        const bars = [
+          { label: "B", value: m.b, color: "#72a7ff" },
+          { label: "V", value: m.v, color: "#8fd18f" },
+          { label: "R", value: m.r, color: "#e2795b" },
+        ];
+        const ctx = analysisCtx, w = analysisChart.width, h = analysisChart.height;
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "#080808";
+        ctx.fillRect(0, 0, w, h);
+        drawAxes(ctx, w, h, { x: "filtro", y: "fluxo médio" });
+        const max = Math.max(...bars.map(b => b.value), 0.001);
+        bars.forEach((bar, i) => {
+          const x = 170 + i * 170;
+          const bh = (bar.value / max) * (h - 110);
+          ctx.fillStyle = bar.color;
+          ctx.fillRect(x, h - 44 - bh, 90, bh);
+          ctx.fillStyle = "#f4f4f1";
+          ctx.fillText(bar.label, x + 38, h - 20);
+          ctx.fillText(fmt(bar.value, 3), x + 12, h - 52 - bh);
+        });
+        ctx.fillStyle = "#d7b46a";
+        ctx.font = "15px system-ui";
+        ctx.fillText(`B−V = ${fmt(m.bv, 2)}`, 690, 95);
+      } else {
+        drawSpectrumCanvas(analysisCtx, analysisChart, currentSpectrum);
+        const m = metrics();
+        const padL = 58, padR = 26, padT = 28, padB = 44;
+        const w = analysisChart.width, h = analysisChart.height;
+        const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
+        [m.line.lambda, m.lineObserved].forEach((lambda, i) => {
+          const x = sx(lambda);
+          analysisCtx.strokeStyle = i === 0 ? "rgba(230,161,91,0.75)" : "rgba(215,180,106,0.95)";
+          analysisCtx.lineWidth = i === 0 ? 1.5 : 2.5;
+          analysisCtx.beginPath();
+          analysisCtx.moveTo(x, padT);
+          analysisCtx.lineTo(x, h - padB);
+          analysisCtx.stroke();
+        });
+        analysisCtx.fillStyle = "#d7b46a";
+        analysisCtx.fillText(`${m.line.label}: ${fmt(m.lineObserved, 1)} nm, vr=${fmt(m.rv, 0)} km/s`, sx(m.lineObserved) + 8, padT + 28);
+      }
+    }
+
+    function updateReadouts() {
+      const target = currentTarget();
+      const m = metrics();
+      document.getElementById("targetMetric").textContent = target.name;
+      document.getElementById("peakMetric").textContent = m ? `${fmt(m.peak, 0)} nm` : "--";
+      document.getElementById("tempMetric").textContent = m ? `${fmt(m.temp, 0)} K` : "--";
+      document.getElementById("rvMetric").textContent = m ? `${fmt(m.rv, 0)} km/s` : "--";
+      document.getElementById("exposureReadout").textContent = `${exposureSlider.value} s`;
+      document.getElementById("noiseReadout").textContent = `${fmt(Number(noiseSlider.value), 2)}`;
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+      observations.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.target}</td>
+          <td>${row.reduction}</td>
+          <td>${row.exposure}</td>
+          <td>${fmt(row.peak, 1)}</td>
+          <td>${fmt(row.temp, 0)}</td>
+          <td>${fmt(row.b, 4)}</td>
+          <td>${fmt(row.v, 4)}</td>
+          <td>${fmt(row.r, 4)}</td>
+          <td>${fmt(row.bv, 3)}</td>
+          <td>${row.line}</td>
+          <td>${fmt(row.lineObserved, 2)}</td>
+          <td>${fmt(row.rv, 1)}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function takeExposure() {
+      currentSpectrum = makeSpectrum(currentTarget());
+      drawDetector(currentSpectrum);
+      drawSpectrumCanvas(spectrumCtx, spectrum, currentSpectrum);
+      drawAnalysis();
+      updateReadouts();
+    }
+
+    function recordMeasurement() {
+      if (!currentSpectrum.length) takeExposure();
+      const m = metrics();
+      observations.push({
+        target: currentTarget().name,
+        reduction: calibrationSelect.options[calibrationSelect.selectedIndex].text,
+        exposure: Number(exposureSlider.value),
+        peak: m.peak,
+        temp: m.temp,
+        b: m.b,
+        v: m.v,
+        r: m.r,
+        bv: m.bv,
+        bol: m.bol,
+        line: m.line.label,
+        lineObserved: m.lineObserved,
+        rv: m.rv,
+      });
+      renderTable();
+    }
+
+    function exportCsv() {
+      if (observations.length === 0) recordMeasurement();
+      const header = ["alvo", "reducao", "exposicao_s", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "linha", "lambda_obs_nm", "vr_km_s"];
+      const lines = [header.join(",")];
+      observations.forEach(row => {
+        lines.push([row.target, row.reduction, row.exposure, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
+          .map(value => typeof value === "number" ? value.toFixed(8) : `"${String(value).replaceAll('"', '""')}"`).join(","));
+      });
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "laboratorio_capitulo_3_espectrofotometria.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function populateTargets() {
+      targetSelect.innerHTML = "";
+      targets.forEach(target => {
+        const option = document.createElement("option");
+        option.value = target.id;
+        option.textContent = target.name;
+        targetSelect.appendChild(option);
+      });
+      targetSelect.value = selectedTargetId;
+    }
+
+    document.querySelectorAll(".view-tab").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".view-tab").forEach(tab => tab.setAttribute("aria-selected", "false"));
+        document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+        button.setAttribute("aria-selected", "true");
+        document.getElementById(button.dataset.view).classList.add("active");
+        drawAnalysis();
+      });
+    });
+
+    document.querySelectorAll(".tab").forEach(button => {
+      button.addEventListener("click", () => {
+        chartMode = button.id.replace("tab-", "");
+        document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
+        drawAnalysis();
+      });
+    });
+
+    targetSelect.addEventListener("change", event => {
+      selectedTargetId = event.target.value;
+      takeExposure();
+    });
+    [exposureSlider, calibrationSelect, noiseSlider, lineSelect].forEach(input => input.addEventListener("input", takeExposure));
+    document.getElementById("takeExposure").addEventListener("click", takeExposure);
+    document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
+    document.getElementById("exportCsv").addEventListener("click", exportCsv);
+    document.getElementById("clearLog").addEventListener("click", () => {
+      observations.length = 0;
+      renderTable();
+    });
+
+    makeTargets();
+    populateTargets();
+    exposureSlider.value = "180";
+    noiseSlider.value = "0.06";
+    calibrationSelect.value = "response";
+    takeExposure();
+  </script>
+</body>
+</html>

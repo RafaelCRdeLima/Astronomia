@@ -747,6 +747,165 @@ O efeito Doppler transforma espectros em medidores de movimento. Se uma fonte se
 \frac{\Delta\lambda}{\lambda}\simeq\frac{v_r}{c}
 \]
 permite medir a velocidade radial. Esse método revela binárias espectroscópicas, rotação estelar, expansão de nebulosas, discos de acreção, planetas por velocidade radial e redshifts de galáxias. Em cosmologia, o redshift ganha interpretação ligada à expansão do próprio espaço, mas a ideia observacional continua sendo o deslocamento de linhas.
+
+\begin{lessonblock}{O que o detector realmente mede}
+Um espectro observado não começa como ``fluxo físico''. Ele começa como contagens no detector. Para uma exposição de duração $t$, em um comprimento de onda $\lambda$, uma forma simplificada do sinal é
+\[
+C_{\rm bruto}(\lambda)=t\,R_{\rm inst}(\lambda)\,F_\lambda(\lambda)+D(\lambda)+N(\lambda),
+\]
+onde $R_{\rm inst}$ é a resposta instrumental, $D$ é dark current e $N$ representa ruído. A redução de dados tenta recuperar algo proporcional ao fluxo:
+\[
+F_\lambda(\lambda)\propto
+\frac{C_{\rm bruto}(\lambda)-D(\lambda)}{t\,R_{\rm inst}(\lambda)}.
+\]
+No laboratório, os modos ``bruto'', ``subtrair dark'' e ``dark + resposta instrumental'' mostram por que calibração não é detalhe burocrático: ela altera a forma do contínuo e, portanto, a temperatura inferida.
+\end{lessonblock}
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Corpo negro e temperatura efetiva}
+A lei de Planck para radiância espectral pode ser escrita como
+\[
+B_\lambda(T)=\frac{2hc^2}{\lambda^5}
+\frac{1}{e^{hc/(\lambda kT)}-1}.
+\]
+Em muitos usos didáticos não precisamos ajustar toda a constante de normalização. A forma do contínuo já informa temperatura. A lei de Wien,
+\[
+\lambda_{\max}T=b,\qquad b=2{,}898\times10^{-3}\,\mathrm{m\,K},
+\]
+leva a
+\[
+T\simeq\frac{2{,}898\times10^6}{\lambda_{\max}(\mathrm{nm})}\ \mathrm{K}.
+\]
+A luminosidade emitida por unidade de área de um corpo negro é dada por Stefan--Boltzmann:
+\[
+F=\sigma T^4.
+\]
+Para uma estrela de raio $R$ observada a distância $d$, o fluxo bolométrico observado escala como
+\[
+f_{\rm bol}=\sigma T^4\left(\frac{R}{d}\right)^2.
+\]
+Assim, temperatura vem da forma do espectro, enquanto raio e distância entram na normalização do fluxo.
+\end{lessonblock}
+
+\textbf{Exemplo: temperatura por Wien.} Se o contínuo calibrado tem pico em $\lambda_{\max}=520\,\mathrm{nm}$, então
+\[
+T\simeq\frac{2{,}898\times10^6}{520}\simeq5570\,\mathrm{K}.
+\]
+Se o mesmo espectro bruto, antes da correção instrumental, parecia ter pico em $610\,\mathrm{nm}$, daria
+\[
+T\simeq4750\,\mathrm{K}.
+\]
+A diferença não significa que a estrela mudou: significa que a resposta instrumental deformou o contínuo observado.
+
+\begin{lessonblock}{Fotometria em filtros e índice de cor}
+Um filtro não mede o fluxo em um único comprimento de onda; ele mede uma média ponderada por uma curva de transmissão $S_X(\lambda)$:
+\[
+F_X=\frac{\int F_\lambda(\lambda)S_X(\lambda)\,d\lambda}
+{\int S_X(\lambda)\,d\lambda}.
+\]
+Em fotometria astronômica, magnitudes são logarítmicas. Ignorando constantes de ponto zero, a diferença de cor entre duas bandas pode ser estimada por
+\[
+B-V\simeq -2{,}5\log_{10}\left(\frac{F_B}{F_V}\right).
+\]
+Valores menores de $B-V$ indicam objeto relativamente mais azul; valores maiores indicam objeto relativamente mais vermelho. Essa interpretação deve ser feita com cuidado, pois poeira interestelar também avermelha a luz.
+\end{lessonblock}
+
+\textbf{Exemplo: cor a partir de fluxos.} Se uma observação calibrada fornece $F_B=0{,}42$ e $F_V=0{,}60$ em unidades relativas,
+\[
+B-V=-2{,}5\log_{10}(0{,}42/0{,}60)
+=-2{,}5\log_{10}(0{,}70)\simeq0{,}39.
+\]
+Se outra estrela tem $F_B/F_V=1{,}20$, então $B-V\simeq-0{,}20$, indicando espectro mais azul e, em geral, temperatura efetiva maior.
+
+\begin{lessonblock}{Linhas espectrais e velocidade radial}
+Uma linha espectral tem um comprimento de onda de repouso $\lambda_0$. Se a linha é observada em $\lambda_{\rm obs}$, então
+\[
+\Delta\lambda=\lambda_{\rm obs}-\lambda_0.
+\]
+Para velocidades pequenas comparadas a $c$,
+\[
+v_r\simeq c\,\frac{\Delta\lambda}{\lambda_0}.
+\]
+Se $v_r>0$, a fonte está se afastando; se $v_r<0$, está se aproximando. Para a linha H$\alpha$,
+\[
+\lambda_0=656{,}28\,\mathrm{nm}.
+\]
+Um deslocamento de apenas $0{,}22\,\mathrm{nm}$ já corresponde a
+\[
+v_r\simeq 3{,}0\times10^5\,\frac{0{,}22}{656{,}28}
+\simeq100\,\mathrm{km\,s^{-1}}.
+\]
+Essa sensibilidade é uma das razões pelas quais espectroscopia é tão poderosa.
+\end{lessonblock}
+
+\textbf{Exemplo: H$\alpha$ deslocada.} Se o laboratório mostra o mínimo de H$\alpha$ em $656{,}05\,\mathrm{nm}$,
+\[
+\Delta\lambda=-0{,}23\,\mathrm{nm}.
+\]
+Logo,
+\[
+v_r\simeq 299792\,\frac{-0{,}23}{656{,}28}
+\simeq -105\,\mathrm{km\,s^{-1}}.
+\]
+O sinal negativo indica aproximação. Em uma entrega, sempre informe a linha usada, o comprimento de onda de repouso, o comprimento observado e o sinal da velocidade.
+
+\begin{lessonblock}{Fluxo integrado e comparação entre objetos}
+O fluxo bolométrico é a integral do fluxo espectral:
+\[
+f_{\rm bol}=\int_0^\infty F_\lambda\,d\lambda.
+\]
+Na prática, com dados discretos em uma faixa limitada, usamos uma soma aproximada:
+\[
+f_{\rm faixa}\simeq \sum_i F_{\lambda,i}\,\Delta\lambda_i.
+\]
+Esse valor não é o fluxo bolométrico completo, pois falta radiação fora da faixa observada, mas é útil para comparar objetos observados com o mesmo instrumento e a mesma redução. Estrelas quentes podem emitir muita radiação no ultravioleta, fora da faixa visível; estrelas frias podem emitir parte importante no infravermelho. Portanto, a integral visível deve ser interpretada como fluxo na faixa observada, não como luminosidade total sem correção.
+\end{lessonblock}
+
+\subsection*{Laboratório}
+\addcontentsline{toc}{subsection}{Laboratório -- Capítulo 3}
+O laboratório interativo deste capítulo está disponível em:
+
+\begin{center}
+\url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-3/}
+\end{center}
+
+Neste laboratório você atua como um observador que obtém espectros de estrelas desconhecidas. O painel não entrega diretamente temperatura ou velocidade: ele mostra contagens, resposta instrumental, espectro calibrado, filtros e linhas. Seu trabalho é transformar dados observados em grandezas físicas.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
+\textbf{Experimento 1: calibração.}
+Escolha um alvo e registre uma medida no modo bruto, uma com dark subtraído e uma com dark + resposta instrumental. Para cada uma, anote $\lambda_{\max}$ e calcule $T$ por Wien. Quantifique a diferença percentual entre a temperatura bruta e a temperatura calibrada:
+\[
+\frac{\Delta T}{T_{\rm cal}}=\frac{|T_{\rm bruto}-T_{\rm cal}|}{T_{\rm cal}}.
+\]
+Explique por que a calibração altera a forma do contínuo.
+
+\textbf{Experimento 2: temperatura por contínuo.}
+Para três alvos, use o espectro calibrado, determine $\lambda_{\max}$ e calcule
+\[
+T=\frac{2{,}898\times10^6}{\lambda_{\max}(\mathrm{nm})}.
+\]
+Ordene os alvos por temperatura e compare com a aparência do espectro: qual é mais azul? qual é mais vermelho?
+
+\textbf{Experimento 3: fotometria em bandas.}
+Registre $F_B$, $F_V$ e $F_R$ para os mesmos alvos. Calcule
+\[
+B-V=-2{,}5\log_{10}(F_B/F_V).
+\]
+Faça uma tabela com $T$ e $B-V$. Verifique se objetos com $B-V$ menor são também mais quentes.
+
+\textbf{Experimento 4: velocidade radial.}
+Escolha uma linha, preferencialmente H$\alpha$, e registre $\lambda_{\rm obs}$. Calcule
+\[
+v_r=c\frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}.
+\]
+Informe se o alvo está se aproximando ou se afastando. Repita com outra linha e compare os valores.
+
+\textbf{Experimento 5: fluxo integrado.}
+Use a coluna de fluxo relativo exportada pelo laboratório ou o valor de fluxo integrado mostrado na tabela. Compare dois alvos observados com mesma exposição e mesma redução. Explique por que maior fluxo observado não implica, sozinho, maior luminosidade intrínseca.
+\end{lessonblock}
+
+\begin{lessonblock}{Formato da entrega}
+A entrega deve conter o CSV exportado, uma tabela com pelo menos três alvos, os cálculos de $T$ por Wien, $B-V$, velocidade radial por pelo menos uma linha, uma comparação entre espectro bruto e calibrado, e uma interpretação curta respondendo: que parte da conclusão vem diretamente dos dados e que parte depende de modelo físico?
+\end{lessonblock}
 \newpage
 \section*{Capítulo 4 -- Telescópios, detectores e observação multi-banda}
 \addcontentsline{toc}{section}{Capítulo 4 -- Telescópios, detectores e observação multi-banda}
