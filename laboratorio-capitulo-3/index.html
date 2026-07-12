@@ -1168,6 +1168,29 @@
       }
     }
 
+    function drawCanvasLabel(ctx, text, x, y, options = {}) {
+      const font = options.font || "bold 15px system-ui";
+      const color = options.color || "#f4f4f1";
+      const bg = options.bg || "rgba(5,5,5,0.86)";
+      const border = options.border || "rgba(215,180,106,0.65)";
+      const padX = options.padX || 7;
+      const padY = options.padY || 5;
+      const canvasW = options.canvasW || ctx.canvas.width;
+      const canvasH = options.canvasH || ctx.canvas.height;
+      ctx.font = font;
+      const width = ctx.measureText(text).width + 2 * padX;
+      const height = 24;
+      const bx = clamp(x, 6, canvasW - width - 6);
+      const by = clamp(y - height + padY, 6, canvasH - height - 6);
+      ctx.fillStyle = bg;
+      ctx.fillRect(bx, by, width, height);
+      ctx.strokeStyle = border;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bx + 0.5, by + 0.5, width - 1, height - 1);
+      ctx.fillStyle = color;
+      ctx.fillText(text, bx + padX, by + height - padY - 2);
+    }
+
     function drawSpectrumCanvas(ctx, canvas, points, mode = "spectrum") {
       const w = canvas.width;
       const h = canvas.height;
@@ -1228,9 +1251,11 @@
           else ctx.lineTo(x, y);
         });
         ctx.stroke();
-        ctx.fillStyle = "#d7b46a";
-        ctx.font = "12px system-ui";
-        ctx.fillText(`corpo negro: ${fmt(Number(blackbodyTempSlider.value), 0)} K`, sx(clamp(760, displayLambdaMin, displayLambdaMax)), padT + 32);
+        drawCanvasLabel(ctx, `corpo negro: ${fmt(Number(blackbodyTempSlider.value), 0)} K`, sx(clamp(760, displayLambdaMin, displayLambdaMax)), padT + 32, {
+          color: "#ffe3a0",
+          canvasW: w,
+          canvasH: h,
+        });
       }
       absorptionMarks.forEach((mark, i) => {
         if (mark.lambda < displayLambdaMin || mark.lambda > displayLambdaMax) return;
@@ -1241,9 +1266,13 @@
         ctx.moveTo(x, padT);
         ctx.lineTo(x, h - padB);
         ctx.stroke();
-        ctx.fillStyle = "#d7b46a";
-        ctx.font = "12px system-ui";
-        ctx.fillText(`${i + 1}: ${fmt(mark.lambda, 1)} nm`, x + 5, padT + 17 + (i % 4) * 15);
+        const labelX = x + (i % 2 === 0 ? 8 : -122);
+        const labelY = padT + 72 + (i % 5) * 32;
+        drawCanvasLabel(ctx, `${i + 1}: ${fmt(mark.lambda, 1)} nm`, labelX, labelY, {
+          color: "#ffe3a0",
+          canvasW: w,
+          canvasH: h,
+        });
       });
     }
 
@@ -1331,8 +1360,11 @@
         analysisCtx.moveTo(x, padT);
         analysisCtx.lineTo(x, h - padB);
         analysisCtx.stroke();
-        analysisCtx.fillStyle = "#d7b46a";
-        analysisCtx.fillText(`λmax ${fmt(m.peak, 0)} nm`, x + 8, padT + 30);
+        drawCanvasLabel(analysisCtx, `λmax ${fmt(m.peak, 0)} nm`, x + 8, padT + 34, {
+          color: "#ffe3a0",
+          canvasW: w,
+          canvasH: h,
+        });
       } else if (chartMode === "photometry") {
         const m = metrics();
         const bars = [
@@ -1373,8 +1405,11 @@
           analysisCtx.moveTo(x, padT);
           analysisCtx.lineTo(x, h - padB);
           analysisCtx.stroke();
-          analysisCtx.fillStyle = "#d7b46a";
-          analysisCtx.fillText(`linha marcada: ${fmt(m.lineObserved, 1)} nm; se for ${m.line.label}, vr=${fmt(m.rv, 0)} km/s`, x + 8, padT + 28);
+          drawCanvasLabel(analysisCtx, `linha: ${fmt(m.lineObserved, 1)} nm | ${m.line.label} -> vr=${fmt(m.rv, 0)} km/s`, x + 8, padT + 34, {
+            color: "#ffe3a0",
+            canvasW: w,
+            canvasH: h,
+          });
         } else {
           analysisCtx.fillStyle = "#aaa69c";
           analysisCtx.fillText("marque uma queda no espectro para medir λ observado", padL + 18, padT + 42);
