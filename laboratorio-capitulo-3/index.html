@@ -502,7 +502,7 @@
             <div class="command-grid">
               <button class="button" id="resetDetector" type="button">Zerar detector</button>
               <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
-              <button class="button" id="exportCsv" type="button">Exportar CSV</button>
+              <button class="button" id="exportCsv" type="button">Exportar CSVs</button>
               <button class="button" id="clearLog" type="button">Limpar registros</button>
             </div>
           </div>
@@ -627,6 +627,8 @@
     let photonTotal = 0;
     let expectedRates = [];
     let accumulatedRaw = [];
+    let accumulatedStar = [];
+    let accumulatedSky = [];
     let displayLambdaMin = 200;
     let displayLambdaMax = 2000;
 
@@ -975,6 +977,8 @@
       const aperture = apertureQuality(target);
       const points = [];
       const areaRatio = starAperture && skyAperture ? apertureArea(starAperture) / Math.max(apertureArea(skyAperture), 1) : 0;
+      const starArea = apertureArea(starAperture);
+      const skyArea = apertureArea(skyAperture);
       for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 2) {
         const selectedFlux = targetFluxAt(target, lambda) * apertureCapture(starAperture, target);
         const targetFluxInStar = targets.reduce((sum, source) => {
@@ -993,14 +997,19 @@
         const extractedStellarFlux = targetFluxInStar - areaRatio * targetFluxInSky;
         const extractedFieldFlux = fieldFluxInStar - areaRatio * fieldFluxInSky;
         const trueFlux = extractedStellarFlux + extractedFieldFlux + skyResidual;
-        const sourceRate = trueFlux * 0.09;
-        const skyFlux = Math.abs(localBackground(starAperture?.x || 0, starAperture?.y || 0)) * (apertureArea(starAperture) + areaRatio ** 2 * apertureArea(skyAperture)) / 1200;
+        const wavelengthSkyShape = 1 + 0.25 * Math.sin(lambda / 88);
+        const starSkyRate = Math.abs(localBackground(starAperture?.x || 0, starAperture?.y || 0)) * starArea * wavelengthSkyShape / 1200;
+        const scaledSkyRate = Math.abs(localBackground(skyAperture?.x || 0, skyAperture?.y || 0)) * skyArea * areaRatio * wavelengthSkyShape / 1200;
+        const starRate = Math.max(0, (targetFluxInStar + fieldFluxInStar) * 0.09 + starSkyRate);
+        const skyRate = Math.max(0, (targetFluxInSky + fieldFluxInSky) * areaRatio * 0.09 + scaledSkyRate);
+        const sourceRate = starRate - skyRate;
+        const skyFlux = Math.abs(localBackground(starAperture?.x || 0, starAperture?.y || 0)) * (starArea + areaRatio ** 2 * skyArea) / 1200;
         const apertureNoise = 0.04
           + (1 - aperture.capture) * 0.08
           + aperture.contamination * 0.18
           + aperture.areaPenalty * 0.04
           + Math.max(0, extractedFieldFlux) * 0.05;
-        points.push({ lambda, trueFlux: selectedFlux, sourceRate, rawRate: sourceRate, backgroundNoiseRate: skyFlux, apertureNoise });
+        points.push({ lambda, trueFlux: selectedFlux, sourceRate, starRate, skyRate, rawRate: sourceRate, backgroundNoiseRate: skyFlux, apertureNoise });
       }
       return points;
     }
@@ -1008,11 +1017,13 @@
     function resetObservation() {
       expectedRates = makeExpectedRates(currentTarget());
       accumulatedRaw = expectedRates.map(() => 0);
+      accumulatedStar = expectedRates.map(() => 0);
+      accumulatedSky = expectedRates.map(() => 0);
       observationSeconds = 0;
       photonTotal = 0;
       absorptionMarks.length = 0;
       fittingBlackbody = false;
-      currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0 }));
+      currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, starFlux: 0, skyFlux: 0, trueFlux: p.trueFlux, raw: 0 }));
       lastFrameTime = null;
       renderObservation();
     }
@@ -1020,11 +1031,16 @@
     function addPhotons(dt) {
       if (!expectedRates.length) resetObservation();
       expectedRates.forEach((p, i) => {
-        const mean = p.rawRate * dt;
-        const sigma = Math.sqrt(Math.max(Math.abs(mean) + p.backgroundNoiseRate * dt, 0.0001)) * (0.42 + p.apertureNoise * 2.2);
-        const incoming = mean + gaussianNoise() * sigma;
-        accumulatedRaw[i] += incoming;
-        photonTotal += Math.max(0, p.sourceRate) * dt;
+        const meanStar = p.starRate * dt;
+        const meanSky = p.skyRate * dt;
+        const starSigma = Math.sqrt(Math.max(Math.abs(meanStar) + p.backgroundNoiseRate * dt, 0.0001)) * (0.34 + p.apertureNoise * 1.6);
+        const skySigma = Math.sqrt(Math.max(Math.abs(meanSky) + p.backgroundNoiseRate * dt, 0.0001)) * (0.34 + p.apertureNoise * 1.6);
+        const incomingStar = meanStar + gaussianNoise() * starSigma;
+        const incomingSky = meanSky + gaussianNoise() * skySigma;
+        accumulatedStar[i] += incomingStar;
+        accumulatedSky[i] += incomingSky;
+        accumulatedRaw[i] = accumulatedStar[i] - accumulatedSky[i];
+        photonTotal += Math.max(0, p.starRate) * dt;
       });
       observationSeconds += dt;
       updateSpectrumFromAccumulator();
@@ -1033,10 +1049,14 @@
     function updateSpectrumFromAccumulator() {
       const t = Math.max(observationSeconds, 0.001);
       currentSpectrum = expectedRates.map((p, i) => {
-        const measuredRate = accumulatedRaw[i] / t;
+        const starFlux = accumulatedStar[i] / t;
+        const skyFlux = accumulatedSky[i] / t;
+        const measuredRate = starFlux - skyFlux;
         return {
           lambda: p.lambda,
           flux: measuredRate,
+          starFlux,
+          skyFlux,
           trueFlux: p.trueFlux,
           raw: measuredRate,
         };
@@ -1320,7 +1340,7 @@
       }
       const plotted = shownPoints(points);
       const model = fittingBlackbody ? blackbodyPoints() : [];
-      const values = plotted.map(p => p.flux);
+      const values = plotted.flatMap(p => [p.starFlux || 0, p.skyFlux || 0, p.flux]);
       const minY = Math.min(0, ...values);
       const maxY = Math.max(...values, 0.001) * 1.08;
       const sx = lambda => lambdaToX(lambda, w, padL, padR);
@@ -1342,17 +1362,44 @@
           ctx.fillText(label.text, sx(label.lambda), padT + 14);
         }
       });
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = "#72a7ff";
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      plotted.forEach((p, i) => {
-        const x = sx(p.lambda);
-        const y = clamp(sy(p.flux), padT, h - padB);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      function plotSeries(field, color, width, alpha = 1) {
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.beginPath();
+        plotted.forEach((p, i) => {
+          const x = sx(p.lambda);
+          const y = clamp(sy(p[field] || 0), padT, h - padB);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      plotSeries("starFlux", "#b8c7d9", 1.1, 0.62);
+      plotSeries("skyFlux", "#8fd18f", 1.1, 0.58);
+      plotSeries("flux", "#72a7ff", 2.25, 1);
+      drawCanvasLabel(ctx, "estrela", padL + 16, padT + 34, {
+        color: "#dbe8f4",
+        border: "rgba(184,199,217,0.55)",
+        canvasW: w,
+        canvasH: h,
+        font: "bold 12px system-ui",
       });
-      ctx.stroke();
+      drawCanvasLabel(ctx, "fundo escalado", padL + 96, padT + 34, {
+        color: "#bce8bc",
+        border: "rgba(143,209,143,0.55)",
+        canvasW: w,
+        canvasH: h,
+        font: "bold 12px system-ui",
+      });
+      drawCanvasLabel(ctx, "líquido: estrela − fundo", padL + 228, padT + 34, {
+        color: "#b8d0ff",
+        border: "rgba(114,167,255,0.75)",
+        canvasW: w,
+        canvasH: h,
+        font: "bold 12px system-ui",
+      });
       if (model.length) {
         ctx.strokeStyle = "#d7b46a";
         ctx.lineWidth = 2.2;
@@ -1619,24 +1666,126 @@
       renderTable();
     }
 
-    function exportCsv() {
-      if (observations.length === 0) recordMeasurement();
-      if (observations.length === 0) return;
-      const header = ["alvo", "extracao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_ajuste_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "hipotese_linha", "lambda_obs_nm", "vr_km_s"];
-      const lines = [header.join(",")];
-      observations.forEach(row => {
-        lines.push([row.target, row.extraction, row.observationSeconds, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
-          .map(value => typeof value === "number" ? value.toFixed(8) : `"${String(value).replaceAll('"', '""')}"`).join(","));
-      });
+    function csvValue(value) {
+      if (typeof value === "number") return Number.isFinite(value) ? value.toFixed(8) : "";
+      return `"${String(value ?? "").replaceAll('"', '""')}"`;
+    }
+
+    function downloadCsv(filename, rows) {
+      const lines = rows.map(row => row.map(csvValue).join(","));
       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "laboratorio_capitulo_3_espectrofotometria.csv";
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+    }
+
+    function exportFluxCsv() {
+      const rows = [[
+        "lambda_nm",
+        "fluxo_abertura_estrela",
+        "fluxo_fundo_escalado",
+        "fluxo_liquido_estrela_menos_fundo",
+        "modelo_corpo_negro",
+      ]];
+      const temperature = Number(blackbodyTempSlider.value);
+      const scale = blackbodyScaleValue();
+      currentSpectrum.forEach(p => {
+        rows.push([
+          p.lambda,
+          p.starFlux,
+          p.skyFlux,
+          p.flux,
+          fittingBlackbody ? blackbodyFlux(p.lambda, temperature, scale) : "",
+        ]);
+      });
+      downloadCsv("laboratorio_3_fluxo_por_comprimento_de_onda.csv", rows);
+    }
+
+    function exportBlackbodyCsv() {
+      const m = metrics();
+      const q = apertureQuality(currentTarget());
+      const rows = [[
+        "alvo",
+        "tempo_acumulado_s",
+        "ajuste_ativo",
+        "temperatura_corpo_negro_K",
+        "escala_corpo_negro",
+        "lambda_pico_observado_nm",
+        "janela_lambda_min_nm",
+        "janela_lambda_max_nm",
+        "raio_abertura_estrela_px",
+        "raio_abertura_fundo_px",
+        "fracao_coletada",
+        "semente_sessao",
+      ], [
+        currentTarget().name,
+        observationSeconds,
+        fittingBlackbody ? "sim" : "nao",
+        fittingBlackbody ? Number(blackbodyTempSlider.value) : "",
+        fittingBlackbody ? blackbodyScaleValue() : "",
+        m ? m.peak : "",
+        displayLambdaMin,
+        displayLambdaMax,
+        starAperture ? starAperture.r : "",
+        skyAperture ? skyAperture.r : "",
+        q.capture,
+        sessionSeed,
+      ]];
+      downloadCsv("laboratorio_3_parametros_corpo_negro.csv", rows);
+    }
+
+    function exportLinesPhotometryCsv() {
+      const m = metrics();
+      const rows = [[
+        "alvo",
+        "tempo_acumulado_s",
+        "F_B",
+        "F_V",
+        "F_R",
+        "BmenosV",
+        "fluxo_bolometrico_relativo",
+        "linha_indice",
+        "lambda_observado_nm",
+        "melhor_identificacao",
+        "lambda_repouso_nm",
+        "velocidade_radial_km_s",
+      ]];
+      const marks = absorptionMarks.length ? absorptionMarks : [null];
+      marks.forEach((mark, i) => {
+        const candidates = mark ? lineCandidates(mark.lambda) : [];
+        const best = candidates[0] || { label: "", lambda: "", rv: "" };
+        rows.push([
+          currentTarget().name,
+          observationSeconds,
+          m ? m.b : "",
+          m ? m.v : "",
+          m ? m.r : "",
+          m ? m.bv : "",
+          m ? m.bol : "",
+          mark ? i + 1 : "",
+          mark ? mark.lambda : "",
+          best.label,
+          best.lambda,
+          best.rv,
+        ]);
+      });
+      downloadCsv("laboratorio_3_linhas_e_fotometria.csv", rows);
+    }
+
+    function exportCsv() {
+      if (!currentSpectrum.length) resetObservation();
+      if (observationSeconds < 0.5) {
+        document.getElementById("fieldStatus").textContent = "Acumule fótons antes de exportar os dados observados.";
+        return;
+      }
+      exportFluxCsv();
+      setTimeout(exportBlackbodyCsv, 120);
+      setTimeout(exportLinesPhotometryCsv, 240);
     }
 
     function chooseNearestTarget(point) {
