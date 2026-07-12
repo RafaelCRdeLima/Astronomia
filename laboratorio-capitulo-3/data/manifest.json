@@ -1,0 +1,21 @@
+{
+  "version": 4,
+  "description": "Recortes reais SDSS DR12 corrected frames em float32, filtros g/r/i alinhados ao filtro r por correlacao local.",
+  "fields": [
+    {
+      "id": "sdss-756-4-0127",
+      "label": "SDSS run 756 camcol 4 campo 127",
+      "file": "sdss-756-4-0127.json"
+    },
+    {
+      "id": "sdss-756-4-0125",
+      "label": "SDSS run 756 camcol 4 campo 125",
+      "file": "sdss-756-4-0125.json"
+    },
+    {
+      "id": "sdss-756-4-0126",
+      "label": "SDSS run 756 camcol 4 campo 126",
+      "file": "sdss-756-4-0126.json"
+    }
+  ]
+}
