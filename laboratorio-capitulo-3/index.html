@@ -31,7 +31,7 @@
       overflow-x: hidden;
     }
 
-    button, input, select { font: inherit; }
+    button, input { font: inherit; }
 
     .shell {
       width: min(1760px, calc(100vw - 28px));
@@ -192,14 +192,7 @@
       margin-bottom: 6px;
     }
 
-    select, input[type="range"] { width: 100%; }
-
-    select {
-      color: var(--text);
-      background: #0d0d0d;
-      border: 1px solid var(--line);
-      padding: 9px;
-    }
+    input[type="range"] { width: 100%; }
 
     .control {
       padding: 10px 0;
@@ -428,15 +421,6 @@
             <div class="formula" id="absorptionLinesReadout">Nenhuma linha marcada. Ative a ferramenta e clique nas quedas do espectro.</div>
           </div>
 
-          <div class="control">
-            <label for="lineSelect">Linha de repouso para v radial</label>
-            <select id="lineSelect">
-              <option value="halpha">Hα 656,3 nm</option>
-              <option value="hbeta">Hβ 486,1 nm</option>
-              <option value="sodium">Na D 589,0 nm</option>
-            </select>
-          </div>
-
           <div class="formula">
             E=hc/λ ; λmax T = 2,898e-3 m K<br>
             Fbol≈∫Fλ dλ ; F=σT⁴(R/d)²<br>
@@ -536,6 +520,13 @@
     const LAMBDA_MIN = 90;
     const LAMBDA_MAX = 2500;
     const MIN_DISPLAY_SPAN = 80;
+    const REST_LINES = [
+      { id: "hdelta", label: "Hδ", lambda: 410.17 },
+      { id: "hgamma", label: "Hγ", lambda: 434.05 },
+      { id: "hbeta", label: "Hβ", lambda: 486.13 },
+      { id: "sodium", label: "Na D", lambda: 589.0 },
+      { id: "halpha", label: "Hα", lambda: 656.28 },
+    ];
     const SIM_SECONDS_PER_REAL_SECOND = 16;
     const targets = [];
     const fieldStars = [];
@@ -568,7 +559,6 @@
     const analysisChart = document.getElementById("analysisChart");
     const analysisCtx = analysisChart.getContext("2d");
     const tableBody = document.getElementById("tableBody");
-    const lineSelect = document.getElementById("lineSelect");
     const lineMeasureToggle = document.getElementById("lineMeasureToggle");
     const clearAbsorptionMarks = document.getElementById("clearAbsorptionMarks");
     const blackbodyToggle = document.getElementById("blackbodyToggle");
@@ -885,11 +875,12 @@
       return "abertura parcial: revise centro e raio";
     }
 
-    function lineRest() {
-      const id = lineSelect.value;
-      if (id === "hbeta") return { id, label: "Hβ", lambda: 486.13 };
-      if (id === "sodium") return { id, label: "Na D", lambda: 589.0 };
-      return { id: "halpha", label: "Hα", lambda: 656.28 };
+    function lineCandidates(lineObserved) {
+      if (!Number.isFinite(lineObserved)) return [];
+      return REST_LINES.map(line => ({
+        ...line,
+        rv: C * (lineObserved - line.lambda) / line.lambda,
+      })).sort((a, b) => Math.abs(a.rv) - Math.abs(b.rv));
     }
 
     function gaussianNoise() {
@@ -1123,11 +1114,12 @@
       const r = integrateBand(points, 700, 130);
       const bv = -2.5 * Math.log10(Math.max(b, 1e-6) / Math.max(v, 1e-6));
       const bol = points.reduce((s, p, i) => i === 0 ? 0 : s + p.flux * (p.lambda - points[i - 1].lambda), 0);
-      const line = lineRest();
       const marked = absorptionMarks[0] || null;
       const lineObserved = marked ? marked.lambda : NaN;
-      const rv = marked ? C * (lineObserved - line.lambda) / line.lambda : NaN;
-      return { peak: peak.lambda, temp, b, v, r, bv, bol, line, lineObserved, rv };
+      const candidates = lineCandidates(lineObserved);
+      const line = candidates[0] || { label: "--", lambda: NaN, rv: NaN };
+      const rv = line.rv;
+      return { peak: peak.lambda, temp, b, v, r, bv, bol, line, lineObserved, rv, candidates };
     }
 
     function drawAxes(ctx, w, h, labels) {
@@ -1443,10 +1435,12 @@
           analysisCtx.moveTo(x, padT);
           analysisCtx.lineTo(x, h - padB);
           analysisCtx.stroke();
-          drawCanvasLabel(analysisCtx, `linha: ${fmt(m.lineObserved, 1)} nm | ${m.line.label} -> vr=${fmt(m.rv, 0)} km/s`, x + 8, padT + 34, {
+          const alternatives = m.candidates.slice(0, 3).map(candidate => `${candidate.label}: ${fmt(candidate.rv, 0)} km/s`).join(" | ");
+          drawCanvasLabel(analysisCtx, `λobs ${fmt(m.lineObserved, 1)} nm | candidatos: ${alternatives}`, x + 8, padT + 34, {
             color: "#ffe3a0",
             canvasW: w,
             canvasH: h,
+            font: "bold 14px system-ui",
           });
         } else {
           analysisCtx.fillStyle = "#aaa69c";
@@ -1684,7 +1678,6 @@
     });
     lambdaMinSlider.addEventListener("input", () => setDisplayRange("min"));
     lambdaMaxSlider.addEventListener("input", () => setDisplayRange("max"));
-    lineSelect.addEventListener("input", renderObservation);
     document.getElementById("observeToggle").addEventListener("click", () => {
       isObserving = !isObserving;
       if (isObserving) fittingBlackbody = false;
