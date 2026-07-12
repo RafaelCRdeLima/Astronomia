@@ -102,17 +102,11 @@
       background: #18140c;
     }
 
-    .mode-row, .calibration-nav {
+    .mode-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
-    }
-
-    .reduction-mode[aria-selected="true"], .cal-step[aria-selected="true"] {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: #18140c;
     }
 
     .layout {
@@ -228,58 +222,6 @@
       overflow-x: auto;
     }
 
-    .calibration-layout {
-      display: grid;
-      grid-template-columns: minmax(760px, 1fr) minmax(360px, 0.34fr);
-      gap: 12px;
-      align-items: start;
-      min-width: 0;
-    }
-
-    .calibration-nav {
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(52, 52, 52, 0.72);
-    }
-
-    .cal-pane { display: none; }
-    .cal-pane.active { display: block; }
-
-    .slider-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .status-line {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .status-pill {
-      border: 1px solid var(--line);
-      background: #0b0b0b;
-      padding: 9px;
-      min-height: 62px;
-    }
-
-    .status-pill small {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      margin-bottom: 5px;
-    }
-
-    .status-pill strong {
-      font-size: 15px;
-    }
-
-    .status-good strong { color: var(--good); }
-    .status-warn strong { color: var(--accent); }
-    .status-bad strong { color: var(--bad); }
-
     .table-wrap {
       max-height: 68vh;
       overflow: auto;
@@ -351,7 +293,6 @@
 
     @media (max-width: 1240px) {
       .layout { grid-template-columns: 1fr; }
-      .calibration-layout { grid-template-columns: 1fr; }
       .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
@@ -362,11 +303,10 @@
       .toolbar, .view-tabs { display: grid; grid-template-columns: 1fr; }
       .button, .chip { width: 100%; text-align: left; }
       .panel { width: 100%; max-width: 100%; margin-bottom: 12px; }
-      #skyField, #spectrum, #detector, #analysisChart, #calibrationChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
+      #skyField, #spectrum, #detector, #analysisChart { width: calc(100vw - 48px); max-width: calc(100vw - 48px); }
       h1 { font-size: 25px; line-height: 1.08; }
       p { font-size: 14px; }
       .metrics { grid-template-columns: 1fr; }
-      .status-line { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -393,7 +333,6 @@
 
     <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
       <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
-      <button class="button view-tab" type="button" data-view="calibrationView" aria-selected="false">Calibração</button>
       <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência física</button>
       <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Caderno de dados</button>
     </div>
@@ -447,22 +386,6 @@
           </div>
 
           <div class="control">
-            <label>Redução aplicada ao espectro</label>
-            <div class="mode-row" role="tablist" aria-label="Modo de redução">
-              <button class="button reduction-mode" type="button" data-reduction="raw" aria-selected="true">Bruto</button>
-              <button class="button reduction-mode" type="button" data-reduction="dark" aria-selected="false">Dark</button>
-              <button class="button reduction-mode" type="button" data-reduction="calibrated" aria-selected="false">Calibrado</button>
-            </div>
-            <div class="formula" id="reductionReadout">Sinal bruto: estrela + céu + dark + resposta instrumental.</div>
-          </div>
-
-          <div class="control">
-            <label for="noiseSlider">Ruído atmosférico/instrumental</label>
-            <input id="noiseSlider" type="range" min="0" max="0.22" step="0.01">
-            <div class="readout"><span id="noiseReadout">--</span><span>S/N</span></div>
-          </div>
-
-          <div class="control">
             <label>Linhas de absorção</label>
             <div class="mode-row" role="tablist" aria-label="Ferramenta de linhas de absorção">
               <button class="button line-tool" id="lineMeasureToggle" type="button" aria-selected="false">Medir linhas de absorção</button>
@@ -489,122 +412,6 @@
       </section>
     </section>
 
-    <section class="view" id="calibrationView" aria-label="Calibração instrumental">
-      <section class="calibration-layout">
-        <section class="panel">
-          <h2>Pipeline de calibração</h2>
-          <div class="body">
-            <div class="calibration-nav" role="tablist" aria-label="Etapas de calibração">
-              <button class="button cal-step" type="button" data-step="raw" aria-selected="true">1 · Bruto</button>
-              <button class="button cal-step" type="button" data-step="dark" aria-selected="false">2 · Dark</button>
-              <button class="button cal-step" type="button" data-step="standard" aria-selected="false">3 · Padrão</button>
-              <button class="button cal-step" type="button" data-step="science" aria-selected="false">4 · Ciência</button>
-              <button class="button cal-step" type="button" data-step="diagnostic" aria-selected="false">5 · Diagnóstico</button>
-            </div>
-            <canvas id="calibrationChart" width="1500" height="560" aria-label="Gráfico de calibração instrumental"></canvas>
-            <div class="legend" id="calibrationLegend">
-              <span><i class="dot" style="background: var(--blue)"></i>dados do detector</span>
-              <span><i class="dot" style="background: var(--accent)"></i>modelo ajustado</span>
-              <span><i class="dot" style="background: var(--bad)"></i>resíduo</span>
-            </div>
-            <div class="status-line">
-              <div class="status-pill" id="darkStatus">
-                <small>Dark</small>
-                <strong>--</strong>
-              </div>
-              <div class="status-pill" id="responseStatus">
-                <small>Resposta</small>
-                <strong>--</strong>
-              </div>
-              <div class="status-pill" id="scienceStatus">
-                <small>Ciência</small>
-                <strong>--</strong>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <h2>Controles de calibração</h2>
-          <div class="body">
-            <div class="cal-pane active" id="cal-pane-raw">
-              <div class="control">
-                <label>Dados brutos do detector</label>
-                <div class="formula">Cobs(λ)=Cestrela(λ)R(λ)+Cdarker(λ)+ruído</div>
-              </div>
-              <div class="control">
-                <label>Modo atual</label>
-                <div class="formula" id="rawModeReadout">Use Bruto para enxergar o que o satélite mediu antes de qualquer correção.</div>
-              </div>
-            </div>
-
-            <div class="cal-pane" id="cal-pane-dark">
-              <div class="slider-grid">
-                <div class="control">
-                  <label for="darkBaseSlider">Dark base</label>
-                  <input id="darkBaseSlider" type="range" min="0.005" max="0.050" step="0.001" value="0.025">
-                  <div class="readout"><span id="darkBaseReadout">--</span><span>e-/s</span></div>
-                </div>
-                <div class="control">
-                  <label for="darkSlopeSlider">Inclinação térmica</label>
-                  <input id="darkSlopeSlider" type="range" min="0.000005" max="0.000070" step="0.000001" value="0.000035">
-                  <div class="readout"><span id="darkSlopeReadout">--</span><span>e-/s/nm</span></div>
-                </div>
-              </div>
-              <div class="formula">Cdarker,modelo(λ)=a+b(λ-200 nm)</div>
-            </div>
-
-            <div class="cal-pane" id="cal-pane-standard">
-              <div class="slider-grid">
-                <div class="control">
-                  <label for="blueCenterSlider">Corte azul</label>
-                  <input id="blueCenterSlider" type="range" min="200" max="360" step="1" value="245">
-                  <div class="readout"><span id="blueCenterReadout">--</span><span>nm</span></div>
-                </div>
-                <div class="control">
-                  <label for="redCenterSlider">Corte vermelho</label>
-                  <input id="redCenterSlider" type="range" min="1600" max="2300" step="5" value="2100">
-                  <div class="readout"><span id="redCenterReadout">--</span><span>nm</span></div>
-                </div>
-                <div class="control">
-                  <label for="rippleSlider">Ondulação do sensor</label>
-                  <input id="rippleSlider" type="range" min="0" max="0.140" step="0.005" value="0.080">
-                  <div class="readout"><span id="rippleReadout">--</span><span>amplitude</span></div>
-                </div>
-              </div>
-              <div class="formula">Restrela padrão(λ)=Cpadrao(λ)-Cdarker(λ) dividido pelo fluxo conhecido.</div>
-            </div>
-
-            <div class="cal-pane" id="cal-pane-science">
-              <div class="control">
-                <label>Aplicação na estrela escolhida</label>
-                <div class="formula">Fcal(λ)=[Cobs(λ)-Cdarker,modelo(λ)]/Rmodelo(λ)</div>
-              </div>
-              <div class="control">
-                <label>Redução aplicada</label>
-                <div class="mode-row" role="tablist" aria-label="Modo de redução na etapa ciência">
-                  <button class="button reduction-mode" type="button" data-reduction="raw" aria-selected="true">Bruto</button>
-                  <button class="button reduction-mode" type="button" data-reduction="dark" aria-selected="false">Dark</button>
-                  <button class="button reduction-mode" type="button" data-reduction="calibrated" aria-selected="false">Calibrado</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="cal-pane" id="cal-pane-diagnostic">
-              <div class="control">
-                <label>Qualidade do ajuste</label>
-                <div class="formula" id="diagnosticReadout">Ajuste os controles até reduzir os resíduos do dark e da estrela padrão.</div>
-              </div>
-              <div class="control">
-                <label>Resumo operacional</label>
-                <div class="formula" id="calibrationSummary">--</div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </section>
-    </section>
-
     <section class="view" id="analysisView" aria-label="Inferência física">
       <section class="panel">
         <h2>Inferência física</h2>
@@ -616,7 +423,7 @@
         <div class="body">
           <canvas id="analysisChart" width="1500" height="560" aria-label="Gráfico de análise"></canvas>
           <div class="legend">
-            <span><i class="dot" style="background: var(--blue)"></i>dados calibrados</span>
+            <span><i class="dot" style="background: var(--blue)"></i>dados extraídos</span>
             <span><i class="dot" style="background: var(--accent)"></i>modelo ajustável</span>
             <span><i class="dot" style="background: var(--orange)"></i>filtros/linhas</span>
           </div>
@@ -631,12 +438,12 @@
               Posicione o fundo em uma região limpa e depois em uma região contaminada. Explique como a subtração muda o contínuo.
             </div>
             <div class="task">
-              <strong>Experimento 3: calibração instrumental</strong>
-              Compare espectros bruto, com dark subtraído e com resposta corrigida. Quantifique como λmax e T mudam.
+              <strong>Experimento 3: fundo local</strong>
+              Compare espectros extraídos com uma abertura de fundo limpa e com uma abertura de fundo contaminada. Quantifique como λmax, T e fluxo integrado mudam.
             </div>
             <div class="task">
               <strong>Experimento 4: temperatura por Wien</strong>
-              Meça λmax no contínuo calibrado e calcule T = 2,898e-3/λmax. Compare com o ajuste visual do contínuo.
+              Meça λmax no contínuo extraído e calcule T = 2,898e-3/λmax. Compare com o ajuste visual do contínuo.
             </div>
             <div class="task">
               <strong>Experimento 5: fotometria em bandas</strong>
@@ -648,7 +455,7 @@
             </div>
             <div class="task">
               <strong>Experimento 7: luminosidade relativa</strong>
-              Integre o espectro calibrado para obter um fluxo bolométrico relativo e compare dois alvos registrados com tempo acumulado parecido.
+              Integre o espectro extraído para obter um fluxo bolométrico relativo e compare dois alvos registrados com tempo acumulado parecido.
             </div>
           </div>
         </div>
@@ -664,7 +471,7 @@
               <thead>
                 <tr>
                   <th>alvo</th>
-                  <th>redução</th>
+                  <th>extração</th>
                   <th>t acum s</th>
                   <th>r estrela px</th>
                   <th>r fundo px</th>
@@ -695,18 +502,10 @@
     const LAMBDA_MIN = 200;
     const LAMBDA_MAX = 2000;
     const SIM_SECONDS_PER_REAL_SECOND = 16;
-    const TRUE_DARK_BASE = 0.025;
-    const TRUE_DARK_SLOPE = 0.000035;
-    const TRUE_BLUE_CENTER = 245;
-    const TRUE_RED_CENTER = 2100;
-    const TRUE_RIPPLE = 0.08;
-    const STANDARD_TEMP = 9600;
     const targets = [];
     const fieldStars = [];
     const observations = [];
     let chartMode = "continuum";
-    let calibrationStep = "raw";
-    let reductionMode = "raw";
     let measuringLines = false;
     let currentSpectrum = [];
     const absorptionMarks = [];
@@ -730,18 +529,10 @@
     const spectrumCtx = spectrum.getContext("2d");
     const analysisChart = document.getElementById("analysisChart");
     const analysisCtx = analysisChart.getContext("2d");
-    const calibrationChart = document.getElementById("calibrationChart");
-    const calibrationCtx = calibrationChart.getContext("2d");
     const tableBody = document.getElementById("tableBody");
-    const noiseSlider = document.getElementById("noiseSlider");
     const lineSelect = document.getElementById("lineSelect");
     const lineMeasureToggle = document.getElementById("lineMeasureToggle");
     const clearAbsorptionMarks = document.getElementById("clearAbsorptionMarks");
-    const darkBaseSlider = document.getElementById("darkBaseSlider");
-    const darkSlopeSlider = document.getElementById("darkSlopeSlider");
-    const blueCenterSlider = document.getElementById("blueCenterSlider");
-    const redCenterSlider = document.getElementById("redCenterSlider");
-    const rippleSlider = document.getElementById("rippleSlider");
 
     function mulberry32(seed) {
       return function rand() {
@@ -769,65 +560,6 @@
     function planckShape(lambdaNm, temperature) {
       const x = 1.4387769e7 / (lambdaNm * temperature);
       return 1 / (Math.pow(lambdaNm, 5) * Math.expm1(x));
-    }
-
-    function response(lambda) {
-      const blueCut = 1 / (1 + Math.exp(-(lambda - TRUE_BLUE_CENTER) / 28));
-      const redCut = 1 / (1 + Math.exp((lambda - TRUE_RED_CENTER) / 95));
-      const ripple = 1 + TRUE_RIPPLE * Math.sin(lambda / 43) - 0.05 * Math.cos(lambda / 67);
-      return clamp(blueCut * redCut * ripple, 0.12, 1.15);
-    }
-
-    function darkCurrent(lambda) {
-      return TRUE_DARK_BASE + TRUE_DARK_SLOPE * (lambda - LAMBDA_MIN);
-    }
-
-    function modelDarkCurrent(lambda) {
-      return Number(darkBaseSlider.value) + Number(darkSlopeSlider.value) * (lambda - LAMBDA_MIN);
-    }
-
-    function modelDarkRate(lambda) {
-      return modelDarkCurrent(lambda) * 0.018;
-    }
-
-    function modelResponse(lambda) {
-      const blueCenter = Number(blueCenterSlider.value);
-      const redCenter = Number(redCenterSlider.value);
-      const rippleAmp = Number(rippleSlider.value);
-      const blueCut = 1 / (1 + Math.exp(-(lambda - blueCenter) / 28));
-      const redCut = 1 / (1 + Math.exp((lambda - redCenter) / 95));
-      const ripple = 1 + rippleAmp * Math.sin(lambda / 43) - 0.05 * Math.cos(lambda / 67);
-      return clamp(blueCut * redCut * ripple, 0.08, 1.25);
-    }
-
-    function standardFlux(lambda) {
-      const norm = Math.max(planckShape(550, STANDARD_TEMP), 1e-30);
-      return 1.35 * planckShape(lambda, STANDARD_TEMP) / norm;
-    }
-
-    function trueDarkRate(lambda) {
-      return darkCurrent(lambda) * 0.018;
-    }
-
-    function darkCalibrationData() {
-      const points = [];
-      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 12) {
-        const waveNoise = 1 + 0.035 * Math.sin(lambda / 37) + 0.018 * Math.cos(lambda / 71);
-        points.push({ lambda, measured: trueDarkRate(lambda) * waveNoise, model: modelDarkRate(lambda) });
-      }
-      return points;
-    }
-
-    function standardCalibrationData() {
-      const points = [];
-      for (let lambda = LAMBDA_MIN; lambda <= LAMBDA_MAX; lambda += 12) {
-        const known = standardFlux(lambda) * 0.09;
-        const measured = known * response(lambda) + trueDarkRate(lambda);
-        const darkSubtracted = Math.max(0, measured - modelDarkRate(lambda));
-        const model = known * modelResponse(lambda);
-        points.push({ lambda, measured, darkSubtracted, known, model, calibrated: darkSubtracted / Math.max(modelResponse(lambda), 0.08) });
-      }
-      return points;
     }
 
     function gaussian(x, mu, sigma) {
@@ -1033,7 +765,7 @@
 
     function apertureComment(target, q) {
       if (!q.valid) return "desenhe abertura da estrela e abertura de fundo";
-      if (q.capture < 0.03) return "abertura fora do alvo: só fundo/dark deve restar";
+      if (q.capture < 0.03) return "abertura fora do alvo: deve restar apenas fundo subtraído e ruído";
       if (starAperture.r < target.psf * 0.9) return "abertura pequena: perde fluxo da estrela";
       if (starAperture.r > target.psf * 3.2) return "abertura grande: entra mais fundo e mais contaminantes";
       if (q.contamination > 0.1) return "fundo contaminado: a subtração pode remover luz da estrela";
@@ -1075,16 +807,15 @@
         const skyResidual = aperture.valid ? aperture.skyResidual * (1 + 0.25 * Math.sin(lambda / 88)) : 0;
         const extractedStellarFlux = targetFluxInStar - areaRatio * targetFluxInSky;
         const extractedFieldFlux = fieldFluxInStar - areaRatio * fieldFluxInSky;
-        const trueFlux = Math.max(0, extractedStellarFlux + extractedFieldFlux + skyResidual);
-        const resp = response(lambda);
-        const darkRate = darkCurrent(lambda) * 0.018;
-        const sourceRate = Math.max(0, trueFlux * resp * 0.09);
-        const apertureNoise = Number(noiseSlider.value)
+        const trueFlux = extractedStellarFlux + extractedFieldFlux + skyResidual;
+        const sourceRate = trueFlux * 0.09;
+        const skyFlux = Math.abs(localBackground(starAperture?.x || 0, starAperture?.y || 0)) * (apertureArea(starAperture) + areaRatio ** 2 * apertureArea(skyAperture)) / 1200;
+        const apertureNoise = 0.04
           + (1 - aperture.capture) * 0.08
           + aperture.contamination * 0.18
           + aperture.areaPenalty * 0.04
           + Math.max(0, extractedFieldFlux) * 0.05;
-        points.push({ lambda, trueFlux: selectedFlux, response: resp, darkRate, sourceRate, rawRate: sourceRate + darkRate, apertureNoise });
+        points.push({ lambda, trueFlux: selectedFlux, sourceRate, rawRate: sourceRate, backgroundNoiseRate: skyFlux, apertureNoise });
       }
       return points;
     }
@@ -1095,7 +826,7 @@
       observationSeconds = 0;
       photonTotal = 0;
       absorptionMarks.length = 0;
-      currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0, response: p.response }));
+      currentSpectrum = expectedRates.map(p => ({ lambda: p.lambda, flux: 0, trueFlux: p.trueFlux, raw: 0 }));
       lastFrameTime = null;
       renderObservation();
     }
@@ -1104,10 +835,10 @@
       if (!expectedRates.length) resetObservation();
       expectedRates.forEach((p, i) => {
         const mean = p.rawRate * dt;
-        const sigma = Math.sqrt(Math.max(mean, 0.0001)) * (0.45 + p.apertureNoise * 2.4);
+        const sigma = Math.sqrt(Math.max(Math.abs(mean) + p.backgroundNoiseRate * dt, 0.0001)) * (0.42 + p.apertureNoise * 2.2);
         const incoming = mean + gaussianNoise() * sigma;
-        accumulatedRaw[i] = Math.max(0, accumulatedRaw[i] + incoming);
-        photonTotal += p.sourceRate * dt;
+        accumulatedRaw[i] += incoming;
+        photonTotal += Math.max(0, p.sourceRate) * dt;
       });
       observationSeconds += dt;
       updateSpectrumFromAccumulator();
@@ -1117,34 +848,17 @@
       const t = Math.max(observationSeconds, 0.001);
       currentSpectrum = expectedRates.map((p, i) => {
         const measuredRate = accumulatedRaw[i] / t;
-        let flux = measuredRate;
-        if (reductionMode === "dark") flux = measuredRate - modelDarkRate(p.lambda);
-        if (reductionMode === "calibrated") flux = (measuredRate - modelDarkRate(p.lambda)) / Math.max(modelResponse(p.lambda), 0.08);
         return {
           lambda: p.lambda,
-          flux,
+          flux: measuredRate,
           trueFlux: p.trueFlux,
           raw: measuredRate,
-          response: p.response,
-          modelResponse: modelResponse(p.lambda),
-          modelDark: modelDarkRate(p.lambda),
         };
       });
     }
 
-    function reductionLabel() {
-      if (reductionMode === "dark") return "dark subtraído";
-      if (reductionMode === "calibrated") return "dark + resposta instrumental";
-      return "bruto: sinal + dark + resposta";
-    }
-
-    function setReductionMode(mode) {
-      reductionMode = mode;
-      document.querySelectorAll(".reduction-mode").forEach(button => {
-        button.setAttribute("aria-selected", String(button.dataset.reduction === mode));
-      });
-      updateSpectrumFromAccumulator();
-      renderObservation();
+    function extractionLabel() {
+      return "estrela menos fundo";
     }
 
     function canvasPoint(event, canvas) {
@@ -1229,7 +943,7 @@
         ? (q.valid ? `Alvo: ${target.name}. Fração coletada: ${(100 * q.capture).toFixed(0)}%; ${apertureComment(target, q)}.` : `Alvo: ${target.name}. Desenhe abertura da estrela e do fundo.`)
         : "Clique em uma estrela brilhante.";
       document.getElementById("selectedTargetReadout").textContent = target
-        ? `${target.name}; x=${fmt(target.x, 0)} px, y=${fmt(target.y, 0)} px; classe aparente: ${apparentClass(target.kind)}; abertura estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px; captura=${fmt(100 * q.capture, 0)}%; ruído de área=${fmt(q.areaPenalty, 2)}`
+        ? `${target.name}; x=${fmt(target.x, 0)} px, y=${fmt(target.y, 0)} px; classe aparente: ${apparentClass(target.kind)}; abertura estrela r=${starAperture ? fmt(starAperture.r, 1) : "--"} px; fundo r=${skyAperture ? fmt(skyAperture.r, 1) : "--"} px; captura=${fmt(100 * q.capture, 0)}%; ruído de fundo/área=${fmt(q.areaPenalty, 2)}`
         : "Nenhuma estrela selecionada.";
     }
 
@@ -1312,7 +1026,7 @@
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#080808";
       ctx.fillRect(0, 0, w, h);
-      drawAxes(ctx, w, h, { x: "λ (nm)", y: mode === "response" ? "resposta" : "fluxo" });
+      drawAxes(ctx, w, h, { x: "λ (nm)", y: "fluxo" });
       const padL = 58, padR = 26, padT = 28, padB = 58;
       if (photonTotal <= 0 || observationSeconds <= 0) {
         ctx.fillStyle = "#aaa69c";
@@ -1392,114 +1106,6 @@
         return;
       }
       node.textContent = absorptionMarks.map((mark, i) => `${i + 1}: ${fmt(mark.lambda, 1)} nm`).join("; ");
-    }
-
-    function calibrationMetrics() {
-      const dark = darkCalibrationData();
-      const standard = standardCalibrationData();
-      const rms = values => Math.sqrt(values.reduce((s, v) => s + v * v, 0) / Math.max(values.length, 1));
-      const darkScale = Math.max(...dark.map(p => p.measured), 1e-6);
-      const darkRms = rms(dark.map(p => (p.model - p.measured) / darkScale));
-      const responseRms = rms(standard.map(p => (p.model - p.darkSubtracted) / Math.max(p.darkSubtracted, 1e-5)));
-      const calibratedRms = rms(standard.map(p => (p.calibrated - p.known) / Math.max(p.known, 1e-5)));
-      return { darkRms, responseRms, calibratedRms };
-    }
-
-    function statusClass(value, good, warn) {
-      if (value <= good) return "status-good";
-      if (value <= warn) return "status-warn";
-      return "status-bad";
-    }
-
-    function statusText(value, good, warn) {
-      if (value <= good) return "bom";
-      if (value <= warn) return "razoável";
-      return "revisar";
-    }
-
-    function drawCalibrationChart(series) {
-      const ctx = calibrationCtx;
-      const canvas = calibrationChart;
-      const w = canvas.width;
-      const h = canvas.height;
-      const padL = 68, padR = 28, padT = 32, padB = 58;
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = "#080808";
-      ctx.fillRect(0, 0, w, h);
-      drawAxes(ctx, w, h, { x: "λ (nm)", y: series.yLabel });
-      const values = series.lines.flatMap(line => line.points.map(p => p.y));
-      const minY = Math.min(0, ...values);
-      const maxY = Math.max(...values, 1e-5) * 1.08;
-      const sx = lambda => padL + ((lambda - LAMBDA_MIN) / (LAMBDA_MAX - LAMBDA_MIN)) * (w - padL - padR);
-      const sy = value => padT + (1 - (value - minY) / Math.max(maxY - minY, 1e-8)) * (h - padT - padB);
-      series.lines.forEach(line => {
-        ctx.strokeStyle = line.color;
-        ctx.lineWidth = line.width || 1.8;
-        ctx.setLineDash(line.dash || []);
-        ctx.beginPath();
-        line.points.forEach((p, i) => {
-          const x = sx(p.lambda);
-          const y = clamp(sy(p.y), padT, h - padB);
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-        ctx.setLineDash([]);
-      });
-      ctx.fillStyle = "#aaa69c";
-      ctx.font = "13px system-ui";
-      ctx.fillText(series.title, padL + 10, padT + 22);
-    }
-
-    function drawCalibration() {
-      const dark = darkCalibrationData();
-      const standard = standardCalibrationData();
-      const science = currentSpectrum.length ? currentSpectrum : expectedRates.map(p => ({ lambda: p.lambda, flux: 0, raw: 0 }));
-      if (calibrationStep === "dark") {
-        drawCalibrationChart({
-          title: "Exposição escura do satélite: dados medidos versus modelo ajustável",
-          yLabel: "contagens/s",
-          lines: [
-            { color: "#72a7ff", points: dark.map(p => ({ lambda: p.lambda, y: p.measured })), width: 2 },
-            { color: "#d7b46a", points: dark.map(p => ({ lambda: p.lambda, y: p.model })), width: 2.4 },
-          ],
-        });
-      } else if (calibrationStep === "standard") {
-        drawCalibrationChart({
-          title: "Estrela padrão: resposta instrumental estimada a partir de fluxo conhecido",
-          yLabel: "contagens/s",
-          lines: [
-            { color: "#72a7ff", points: standard.map(p => ({ lambda: p.lambda, y: p.darkSubtracted })), width: 2 },
-            { color: "#d7b46a", points: standard.map(p => ({ lambda: p.lambda, y: p.model })), width: 2.4 },
-          ],
-        });
-      } else if (calibrationStep === "science") {
-        drawCalibrationChart({
-          title: `Estrela de ciência: ${reductionLabel()}`,
-          yLabel: "fluxo",
-          lines: [
-            { color: "#72a7ff", points: science.map(p => ({ lambda: p.lambda, y: p.flux })), width: 2 },
-          ],
-        });
-      } else if (calibrationStep === "diagnostic") {
-        drawCalibrationChart({
-          title: "Resíduos normalizados: zero é o ajuste ideal",
-          yLabel: "resíduo",
-          lines: [
-            { color: "#d96d6d", points: dark.map(p => ({ lambda: p.lambda, y: (p.model - p.measured) / Math.max(...dark.map(q => q.measured), 1e-6) })), width: 1.8 },
-            { color: "#d7b46a", points: standard.map(p => ({ lambda: p.lambda, y: (p.model - p.darkSubtracted) / Math.max(p.darkSubtracted, 1e-5) })), width: 1.8 },
-          ],
-        });
-      } else {
-        const rawPoints = expectedRates.map(p => ({ lambda: p.lambda, y: p.rawRate }));
-        drawCalibrationChart({
-          title: "Dado bruto previsto pelo detector: fonte multiplicada pela resposta + dark",
-          yLabel: "contagens/s",
-          lines: [
-            { color: "#72a7ff", points: rawPoints, width: 2 },
-          ],
-        });
-      }
     }
 
     function drawDetector(points) {
@@ -1607,7 +1213,6 @@
     function updateReadouts() {
       const target = currentTarget();
       const m = observationSeconds > 0.2 ? metrics() : null;
-      const cm = calibrationMetrics();
       document.getElementById("targetMetric").textContent = target.name;
       document.getElementById("peakMetric").textContent = m ? `${fmt(m.peak, 0)} nm` : "--";
       document.getElementById("tempMetric").textContent = m ? `${fmt(m.temp, 0)} K` : "--";
@@ -1615,32 +1220,9 @@
       document.getElementById("timeReadout").textContent = `${fmt(observationSeconds, 1)} s acumulados`;
       document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
       document.getElementById("acquisitionReadout").textContent = isObserving
-        ? "Detector recebendo fótons continuamente; o espectro muda enquanto a contagem cresce."
-        : "Aquisição pausada; escolha o alvo, desenhe as aberturas e clique em Iniciar aquisição.";
+        ? "Detector recebendo fótons continuamente; o espectro extraído muda enquanto a contagem cresce."
+        : "Aquisição pausada; escolha o alvo, desenhe a abertura da estrela e uma abertura de fundo.";
       document.getElementById("observeToggle").textContent = isObserving ? "Pausar aquisição" : "Iniciar aquisição";
-      document.getElementById("noiseReadout").textContent = `${fmt(Number(noiseSlider.value), 2)}`;
-      document.getElementById("reductionReadout").textContent = reductionLabel();
-      document.getElementById("darkBaseReadout").textContent = fmt(Number(darkBaseSlider.value), 3);
-      document.getElementById("darkSlopeReadout").textContent = Number(darkSlopeSlider.value).toFixed(6);
-      document.getElementById("blueCenterReadout").textContent = fmt(Number(blueCenterSlider.value), 0);
-      document.getElementById("redCenterReadout").textContent = fmt(Number(redCenterSlider.value), 0);
-      document.getElementById("rippleReadout").textContent = fmt(Number(rippleSlider.value), 3);
-      const darkStatus = document.getElementById("darkStatus");
-      const responseStatus = document.getElementById("responseStatus");
-      const scienceStatus = document.getElementById("scienceStatus");
-      [
-        [darkStatus, cm.darkRms, 0.045, 0.11, "RMS"],
-        [responseStatus, cm.responseRms, 0.08, 0.20, "χ relativo"],
-        [scienceStatus, cm.calibratedRms, 0.09, 0.22, "RMS padrão"],
-      ].forEach(([node, value, good, warn, label]) => {
-        node.classList.remove("status-good", "status-warn", "status-bad");
-        node.classList.add(statusClass(value, good, warn));
-        node.querySelector("strong").textContent = `${statusText(value, good, warn)} · ${label} ${fmt(value, 3)}`;
-      });
-      document.getElementById("diagnosticReadout").textContent =
-        `Dark RMS=${fmt(cm.darkRms, 3)}; resposta χ=${fmt(cm.responseRms, 3)}; padrão calibrado RMS=${fmt(cm.calibratedRms, 3)}.`;
-      document.getElementById("calibrationSummary").textContent =
-        `Modelo atual: dark a=${fmt(Number(darkBaseSlider.value), 3)}, b=${Number(darkSlopeSlider.value).toFixed(6)}, corte azul=${fmt(Number(blueCenterSlider.value), 0)} nm, corte vermelho=${fmt(Number(redCenterSlider.value), 0)} nm.`;
       renderAbsorptionMarks();
       drawSkyField();
     }
@@ -1651,7 +1233,7 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${row.target}</td>
-          <td>${row.reduction}</td>
+          <td>${row.extraction}</td>
           <td>${fmt(row.observationSeconds, 1)}</td>
           <td>${fmt(row.starRadius, 1)}</td>
           <td>${fmt(row.skyRadius, 1)}</td>
@@ -1675,7 +1257,6 @@
       drawDetector(currentSpectrum);
       drawSpectrumCanvas(spectrumCtx, spectrum, currentSpectrum);
       drawAnalysis();
-      drawCalibration();
       updateReadouts();
     }
 
@@ -1689,7 +1270,7 @@
       const q = apertureQuality(currentTarget());
       observations.push({
         target: currentTarget().name,
-        reduction: reductionLabel(),
+        extraction: extractionLabel(),
         observationSeconds,
         starRadius: starAperture ? starAperture.r : NaN,
         skyRadius: skyAperture ? skyAperture.r : NaN,
@@ -1711,10 +1292,10 @@
     function exportCsv() {
       if (observations.length === 0) recordMeasurement();
       if (observations.length === 0) return;
-      const header = ["alvo", "reducao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "hipotese_linha", "lambda_obs_nm", "vr_km_s"];
+      const header = ["alvo", "extracao", "tempo_acumulado_s", "raio_estrela_px", "raio_fundo_px", "fracao_coletada", "lambda_max_nm", "T_Wien_K", "F_B", "F_V", "F_R", "BmenosV", "F_bol_rel", "hipotese_linha", "lambda_obs_nm", "vr_km_s"];
       const lines = [header.join(",")];
       observations.forEach(row => {
-        lines.push([row.target, row.reduction, row.observationSeconds, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
+        lines.push([row.target, row.extraction, row.observationSeconds, row.starRadius, row.skyRadius, row.capture, row.peak, row.temp, row.b, row.v, row.r, row.bv, row.bol, row.line, row.lineObserved, row.rv]
           .map(value => typeof value === "number" ? value.toFixed(8) : `"${String(value).replaceAll('"', '""')}"`).join(","));
       });
       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -1762,37 +1343,18 @@
         : "Ferramenta de linhas desligada.";
     }
 
-    function setCalibrationStep(step) {
-      calibrationStep = step;
-      document.querySelectorAll(".cal-step").forEach(button => {
-        button.setAttribute("aria-selected", String(button.dataset.step === step));
-      });
-      document.querySelectorAll(".cal-pane").forEach(pane => pane.classList.remove("active"));
-      const pane = document.getElementById(`cal-pane-${step}`);
-      if (pane) pane.classList.add("active");
-      drawCalibration();
-    }
-
     function activateView(viewId) {
       document.querySelectorAll(".view-tab").forEach(tab => tab.setAttribute("aria-selected", String(tab.dataset.view === viewId)));
       document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
       const view = document.getElementById(viewId);
       if (view) view.classList.add("active");
       drawAnalysis();
-      drawCalibration();
     }
 
     document.querySelectorAll(".view-tab").forEach(button => {
       button.addEventListener("click", () => {
         activateView(button.dataset.view);
         if (history.replaceState) history.replaceState(null, "", `#${button.dataset.view}`);
-      });
-    });
-
-    document.querySelectorAll(".cal-step").forEach(button => {
-      button.addEventListener("click", () => {
-        setCalibrationStep(button.dataset.step);
-        if (history.replaceState) history.replaceState(null, "", `#calibration-${button.dataset.step}`);
       });
     });
 
@@ -1840,22 +1402,12 @@
     spectrum.addEventListener("pointerdown", event => markAbsorptionLine(event, spectrum));
     analysisChart.addEventListener("pointerdown", event => markAbsorptionLine(event, analysisChart));
 
-    document.querySelectorAll(".reduction-mode").forEach(button => {
-      button.addEventListener("click", () => setReductionMode(button.dataset.reduction));
-    });
-    [darkBaseSlider, darkSlopeSlider, blueCenterSlider, redCenterSlider, rippleSlider].forEach(slider => {
-      slider.addEventListener("input", () => {
-        updateSpectrumFromAccumulator();
-        renderObservation();
-      });
-    });
     lineMeasureToggle.addEventListener("click", () => setMeasuringLines(!measuringLines));
     clearAbsorptionMarks.addEventListener("click", () => {
       absorptionMarks.length = 0;
       renderObservation();
     });
     lineSelect.addEventListener("input", renderObservation);
-    noiseSlider.addEventListener("input", resetObservation);
     document.getElementById("observeToggle").addEventListener("click", () => {
       isObserving = !isObserving;
       lastFrameTime = null;
@@ -1881,12 +1433,8 @@
     }
 
     makeTargets();
-    noiseSlider.value = "0.06";
     resetObservation();
-    if (location.hash.startsWith("#calibration-")) {
-      activateView("calibrationView");
-      setCalibrationStep(location.hash.replace("#calibration-", ""));
-    } else if (location.hash === "#calibrationView" || location.hash === "#analysisView" || location.hash === "#dataView") {
+    if (location.hash === "#analysisView" || location.hash === "#dataView") {
       activateView(location.hash.slice(1));
     }
     window.requestAnimationFrame(observeLoop);
