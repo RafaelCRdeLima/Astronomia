@@ -1528,6 +1528,47 @@
       detectorCtx.fillText("imagem espectral alinhada ao eixo λ do gráfico abaixo", padL, 24);
     }
 
+    function drawPhotometryCanvas(ctx, canvas, values) {
+      const bars = [
+        { label: "B", value: values.b, color: "#72a7ff" },
+        { label: "V", value: values.v, color: "#8fd18f" },
+        { label: "R", value: values.r, color: "#e2795b" },
+      ];
+      const w = canvas.width;
+      const h = canvas.height;
+      const padL = 72, padR = 42, padT = 46, padB = 72;
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#080808";
+      ctx.fillRect(0, 0, w, h);
+      drawAxes(ctx, w, h, { x: "filtro", y: "fluxo médio" });
+      const max = Math.max(...bars.map(b => b.value), 0.001);
+      const plotW = w - padL - padR;
+      const barW = Math.min(150, plotW / 6);
+      const gap = (plotW - bars.length * barW) / (bars.length + 1);
+      bars.forEach((bar, i) => {
+        const x = padL + gap + i * (barW + gap);
+        const bh = (bar.value / max) * (h - padT - padB);
+        const y = h - padB - bh;
+        ctx.fillStyle = bar.color;
+        ctx.fillRect(x, y, barW, bh);
+        ctx.strokeStyle = "rgba(244,244,241,0.25)";
+        ctx.strokeRect(x + 0.5, y + 0.5, barW - 1, bh - 1);
+        ctx.fillStyle = "#f4f4f1";
+        ctx.font = "bold 22px system-ui";
+        ctx.textAlign = "center";
+        ctx.fillText(bar.label, x + barW / 2, h - 34);
+        ctx.font = "15px system-ui";
+        ctx.fillText(fmt(bar.value, 3), x + barW / 2, y - 12);
+      });
+      ctx.textAlign = "start";
+      drawCanvasLabel(ctx, `B−V = ${fmt(values.bv, 2)}`, w - padR - 210, padT + 34, {
+        color: "#ffe3a0",
+        canvasW: w,
+        canvasH: h,
+        font: "bold 18px system-ui",
+      });
+    }
+
     function drawAnalysis() {
       if (!currentSpectrum.length) return;
       if (chartMode === "continuum") {
@@ -1549,30 +1590,7 @@
         });
       } else if (chartMode === "photometry") {
         const m = metrics();
-        const bars = [
-          { label: "B", value: m.b, color: "#72a7ff" },
-          { label: "V", value: m.v, color: "#8fd18f" },
-          { label: "R", value: m.r, color: "#e2795b" },
-        ];
-        const ctx = analysisCtx, w = analysisChart.width, h = analysisChart.height;
-        ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = "#080808";
-        ctx.fillRect(0, 0, w, h);
-        drawAxes(ctx, w, h, { x: "filtro", y: "fluxo médio" });
-        const max = Math.max(...bars.map(b => b.value), 0.001);
-        const padB = 58;
-        bars.forEach((bar, i) => {
-          const x = 170 + i * 170;
-          const bh = (bar.value / max) * (h - 110);
-          ctx.fillStyle = bar.color;
-          ctx.fillRect(x, h - padB - bh, 90, bh);
-          ctx.fillStyle = "#f4f4f1";
-          ctx.fillText(bar.label, x + 38, h - 34);
-          ctx.fillText(fmt(bar.value, 3), x + 12, h - padB - 8 - bh);
-        });
-        ctx.fillStyle = "#d7b46a";
-        ctx.font = "15px system-ui";
-        ctx.fillText(`B−V = ${fmt(m.bv, 2)}`, 690, 95);
+        drawPhotometryCanvas(analysisCtx, analysisChart, m);
       } else {
         drawSpectrumCanvas(analysisCtx, analysisChart, currentSpectrum);
         const m = metrics();
@@ -2016,6 +2034,12 @@ ${latexRows(rows)}
 \\caption{Fluxo por comprimento de onda de ${latexEscape(obs.target)}. A curva líquida corresponde ao fluxo da abertura da estrela menos o fundo escalado.}
 \\end{figure*}
 
+\\begin{figure*}[t]
+\\centering
+\\includegraphics[width=0.82\\textwidth]{figuras/${obs.slug}_fotometria.png}
+\\caption{Fotometria sintética de ${latexEscape(obs.target)} nas bandas B, V e R.}
+\\end{figure*}
+
 Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
 
 `;
@@ -2157,6 +2181,15 @@ Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
       return canvasToBlob(canvas);
     }
 
+    function observationPhotometryFigureBlob(observation) {
+      const canvas = document.createElement("canvas");
+      canvas.width = spectrum.width;
+      canvas.height = spectrum.height;
+      const ctx = canvas.getContext("2d");
+      drawPhotometryCanvas(ctx, canvas, observation);
+      return canvasToBlob(canvas);
+    }
+
     function canvasToBlob(canvas) {
       return new Promise((resolve, reject) => {
         canvas.toBlob(blob => {
@@ -2225,6 +2258,10 @@ Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
         files.push({
           name: `figuras/${observation.slug}_fluxo.png`,
           blob: await observationFigureBlob(observation),
+        });
+        files.push({
+          name: `figuras/${observation.slug}_fotometria.png`,
+          blob: await observationPhotometryFigureBlob(observation),
         });
       }
 
