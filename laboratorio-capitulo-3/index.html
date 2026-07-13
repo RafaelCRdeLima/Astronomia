@@ -2010,11 +2010,11 @@ ${latexRows(rows)}
         const dataPath = `dados/${obs.slug}_fluxo.csv`;
         return `\\subsection{${latexEscape(obs.target)}}
 
-\\begin{figure}[H]
+\\begin{figure*}[t]
 \\centering
-\\includegraphics[width=0.95\\linewidth]{figuras/${obs.slug}_fluxo.png}
+\\includegraphics[width=0.98\\textwidth]{figuras/${obs.slug}_fluxo.png}
 \\caption{Fluxo por comprimento de onda de ${latexEscape(obs.target)}. A curva líquida corresponde ao fluxo da abertura da estrela menos o fundo escalado.}
-\\end{figure}
+\\end{figure*}
 
 Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
 
