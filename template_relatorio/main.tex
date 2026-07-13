@@ -1,101 +1,77 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass{aa}
 
-%-------------------------------------------------
-% PACOTES
-%-------------------------------------------------
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[brazil]{babel}
-\usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{parskip}
 \usepackage{amsmath}
-\usepackage{amssymb}
 \usepackage{booktabs}
-\usepackage{longtable}
 \usepackage{float}
-
-\geometry{a4paper, margin=2.5cm}
+\usepackage{txfonts}
 
 %-------------------------------------------------
 % DADOS DO RELATÓRIO
 %-------------------------------------------------
 
-\newcommand{\aluno}{\textbf{Nome do Aluno}}
-\newcommand{\experimento}{\textbf{Espectrofotometria estelar}}
+\newcommand{\aluno}{Nome do Aluno}
+\newcommand{\experimento}{Espectrofotometria estelar}
 
 \newcommand{\disciplina}{Astronomia}
 \newcommand{\professor}{Prof. Dr. Rafael C. R. de Lima}
 \newcommand{\datarelatorio}{\today}
 
-%=================================================
-
 \begin{document}
 
-%-------------------------------------------------
-% CABEÇALHO
-%-------------------------------------------------
+\title{\experimento}
+\subtitle{Relatório de laboratório em formato Astronomy \& Astrophysics}
 
-\noindent
-\begin{minipage}[c]{0.20\textwidth}
-\includegraphics[width=0.60\linewidth]{udesc.png}
-\end{minipage}
-\hfill
-\begin{minipage}[c]{0.55\textwidth}
-\centering
-\textbf{UNIVERSIDADE DO ESTADO DE SANTA CATARINA}\\
-Centro de Ciências Tecnológicas -- CCT
-\end{minipage}
-\hfill
-\begin{minipage}[c]{0.20\textwidth}
-\raggedleft
-\includegraphics[width=0.85\linewidth]{CCT.png}
-\end{minipage}
+\author{\aluno}
 
-\vspace{1cm}
+\institute{
+Universidade do Estado de Santa Catarina, Centro de Ciências Tecnológicas -- CCT\\
+\email{Disciplina: \disciplina; professor: \professor}
+}
 
-\begin{center}
-{\Large\textbf{Relatório de Experimento}}\\[0.5cm]
-{\Large\experimento}
-\end{center}
+\date{\datarelatorio}
 
-\vspace{0.8cm}
+\abstract
+{Este relatório apresenta uma análise espectrofotométrica de estrelas observadas no laboratório virtual.}
+{O objetivo é extrair espectros a partir de aberturas fotométricas, subtrair o fundo local, ajustar um contínuo aproximado de corpo negro e medir grandezas fotométricas e linhas de absorção.}
+{Foram registradas uma ou mais estrelas no simulador. Para cada alvo, o laboratório exportou o fluxo da abertura da estrela, o fundo escalado, o fluxo líquido, a fotometria sintética e as linhas de absorção marcadas.}
+{Os resultados principais são apresentados nas tabelas e figuras geradas automaticamente. O aluno deve completar a interpretação física, comparando temperaturas, cores, fluxo integrado e possíveis identificações das linhas.}
+{O formato segue a classe oficial \texttt{aa.cls} da revista Astronomy \& Astrophysics.}
 
-\textbf{Aluno:} \aluno\\
-\textbf{Disciplina:} \disciplina\\
-\textbf{Professor:} \professor\\
-\textbf{Data:} \datarelatorio
+\keywords{Stars: fundamental parameters -- Techniques: spectroscopic -- Techniques: photometric -- Methods: data analysis}
 
-\vspace{1cm}
+\maketitle
 
 %=================================================
 \section{Introdução}
 
-Escreva aqui o objetivo do experimento e descreva brevemente como o espectro foi obtido a partir da abertura da estrela e da abertura de fundo.
+Descreva aqui o objetivo do experimento e explique por que espectros estelares permitem inferir temperatura, cor, fluxo relativo e composição atmosférica.
 
 %=================================================
-\section{Teoria}
+\section{Fundamentação teórica}
 
-Escreva aqui a teoria usada para interpretar o contínuo espectral, a fotometria e as linhas de absorção.
+O contínuo espectral de uma estrela pode ser aproximado, em primeira ordem, por uma curva de corpo negro. A posição do máximo da emissão está relacionada à temperatura pela lei de Wien,
 
 \begin{equation}
 \lambda_{\max}T = 2{,}898\times 10^{-3}\ {\rm m\,K}.
 \end{equation}
 
+A fotometria sintética em bandas permite construir índices de cor. Neste laboratório, usamos
+
 \begin{equation}
 B - V = -2{,}5\log_{10}\left(\frac{F_B}{F_V}\right).
 \end{equation}
+
+Linhas de absorção deslocadas em comprimento de onda podem ser interpretadas, na aproximação não relativística, por
 
 \begin{equation}
 \frac{v_r}{c}\simeq \frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}.
 \end{equation}
 
-
-
 %=================================================
-\section{Dados}
+\section{Observações e redução dos dados}
 
-As tabelas e figuras abaixo foram exportadas diretamente do laboratório após o registro das estrelas observadas.
+As tabelas e figuras abaixo foram exportadas diretamente do laboratório após o registro das estrelas observadas. Para cada estrela, o fluxo líquido corresponde ao fluxo medido na abertura da estrela menos o fundo local escalado pela área da abertura.
 
 \input{tabelas/tabela_resumo_observacoes.tex}
 
@@ -106,20 +82,20 @@ As tabelas e figuras abaixo foram exportadas diretamente do laboratório após o
 \input{secoes/observacoes.tex}
 
 %=================================================
-\section{Cálculos}
+\section{Análise}
 
 Apresente aqui os cálculos feitos com os dados exportados. Use os arquivos em \texttt{dados/} para consultar os valores de fluxo por comprimento de onda de cada estrela.
+
+Compare as temperaturas obtidas pelo ajuste de corpo negro, os valores de $B-V$, o fluxo integrado e as linhas de absorção marcadas. Discuta quais estrelas são mais quentes, quais são mais frias e se alguma estrela é semelhante ao Sol.
 
 %=================================================
 \section{Discussão}
 
-Discuta se o contínuo observado é compatível com o corpo negro ajustado, quais linhas de absorção foram identificadas e como o fundo escolhido afetou o espectro líquido.
+Discuta as limitações do método: escolha da abertura da estrela, escolha da abertura de fundo, ruído estatístico, linhas de absorção sobrepostas ao contínuo e intervalo de comprimento de onda usado no ajuste.
 
 %=================================================
-\section{Conclusão}
+\section{Conclusões}
 
 Escreva aqui as principais conclusões do experimento.
-
-
 
 \end{document}

@@ -574,8 +574,8 @@
         <div class="body">
           <div class="tasks">
             <div class="task">
-              <strong>Gerar relatório em LaTeX</strong>
-              Registre uma medida para cada estrela analisada, preencha o nome do aluno e clique em Gerar template. O laboratório salvará o arquivo main.tex, logos, figuras, tabelas auxiliares e CSVs de dados para todas as estrelas registradas.
+              <strong>Gerar relatório em LaTeX no formato A&amp;A</strong>
+              Registre uma medida para cada estrela analisada, preencha o nome do aluno e clique em Gerar template. O laboratório salvará o arquivo main.tex, a classe oficial aa.cls, figuras, tabelas auxiliares e CSVs de dados para todas as estrelas registradas.
             </div>
           </div>
           <div class="control">
@@ -2174,20 +2174,26 @@ Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
     }
 
     async function buildReportFiles(studentName) {
-      const [template, udescLogo, cctLogo] = await Promise.all([
+      const [template, aaClass, aaBibstyle, linenoStyle, linenoAaStyle, aaReadme] = await Promise.all([
         fetchText("../template_relatorio/main.tex"),
-        fetchBlob("../template_relatorio/udesc.png"),
-        fetchBlob("../template_relatorio/CCT.png"),
+        fetchBlob("../template_relatorio/aa.cls"),
+        fetchBlob("../template_relatorio/aa.bst"),
+        fetchBlob("../template_relatorio/lineno.sty"),
+        fetchBlob("../template_relatorio/linenoaa.sty"),
+        fetchBlob("../template_relatorio/readme-aa.txt"),
       ]);
       const experimentName = "Espectrofotometria estelar";
       const mainTex = template
-        .replace(/\\newcommand\{\\aluno\}\{.*\}/, () => `\\newcommand{\\aluno}{\\textbf{${latexEscape(studentName)}}}`)
-        .replace(/\\newcommand\{\\experimento\}\{.*\}/, () => `\\newcommand{\\experimento}{\\textbf{${latexEscape(experimentName)}}}`);
+        .replace(/\\newcommand\{\\aluno\}\{.*\}/, () => `\\newcommand{\\aluno}{${latexEscape(studentName)}}`)
+        .replace(/\\newcommand\{\\experimento\}\{.*\}/, () => `\\newcommand{\\experimento}{${latexEscape(experimentName)}}`);
 
       const files = [
         { name: "main.tex", blob: new Blob([mainTex], { type: "text/x-tex;charset=utf-8" }) },
-        { name: "udesc.png", blob: udescLogo },
-        { name: "CCT.png", blob: cctLogo },
+        { name: "aa.cls", blob: aaClass },
+        { name: "aa.bst", blob: aaBibstyle },
+        { name: "lineno.sty", blob: linenoStyle },
+        { name: "linenoaa.sty", blob: linenoAaStyle },
+        { name: "readme-aa.txt", blob: aaReadme },
         { name: "tabelas/tabela_resumo_observacoes.tex", blob: new Blob([summaryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "tabelas/tabela_fotometria.tex", blob: new Blob([photometryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "tabelas/tabela_linhas_absorcao.tex", blob: new Blob([absorptionLinesLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
