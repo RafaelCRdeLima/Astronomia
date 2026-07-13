@@ -39,6 +39,14 @@
       font: inherit;
     }
 
+    input[type="text"] {
+      width: 100%;
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 10px;
+    }
+
     .shell {
       width: min(1760px, calc(100vw - 28px));
       margin: 0 auto;
@@ -511,7 +519,7 @@
     <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
       <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
       <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência física</button>
-      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Tabela de dados</button>
+      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Template de Relatório</button>
     </div>
 
     <section class="layout view active" id="observationView" aria-label="Dashboard de observação">
@@ -648,10 +656,24 @@
       </section>
     </section>
 
-    <section class="view" id="dataView" aria-label="Tabela de dados">
+    <section class="view" id="dataView" aria-label="Template de relatório">
       <section class="panel">
-        <h2>Tabela de dados</h2>
+        <h2>Template de Relatório</h2>
         <div class="body">
+          <div class="tasks">
+            <div class="task">
+              <strong>Gerar relatório em LaTeX no formato A&amp;A</strong>
+              Preencha o nome do aluno e clique em Gerar template. O laboratório salvará o arquivo main.tex, a classe oficial aa.cls, figuras do mapa e dos gráficos, tabelas auxiliares e CSVs do catálogo simulado.
+            </div>
+          </div>
+          <div class="control">
+            <label for="studentNameInput">Nome do aluno</label>
+            <input id="studentNameInput" type="text" placeholder="Digite o nome completo">
+          </div>
+          <div class="toolbar">
+            <button class="button" id="generateTemplate" type="button">Gerar template</button>
+            <span class="chip" id="reportStatus">Aguardando geração do relatório.</span>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -678,6 +700,8 @@
     const TAU = Math.PI * 2;
     const SOLAR_MV = 4.83;
     const FIELD_MAS_PER_PIXEL = 4;
+    const FIELD_PARALLAX_PHASE = -0.45;
+    const FIELD_PARALLAX_TILT = 0.64;
     const stars = [];
     const referenceStars = [];
     let selected = 0;
@@ -698,6 +722,8 @@
     const luminositySlider = document.getElementById("luminositySlider");
     const extinctionSlider = document.getElementById("extinctionSlider");
     const noiseSlider = document.getElementById("noiseSlider");
+    const studentNameInput = document.getElementById("studentNameInput");
+    const reportStatus = document.getElementById("reportStatus");
     const tableBody = document.getElementById("tableBody");
 
     function mulberry32(seed) {
@@ -756,7 +782,7 @@
         const extinction = rand() < 0.62 ? rand() * 1.2 : 1.2 + rand() * 2.5;
         const noise = 0.025 + rand() * 0.28;
         const colorIntrinsic = clamp(1.35 - 0.26 * log10(luminosity) + (rand() - 0.5) * 0.35, -0.25, 1.7);
-        const parallaxAngle = rand() * TAU;
+        const fieldOffset = ((rand() - 0.5) * 0.16);
         const measurementBias = (rand() - 0.5) * 1.4;
         const star = {
           id: `${names[i % names.length]}-${String(i + 1).padStart(2, "0")}`,
@@ -767,10 +793,10 @@
           extinction,
           noise,
           colorIntrinsic,
-          parallaxAngle,
+          fieldOffset,
           measurementBias,
         };
-        star.original = { distance, luminosity, extinction, noise, colorIntrinsic, parallaxAngle, measurementBias };
+        star.original = { distance, luminosity, extinction, noise, colorIntrinsic, fieldOffset, measurementBias };
         stars.push(star);
       }
     }
@@ -808,11 +834,12 @@
     }
 
     function skyPosition(star, day = observationDay) {
-      const phase = (day / 365) * TAU + star.parallaxAngle;
+      const phase = (day / 365) * TAU + FIELD_PARALLAX_PHASE + star.fieldOffset;
       const pPixels = observed(star).trueParallaxMas / FIELD_MAS_PER_PIXEL;
+      const localTilt = FIELD_PARALLAX_TILT + (star.x - 0.5) * 0.08 + (star.y - 0.5) * 0.05;
       return {
         x: 28 + star.x * (sky.width - 56) + pPixels * Math.cos(phase),
-        y: 28 + star.y * (sky.height - 56) + pPixels * Math.sin(phase),
+        y: 28 + star.y * (sky.height - 56) + pPixels * localTilt * Math.sin(phase),
       };
     }
 
@@ -1100,7 +1127,27 @@
       render();
     }
 
-    function exportCsv() {
+    function csvValue(value) {
+      if (typeof value === "number") return Number.isFinite(value) ? value.toPrecision(8) : "";
+      return `"${String(value ?? "").replaceAll('"', '""')}"`;
+    }
+
+    function rowsToCsv(rows) {
+      return rows.map(row => row.map(csvValue).join(",")).join("\n");
+    }
+
+    function downloadBlob(filename, blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function catalogCsvRows() {
       const header = [
         "id", "paralaxe_mas", "erro_paralaxe_mas", "distancia_inferida_pc",
         "distancia_real_pc", "x_jan_px", "y_jan_px", "x_jul_px", "y_jul_px",
@@ -1135,18 +1182,290 @@
           star.extinction,
           star.luminosity,
           o.inferredLuminosity,
-        ].map(value => typeof value === "number" ? value.toPrecision(7) : value);
+        ];
       });
-      const csv = [header, ...rows].map(row => row.join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "laboratorio_capitulo_1_catalogo.csv";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      return [header, ...rows];
+    }
+
+    function exportCsv() {
+      const blob = new Blob([rowsToCsv(catalogCsvRows())], { type: "text/csv;charset=utf-8" });
+      downloadBlob("laboratorio_capitulo_1_catalogo.csv", blob);
+    }
+
+    function latexEscape(value) {
+      const text = String(value ?? "")
+        .replaceAll("λ", "lambda")
+        .replaceAll("σ", "sigma")
+        .replaceAll("☉", "\\odot")
+        .replaceAll("−", "-");
+      const replacements = {
+        "\\": "\\textbackslash{}",
+        "{": "\\{",
+        "}": "\\}",
+        "$": "\\$",
+        "&": "\\&",
+        "%": "\\%",
+        "#": "\\#",
+        "_": "\\_",
+        "~": "\\textasciitilde{}",
+        "^": "\\textasciicircum{}",
+      };
+      return text.replace(/[\\{}$&%#_~^]/g, char => replacements[char]);
+    }
+
+    function latexCell(value, digits = 3) {
+      if (typeof value === "number") {
+        if (!Number.isFinite(value)) return "--";
+        if (Number.isInteger(value) && Math.abs(value) < 100) return String(value);
+        return fmt(value, digits);
+      }
+      if (value === null || value === undefined || value === "") return "--";
+      return latexEscape(value);
+    }
+
+    function latexRows(rows) {
+      return rows.map(row => `${row.map(cell => latexCell(cell)).join(" & ")} \\\\`).join("\n");
+    }
+
+    function reportMainTex(studentName) {
+      return `\\documentclass{aa}
+
+\\usepackage{graphicx}
+\\usepackage{amsmath}
+\\usepackage{booktabs}
+\\usepackage{txfonts}
+
+\\newcommand{\\aluno}{${latexEscape(studentName)}}
+\\newcommand{\\experimento}{Paralaxe, brilho aparente e distância}
+\\newcommand{\\disciplina}{Astronomia}
+\\newcommand{\\professor}{Prof. Dr. Rafael C. R. de Lima}
+\\newcommand{\\datarelatorio}{\\today}
+\\newcommand{\\compacttables}{\\footnotesize\\setlength{\\tabcolsep}{3pt}}
+
+\\begin{document}
+
+\\title{\\experimento}
+\\subtitle{Relatório de laboratório em formato Astronomy \\& Astrophysics}
+
+\\author{\\aluno}
+
+\\institute{
+Universidade do Estado de Santa Catarina, Centro de Ciências Tecnológicas -- CCT\\\\
+\\email{Disciplina: \\disciplina; professor: \\professor}
+}
+
+\\date{\\datarelatorio}
+
+\\abstract
+{Este relatório apresenta medidas simuladas de paralaxe, brilho aparente, cor e luminosidade para um campo estelar.}
+{O objetivo é inferir distâncias a partir de paralaxe anual e combinar essas distâncias com fotometria para obter magnitudes absolutas e luminosidades.}
+{O laboratório exportou o mapa do céu, gráficos de inferência e uma tabela com paralaxe, distância, magnitudes, extinção e luminosidade para as estrelas simuladas.}
+{O aluno deve completar a análise quantitativa, comparando o deslocamento entre duas épocas com a paralaxe exportada e avaliando como o erro relativo cresce para paralaxes pequenas.}
+{A simulação usa uma direção de paralaxe comum para o campo observado, com amplitudes diferentes conforme a distância de cada estrela.}
+
+\\keywords{Astrometry -- Parallaxes -- Stars: distances -- Techniques: photometric}
+
+\\maketitle
+
+\\section{Introdução}
+
+Descreva o objetivo do experimento e explique por que a mudança da posição da Terra ao longo da órbita produz um deslocamento aparente anual das estrelas próximas em relação ao fundo distante.
+
+\\section{Fundamentação teórica}
+
+A paralaxe anual relaciona distância e ângulo por
+\\begin{equation}
+d({\\rm pc}) = \\frac{1}{p({\\rm arcsec})} = \\frac{1000}{p({\\rm mas})}.
+\\end{equation}
+
+No mapa do laboratório, se a separação entre duas observações opostas da órbita terrestre é $\\Delta_{px}$, uma estimativa da paralaxe é
+\\begin{equation}
+p_{\\rm grid}({\\rm mas}) = \\frac{\\Delta_{px}}{2}\\,s,
+\\end{equation}
+em que $s$ é a escala angular do mapa em mas por pixel.
+
+A magnitude absoluta inferida é
+\\begin{equation}
+M = m - 5\\log_{10}\\left(\\frac{d}{10\\,{\\rm pc}}\\right) - A_V,
+\\end{equation}
+e a luminosidade relativa pode ser estimada por
+\\begin{equation}
+\\frac{L}{L_\\odot}=10^{(M_{V,\\odot}-M)/2.5}.
+\\end{equation}
+
+\\section{Dados observacionais}
+
+\\input{tabelas/tabela_catalogo_resumo.tex}
+
+\\begin{figure*}[t]
+\\centering
+\\includegraphics[width=0.98\\textwidth]{figuras/mapa_celeste.png}
+\\caption{Mapa do céu simulado na data selecionada no laboratório. Estrelas próximas apresentam deslocamento paralático maior, mas a orientação geral do deslocamento é comum ao campo.}
+\\end{figure*}
+
+\\begin{figure*}[t]
+\\centering
+\\includegraphics[width=0.92\\textwidth]{figuras/grafico_distancia.png}
+\\caption{Magnitude aparente em função da distância inferida por paralaxe.}
+\\end{figure*}
+
+\\begin{figure*}[t]
+\\centering
+\\includegraphics[width=0.92\\textwidth]{figuras/grafico_luminosidade.png}
+\\caption{Comparação entre luminosidade real simulada e luminosidade inferida.}
+\\end{figure*}
+
+\\begin{figure*}[t]
+\\centering
+\\includegraphics[width=0.92\\textwidth]{figuras/grafico_erro_paralaxe.png}
+\\caption{Erro relativo da distância/paralaxe em função da paralaxe medida.}
+\\end{figure*}
+
+\\section{Análise}
+
+Use o arquivo \\texttt{dados/catalogo.csv} para calcular distâncias, magnitudes absolutas e luminosidades. Escolha pelo menos oito estrelas, estime a paralaxe no grid para duas épocas separadas por aproximadamente seis meses e compare com a paralaxe exportada.
+
+\\section{Discussão}
+
+Discuta por que estrelas distantes têm paralaxes menores, por que o erro relativo cresce quando a paralaxe diminui e como extinção e cor observada afetam a interpretação fotométrica.
+
+\\section{Conclusões}
+
+Escreva aqui as principais conclusões do experimento.
+
+\\end{document}
+`;
+    }
+
+    function summaryLatexTable() {
+      const rows = stars.slice(0, 15).map(star => {
+        const o = observed(star);
+        const jan = skyPosition(star, 0);
+        const jul = skyPosition(star, 182.5);
+        const displacement = Math.hypot(jan.x - jul.x, jan.y - jul.y);
+        const parallaxFromGrid = displacement * FIELD_MAS_PER_PIXEL / 2;
+        return [
+          star.id,
+          o.measuredParallaxMas,
+          o.inferredDistance,
+          parallaxFromGrid,
+          o.apparentMag,
+          o.inferredAbsMag,
+          star.extinction,
+          o.inferredLuminosity,
+        ];
+      });
+      return `\\begin{table*}[t]
+\\centering
+\\compacttables
+\\caption{Resumo das primeiras 15 estrelas do catálogo simulado. O catálogo completo está em \\texttt{dados/catalogo.csv}.}
+\\begin{tabular}{lrrrrrrr}
+\\toprule
+ID & $p$ & $d$ & $p_{grid}$ & $m_V$ & $M_V$ & $A_V$ & $L_{inf}$ \\\\
+ & (mas) & (pc) & (mas) & (mag) & (mag) & (mag) & ($L_\\odot$) \\\\
+\\midrule
+${latexRows(rows)}
+\\bottomrule
+\\end{tabular}
+\\end{table*}
+`;
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(blob => {
+          if (blob) resolve(blob);
+          else reject(new Error("Não foi possível gerar uma figura PNG."));
+        }, "image/png");
+      });
+    }
+
+    async function fetchBlob(path) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`Não foi possível carregar ${path}`);
+      return response.blob();
+    }
+
+    function skyFigureBlob() {
+      drawSky();
+      return canvasToBlob(sky);
+    }
+
+    function chartFigureBlob(mode) {
+      const savedMode = chartMode;
+      chartMode = mode;
+      drawChart();
+      return canvasToBlob(chart).finally(() => {
+        chartMode = savedMode;
+        drawChart();
+      });
+    }
+
+    async function buildReportFiles(studentName) {
+      const [aaClass, aaBibstyle, linenoStyle, linenoAaStyle, aaReadme] = await Promise.all([
+        fetchBlob("../template_relatorio/aa.cls"),
+        fetchBlob("../template_relatorio/aa.bst"),
+        fetchBlob("../template_relatorio/lineno.sty"),
+        fetchBlob("../template_relatorio/linenoaa.sty"),
+        fetchBlob("../template_relatorio/readme-aa.txt"),
+      ]);
+      return [
+        { name: "main.tex", blob: new Blob([reportMainTex(studentName)], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "aa.cls", blob: aaClass },
+        { name: "aa.bst", blob: aaBibstyle },
+        { name: "lineno.sty", blob: linenoStyle },
+        { name: "linenoaa.sty", blob: linenoAaStyle },
+        { name: "readme-aa.txt", blob: aaReadme },
+        { name: "tabelas/tabela_catalogo_resumo.tex", blob: new Blob([summaryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "dados/catalogo.csv", blob: new Blob([rowsToCsv(catalogCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "figuras/mapa_celeste.png", blob: await skyFigureBlob() },
+        { name: "figuras/grafico_distancia.png", blob: await chartFigureBlob("distance") },
+        { name: "figuras/grafico_luminosidade.png", blob: await chartFigureBlob("luminosity") },
+        { name: "figuras/grafico_erro_paralaxe.png", blob: await chartFigureBlob("error") },
+      ];
+    }
+
+    async function saveReportFiles(files) {
+      if (window.showDirectoryPicker) {
+        const directory = await window.showDirectoryPicker({ mode: "readwrite" });
+        for (const file of files) {
+          const parts = file.name.split("/");
+          const filename = parts.pop();
+          let targetDirectory = directory;
+          for (const part of parts) {
+            targetDirectory = await targetDirectory.getDirectoryHandle(part, { create: true });
+          }
+          const handle = await targetDirectory.getFileHandle(filename, { create: true });
+          const writable = await handle.createWritable();
+          await writable.write(file.blob);
+          await writable.close();
+        }
+        return `${files.length} arquivos salvos na pasta escolhida.`;
+      }
+
+      files.forEach((file, index) => {
+        setTimeout(() => downloadBlob(file.name.replaceAll("/", "_"), file.blob), index * 150);
+      });
+      return "Seu navegador não abriu seletor de pasta; os arquivos foram baixados individualmente.";
+    }
+
+    async function generateReportTemplate() {
+      const studentName = studentNameInput.value.trim();
+      if (!studentName) {
+        reportStatus.textContent = "Digite o nome do aluno antes de gerar.";
+        studentNameInput.focus();
+        return;
+      }
+      try {
+        reportStatus.textContent = "Gerando arquivos do relatório...";
+        const files = await buildReportFiles(studentName);
+        reportStatus.textContent = await saveReportFiles(files);
+      } catch (error) {
+        reportStatus.textContent = error.name === "AbortError"
+          ? "Salvamento cancelado."
+          : "Não foi possível gerar o template. Verifique se a página está publicada/servida por HTTP.";
+        console.error(error);
+      }
     }
 
     sky.addEventListener("click", event => {
@@ -1213,6 +1532,7 @@
       event.currentTarget.textContent = hidden ? "Habilitar modo instrutor" : "Ocultar modo instrutor";
     });
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
+    document.getElementById("generateTemplate").addEventListener("click", generateReportTemplate);
     document.getElementById("clearMeasure").addEventListener("click", () => {
       measurePoints.length = 0;
       updateMeasureReadout();
@@ -1234,6 +1554,7 @@
         document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
         button.setAttribute("aria-selected", "true");
         document.getElementById(button.dataset.view).classList.add("active");
+        if (history.replaceState) history.replaceState(null, "", `#${button.dataset.view}`);
         drawChart();
       });
     });
@@ -1252,6 +1573,10 @@
     filterMode = "V";
     populateSelect();
     syncControls();
+    if (location.hash === "#analysisView" || location.hash === "#dataView") {
+      const targetButton = document.querySelector(`.view-tab[data-view="${location.hash.slice(1)}"]`);
+      if (targetButton) targetButton.click();
+    }
     render();
   </script>
 </body>
