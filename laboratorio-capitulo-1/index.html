@@ -572,6 +572,7 @@
           <div class="control">
             <label>Régua angular</label>
             <div class="readout"><span id="angularMeasureReadout">clique em dois pontos</span><span>escala do grid</span></div>
+            <button class="button" id="recordParallaxMeasure" type="button">Registrar medida de paralaxe</button>
             <button class="button" id="clearMeasure" type="button">Limpar régua</button>
           </div>
 
@@ -672,8 +673,27 @@
           </div>
           <div class="toolbar">
             <button class="button" id="generateTemplate" type="button">Gerar template</button>
+            <button class="button" id="clearParallaxMeasures" type="button">Limpar medidas</button>
             <span class="chip" id="reportStatus">Aguardando geração do relatório.</span>
           </div>
+          <h2>Medidas de paralaxe salvas</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>estrela</th>
+                  <th>data</th>
+                  <th>Δ px</th>
+                  <th>p grid mas</th>
+                  <th>p catálogo mas</th>
+                  <th>erro %</th>
+                </tr>
+              </thead>
+              <tbody id="parallaxMeasureBody"></tbody>
+            </table>
+          </div>
+          <h2>Catálogo simulado</h2>
           <div class="table-wrap">
             <table>
               <thead>
@@ -704,6 +724,7 @@
     const FIELD_PARALLAX_TILT = 0.64;
     const stars = [];
     const referenceStars = [];
+    const parallaxMeasurements = [];
     let selected = 0;
     let chartMode = "distance";
     let observationDay = 0;
@@ -725,6 +746,7 @@
     const studentNameInput = document.getElementById("studentNameInput");
     const reportStatus = document.getElementById("reportStatus");
     const tableBody = document.getElementById("tableBody");
+    const parallaxMeasureBody = document.getElementById("parallaxMeasureBody");
 
     function mulberry32(seed) {
       return function rand() {
@@ -1033,6 +1055,23 @@
       });
     }
 
+    function renderParallaxMeasurements() {
+      parallaxMeasureBody.innerHTML = "";
+      parallaxMeasurements.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.index}</td>
+          <td>${row.starId}</td>
+          <td>${row.dateLabel}</td>
+          <td>${fmt(row.displacementPx, 1)}</td>
+          <td>${fmt(row.parallaxGridMas, 2)}</td>
+          <td>${fmt(row.catalogParallaxMas, 2)}</td>
+          <td>${fmt(100 * row.relativeDifference, 1)}</td>
+        `;
+        parallaxMeasureBody.appendChild(tr);
+      });
+    }
+
     function populateSelect() {
       starSelect.innerHTML = "";
       stars.forEach((star, index) => {
@@ -1089,11 +1128,52 @@
       floating.textContent = `Régua AB: ${text}`;
     }
 
+    function currentRulerMeasurement() {
+      if (measurePoints.length < 2) return null;
+      const dx = measurePoints[1].x - measurePoints[0].x;
+      const dy = measurePoints[1].y - measurePoints[0].y;
+      const displacementPx = Math.hypot(dx, dy);
+      const parallaxGridMas = displacementPx * FIELD_MAS_PER_PIXEL / 2;
+      const star = stars[selected];
+      const o = observed(star);
+      const relativeDifference = (parallaxGridMas - o.measuredParallaxMas) / Math.max(o.measuredParallaxMas, 1e-6);
+      return {
+        index: parallaxMeasurements.length + 1,
+        starIndex: selected,
+        starId: star.id,
+        dateLabel: dayLabel(observationDay),
+        observationDay,
+        x1: measurePoints[0].x,
+        y1: measurePoints[0].y,
+        x2: measurePoints[1].x,
+        y2: measurePoints[1].y,
+        displacementPx,
+        displacementMas: displacementPx * FIELD_MAS_PER_PIXEL,
+        parallaxGridMas,
+        catalogParallaxMas: o.measuredParallaxMas,
+        sigmaParallaxMas: o.sigmaParallaxMas,
+        inferredDistancePc: o.inferredDistance,
+        relativeDifference,
+      };
+    }
+
+    function recordParallaxMeasurement() {
+      const measurement = currentRulerMeasurement();
+      if (!measurement) {
+        reportStatus.textContent = "Clique em dois pontos com a régua antes de registrar.";
+        return;
+      }
+      parallaxMeasurements.push(measurement);
+      reportStatus.textContent = `${parallaxMeasurements.length} medida(s) de paralaxe salva(s).`;
+      renderParallaxMeasurements();
+    }
+
     function render() {
       updateReadouts();
       drawSky();
       drawChart();
       renderTable();
+      renderParallaxMeasurements();
     }
 
     function setMapFullscreen(enabled) {
@@ -1297,6 +1377,8 @@ e a luminosidade relativa pode ser estimada por
 
 \\input{tabelas/tabela_catalogo_resumo.tex}
 
+\\input{tabelas/tabela_medidas_paralaxe.tex}
+
 \\begin{figure*}[t]
 \\centering
 \\includegraphics[width=0.98\\textwidth]{figuras/mapa_celeste.png}
@@ -1323,7 +1405,7 @@ e a luminosidade relativa pode ser estimada por
 
 \\section{Análise}
 
-Use o arquivo \\texttt{dados/catalogo.csv} para calcular distâncias, magnitudes absolutas e luminosidades. Escolha pelo menos oito estrelas, estime a paralaxe no grid para duas épocas separadas por aproximadamente seis meses e compare com a paralaxe exportada.
+Use o arquivo \\texttt{dados/catalogo.csv} para calcular distâncias, magnitudes absolutas e luminosidades. Use também \\texttt{dados/medidas_paralaxe_regua.csv} para comparar as paralaxes medidas manualmente com a régua e as paralaxes exportadas pelo catálogo.
 
 \\section{Discussão}
 
@@ -1363,6 +1445,70 @@ Escreva aqui as principais conclusões do experimento.
 \\toprule
 ID & $p$ & $d$ & $p_{grid}$ & $m_V$ & $M_V$ & $A_V$ & $L_{inf}$ \\\\
  & (mas) & (pc) & (mas) & (mag) & (mag) & (mag) & ($L_\\odot$) \\\\
+\\midrule
+${latexRows(rows)}
+\\bottomrule
+\\end{tabular}
+\\end{table*}
+`;
+    }
+
+    function parallaxMeasurementsCsvRows() {
+      return [[
+        "indice",
+        "id",
+        "data_observacao",
+        "dia_do_ano",
+        "x1_px",
+        "y1_px",
+        "x2_px",
+        "y2_px",
+        "deslocamento_px",
+        "deslocamento_mas",
+        "paralaxe_grid_mas",
+        "paralaxe_catalogo_mas",
+        "sigma_paralaxe_mas",
+        "distancia_inferida_pc",
+        "diferenca_relativa",
+      ], ...parallaxMeasurements.map(row => [
+        row.index,
+        row.starId,
+        row.dateLabel,
+        row.observationDay,
+        row.x1,
+        row.y1,
+        row.x2,
+        row.y2,
+        row.displacementPx,
+        row.displacementMas,
+        row.parallaxGridMas,
+        row.catalogParallaxMas,
+        row.sigmaParallaxMas,
+        row.inferredDistancePc,
+        row.relativeDifference,
+      ])];
+    }
+
+    function parallaxMeasurementsLatexTable() {
+      const rows = parallaxMeasurements.length
+        ? parallaxMeasurements.map(row => [
+            row.index,
+            row.starId,
+            row.dateLabel,
+            row.displacementPx,
+            row.parallaxGridMas,
+            row.catalogParallaxMas,
+            100 * row.relativeDifference,
+          ])
+        : [["--", "nenhuma medida salva", "--", "--", "--", "--", "--"]];
+      return `\\begin{table*}[t]
+\\centering
+\\compacttables
+\\caption{Medidas de paralaxe feitas manualmente com a régua angular. A paralaxe de grid usa $p_{grid}=\\Delta_{px}s/2$.}
+\\begin{tabular}{rlrrrrr}
+\\toprule
+\\# & ID & Data & $\\Delta_{px}$ & $p_{grid}$ & $p_{cat}$ & Dif. \\\\
+ & & & (px) & (mas) & (mas) & (\\%) \\\\
 \\midrule
 ${latexRows(rows)}
 \\bottomrule
@@ -1417,7 +1563,9 @@ ${latexRows(rows)}
         { name: "linenoaa.sty", blob: linenoAaStyle },
         { name: "readme-aa.txt", blob: aaReadme },
         { name: "tabelas/tabela_catalogo_resumo.tex", blob: new Blob([summaryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "tabelas/tabela_medidas_paralaxe.tex", blob: new Blob([parallaxMeasurementsLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "dados/catalogo.csv", blob: new Blob([rowsToCsv(catalogCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "dados/medidas_paralaxe_regua.csv", blob: new Blob([rowsToCsv(parallaxMeasurementsCsvRows())], { type: "text/csv;charset=utf-8" }) },
         { name: "figuras/mapa_celeste.png", blob: await skyFigureBlob() },
         { name: "figuras/grafico_distancia.png", blob: await chartFigureBlob("distance") },
         { name: "figuras/grafico_luminosidade.png", blob: await chartFigureBlob("luminosity") },
@@ -1533,6 +1681,12 @@ ${latexRows(rows)}
     });
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
     document.getElementById("generateTemplate").addEventListener("click", generateReportTemplate);
+    document.getElementById("recordParallaxMeasure").addEventListener("click", recordParallaxMeasurement);
+    document.getElementById("clearParallaxMeasures").addEventListener("click", () => {
+      parallaxMeasurements.length = 0;
+      reportStatus.textContent = "Medidas de paralaxe apagadas.";
+      renderParallaxMeasurements();
+    });
     document.getElementById("clearMeasure").addEventListener("click", () => {
       measurePoints.length = 0;
       updateMeasureReadout();
