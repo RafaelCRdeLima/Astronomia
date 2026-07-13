@@ -971,6 +971,74 @@
       ctx.fillText(labels.x, w - 120, h - 12);
     }
 
+    function niceLinearTicks(min, max, count = 5) {
+      if (!Number.isFinite(min) || !Number.isFinite(max) || min === max) return [min || 0];
+      const span = Math.abs(max - min);
+      const rawStep = span / Math.max(count - 1, 1);
+      const mag = 10 ** Math.floor(log10(rawStep));
+      const norm = rawStep / mag;
+      const niceNorm = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+      const step = niceNorm * mag;
+      const start = Math.ceil(min / step) * step;
+      const ticks = [];
+      for (let value = start; value <= max + step * 0.5; value += step) ticks.push(value);
+      return ticks.length ? ticks.slice(0, 8) : [min, max];
+    }
+
+    function niceLogTicks(minValue, maxValue) {
+      const minExp = Math.floor(log10(Math.max(minValue, 1e-6)));
+      const maxExp = Math.ceil(log10(Math.max(maxValue, 1e-6)));
+      const ticks = [];
+      for (let exp = minExp; exp <= maxExp; exp++) {
+        [1, 2, 5].forEach(mult => {
+          const value = mult * 10 ** exp;
+          if (value >= minValue * 0.92 && value <= maxValue * 1.08) ticks.push(value);
+        });
+      }
+      return ticks.length ? ticks : [minValue, maxValue];
+    }
+
+    function formatTick(value) {
+      if (!Number.isFinite(value)) return "";
+      if (Math.abs(value) >= 1000) return value.toFixed(0);
+      if (Math.abs(value) >= 100) return value.toFixed(0);
+      if (Math.abs(value) >= 10) return value.toFixed(1).replace(/\.0$/, "");
+      if (Math.abs(value) >= 1) return value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+      return value.toPrecision(2);
+    }
+
+    function drawNumericAxes(ctx, w, h, labels, scaleX, scaleY, xTicks, yTicks) {
+      const padL = 54;
+      const padR = 20;
+      const padT = 24;
+      const padB = 42;
+      drawAxes(ctx, w, h, labels);
+      ctx.save();
+      ctx.font = "11px system-ui";
+      ctx.fillStyle = "#aaa69c";
+      ctx.strokeStyle = "rgba(170,166,156,0.25)";
+      ctx.lineWidth = 1;
+      xTicks.forEach(value => {
+        const x = scaleX(value);
+        if (x < padL - 1 || x > w - padR + 1) return;
+        ctx.beginPath();
+        ctx.moveTo(x, h - padB);
+        ctx.lineTo(x, h - padB + 5);
+        ctx.stroke();
+        ctx.fillText(formatTick(value), x - 12, h - padB + 19);
+      });
+      yTicks.forEach(value => {
+        const y = scaleY(value);
+        if (y < padT - 1 || y > h - padB + 1) return;
+        ctx.beginPath();
+        ctx.moveTo(padL - 5, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+        ctx.fillText(formatTick(value), 8, y + 4);
+      });
+      ctx.restore();
+    }
+
     function plotPoint(ctx, x, y, color, radius) {
       ctx.beginPath();
       ctx.fillStyle = color;
@@ -1000,20 +1068,36 @@
         points = stars.map((s, i) => ({ i, x: observed(s).measuredParallaxMas, y: observed(s).relativeParallaxError * 100, err: observed(s).relativeParallaxError }));
         labels = { x: "paralaxe medida (mas)", y: "erro relativo %" };
       }
-      drawAxes(chartCtx, w, h, labels);
-
-      const xs = points.map(p => chartMode === "distance" || chartMode === "luminosity" || chartMode === "error" ? log10(Math.max(p.x, 0.001)) : p.x);
-      const ys = points.map(p => p.y);
+      const yUsesLog = chartMode === "luminosity";
+      const xs = points.map(p => log10(Math.max(p.x, 0.001)));
+      const ys = points.map(p => yUsesLog ? log10(Math.max(p.y, 0.001)) : p.y);
       const minX = Math.min(...xs);
       const maxX = Math.max(...xs);
       const minY = Math.min(...ys);
       const maxY = Math.max(...ys);
+      const xValues = points.map(p => p.x);
+      const yValues = points.map(p => p.y);
+      const minRawX = Math.min(...xValues);
+      const maxRawX = Math.max(...xValues);
+      const minRawY = Math.min(...yValues);
+      const maxRawY = Math.max(...yValues);
       const scaleX = value => padL + ((log10(Math.max(value, 0.001)) - minX) / Math.max(0.001, maxX - minX)) * (w - padL - padR);
       const scaleY = value => {
-        const t = (value - minY) / Math.max(0.001, maxY - minY);
+        const scaledValue = yUsesLog ? log10(Math.max(value, 0.001)) : value;
+        const t = (scaledValue - minY) / Math.max(0.001, maxY - minY);
         const yy = chartMode === "distance" ? t : 1 - t;
         return padT + yy * (h - padT - padB);
       };
+      drawNumericAxes(
+        chartCtx,
+        w,
+        h,
+        labels,
+        scaleX,
+        scaleY,
+        niceLogTicks(minRawX, maxRawX),
+        yUsesLog ? niceLogTicks(minRawY, maxRawY) : niceLinearTicks(minRawY, maxRawY, 5)
+      );
 
       if (chartMode === "luminosity") {
         chartCtx.strokeStyle = "rgba(215,180,106,0.45)";
