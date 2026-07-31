@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dados dos laboratórios | Astrofísica Moderna</title>
+  <style>
+    :root { --bg:#050505; --panel:#101010; --line:#343434; --text:#f4f4f1; --muted:#aaa69c; --accent:#d7b46a; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--text); background:var(--bg);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .shell { width:min(1180px, calc(100vw - 32px)); margin:0 auto; padding:28px 0 48px; }
+    header { display:flex; justify-content:space-between; gap:18px; align-items:end;
+      padding-bottom:18px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+    h1 { margin:0; font-size:clamp(28px,4vw,48px); line-height:1.05; }
+    p { margin:10px 0 0; color:var(--muted); line-height:1.55; }
+    a { color:var(--accent); }
+    .badge { color:var(--accent); border:1px solid var(--line); padding:8px 10px; border-radius:8px; font-size:14px; }
+    .intro { margin:22px 0 8px; max-width:760px; }
+    table { width:100%; border-collapse:collapse; margin-top:22px; font-size:15px; }
+    th, td { text-align:left; padding:12px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { color:var(--accent); font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:0.04em; }
+    td.cap { color:var(--muted); white-space:nowrap; }
+    td.file a { font-weight:600; text-decoration:none; }
+    td.file a:hover { text-decoration:underline; }
+    td .src { display:block; color:var(--muted); font-size:13px; margin-top:4px; }
+    .nav { margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; }
+    .nav a { border:1px solid var(--line); background:var(--panel); border-radius:10px;
+      padding:12px 14px; text-decoration:none; }
+    @media (max-width:720px) { table, thead, tbody, tr, td, th { display:block; }
+      thead { display:none; } tr { border-bottom:1px solid var(--line); padding:8px 0; }
+      td, th { border:0; padding:4px 0; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Dados dos laboratórios</h1>
+        <p>Medidas reais para os exercícios práticos da apostila de Astrofísica Moderna.</p>
+      </div>
+      <div class="badge">Prof. Dr. Rafael Camargo Rodrigues de Lima</div>
+    </header>
+
+    <p class="intro">Todos os arquivos são CSV com vírgula separando campos e ponto como separador
+    decimal — abrem direto no Excel, no LibreOffice, no Python (<code>pandas.read_csv</code>) ou no
+    Mathematica (<code>Import</code>). Nenhum dado foi simulado: cada arquivo vem de um arquivo público
+    de observação, com no máximo um recorte de faixa e um filtro de qualidade. O roteiro de cada
+    laboratório, com a equação a aplicar e o valor de referência para conferência, está no capítulo
+    indicado da apostila.</p>
+
+    <table>
+      <thead>
+        <tr><th>Arquivo</th><th>Cap.</th><th>Conteúdo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="file"><a href="01_gaia_estrelas_25pc.csv" download>01_gaia_estrelas_25pc.csv</a>
+            <span class="src">ESA Gaia DR3</span></td>
+          <td class="cap">1 e 5</td>
+          <td>2000 estrelas a menos de 25 pc: paralaxe, erro, magnitude G e cor BP−RP. Distâncias, magnitudes absolutas e diagrama HR.</td></tr>
+        <tr><td class="file"><a href="02_terceira_lei_kepler.csv" download>02_terceira_lei_kepler.csv</a>
+            <span class="src">valores tabelados JPL/NASA</span></td>
+          <td class="cap">2</td>
+          <td>Semieixo maior e período de 21 corpos, orbitando quatro centros diferentes. Pesar o Sol, Júpiter, Saturno e a Terra.</td></tr>
+        <tr><td class="file"><a href="03_espectro_solar.csv" download>03_espectro_solar.csv</a>
+            <span class="src">WHI reference spectrum, LASP/LISIRD</span></td>
+          <td class="cap">3</td>
+          <td>Irradiância espectral solar medida acima da atmosfera, 200–2400 nm. Lei de Wien, integração e temperatura efetiva.</td></tr>
+        <tr><td class="file"><a href="05_estrelas_massa_raio_teff.csv" download>05_estrelas_massa_raio_teff.csv</a>
+            <span class="src">Eker et al. 2018, MNRAS 479, 5491</span></td>
+          <td class="cap">5</td>
+          <td>581 estrelas de binárias eclipsantes com massa, raio e temperatura medidos. Relação massa-luminosidade e tempo de vida.</td></tr>
+        <tr><td class="file"><a href="07_pulsares_atnf.csv" download>07_pulsares_atnf.csv</a>
+            <span class="src">ATNF Pulsar Catalogue</span></td>
+          <td class="cap">7</td>
+          <td>2052 pulsares com período e derivada do período. Diagrama P–Ṗ, idade característica e campo magnético.</td></tr>
+        <tr><td class="file"><a href="08_gw150914_strain.csv" download>08_gw150914_strain.csv</a>
+            <span class="src">GWOSC / LIGO</span></td>
+          <td class="cap">8</td>
+          <td>2,8 s de tensão medida em Hanford e Livingston em torno de GW150914, a 4096 amostras por segundo.</td></tr>
+        <tr><td class="file"><a href="09_planetas_sistema_solar.csv" download>09_planetas_sistema_solar.csv</a>
+            <span class="src">NASA Planetary Fact Sheet</span></td>
+          <td class="cap">9</td>
+          <td>Distância, raio, massa, albedo de Bond e temperatura medida dos oito planetas. Temperatura de equilíbrio e efeito estufa.</td></tr>
+        <tr><td class="file"><a href="10a_exoplanetas_massa_raio.csv" download>10a_exoplanetas_massa_raio.csv</a>
+            <span class="src">NASA Exoplanet Archive</span></td>
+          <td class="cap">10</td>
+          <td>1035 exoplanetas com massa e raio medidos, com incertezas. Densidade média e composição.</td></tr>
+        <tr><td class="file"><a href="10b_transito_kepler.csv" download>10b_transito_kepler.csv</a>
+            <span class="src">arquivo público do Kepler (MAST)</span></td>
+          <td class="cap">10</td>
+          <td>Curvas de luz dobradas de HAT-P-7 b e Kepler-10 b, cadência de 1 minuto. Medir o raio de um planeta.</td></tr>
+        <tr><td class="file"><a href="11_curvas_rotacao_sparc.csv" download>11_curvas_rotacao_sparc.csv</a>
+            <span class="src">SPARC, Lelli et al. 2016</span></td>
+          <td class="cap">11</td>
+          <td>Curvas de rotação de 176 galáxias, com contribuições de gás, disco e bojo. Pesar uma galáxia e achar o que falta.</td></tr>
+        <tr><td class="file"><a href="13_supernovas_ia_pantheon.csv" download>13_supernovas_ia_pantheon.csv</a>
+            <span class="src">Pantheon+ / SH0ES</span></td>
+          <td class="cap">13 e 16</td>
+          <td>1573 supernovas Ia com desvio para o vermelho e módulo de distância. Medir a constante de Hubble.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="nav">
+      <a href="../">Voltar para a apostila</a>
+      <a href="README.md">Descrição completa dos arquivos</a>
+      <a href="../../">Página do curso</a>
+    </div>
+  </main>
+</body>
+</html>
