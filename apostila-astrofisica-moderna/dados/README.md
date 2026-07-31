@@ -21,6 +21,7 @@ na coluna de origem, com no máximo um recorte de faixa e um filtro de qualidade
 | `10b_transito_kepler.csv` | 10 | Curvas de luz dobradas de HAT-P-7 b e Kepler-10 b, cadência de 1 min | arquivo público do Kepler (MAST) |
 | `11_curvas_rotacao_sparc.csv` | 11 | Curvas de rotação de 176 galáxias: raio, velocidade observada e contribuições de gás, disco e bojo | SPARC, Lelli et al. 2016 (VizieR) |
 | `13_supernovas_ia_pantheon.csv` | 13 e 16 | 1573 supernovas Ia: desvio para o vermelho, módulo de distância e incerteza | Pantheon+ / SH0ES data release |
+| `19_zona_habitavel.csv` | 19 | 5557 exoplanetas com semieixo maior, raio e luminosidade da estrela hospedeira | NASA Exoplanet Archive (`pscomppars`) |
 
 ## Como usar
 
