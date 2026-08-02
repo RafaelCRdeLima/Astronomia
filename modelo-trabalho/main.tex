@@ -196,6 +196,34 @@ junto do valor.
     \end{tabular}
 \end{table}
 
+% --- EXEMPLO 6b: o código da tabela, impresso no PDF ----------------
+% O bloco verbatim abaixo mostra, dentro do PDF, os comandos que geram
+% a tabela. É só material de consulta: apague-o na versão final.
+O código que produziu a Tabela~\ref{tab:exemplo} é este:
+
+\begin{quote}\small
+\begin{verbatim}
+\begin{table}[H]
+    \centering
+    \caption{Legenda da tabela, sempre ACIMA dela.}
+    \label{tab:exemplo}
+    \begin{tabular}{lcc}    % uma letra por coluna: l, c ou r
+        \toprule
+        Estrela & p (mas) & d (pc) \\   % & separa, \\ termina a linha
+        \midrule
+        Proxima Centauri & 768,07 & 1,302 \\
+        Wolf 359         & 415,18 & 2,409 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{verbatim}
+\end{quote}
+
+Para acrescentar uma linha, copie uma linha de dados e edite os valores.
+Para acrescentar uma coluna, some uma letra em \verb|{lcc}| e um \verb|&|
+em cada linha. Se as colunas não baterem, o LaTeX acusa
+\texttt{Extra alignment tab} ou \texttt{Misplaced \textbackslash noalign}.
+
 % --- EXEMPLO 7: figura ----------------------------------------------
 % width=0.75\linewidth faz a figura ocupar 75% da largura do texto.
 % O [H] exige que a figura fique exatamente aqui; sem ele, o LaTeX
@@ -214,6 +242,27 @@ esquerdo corresponde às anãs brancas.
              mais luminosas apareçam em cima.}
     \label{fig:exemplo}
 \end{figure}
+
+% --- EXEMPLO 7b: o código da figura, impresso no PDF ----------------
+E este é o código que inseriu a Figura~\ref{fig:exemplo}:
+
+\begin{quote}\small
+\begin{verbatim}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figura_exemplo.pdf}
+    \caption{Legenda da figura, sempre ABAIXO dela.}
+    \label{fig:exemplo}
+\end{figure}
+\end{verbatim}
+\end{quote}
+
+Troque \verb|figura_exemplo.pdf| pelo nome do seu arquivo, que precisa
+estar na mesma pasta do \verb|main.tex|. O \verb|width| controla o
+tamanho: \verb|0.75\linewidth| ocupa 75\% da largura do texto. O
+\verb|[H]| força a figura a ficar exatamente onde você a escreveu; sem
+ele, o LaTeX escolhe a melhor posição, o que costuma dar um resultado
+mais bonito.
 
 % --- EXEMPLO 8: como apresentar um resultado -------------------------
 % Um resultado numérico tem três partes obrigatórias: valor, incerteza

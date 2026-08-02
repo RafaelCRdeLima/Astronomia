@@ -1,0 +1,205 @@
+\documentclass[12pt,a4paper]{article}
+
+%-------------------------------------------------
+% PACOTES
+%-------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{float}
+
+\geometry{a4paper, margin=2.5cm}
+
+%-------------------------------------------------
+% DADOS DO RELATÓRIO
+%-------------------------------------------------
+
+\newcommand{\aluno}{\textbf{Nome do Aluno}}
+\newcommand{\experimento}{\textbf{Espectrofotometria estelar}}
+
+\newcommand{\disciplina}{Astronomia}
+\newcommand{\professor}{Prof. Dr. Rafael C. R. de Lima}
+\newcommand{\datarelatorio}{\today}
+
+%=================================================
+
+\begin{document}
+
+%-------------------------------------------------
+% CABEÇALHO
+%-------------------------------------------------
+
+\noindent
+\begin{minipage}[c]{0.20\textwidth}
+\includegraphics[width=0.60\linewidth]{udesc.png}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.55\textwidth}
+\centering
+\textbf{UNIVERSIDADE DO ESTADO DE SANTA CATARINA}\\
+Centro de Ciências Tecnológicas -- CCT
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.20\textwidth}
+\raggedleft
+\includegraphics[width=0.85\linewidth]{CCT.png}
+\end{minipage}
+
+\vspace{1cm}
+
+\begin{center}
+{\Large\textbf{Relatório de Experimento}}\\[0.5cm]
+{\Large\experimento}
+\end{center}
+
+\vspace{0.8cm}
+
+\textbf{Aluno:} \aluno\\
+\textbf{Disciplina:} \disciplina\\
+\textbf{Professor:} \professor\\
+\textbf{Data:} \datarelatorio
+
+\vspace{1cm}
+
+%=================================================
+\section{Introdução}
+
+Escreva aqui o objetivo do experimento e descreva brevemente como o espectro foi obtido a partir da abertura da estrela e da abertura de fundo.
+
+%=================================================
+\section{Teoria}
+
+Escreva aqui a teoria usada para interpretar o contínuo espectral, a fotometria e as linhas de absorção.
+
+% Equação numerada com rótulo: o \label permite citá-la depois com \eqref
+\begin{equation}
+\lambda_{\max}T = 2{,}898\times 10^{-3}\ {\rm m\,K}.
+\label{eq:wien}
+\end{equation}
+
+\begin{equation}
+B - V = -2{,}5\log_{10}\left(\frac{F_B}{F_V}\right).
+\label{eq:cor}
+\end{equation}
+
+\begin{equation}
+\frac{v_r}{c}\simeq \frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}.
+\label{eq:doppler}
+\end{equation}
+
+% Para citar no texto, escreva por exemplo:
+% "A temperatura foi obtida pela Equação~\eqref{eq:wien}."
+
+%=================================================
+\section{Dados}
+
+% =================================================================
+% COMO INSERIR UMA FIGURA
+% -----------------------------------------------------------------
+%   \begin{figure}[H]      -> abre a figura; [H] fixa nesta posição
+%   \centering             -> centraliza
+%   \includegraphics[...]  -> insere o arquivo de imagem
+%       width=0.95\linewidth  ajusta a largura para 95% da linha
+%   \caption{...}          -> legenda (sempre ABAIXO da figura)
+%   \label{fig:...}        -> rótulo, para citar com \ref{fig:...}
+%   \end{figure}
+% O arquivo da imagem precisa estar na MESMA PASTA deste .tex.
+% Formatos aceitos: .png, .jpg, .pdf
+% =================================================================
+
+\IfFileExists{figura_fluxo_espectral.png}{%   <- só para o arquivo compilar antes de você exportar a figura
+A Figura~\ref{fig:espectro} mostra o fluxo por comprimento de onda exportado do laboratório.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\linewidth]{figura_fluxo_espectral.png}
+\caption{Fluxo por comprimento de onda obtido no laboratório. A curva líquida corresponde ao fluxo da abertura da estrela menos o fundo escalado.}
+\label{fig:espectro}
+\end{figure}
+}{%
+\begin{center}\fbox{\parbox{0.9\linewidth}{\small\textit{Figura ainda não exportada. Baixe \texttt{figura\_fluxo\_espectral.png} no laboratório, coloque na mesma pasta deste arquivo e compile de novo.}}}\end{center}
+}
+
+% =================================================================
+% COMO CRIAR UMA TABELA
+% -----------------------------------------------------------------
+%   \begin{table}[H]        -> abre a tabela
+%   \centering              -> centraliza
+%   \caption{...}           -> legenda (sempre ACIMA da tabela)
+%   \label{tab:...}         -> rótulo, para citar com \ref{tab:...}
+%   \begin{tabular}{lccc}   -> uma letra por coluna:
+%                                l = alinha à esquerda
+%                                c = centraliza
+%                                r = alinha à direita
+%   \toprule \midrule \bottomrule -> os três traços (pacote booktabs)
+%   O & separa as colunas e o \\ termina a linha.
+% TROQUE OS NÚMEROS ABAIXO PELOS SEUS. Para acrescentar uma linha,
+% copie uma linha existente e edite. Para acrescentar uma coluna,
+% some uma letra em {lccc} e um & em cada linha.
+% =================================================================
+
+A Tabela~\ref{tab:corpo-negro} resume o ajuste de corpo negro ao contínuo observado.
+
+\begin{table}[H]
+\centering
+\caption{Ajuste de corpo negro ao espectro observado. A temperatura vem da Equação~\eqref{eq:wien}.}
+\label{tab:corpo-negro}
+\begin{tabular}{lccc}
+\toprule
+Abertura & $\lambda_{\max}$ (nm) & $T$ (K) & $\chi^2_{\rm red}$ \\
+\midrule
+Estrela        & $498 \pm 6$ & $5820 \pm 70$ & $1{,}12$ \\
+Fundo          & ---         & ---           & ---      \\
+Líquido        & $501 \pm 5$ & $5780 \pm 60$ & $1{,}04$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A Tabela~\ref{tab:fotometria} traz a fotometria nos três filtros e as linhas identificadas.
+
+\begin{table}[H]
+\centering
+\caption{Fotometria e linhas de absorção medidas no espectro líquido.}
+\label{tab:fotometria}
+\begin{tabular}{lcc}
+\toprule
+Grandeza & Valor & Incerteza \\
+\midrule
+$m_B$              & $9{,}84$  & $0{,}03$ \\
+$m_V$              & $9{,}21$  & $0{,}02$ \\
+$m_R$              & $8{,}88$  & $0{,}02$ \\
+$B-V$              & $0{,}63$  & $0{,}04$ \\
+H$\alpha$ (nm)     & $656{,}1$ & $0{,}3$  \\
+Na D (nm)          & $589{,}4$ & $0{,}3$  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Se preferir usar as tabelas prontas exportadas pelo laboratório em vez
+% de digitar os valores, apague as duas tabelas acima e descomente:
+% \input{tabela_corpo_negro.tex}
+% \input{tabela_fotometria_linhas.tex}
+
+%=================================================
+\section{Cálculos}
+
+Apresente aqui os cálculos feitos com os dados exportados. Use o arquivo \texttt{dados\_fluxo.csv} para consultar os valores de fluxo por comprimento de onda.
+
+%=================================================
+\section{Discussão}
+
+Discuta se o contínuo observado é compatível com o corpo negro ajustado, quais linhas de absorção foram identificadas e como o fundo escolhido afetou o espectro líquido.
+
+%=================================================
+\section{Conclusão}
+
+Escreva aqui as principais conclusões do experimento.
+
+\end{document}
