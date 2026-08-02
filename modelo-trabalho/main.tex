@@ -28,7 +28,8 @@
 \usepackage{caption}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
 
-\sisetup{output-decimal-marker={,}, input-decimal-markers={.,}, per-mode=symbol}  % vírgula decimal
+% output-decimal-marker faz o PDF sair com vírgula decimal, mesmo escrevendo ponto
+\sisetup{output-decimal-marker={,}, per-mode=symbol}
 
 % ---------------------------------------------------- PREENCHA AQUI
 \newcommand{\aluno}{Nome Completo do Aluno}
@@ -149,9 +150,9 @@ com asterisco, que não gera numeração:
 % --- EXEMPLO 5: matemática dentro do texto e unidades ----------------
 Símbolos no meio da frase vão entre cifrões: a paralaxe de Proxima
 Centauri vale $p = \SI{768}{mas}$, o que corresponde a
-$d = \SI{1,30}{pc}$. Para números com unidade, o comando
+$d = \SI{1.30}{pc}$. Para números com unidade, o comando
 \verb|\SI{valor}{unidade}| cuida do espaçamento e da formatação, e
-escreve $\SI{3,0e8}{\meter\per\second}$ corretamente.
+escreve $\SI{3.0e8}{\meter\per\second}$ corretamente.
 
 % =====================================================================
 \section{Dados}
