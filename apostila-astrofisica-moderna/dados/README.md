@@ -10,7 +10,7 @@ na coluna de origem, com no máximo um recorte de faixa e um filtro de qualidade
 
 | Arquivo | Capítulo | Conteúdo | Origem |
 |---|---|---|---|
-| `01_gaia_estrelas_25pc.csv` | 1 e 5 | 2000 estrelas com paralaxe > 40 mas (d < 25 pc): paralaxe, erro, magnitude G, cor BP−RP | ESA Gaia DR3, via TAP |
+| `01_gaia_estrelas_25pc.csv` | 1 e 5 | 2000 estrelas com paralaxe > 40 mas (d < 25 pc): posição, paralaxe e erro, movimento próprio, velocidade radial, magnitude G e cor BP−RP | ESA Gaia DR3, via TAP |
 | `02_terceira_lei_kepler.csv` | 2 | Semieixo maior e período de 21 corpos: planetas do Sol, luas de Júpiter, luas de Saturno e a Lua | valores tabelados JPL/NASA |
 | `03_espectro_solar.csv` | 3 | Irradiância espectral solar medida acima da atmosfera, 200–2400 nm, passo de 0,5 nm | WHI reference spectrum, LASP/LISIRD |
 | `05_estrelas_massa_raio_teff.csv` | 5 | 581 estrelas de binárias eclipsantes destacadas: massa, raio e temperatura efetiva medidos | Eker et al. 2018, MNRAS 479, 5491 (VizieR) |

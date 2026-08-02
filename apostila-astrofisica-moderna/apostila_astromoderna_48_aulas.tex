@@ -298,6 +298,16 @@ transversal & Projetos guiados com dados públicos & 17 \\
 \addcontentsline{toc}{section}{Capítulo 1 -- Fundamentos observacionais e escalas de medida}
 A astrofísica moderna começa com uma limitação que é também sua força: quase tudo que sabemos sobre o universo vem de observações à distância. Não podemos colocar uma estrela em uma bancada, mudar sua massa e medir a resposta; não podemos repetir a formação de uma galáxia em laboratório; não podemos acelerar a história cósmica para ver o resultado final. Em vez disso, observamos luz, posição, tempo, movimento e, em casos especiais, partículas e ondas gravitacionais. A tarefa central do astrofísico é transformar sinais recebidos em propriedades físicas: distância, massa, temperatura, composição química, densidade, idade e história evolutiva.
 
+\begin{noticebox}
+\textbf{Como este capítulo se divide.} O conteúdo foi organizado para dois encontros de $50$ minutos.
+
+\textbf{Aula 1 --- a geometria do céu e os sistemas de referência.} Ângulos e ângulo sólido; a esfera celeste e os três sistemas de coordenadas; trigonometria esférica e a equação da altura; eclíptica, obliquidade e estações; a equação do tempo; tempo sideral; precessão, nutação e o conceito de época; os sistemas de referência ICRS e Gaia-CRF; a cadeia de reduções que leva de uma posição de catálogo à posição aparente no telescópio.
+
+\textbf{Aula 2 --- distâncias, brilhos e a ponte para a física.} Paralaxe e a definição do parsec; as unidades astronômicas e suas definições modernas; movimento próprio, velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; fluxo, luminosidade e a lei do inverso do quadrado; a escala de magnitudes deduzida; módulo de distância; cores e sistemas fotométricos; extinção e avermelhamento; correção bolométrica.
+
+As seções de instrumentação --- redução de imagens, astrometria de placa e refração --- são leitura complementar: elas não cabem em duas aulas expositivas, mas são necessárias para os laboratórios.
+\end{noticebox}
+
 O céu aparente é descrito por coordenadas. A esfera celeste não é uma casca real ao redor da Terra, mas uma construção geométrica extremamente útil. Quando dizemos que uma estrela tem certa ascensão reta e declinação, estamos especificando uma direção no céu, não uma posição tridimensional completa. Essa distinção é importante: duas estrelas podem aparecer próximas angularmente e estar separadas por centenas ou milhares de parsecs ao longo da linha de visada. A geometria celeste permite prever quando um objeto nasce, culmina e se põe; a física permite interpretar o que sua luz revela.
 
 O tempo astronômico também tem uma lógica própria. O dia solar acompanha a posição aparente do Sol; o dia sideral acompanha a rotação da Terra em relação às estrelas distantes. Como a Terra avança em sua órbita ao redor do Sol, esses dois ciclos não coincidem exatamente. Essa diferença explica por que o céu noturno muda ao longo do ano e por que constelações visíveis em uma estação deixam de dominar o céu em outra. Para a observação, o tempo sideral informa quais ascensões retas estão próximas do meridiano local, isto é, quais regiões do céu estão em posição favorável.
@@ -360,78 +370,64 @@ Uma Cefeida em uma galáxia próxima tem magnitude aparente média $m=24{,}0$. P
 logo $28=5\log_{10}(d/10\,\mathrm{pc})$ e $\log_{10}(d/10)=5{,}6$. Portanto $d\simeq10^{6{,}6}\,\mathrm{pc}\simeq4{,}0\,\mathrm{Mpc}$. Uma extinção de apenas $0{,}2$ magnitude já deslocaria a distância inferida; por isso calibração fotométrica e poeira não são detalhes cosméticos.
 \end{lessonblock}
 
-\subsection*{Laboratório}
-\addcontentsline{toc}{subsection}{Laboratório -- Capítulo 1}
-O laboratório interativo deste capítulo está disponível em:
+\subsection*{Medir uma direção: ângulos, ângulo sólido e resolução}
 
-\begin{center}
-\url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-1/}
-\end{center}
+Toda medida astronômica de posição é uma medida de \emph{direção}, e direções vivem em duas dimensões. Vale fixar o vocabulário quantitativamente antes de usá-lo.
 
-Neste laboratório você trabalhará como em uma pequena campanha observacional. Cada acesso ao painel gera um catálogo diferente, de modo que os números não serão iguais para todos os grupos. O objetivo é medir posições em datas diferentes, exportar o catálogo, transformar observáveis em grandezas físicas e justificar as inferências feitas.
+A unidade prática é o segundo de arco:
+\[
+1^\circ=60'=3600'',
+\qquad
+1''=\frac{\pi}{180\times3600}\,\mathrm{rad}=4{,}8481\times10^{-6}\,\mathrm{rad}.
+\]
+O inverso desse número, $206265$, é provavelmente a constante mais usada em astronomia prática: ela converte radianos em segundos de arco. Sua origem é apenas $180\times3600/\pi$.
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
-\textbf{Preparação dos dados.} Abra o laboratório, selecione uma estrela no mapa e varie a data de observação. Use a opção de sobrepor uma data oposta para visualizar o deslocamento anual da estrela em relação ao grid e às estrelas de referência. Depois use o botão \textit{Exportar CSV}. O arquivo contém paralaxe medida, erro de paralaxe, posições simuladas em janeiro e julho, magnitude nos filtros $B$, $V$ e $R$, magnitude absoluta inferida, cor observada, extinção $A_V$ e luminosidade. Use pelo menos 8 estrelas do catálogo para a análise.
+A \textbf{aproximação de pequenos ângulos} é o que torna tudo tratável. Um objeto de tamanho físico $\ell$ a distância $d$ subtende
+\[
+\theta=2\arctan\left(\frac{\ell}{2d}\right)\simeq\frac{\ell}{d},
+\]
+com erro menor que $1\%$ para $\theta<10^\circ$ e menor que uma parte em $10^{6}$ para $\theta<0{,}1^\circ$. Em astronomia estelar, onde os ângulos são de segundos de arco, a aproximação é exata para qualquer propósito prático --- e é ela que permite escrever paralaxe, movimento próprio e tamanho angular como simples razões.
 
-\textbf{Experimento 1: paralaxe por duas épocas.}
-Para cada uma das 8 estrelas escolhidas, use as colunas de posição em janeiro e julho para calcular o deslocamento angular no mapa:
+Direções ocupam \textbf{ângulo sólido}, medido em esferorradianos:
 \[
-\Delta_{\rm px}=\sqrt{(x_{\rm jul}-x_{\rm jan})^2+(y_{\rm jul}-y_{\rm jan})^2}.
+d\Omega=\sin\theta\,d\theta\,d\varphi,
+\qquad
+\oint d\Omega=4\pi\,\mathrm{sr}.
 \]
-No laboratório, a escala do mapa é indicada em mas por pixel. Estime a paralaxe por:
+Um cone de meia-abertura $\alpha$ subtende $\Omega=2\pi(1-\cos\alpha)$, que para $\alpha$ pequeno vale $\pi\alpha^{2}$ --- a área do disco de raio angular $\alpha$. É essa integral que aparecerá no Capítulo 3 ao converter intensidade específica em fluxo, e é ela que define o significado de ``brilho superficial''. Um grau quadrado, unidade comum em levantamentos, vale
 \[
-p_{\rm grid}(\mathrm{mas})=\frac{\Delta_{\rm px}}{2}\,s_{\rm mapa}.
+1\,\mathrm{deg^{2}}=\left(\frac{\pi}{180}\right)^{2}\,\mathrm{sr}=3{,}046\times10^{-4}\,\mathrm{sr},
 \]
-Compare $p_{\rm grid}$ com a paralaxe exportada no CSV. Em seguida calcule a distância:
-\[
-d(\mathrm{pc})=\frac{1000}{p(\mathrm{mas})}.
-\]
-Calcule também a incerteza aproximada:
-\[
-\sigma_d\simeq d\,\frac{\sigma_p}{p}.
-\]
-Entregue uma tabela com $\Delta_{\rm px}$, $p_{\rm grid}$, $p$, $\sigma_p$, $d$ e $\sigma_d$. Identifique a estrela com maior erro relativo de distância e explique numericamente por que paralaxes pequenas tornam a distância menos confiável.
+e o céu inteiro tem $41\,253\,\mathrm{deg^{2}}$. Guarde esse número: ele converte imediatamente a área de um levantamento em fração do céu, e portanto qualquer contagem de objetos em densidade por unidade de área.
 
-\textbf{Experimento 2: magnitude absoluta.}
-Usando a magnitude aparente $m$, a distância inferida $d$ e a extinção $A_V$, calcule para as mesmas estrelas:
-\[
-M=m-5\log_{10}\left(\frac{d}{10\,\mathrm{pc}}\right)-A_V.
-\]
-Compare seu valor de $M$ com a coluna de magnitude absoluta inferida no arquivo exportado. Registre a diferença absoluta $|\Delta M|$ para cada estrela. Se houver diferença relevante, verifique arredondamento, uso de parsec e inclusão de $A_V$.
+Duas escalas de referência ajudam a calibrar a intuição. O olho humano resolve cerca de $1'$; a Lua e o Sol subtendem ambos aproximadamente $0{,}5^\circ$ --- coincidência que torna possíveis os eclipses totais. Um telescópio de $8\,\mathrm{m}$ tem limite de difração de $0{,}015''$ no visível, e a interferometria de base muito longa chega a $20\,\mu$as, doze ordens de grandeza abaixo do olho nu.
 
-\textbf{Experimento 3: luminosidade a partir de magnitude.}
-Converta magnitude absoluta em luminosidade relativa ao Sol usando $M_{\odot,V}=4{,}83$:
-\[
-\frac{L}{L_\odot}=10^{(4{,}83-M)/2{,}5}.
-\]
-Ordene as 8 estrelas por luminosidade. Depois ordene as mesmas estrelas por magnitude aparente. As duas ordenações coincidem? Escolha dois casos em que não coincidam e explique, com números, se a diferença vem principalmente de distância, luminosidade intrínseca ou extinção.
+\subsection*{Os três sistemas de coordenadas e quando usar cada um}
 
-\textbf{Experimento 4: fotometria em filtros.}
-Para as mesmas 8 estrelas, registre $m_B$, $m_V$ e $m_R$. Calcule o índice de cor:
-\[
-B-V=m_B-m_V.
-\]
-Compare estrelas com $B-V$ pequeno e grande. Interprete, com números, quais objetos parecem mais azuis ou mais vermelhos. Discuta por que cor observada não mede apenas temperatura: poeira e extinção também entram na interpretação.
+A esfera celeste admite vários sistemas, todos definidos por um plano fundamental e uma origem sobre ele.
 
-\textbf{Experimento 5: brilho aparente versus distância.}
-Escolha pares de estrelas com luminosidades inferidas parecidas, mas distâncias diferentes. Para cada par, compare os fluxos relativos com a previsão aproximada da lei do inverso do quadrado:
-\[
-\frac{F_1}{F_2}\simeq\frac{L_1}{L_2}\left(\frac{d_2}{d_1}\right)^2\,10^{-0{,}4(A_{V,1}-A_{V,2})}.
-\]
-Calcule pelo menos três razões de fluxo previstas e compare com o CSV. Interprete quando a diferença é dominada por distância, luminosidade intrínseca ou extinção.
+\begin{lessonblock}{Sistemas de coordenadas celestes}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.26\textwidth}}
+\toprule
+Sistema & Plano fundamental & Coordenadas & Depende de \\
+\midrule
+Horizontal & horizonte do observador & azimute $A_z$, altura $h$ & local e instante \\
+Equatorial & equador celeste & ascensão reta $\alpha$, declinação $\delta$ & época (precessão) \\
+Eclíptico & eclíptica & longitude $\lambda$, latitude $\beta$ & época \\
+Galáctico & plano da Via Láctea & $\ell$, $b$ & nada (convencionado) \\
+\bottomrule
+\end{tabular}
 \end{lessonblock}
 
-\begin{lessonblock}{Formato da entrega}
-A entrega deve conter:
-\begin{enumerate}
-\item uma tabela com as 8 estrelas analisadas e as grandezas calculadas;
-\item pelo menos dois gráficos feitos a partir do CSV: um de deslocamento/paralaxe e outro de magnitude ou luminosidade versus distância;
-\item as contas dos cinco experimentos, com unidades;
-\item uma interpretação curta separando observáveis, grandezas inferidas e hipóteses usadas;
-\item uma conclusão respondendo: por que brilho aparente sozinho não permite saber se uma estrela é fisicamente luminosa?
-\end{enumerate}
-As respostas devem ser numéricas. Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' só contam se vierem acompanhadas de valores calculados.
-\end{lessonblock}
+A escolha não é estética. O sistema \textbf{horizontal} responde à pergunta operacional --- ``dá para observar agora?'' --- mas suas coordenadas mudam a cada minuto. O \textbf{equatorial} é o de catálogo, porque acompanha a rotação do céu; é nele que telescópios são apontados. O \textbf{eclíptico} é natural para o Sistema Solar, já que os planetas orbitam perto de um único plano. O \textbf{galáctico} é o de escolha em estudos da Via Láctea, porque separa imediatamente disco de halo.
+
+A ascensão reta é medida em horas, minutos e segundos, e não em graus, por uma razão prática: como a Terra gira $360^\circ$ em $24$ horas siderais, $1^{\rm h}$ de ascensão reta corresponde a $15^\circ$, e o intervalo entre a culminação de dois objetos é lido diretamente da diferença de suas ascensões retas. A unidade codifica um relógio.
+
+A conversão entre horizontal e equatorial já foi deduzida pela lei dos cossenos esférica, e vale reescrever o resultado central destacando o que ele contém:
+\[
+\sin h=\sin\varphi\sin\delta+\cos\varphi\cos\delta\cos H.
+\]
+Três leituras imediatas. Se $\delta=\varphi$, o objeto passa pelo zênite. Se $\delta>90^\circ-|\varphi|$ com o mesmo sinal da latitude, o objeto é circumpolar. E a altura máxima, em $H=0$, vale $h_{\max}=90^\circ-|\varphi-\delta|$: para Joinville, com $\varphi=-26^\circ$, objetos com $\delta=-26^\circ$ passam pelo zênite, e o polo sul celeste está permanentemente a $26^\circ$ de altura.
 
 \subsection*{Geometria esférica: a ferramenta de base}
 
@@ -495,6 +491,96 @@ Para que o Sol volte ao meridiano, a Terra precisa girar esse tanto a mais. O di
 \Delta t=\frac{0{,}986^\circ}{360^\circ}\times24\,\mathrm{h}\simeq3\,\mathrm{min}\,56\,\mathrm{s},
 \]
 donde o dia sideral vale $23^{\rm h}56^{\rm m}04^{\rm s}$. É esse acúmulo de quase quatro minutos por dia que faz o céu noturno girar ao longo do ano: em seis meses, a defasagem chega a doze horas, e as constelações visíveis à meia-noite são exatamente as opostas.
+
+\subsection*{A eclíptica, a obliquidade e as estações}
+
+O movimento anual aparente do Sol descreve um grande círculo, a \textbf{eclíptica}, inclinado de $\varepsilon=23^\circ26'$ em relação ao equador celeste. Essa inclinação --- a obliquidade --- é a inclinação do eixo de rotação da Terra em relação ao polo de sua órbita, e é ela, e não a variação de distância ao Sol, que produz as estações.
+
+O argumento quantitativo é direto. O fluxo por unidade de área horizontal em uma superfície com o Sol a uma altura $h$ é
+\[
+F_{\rm sup}=F_0\sin h,
+\]
+com $F_0$ o fluxo perpendicular ao feixe. Combinando com a altura máxima do Sol, $h_{\max}=90^\circ-|\varphi-\delta_\odot|$, e sabendo que a declinação solar varia entre $-\varepsilon$ e $+\varepsilon$ ao longo do ano, tem-se toda a explicação: no verão local, $\delta_\odot$ tem o mesmo sinal de $\varphi$, o Sol sobe mais e $\sin h$ é maior; simultaneamente, o arco diurno se alonga, porque $\cos H_0=-\tan\varphi\tan\delta_\odot$ torna-se negativo. Mais fluxo por unidade de área \emph{e} mais horas de insolação, os dois efeitos na mesma direção.
+
+Para comparação, a excentricidade orbital terrestre, $e=0{,}0167$, produz variação de fluxo de
+\[
+\frac{F_{\rm peri}}{F_{\rm afel}}=\left(\frac{1+e}{1-e}\right)^{2}\simeq1{,}069,
+\]
+cerca de $7\%$ --- e o periélio ocorre em janeiro, ou seja, no verão do hemisfério sul. Esse efeito existe e é mensurável, mas é secundário frente à modulação geométrica da obliquidade, e tem sinal oposto entre os hemisférios.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: a equação do tempo}
+O Sol verdadeiro não é um bom relógio: ele adianta e atrasa em relação a um ``Sol médio'' fictício que percorreria o equador celeste com velocidade constante. A diferença, chamada \textbf{equação do tempo}, é a soma de duas componentes independentes.
+
+\textbf{Componente da excentricidade.} Pela segunda lei de Kepler, a Terra move-se mais rápido no periélio. A velocidade angular varia como
+\[
+\dot{\theta}\propto\frac{1}{r^{2}},
+\]
+e a anomalia verdadeira difere da média por, em primeira ordem em $e$,
+\[
+\nu-M_{\rm an}\simeq2e\sin M_{\rm an}.
+\]
+Convertendo para tempo, a amplitude é
+\[
+\Delta t_e=\frac{2e}{2\pi}\times1440\,\mathrm{min}\simeq7{,}7\ \text{minutos},
+\]
+com período de um ano.
+
+\textbf{Componente da obliquidade.} Mesmo que o Sol se movesse uniformemente sobre a eclíptica, sua \emph{projeção} sobre o equador não seria uniforme, porque os dois círculos são inclinados. A relação entre longitude eclíptica e ascensão reta é $\tan\alpha=\cos\varepsilon\tan\lambda$, cuja diferença vale, em primeira ordem,
+\[
+\alpha-\lambda\simeq-\tan^{2}\left(\frac{\varepsilon}{2}\right)\sin2\lambda,
+\]
+com amplitude
+\[
+\Delta t_\varepsilon=\frac{\tan^{2}(\varepsilon/2)}{2\pi}\times1440\simeq9{,}9\ \text{minutos},
+\]
+e período de \emph{meio} ano, porque depende de $\sin2\lambda$.
+
+A soma das duas, com fases diferentes, produz a curva assimétrica de dois máximos e dois mínimos, variando de $-14{,}2$ a $+16{,}4$ minutos ao longo do ano. É por isso que o dia mais curto do ano não coincide com o nascer do Sol mais tardio, e é por isso que relógios de sol precisam de tabela de correção. Duas propriedades geométricas independentes --- órbita elíptica e eixo inclinado --- deixam sua assinatura em um único gráfico observável.
+\end{lessonblock}
+
+\subsection*{Precessão, nutação e a necessidade de uma época}
+
+A Terra não é esférica: a rotação a achata, produzindo um bojo equatorial com excesso de momento de inércia. O Sol e a Lua exercem torque sobre esse bojo, tentando alinhá-lo com a eclíptica. Como a Terra é um giroscópio, a resposta não é o alinhamento, e sim a \textbf{precessão} do eixo de rotação.
+
+A taxa pode ser estimada. Para um corpo com momentos de inércia $C$ (polar) e $A$ (equatorial), girando com velocidade angular $\omega$, o torque médio de um perturbador de massa $M$ a distância $r$ produz precessão a
+\[
+\Omega_p\simeq\frac{3}{2}\frac{GM}{r^{3}\omega}\left(\frac{C-A}{C}\right)\cos\varepsilon.
+\]
+Com a elipticidade dinâmica da Terra, $(C-A)/C=3{,}27\times10^{-3}$, obtém-se cerca de $16''$ por ano para a contribuição solar e $34''$ para a lunar --- a Lua domina, apesar de muito menos massiva, porque o torque escala com $M/r^{3}$. A soma,
+\[
+\Omega_p\simeq50{,}3''\ \text{por ano},
+\]
+corresponde a um período de $360^\circ/50{,}3''\simeq25\,800$ anos.
+
+As consequências observacionais são grandes. O ponto vernal --- origem da ascensão reta --- desliza ao longo da eclíptica; a estrela polar muda ao longo dos milênios; e as coordenadas equatoriais de \emph{todos} os objetos mudam continuamente, a taxas de até $50''$ por ano em ascensão reta. Um catálogo sem indicação de época é, portanto, inutilizável: em cinquenta anos o erro acumulado é de quase um minuto de arco, muito acima do campo de visão de qualquer instrumento moderno.
+
+Sobreposta à precessão há a \textbf{nutação}, uma oscilação de pequena amplitude cujo termo principal tem período de $18{,}6$ anos --- o período de regressão dos nodos da órbita lunar --- e amplitude de $9{,}2''$ em obliquidade. Precessão é o movimento secular suave; nutação é o tremor periódico superposto.
+
+Daí a distinção entre dois conceitos que costumam ser confundidos: a \textbf{época} é o instante ao qual se referem a posição e o movimento próprio do objeto (por exemplo, J2000.0, correspondente a JD $2\,451\,545{,}0$ em Tempo Terrestre); o \textbf{equinócio} é o instante que define a orientação dos eixos do sistema de coordenadas. Um catálogo pode listar posições de época 2016 no equinócio J2000 --- e as duas informações são necessárias.
+
+\subsection*{Sistemas de referência modernos}
+
+A necessidade de corrigir precessão desaparece se o sistema de coordenadas for ancorado em objetos que não se movem. Essa é a ideia do \textbf{ICRS} (\textit{International Celestial Reference System}), adotado em 1998: um sistema cinematicamente não rotante, cuja realização prática, o ICRF, é definida pelas posições de algumas centenas de quasares e núcleos ativos observados por interferometria de rádio de base muito longa. Por estarem a distâncias de gigaparsecs, esses objetos não têm movimento próprio detectável --- a versão mais recente do catálogo fixa os eixos com estabilidade melhor que $0{,}03$ milissegundo de arco.
+
+Os eixos do ICRS foram escolhidos para coincidir, dentro da incerteza, com o equador e o equinócio médios de J2000.0. Mas a coincidência é histórica, não definitória: o ICRS \emph{não} é definido pelo equador terrestre, e é justamente por isso que ele não precisa de correção de precessão.
+
+No óptico, a realização é o \textbf{Gaia-CRF}, construído a partir de centenas de milhares de quasares medidos pela própria missão e alinhado ao ICRF por rotação global. Todo o catálogo do Gaia --- e, por extensão, quase toda a astrometria moderna --- está expresso nesse referencial. Quando o laboratório de dados deste capítulo pede paralaxes e movimentos próprios, o que está sendo usado é essa infraestrutura.
+
+\subsection*{Da posição de catálogo à posição no telescópio}
+
+Apontar um telescópio exige uma cadeia de correções, e é instrutivo enumerá-la porque cada elo corresponde a um fenômeno físico distinto:
+
+\begin{enumerate}
+\item \textbf{Movimento próprio}: propagar a posição da época do catálogo para a data da observação, $\alpha(t)=\alpha_0+\mu_\alpha(t-t_0)$. Para estrelas rápidas, isso chega a segundos de arco por década.
+\item \textbf{Paralaxe anual}: corrigir pelo deslocamento da Terra em sua órbita, com amplitude $p$ e fase dependente da época do ano.
+\item \textbf{Aberração}: somar o desvio de até $20{,}5''$ devido à velocidade orbital da Terra, mais um termo diurno de $0{,}3''$ da rotação.
+\item \textbf{Deflexão gravitacional pelo Sol}: $4GM_\odot/c^{2}b$, que vale $1{,}75''$ no limbo solar e ainda $4$ mas a $90^\circ$ de distância angular --- portanto não desprezível para astrometria de precisão em \emph{qualquer} direção do céu.
+\item \textbf{Precessão e nutação}: girar os eixos do equinócio de catálogo para o da data.
+\item \textbf{Movimento do polo e rotação da Terra}: aplicar a orientação instantânea real do planeta, medida e publicada continuamente.
+\item \textbf{Refração atmosférica}: elevar a posição aparente conforme a distância zenital.
+\end{enumerate}
+
+A soma dessas correções pode ultrapassar um minuto de arco. Nenhuma delas é opcional em trabalho de precisão, e a ordem importa --- é por isso que existem bibliotecas padronizadas de redução astrométrica, e por que reimplementá-las manualmente é um caminho conhecido para erros silenciosos.
 
 \subsection*{Paralaxe, aberração e movimento próprio}
 
@@ -569,6 +655,131 @@ BC=m_{\rm bol}-V.
 Ela depende fortemente da temperatura: é próxima de zero para estrelas de tipo solar, cuja emissão tem pico no visível, e fortemente negativa tanto para estrelas muito quentes (que emitem no ultravioleta) quanto para estrelas muito frias (que emitem no infravermelho). Sem essa correção, não se converte magnitude observada em luminosidade --- e sem luminosidade não existe diagrama HR físico.
 
 
+\subsection*{As unidades e o que elas significam hoje}
+
+As três unidades de distância da astronomia têm origens distintas, e duas delas foram redefinidas recentemente --- o que mudou seu status de ``medida'' para ``convenção exata''.
+
+A \textbf{unidade astronômica} nasceu como o semieixo maior da órbita terrestre, uma quantidade medida e sujeita a revisão. Desde 2012, por resolução da União Astronômica Internacional, ela é um valor \emph{exato} por definição:
+\[
+1\,\mathrm{UA}=149\,597\,870\,700\,\mathrm{m}\ \text{(exato)}.
+\]
+A mudança teve motivo prático: com telemetria de radar e rastreamento de sondas, a distância Terra-Sol passou a ser conhecida melhor que a própria definição antiga permitia expressar, e além disso ela varia lentamente à medida que o Sol perde massa. Fixar o número elimina a ambiguidade.
+
+O \textbf{parsec} passou a ser, por consequência, também exato:
+\[
+1\,\mathrm{pc}=\frac{648\,000}{\pi}\,\mathrm{UA}=3{,}085\,677\,581\,4913673\times10^{16}\,\mathrm{m},
+\]
+já que $648\,000''=180^\circ$ e a definição é puramente geométrica. Note que o parsec não é uma unidade ``natural'' do espaço: ele codifica a órbita da Terra. Uma civilização em outro sistema planetário teria outro parsec.
+
+O \textbf{ano-luz} é definido a partir do ano juliano de $365{,}25$ dias exatos e da velocidade da luz, também exata:
+\[
+1\,\mathrm{al}=9{,}460\,730\,472\,5808\times10^{15}\,\mathrm{m},
+\qquad
+1\,\mathrm{pc}=3{,}261\,56\,\mathrm{al}.
+\]
+Ele é útil em divulgação, por embutir a ideia de tempo de viagem da luz, e raro em trabalho técnico.
+
+Para massas e luminosidades, a IAU adotou em 2015 um conjunto de \textbf{valores nominais}, também exatos por convenção, justamente para que resultados publicados não mudem quando a medida do Sol for refinada:
+\[
+\mathcal{L}^{\rm N}_\odot=3{,}828\times10^{26}\,\mathrm{W},
+\qquad
+\mathcal{R}^{\rm N}_\odot=6{,}957\times10^{8}\,\mathrm{m},
+\qquad
+(\mathcal{GM})^{\rm N}_\odot=1{,}327\,124\,4\times10^{20}\,\mathrm{m^{3}s^{-2}}.
+\]
+Repare que se adota $GM_\odot$, e não $M_\odot$ separadamente: o produto é medido com dez algarismos significativos pelas órbitas planetárias, enquanto $G$ é conhecido com apenas quatro ou cinco. Dividir um pelo outro degradaria a precisão. É um exemplo instrutivo de como a escolha de variáveis preserva informação.
+
+\subsection*{Velocidade espacial completa}
+
+Uma estrela tem três componentes de velocidade em relação ao Sol, e cada uma vem de uma medida diferente.
+
+A \textbf{velocidade radial} $v_r$ vem do deslocamento Doppler das linhas espectrais e é independente da distância --- é a única componente mensurável sem saber onde o objeto está.
+
+A \textbf{velocidade tangencial} vem do movimento próprio combinado com a distância:
+\[
+v_t=\mu\,d.
+\]
+Em unidades práticas, com $\mu$ em segundos de arco por ano e $d$ em parsecs,
+\[
+v_t\,[\mathrm{km\,s^{-1}}]=4{,}74\,\mu\,d.
+\]
+O fator $4{,}74$ merece dedução, porque ele é frequentemente decorado sem sentido: uma estrela a $1\,\mathrm{pc}$ com movimento próprio de $1''$ por ano percorre, por definição de parsec, $1\,\mathrm{UA}$ por ano. Convertendo,
+\[
+\frac{1\,\mathrm{UA}}{1\,\mathrm{ano}}=\frac{1{,}495\,979\times10^{11}\,\mathrm{m}}{3{,}155\,76\times10^{7}\,\mathrm{s}}=4740\,\mathrm{m\,s^{-1}}.
+\]
+O número não é uma constante física; é a razão entre duas unidades escolhidas por seres humanos.
+
+O movimento próprio tem duas componentes, e há uma convenção que gera erros: publica-se $\mu_{\alpha*}=\mu_\alpha\cos\delta$, e não $\mu_\alpha$, justamente para que a quantidade represente deslocamento angular verdadeiro sobre o céu --- meridianos convergem nos polos, e sem o fator $\cos\delta$ um objeto polar teria movimento próprio em ascensão reta enorme sem se deslocar quase nada. O módulo é então
+\[
+\mu=\sqrt{\mu_{\alpha*}^{2}+\mu_\delta^{2}}.
+\]
+
+Compondo as duas partes, a velocidade espacial total é
+\[
+v=\sqrt{v_r^{2}+v_t^{2}},
+\]
+e é ela --- não a velocidade radial isolada --- que entra em qualquer estudo de dinâmica galáctica. Note a assimetria de informação: $v_r$ é fácil e independe de distância; $v_t$ exige astrometria \emph{e} distância, e sua incerteza herda ambas. Foi exatamente essa assimetria que o Gaia desfez, ao medir movimentos próprios e paralaxes para o mesmo bilhão de estrelas.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: por que inverter a paralaxe é enviesado}
+A relação $d=1/p$ é exata para os valores verdadeiros. Para valores \emph{medidos}, ela não é.
+
+Suponha que a paralaxe medida tenha erro gaussiano, $p_{\rm obs}=p_{\rm verd}+\epsilon$ com $\epsilon\sim N(0,\sigma_p)$. A distribuição de $1/p_{\rm obs}$ não é gaussiana e, pior, tem média divergente: existe probabilidade não nula de $p_{\rm obs}$ ser arbitrariamente próximo de zero, e o inverso explode. Formalmente, $\langle1/p_{\rm obs}\rangle$ não existe.
+
+Há ainda um efeito adicional, o \textbf{viés de Lutz-Kelker}. Estrelas distribuem-se no espaço, e o volume acessível cresce com $d^{3}$: há muito mais estrelas com paralaxe pequena do que com paralaxe grande. Quando o erro espalha valores para cima e para baixo, o número de estrelas distantes promovidas a paralaxes maiores excede o de próximas rebaixadas, simplesmente porque as primeiras são mais numerosas. O resultado é que uma paralaxe medida tende, em média, a superestimar a verdadeira --- e portanto a distância inferida por $1/p$ tende a ser subestimada.
+
+Formalizando com o teorema de Bayes, e adotando densidade espacial uniforme como \textit{prior}, a posterior da distância é
+\[
+P(d\,|\,p_{\rm obs})\propto d^{2}\exp\left[-\frac{(p_{\rm obs}-1/d)^{2}}{2\sigma_p^{2}}\right],
+\]
+em que o fator $d^{2}$ vem do elemento de volume. Para $\sigma_p/p\lesssim0{,}1$ a correção é pequena e $1/p$ é aceitável; para $\sigma_p/p\gtrsim0{,}2$ ela domina, e usar $1/p$ produz erro sistemático de dezenas de por cento. A regra prática, hoje padrão em trabalhos com Gaia, é: acima de $20\%$ de erro relativo em paralaxe, não inverta --- infira.
+\end{lessonblock}
+
+\subsection*{Extinção: da profundidade óptica à magnitude}
+
+A poeira interestelar remove fótons da linha de visada por absorção e espalhamento. Se a profundidade óptica na direção observada é $\tau_\lambda$, o fluxo transmitido é
+\[
+F_{\rm obs}=F_0e^{-\tau_\lambda}.
+\]
+Convertendo para magnitudes pela relação de Pogson:
+\[
+A_\lambda\equiv m_{\rm obs}-m_0=-2{,}5\log_{10}e^{-\tau_\lambda}=2{,}5\,\tau_\lambda\log_{10}e=1{,}0857\,\tau_\lambda.
+\]
+Esse fator $1{,}086$ é apenas $2{,}5/\ln10$, e explica por que ``uma magnitude de extinção'' corresponde aproximadamente a uma profundidade óptica unitária --- coincidência numérica conveniente que se usa o tempo todo.
+
+Como a extinção cresce para o azul, aproximadamente como $A_\lambda\propto\lambda^{-1}$ no visível, o objeto fica mais fraco \emph{e} mais vermelho. Definindo o excesso de cor $E(B-V)=A_B-A_V$ e a razão de extinção total para seletiva $R_V=A_V/E(B-V)\simeq3{,}1$, a correção completa do módulo de distância torna-se
+\[
+m-M=5\log_{10}d-5+A_V=5\log_{10}d-5+R_V\,E(B-V).
+\]
+A cadeia inteira é: mede-se a cor observada, compara-se com a cor intrínseca esperada para o tipo espectral, obtém-se $E(B-V)$, multiplica-se por $R_V$ e corrige-se. Cada elo introduz incerteza, e o segundo --- conhecer a cor intrínseca --- exige classificação espectral prévia. É por isso que fotometria sem espectroscopia é sempre uma inferência mais frágil.
+
+Uma consequência quantitativa que vale internalizar: um erro de $0{,}1$ magnitude em $A_V$ produz erro de $5\%$ em distância, pois $\Delta d/d=\ln(10)\,\Delta A/5\simeq0{,}46\,\Delta A$. No plano galáctico, onde $A_V$ pode chegar a dezenas de magnitudes, ignorar extinção não introduz erro --- torna a medida sem sentido.
+
+\subsection*{Correção bolométrica e o zero da escala}
+
+A magnitude em uma banda mede apenas a fração do fluxo que passa pelo filtro. Para obter a luminosidade total, define-se
+\[
+BC_V=m_{\rm bol}-V=M_{\rm bol}-M_V,
+\]
+uma quantidade que depende quase inteiramente da temperatura efetiva e é sempre negativa ou nula por convenção moderna.
+
+O ponto zero foi fixado pela IAU em 2015 de forma absoluta, encerrando décadas de ambiguidade: $M_{\rm bol}=0$ corresponde exatamente a
+\[
+L=3{,}0128\times10^{28}\,\mathrm{W},
+\]
+de modo que a conversão entre magnitude bolométrica e luminosidade é
+\[
+M_{\rm bol}=-2{,}5\log_{10}\left(\frac{L}{L_0}\right),
+\qquad
+L_0=3{,}0128\times10^{28}\,\mathrm{W}.
+\]
+Com a luminosidade nominal solar, isso dá $M_{{\rm bol},\odot}=4{,}74$ exatamente. Note que esse valor deixou de ser uma medida do Sol e passou a ser uma consequência de duas convenções --- outro exemplo do movimento geral da metrologia astronômica em direção a definições fixas.
+
+Para uso prático, a expressão que converte magnitude absoluta em luminosidade solar,
+\[
+\frac{L}{L_\odot}=10^{-0{,}4\left(M_{\rm bol}-4{,}74\right)},
+\]
+é a que aparece nos laboratórios deste capítulo --- e agora se sabe de onde vem cada um dos seus números.
+
 \subsection*{Sistemas fotométricos e a definição de magnitude}
 
 Uma magnitude não é uma medida absoluta de energia; ela é a integral do fluxo ponderada pela resposta de um sistema:
@@ -634,8 +845,81 @@ Medidas de precisão exigem distinguir escalas de tempo que diferem por termos p
 
 Para trabalho de alta precisão --- cronometragem de pulsares, trânsitos, ondas gravitacionais --- usa-se \textbf{BJD}$_\mathrm{TDB}$: a data juliana corrigida para o baricentro do Sistema Solar e expressa em uma escala relativisticamente consistente. A correção baricêntrica chega a $\pm8{,}3$ minutos --- o tempo que a luz leva para cruzar $1\,\mathrm{UA}$ --- e ignorá-la introduz uma modulação anual espúria de mesmo período em qualquer série temporal. Muitos ``sinais anuais'' na literatura têm essa origem.
 
+\subsection*{Laboratório}
+\addcontentsline{toc}{subsection}{Laboratório -- Capítulo 1}
+O laboratório interativo deste capítulo está disponível em:
+
+\begin{center}
+\url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-1/}
+\end{center}
+
+Neste laboratório você trabalhará como em uma pequena campanha observacional. Cada acesso ao painel gera um catálogo diferente, de modo que os números não serão iguais para todos os grupos. O objetivo é medir posições em datas diferentes, exportar o catálogo, transformar observáveis em grandezas físicas e justificar as inferências feitas.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
+\textbf{Preparação dos dados.} Abra o laboratório, selecione uma estrela no mapa e varie a data de observação. Use a opção de sobrepor uma data oposta para visualizar o deslocamento anual da estrela em relação ao grid e às estrelas de referência. Depois use o botão \textit{Exportar CSV}. O arquivo contém paralaxe medida, erro de paralaxe, posições simuladas em janeiro e julho, magnitude nos filtros $B$, $V$ e $R$, magnitude absoluta inferida, cor observada, extinção $A_V$ e luminosidade. Use pelo menos 8 estrelas do catálogo para a análise.
+
+\textbf{Experimento 1: paralaxe por duas épocas.}
+Para cada uma das 8 estrelas escolhidas, use as colunas de posição em janeiro e julho para calcular o deslocamento angular no mapa:
+\[
+\Delta_{\rm px}=\sqrt{(x_{\rm jul}-x_{\rm jan})^2+(y_{\rm jul}-y_{\rm jan})^2}.
+\]
+No laboratório, a escala do mapa é indicada em mas por pixel. Estime a paralaxe por:
+\[
+p_{\rm grid}(\mathrm{mas})=\frac{\Delta_{\rm px}}{2}\,s_{\rm mapa}.
+\]
+Compare $p_{\rm grid}$ com a paralaxe exportada no CSV. Em seguida calcule a distância:
+\[
+d(\mathrm{pc})=\frac{1000}{p(\mathrm{mas})}.
+\]
+Calcule também a incerteza aproximada:
+\[
+\sigma_d\simeq d\,\frac{\sigma_p}{p}.
+\]
+Entregue uma tabela com $\Delta_{\rm px}$, $p_{\rm grid}$, $p$, $\sigma_p$, $d$ e $\sigma_d$. Identifique a estrela com maior erro relativo de distância e explique numericamente por que paralaxes pequenas tornam a distância menos confiável.
+
+\textbf{Experimento 2: magnitude absoluta.}
+Usando a magnitude aparente $m$, a distância inferida $d$ e a extinção $A_V$, calcule para as mesmas estrelas:
+\[
+M=m-5\log_{10}\left(\frac{d}{10\,\mathrm{pc}}\right)-A_V.
+\]
+Compare seu valor de $M$ com a coluna de magnitude absoluta inferida no arquivo exportado. Registre a diferença absoluta $|\Delta M|$ para cada estrela. Se houver diferença relevante, verifique arredondamento, uso de parsec e inclusão de $A_V$.
+
+\textbf{Experimento 3: luminosidade a partir de magnitude.}
+Converta magnitude absoluta em luminosidade relativa ao Sol usando $M_{\odot,V}=4{,}83$:
+\[
+\frac{L}{L_\odot}=10^{(4{,}83-M)/2{,}5}.
+\]
+Ordene as 8 estrelas por luminosidade. Depois ordene as mesmas estrelas por magnitude aparente. As duas ordenações coincidem? Escolha dois casos em que não coincidam e explique, com números, se a diferença vem principalmente de distância, luminosidade intrínseca ou extinção.
+
+\textbf{Experimento 4: fotometria em filtros.}
+Para as mesmas 8 estrelas, registre $m_B$, $m_V$ e $m_R$. Calcule o índice de cor:
+\[
+B-V=m_B-m_V.
+\]
+Compare estrelas com $B-V$ pequeno e grande. Interprete, com números, quais objetos parecem mais azuis ou mais vermelhos. Discuta por que cor observada não mede apenas temperatura: poeira e extinção também entram na interpretação.
+
+\textbf{Experimento 5: brilho aparente versus distância.}
+Escolha pares de estrelas com luminosidades inferidas parecidas, mas distâncias diferentes. Para cada par, compare os fluxos relativos com a previsão aproximada da lei do inverso do quadrado:
+\[
+\frac{F_1}{F_2}\simeq\frac{L_1}{L_2}\left(\frac{d_2}{d_1}\right)^2\,10^{-0{,}4(A_{V,1}-A_{V,2})}.
+\]
+Calcule pelo menos três razões de fluxo previstas e compare com o CSV. Interprete quando a diferença é dominada por distância, luminosidade intrínseca ou extinção.
+\end{lessonblock}
+
+\begin{lessonblock}{Formato da entrega}
+A entrega deve conter:
+\begin{enumerate}
+\item uma tabela com as 8 estrelas analisadas e as grandezas calculadas;
+\item pelo menos dois gráficos feitos a partir do CSV: um de deslocamento/paralaxe e outro de magnitude ou luminosidade versus distância;
+\item as contas dos cinco experimentos, com unidades;
+\item uma interpretação curta separando observáveis, grandezas inferidas e hipóteses usadas;
+\item uma conclusão respondendo: por que brilho aparente sozinho não permite saber se uma estrela é fisicamente luminosa?
+\end{enumerate}
+As respostas devem ser numéricas. Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' só contam se vierem acompanhadas de valores calculados.
+\end{lessonblock}
+
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Laboratório de dados 1 -- distâncias e magnitudes com o Gaia}
-\textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- 2000 estrelas reais a menos de $25\,\mathrm{pc}$ do Sol, medidas pela missão Gaia. Colunas: \texttt{paralaxe\_mas}, \texttt{erro\_paralaxe\_mas}, \texttt{G\_mag}, \texttt{BP\_RP}.
+\textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- 2000 estrelas reais a menos de $25\,\mathrm{pc}$ do Sol, medidas pela missão Gaia. Colunas: \texttt{ra\_deg}, \texttt{dec\_deg}, \texttt{paralaxe\_mas}, \texttt{erro\_paralaxe\_mas}, \texttt{pmra\_mas\_ano}, \texttt{pmdec\_mas\_ano}, \texttt{vel\_radial\_km\_s}, \texttt{G\_mag}, \texttt{BP\_RP}. Os movimentos próprios já vêm na convenção $\mu_{\alpha*}=\mu_\alpha\cos\delta$.
 
 \textbf{Física.} A paralaxe dá a distância por geometria pura, e a distância converte brilho aparente em brilho intrínseco:
 \[
@@ -649,12 +933,13 @@ M=m-5\log_{10}\!\left(\frac{d}{\mathrm{pc}}\right)+5.
 \item Crie a coluna de magnitude absoluta: \texttt{=D2-5*LOG10(F2)+5}.
 \item Faça o gráfico de dispersão de $M$ (eixo $y$, invertido) contra \texttt{BP\_RP} (eixo $x$). Você acaba de construir um diagrama HR com dados próprios.
 \item Identifique a sequência principal e o grupo isolado embaixo à esquerda. Quantas estrelas há em cada grupo?
-\item Propague a incerteza: $\sigma_d/d=\sigma_p/p$. Para quantas estrelas a distância é melhor que $1\%$?
+\item Propague a incerteza: $\sigma_d/d=\sigma_p/p$. Para quantas estrelas a distância é melhor que $1\%$? Verifique também quantas têm $\sigma_p/p>0{,}2$, faixa em que inverter a paralaxe deixa de ser legítimo.
+\item Monte a velocidade espacial. Calcule $\mu=\sqrt{\mu_{\alpha*}^{2}+\mu_\delta^{2}}$ em segundos de arco por ano (as colunas estão em mas/ano), depois $v_t=4{,}74\,\mu\,d$ e, para as estrelas que têm velocidade radial medida, $v=\sqrt{v_r^{2}+v_t^{2}}$. Ordene por $v$ e identifique as estrelas de alta velocidade.
 \end{enumerate}
 
 \textbf{Entrega.} O diagrama, a contagem dos dois grupos e uma resposta curta: por que uma amostra limitada por volume, como esta, contém tantas estrelas fracas e quase nenhuma gigante?
 
-\textbf{Confira.} A estrela mais próxima da lista tem $p\simeq768\,\mathrm{mas}$, ou seja $d\simeq1{,}30\,\mathrm{pc}$ --- é Proxima Centauri.
+\textbf{Confira.} A estrela mais próxima da lista tem $p\simeq768\,\mathrm{mas}$, ou seja $d\simeq1{,}30\,\mathrm{pc}$ --- é Proxima Centauri. O maior movimento próprio da amostra passa de $10''$ por ano: é a estrela de Barnard, e sua velocidade tangencial fica em torno de $90\,\mathrm{km\,s^{-1}}$. Estrelas com $v>100\,\mathrm{km\,s^{-1}}$ na vizinhança solar pertencem tipicamente ao disco espesso ou ao halo --- a cinemática já separa populações antes de qualquer espectro.
 \end{lessonblock}
 
 \newpage

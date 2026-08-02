@@ -290,10 +290,30 @@ Aulas & Tema & Bloco \\
 \aula{1}{O céu como laboratório físico}{cap. 1}
 \objetivos{Reconhecer a astronomia como ciência observacional e conectar fenômenos aparentes do céu a modelos físicos.}
 \ideias{
-\item A esfera celeste é uma construção geométrica útil, não uma superfície real.
-\item O movimento diário do céu vem da rotação da Terra; o movimento anual aparente do Sol vem da translação terrestre.
-\item Modelos astronômicos são avaliados pela capacidade de prever posições, brilhos e espectros.
+\item A esfera celeste é uma construção geométrica útil, não uma superfície real: coordenadas celestes fixam direção, não posição tridimensional.
+\item Medir uma direção é medir um ângulo. A constante $206265$ converte radianos em segundos de arco, e o céu inteiro tem $41\,253$ graus quadrados.
+\item Existem quatro sistemas de coordenadas em uso, e a escolha entre eles é operacional: horizontal para saber se dá para observar, equatorial para catalogar, eclíptico para o Sistema Solar, galáctico para a Via Láctea.
+\item A lei dos cossenos esférica resolve a conversão entre sistemas e produz a equação da altura, $\sin h=\sin\varphi\sin\delta+\cos\varphi\cos\delta\cos H$, da qual saem culminação, arco diurno e circumpolaridade.
+\item As estações vêm da obliquidade de $23^\circ26'$, não da excentricidade: esta produz apenas $7\%$ de variação de fluxo, e com o sinal trocado entre hemisférios.
+\item O eixo da Terra precessa a $50{,}3''$ por ano, período de $25\,800$ anos, porque Sol e Lua exercem torque sobre o bojo equatorial. É por isso que todo catálogo precisa declarar sua época.
+\item O sistema de referência moderno, o ICRS, é ancorado em quasares, e não no equador terrestre --- e por isso não precisa de correção de precessão.
 }
+
+\begin{lessonblock}{Roteiro de 50 minutos}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.79\textwidth}}
+\toprule
+Tempo & Atividade \\
+\midrule
+0--8 min & Abertura: por que a astronomia é uma ciência de inferência à distância. A cadeia observável $\rightarrow$ grandeza física. \\
+8--18 min & Ângulos, pequenos ângulos e ângulo sólido. Calibrar intuição: olho ($1'$), Lua ($0{,}5^\circ$), difração de $8\,\mathrm{m}$ ($0{,}015''$), VLBI ($20\,\mu$as). \\
+18--32 min & Os quatro sistemas de coordenadas; dedução da equação da altura pela lei dos cossenos esférica; aplicação imediata à latitude local. \\
+32--42 min & Eclíptica, obliquidade e estações, com o argumento quantitativo de $\sin h$ e do arco diurno. Mencionar a equação do tempo. \\
+42--50 min & Precessão e nutação: por que catálogos têm época; ICRS e Gaia-CRF; a cadeia de reduções da posição. \\
+\bottomrule
+\end{tabular}
+
+\textbf{Leitura de apoio:} Capítulo 1 da apostila, seções 1 a 9 (de ``Medir uma direção'' até ``Da posição de catálogo à posição no telescópio'').
+\end{lessonblock}
 \atividade{Desenhe a esfera celeste local: horizonte, zênite, polos celestes e equador celeste para a latitude de sua cidade.}
 \exercicios{
 \item Explique por que estrelas diferentes são visíveis em épocas diferentes do ano.
@@ -303,10 +323,30 @@ Aulas & Tema & Bloco \\
 \aula{2}{Coordenadas celestes e tempo astronômico}{cap. 1}
 \objetivos{Usar ascensão reta, declinação, altitude e azimute; entender a ligação entre tempo sideral e observação.}
 \ideias{
-\item Declinação é análoga à latitude; ascensão reta é análoga à longitude, medida em horas.
-\item O tempo sideral indica quais ascensões retas cruzam o meridiano local.
-\item A conversão entre sistemas depende da latitude, da hora e da data.
+\item O dia solar excede o sideral em $3^{\rm m}56^{\rm s}$ porque a Terra avança $0{,}986^\circ$ em sua órbita a cada dia: o tempo sideral é o relógio que aponta o céu.
+\item A paralaxe é geometria pura, $d\,[\mathrm{pc}]=1/p\,['']$, e o parsec é definido exatamente para que essa inversão valha. Desde 2012 a UA é exata por convenção, e o parsec é consequência dela.
+\item Aberração ($20{,}5''$) e paralaxe (menos de $1''$) são efeitos distintos, defasados de um quarto de período, e só o segundo depende da distância.
+\item Movimento próprio mais distância dão velocidade tangencial, $v_t=4{,}74\,\mu\,d$; com velocidade radial fecha-se o vetor velocidade completo.
+\item Inverter a paralaxe é enviesado quando $\sigma_p/p\gtrsim0{,}2$, por efeito de volume --- o viés de Lutz-Kelker.
+\item A escala de magnitudes é logarítmica por construção: $m_2-m_1=-2{,}5\log_{10}(F_2/F_1)$, com o $2{,}5$ forçado pela escolha de que cinco magnitudes valem um fator 100.
+\item O módulo de distância, $m-M=5\log_{10}d-5+A$, é a ponte entre brilho observado e distância --- e o termo $A$ de extinção não é opcional no plano galáctico.
 }
+
+\begin{lessonblock}{Roteiro de 50 minutos}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.79\textwidth}}
+\toprule
+Tempo & Atividade \\
+\midrule
+0--8 min & Tempo sideral contra tempo solar, deduzindo os $3^{\rm m}56^{\rm s}$; para que serve o tempo sideral na prática observacional. \\
+8--20 min & Paralaxe: geometria, definição do parsec, ordem de grandeza dos ângulos envolvidos. Unidades modernas e por que a UA virou exata. \\
+20--30 min & Movimento próprio, velocidade tangencial e velocidade espacial; dedução do fator $4{,}74$; viés estatístico ao inverter paralaxes. \\
+30--42 min & Fluxo, luminosidade e lei do inverso do quadrado; dedução da escala de Pogson e do módulo de distância. \\
+42--50 min & Cores, extinção e avermelhamento: $A_\lambda=1{,}086\,\tau_\lambda$, excesso de cor e $R_V$. Fechamento com a cadeia completa observável $\rightarrow$ grandeza física. \\
+\bottomrule
+\end{tabular}
+
+\textbf{Leitura de apoio:} Capítulo 1 da apostila, seções 5 e 10 a 16, mais o Laboratório de dados 1.
+\end{lessonblock}
 \atividade{Escolher uma estrela brilhante e interpretar sua posição em um mapa celeste ou aplicativo planetário.}
 \exercicios{
 \item Por que a ascensão reta é medida em horas?
