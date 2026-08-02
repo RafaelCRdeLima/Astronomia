@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modelo de trabalho | Astronomia</title>
+  <style>
+    :root { --bg:#050505; --panel:#101010; --line:#343434; --text:#f4f4f1; --muted:#aaa69c; --accent:#d7b46a; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--text); background:var(--bg);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .shell { width:min(1080px, calc(100vw - 32px)); margin:0 auto; padding:28px 0 48px; }
+    header { display:flex; justify-content:space-between; gap:18px; align-items:end;
+      padding-bottom:18px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+    h1 { margin:0; font-size:clamp(28px,4vw,46px); line-height:1.05; }
+    h2 { margin:34px 0 0; font-size:20px; color:var(--accent); }
+    p { margin:10px 0 0; color:var(--muted); line-height:1.6; }
+    a { color:var(--accent); }
+    code { background:var(--panel); border:1px solid var(--line); border-radius:5px;
+      padding:1px 5px; font-size:13px; color:var(--text); }
+    pre { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+      padding:14px; overflow-x:auto; font-size:13px; }
+    .badge { color:var(--accent); border:1px solid var(--line); padding:8px 10px; border-radius:8px; font-size:14px; }
+    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); margin-top:22px; }
+    .card { border:1px solid var(--line); background:var(--panel); border-radius:12px;
+      padding:16px; text-decoration:none; color:var(--text); display:block; }
+    .card:hover { border-color:var(--accent); }
+    .card strong { display:block; font-size:16px; }
+    .card span { display:block; color:var(--muted); font-size:14px; margin-top:6px; }
+    ul { color:var(--muted); line-height:1.7; }
+    .nav { margin-top:30px; display:flex; gap:12px; flex-wrap:wrap; }
+    .nav a { border:1px solid var(--line); background:var(--panel); border-radius:10px;
+      padding:12px 14px; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Modelo de trabalho</h1>
+        <p>Template em LaTeX para os trabalhos e relatórios de Astronomia (AST0001).</p>
+      </div>
+      <div class="badge">Prof. Dr. Rafael Camargo Rodrigues de Lima</div>
+    </header>
+
+    <p>Capa da UDESC já montada e as quatro seções exigidas — Introdução, Teoria Básica,
+    Dados e Conclusão — com exemplos prontos de equação, tabela, figura, citação e
+    referências. Os comentários dentro do arquivo explicam o que se espera de cada seção
+    e como fazer cada coisa em LaTeX.</p>
+
+    <section class="grid">
+      <a class="card" href="modelo-trabalho.zip" download>
+        <strong>Baixar tudo (.zip)</strong>
+        <span>main.tex, logo, figura de exemplo e o PDF compilado.</span>
+      </a>
+      <a class="card" href="main.tex" download>
+        <strong>main.tex</strong>
+        <span>Só o arquivo do modelo.</span>
+      </a>
+      <a class="card" href="main.pdf" target="_blank" rel="noopener">
+        <strong>Ver o resultado</strong>
+        <span>PDF compilado, para conferir como deve ficar.</span>
+      </a>
+      <a class="card" href="udesc.png" download>
+        <strong>udesc.png</strong>
+        <span>Logo usado na capa. Precisa ficar na mesma pasta.</span>
+      </a>
+    </section>
+
+    <h2>Como compilar</h2>
+    <p><strong>No Overleaf:</strong> crie um projeto em branco, envie <code>main.tex</code>,
+    <code>udesc.png</code> e <code>figura_exemplo.pdf</code>, e clique em Recompile.</p>
+    <p><strong>No seu computador,</strong> com TeX Live ou MiKTeX instalado:</p>
+    <pre>pdflatex main.tex
+pdflatex main.tex</pre>
+    <p>As duas passagens são necessárias: a segunda resolve as referências cruzadas.
+    Se os números de equação ou figura aparecerem como <code>??</code>, compile mais uma vez.</p>
+
+    <h2>O que preencher</h2>
+    <p>No começo do <code>main.tex</code>, quatro linhas:</p>
+    <pre>\newcommand{\aluno}{Nome Completo do Aluno}
+\newcommand{\titulotrabalho}{Título do Trabalho}
+\newcommand{\disciplina}{ASTRONOMIA (AST0001)}
+\newcommand{\semestre}{2026/2}</pre>
+
+    <h2>Erros mais comuns</h2>
+    <ul>
+      <li><strong>Acento sai errado:</strong> salve o arquivo em UTF-8.</li>
+      <li><strong>Figura não aparece:</strong> ela precisa estar na mesma pasta, e o nome diferencia maiúsculas de minúsculas.</li>
+      <li><strong>Referência vira <code>??</code>:</strong> falta compilar de novo.</li>
+      <li><strong>Undefined control sequence:</strong> comando escrito errado ou pacote faltando; a mensagem indica a linha.</li>
+    </ul>
+
+    <div class="nav">
+      <a href="../">Página do curso</a>
+      <a href="../apostila-astrofisica-moderna/">Apostila</a>
+      <a href="../apostila-astrofisica-moderna/dados/">Dados dos laboratórios</a>
+    </div>
+  </main>
+</body>
+</html>
