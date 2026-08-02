@@ -195,7 +195,7 @@ Material didático em português baseado na organização conceitual de Bradley 
 \pagenumbering{roman}
 
 \begin{noticebox}
-Esta apostila é um material original de apoio para aulas. Ela usa o livro de Carroll \& Ostlie como referência de conteúdo, sequência e aprofundamento, mas não reproduz o texto do livro. Para demonstrações completas, exemplos resolvidos e problemas adicionais, consulte o PDF de referência na pasta da disciplina.
+Esta apostila é um material original de apoio para aulas. Ela usa o livro de Carroll \& Ostlie como referência de conteúdo, sequência e aprofundamento, mas não reproduz o texto do livro. Para demonstrações completas, exemplos resolvidos e problemas adicionais, consulte a bibliografia indicada no fim do texto.
 \end{noticebox}
 
 \tableofcontents
@@ -208,7 +208,7 @@ Esta apostila é um material original de apoio para aulas. Ela usa o livro de Ca
 \addcontentsline{toc}{section}{Como usar esta apostila}
 Esta apostila reúne os capítulos de estudo do curso de Astrofísica Moderna. Ela foi escrita para acompanhar a leitura, organizar os conceitos em português e ajudar você a conectar observações, modelos físicos, estimativas e interpretação de dados.
 
-O planejamento detalhado dos encontros, com as fichas numeradas do semestre, foi separado no arquivo \texttt{plano\_aulas\_astromoderna\_48\_aulas.tex}. Use esse documento como roteiro semanal. Use esta apostila principal como material de leitura contínua: antes de cada bloco do curso, leia o capítulo correspondente, marque dúvidas e tente refazer as estimativas apresentadas.
+Cada capítulo pode ser lido de forma independente, mas a sequência foi pensada para ser cumulativa: o que se deduz em um capítulo é usado como ferramenta nos seguintes. Antes de cada assunto novo, leia o capítulo correspondente, marque suas dúvidas e tente refazer as estimativas apresentadas --- refazer uma conta é a maneira mais rápida de descobrir se você entendeu a hipótese que está por trás dela.
 
 \subsection*{Os laboratórios de dados}
 
@@ -249,12 +249,12 @@ Esfera celeste e coordenadas; mecânica celeste; radiação, espectros e telesc�
 Os 19 capítulos a seguir funcionam como leitura de sustentação para os blocos conceituais do curso. Eles foram escritos para que cada parte do curso tenha um núcleo de conteúdo contínuo, com explicações, exemplos de ordem de grandeza, perguntas de interpretação e conexões entre observação e teoria. O objetivo é ajudar você a estudar com autonomia: aqui a prioridade é organizar as ideias físicas em português, em uma sequência adequada para acompanhar o semestre.
 
 \begin{noticebox}
-Antes de cada bloco de aulas, leia o capítulo correspondente e marque trechos em que aparecem relações entre observação e inferência física. Durante a aula, use essas marcações para acompanhar cálculos, interpretar gráficos e registrar dúvidas.
+Ao estudar um capítulo, marque os trechos em que aparecem relações entre observação e inferência física. São eles que sustentam quase todos os cálculos e gráficos do restante do texto, e voltar a essas marcações é a forma mais eficiente de revisar.
 \end{noticebox}
 
 \subsection*{Mapa das 48 aulas nesta apostila}
 
-A tabela abaixo liga cada bloco de aulas do semestre ao capítulo de apoio correspondente. Os capítulos 15 a 17 são transversais: eles não pertencem a uma semana específica, mas sustentam as atividades práticas e os projetos ao longo de todo o curso.
+A tabela abaixo indica em que ordem os capítulos acompanham o curso, e serve para você saber o que ler antes de cada assunto. Os capítulos 15 a 17 são transversais: eles não pertencem a um tema específico, mas sustentam as atividades práticas e os projetos do início ao fim.
 
 \begin{longtable}{>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{8.0cm}>{\raggedright\arraybackslash}p{3.4cm}}
 \toprule
@@ -299,13 +299,13 @@ transversal & Projetos guiados com dados públicos & 17 \\
 A astrofísica moderna começa com uma limitação que é também sua força: quase tudo que sabemos sobre o universo vem de observações à distância. Não podemos colocar uma estrela em uma bancada, mudar sua massa e medir a resposta; não podemos repetir a formação de uma galáxia em laboratório; não podemos acelerar a história cósmica para ver o resultado final. Em vez disso, observamos luz, posição, tempo, movimento e, em casos especiais, partículas e ondas gravitacionais. A tarefa central do astrofísico é transformar sinais recebidos em propriedades físicas: distância, massa, temperatura, composição química, densidade, idade e história evolutiva.
 
 \begin{noticebox}
-\textbf{Como este capítulo se divide.} O conteúdo foi organizado para dois encontros de $50$ minutos.
+\textbf{Como este capítulo se divide.} O conteúdo está organizado em duas partes, e vale estudá-las separadamente.
 
-\textbf{Aula 1 --- a geometria do céu e os sistemas de referência.} Ângulos e ângulo sólido; a esfera celeste e os três sistemas de coordenadas; trigonometria esférica e a equação da altura; eclíptica, obliquidade e estações; a equação do tempo; tempo sideral; precessão, nutação e o conceito de época; os sistemas de referência ICRS e Gaia-CRF; a cadeia de reduções que leva de uma posição de catálogo à posição aparente no telescópio.
+\textbf{Parte I --- a geometria do céu e os sistemas de referência.} Ângulos e ângulo sólido; a esfera celeste e os três sistemas de coordenadas; trigonometria esférica e a equação da altura; eclíptica, obliquidade e estações; a equação do tempo; tempo sideral; precessão, nutação e o conceito de época; os sistemas de referência ICRS e Gaia-CRF; a cadeia de reduções que leva de uma posição de catálogo à posição aparente no telescópio.
 
-\textbf{Aula 2 --- distâncias, brilhos e a ponte para a física.} Paralaxe e a definição do parsec; as unidades astronômicas e suas definições modernas; movimento próprio, velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; fluxo, luminosidade e a lei do inverso do quadrado; a escala de magnitudes deduzida; módulo de distância; cores e sistemas fotométricos; extinção e avermelhamento; correção bolométrica.
+\textbf{Parte II --- distâncias, brilhos e a ponte para a física.} Paralaxe e a definição do parsec; as unidades astronômicas e suas definições modernas; movimento próprio, velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; fluxo, luminosidade e a lei do inverso do quadrado; a escala de magnitudes deduzida; módulo de distância; cores e sistemas fotométricos; extinção e avermelhamento; correção bolométrica.
 
-As seções de instrumentação --- redução de imagens, astrometria de placa e refração --- são leitura complementar: elas não cabem em duas aulas expositivas, mas são necessárias para os laboratórios.
+As seções de instrumentação --- redução de imagens, astrometria de placa e refração --- são leitura complementar: elas não são pré-requisito para as duas partes acima, mas você vai precisar delas nos laboratórios.
 \end{noticebox}
 
 O céu aparente é descrito por coordenadas. A esfera celeste não é uma casca real ao redor da Terra, mas uma construção geométrica extremamente útil. Quando dizemos que uma estrela tem certa ascensão reta e declinação, estamos especificando uma direção no céu, não uma posição tridimensional completa. Essa distinção é importante: duas estrelas podem aparecer próximas angularmente e estar separadas por centenas ou milhares de parsecs ao longo da linha de visada. A geometria celeste permite prever quando um objeto nasce, culmina e se põe; a física permite interpretar o que sua luz revela.
@@ -2257,7 +2257,7 @@ L=4\pi R^2\sigma T_{\rm eff}^4
 \]
 permite transformar posição no HR em uma estimativa de raio. Duas estrelas com a mesma temperatura, mas luminosidades diferentes, têm raios diferentes. Uma gigante vermelha pode ser fria e luminosa porque seu raio é enorme; uma anã branca pode ser quente e fraca porque seu raio é pequeno.
 
-Para estudantes de Física, o passo seguinte é perceber que a sequência principal é uma família de soluções de equilíbrio. A estrela precisa satisfazer conservação de massa, equilíbrio hidrostático, transporte de energia e geração de energia. Em forma conceitual:
+O passo seguinte é perceber que a sequência principal é uma família de soluções de equilíbrio. A estrela precisa satisfazer conservação de massa, equilíbrio hidrostático, transporte de energia e geração de energia. Em forma conceitual:
 \[
 \frac{dP}{dr}=-\frac{Gm\rho}{r^2},\qquad
 \frac{dm}{dr}=4\pi r^2\rho,\qquad
@@ -5432,7 +5432,7 @@ O modo de trabalho mudou junto com os instrumentos. Levantamentos como ZTF, ATLA
 
 Nenhum ser humano lê milhões de alertas. Entre o telescópio e o astrônomo entram os \textit{brokers} --- sistemas como ALeRCE, Fink, ANTARES e Lasair --- que filtram, classificam e priorizam. A classificação usa aprendizado de máquina treinado em eventos já rotulados, e é aqui que a estatística deixa de ser detalhe: com milhões de candidatos e poucas centenas de espectros de acompanhamento por noite disponíveis no mundo inteiro, decidir \emph{o que observar em seguida} passa a ser o gargalo científico.
 
-Isso cria um problema epistemológico interessante, que vale discutir em aula: se um classificador automático foi treinado com os transientes já conhecidos, ele tende a ser bom exatamente no que já sabíamos e cego para o que é novo. Descobrir classes inéditas exige, deliberadamente, olhar para o que o algoritmo classificou mal.
+Isso cria um problema epistemológico que merece atenção: se um classificador automático foi treinado com os transientes já conhecidos, ele tende a ser bom exatamente no que já sabíamos e cego para o que é novo. Descobrir classes inéditas exige, deliberadamente, olhar para o que o algoritmo classificou mal.
 
 \begin{lessonblock}{Exemplo de aplicação: quantas supernovas cabem em uma noite}
 A taxa de supernovas em uma galáxia como a Via Láctea é da ordem de uma a cada $50$ anos, ou $2\times10^{-2}$ por ano. A densidade de galáxias grandes é aproximadamente $10^{-2}\,\mathrm{Mpc^{-3}}$. Um levantamento capaz de detectar supernovas até $500\,\mathrm{Mpc}$ cobre um volume
@@ -5809,7 +5809,7 @@ Cada projeto deve caber em 3 a 5 páginas e seguir uma estrutura fixa:
 \item \textbf{Resultado:} figura principal, tabela curta e estimativa numérica.
 \item \textbf{Discussão:} incertezas, vieses e uma conclusão proporcional ao que foi medido.
 \end{enumerate}
-Essa estrutura treina escrita científica sem exigir que o estudante produza pesquisa original.
+Essa estrutura treina escrita científica sem exigir que você produza pesquisa original.
 \end{lessonblock}
 
 \begin{lessonblock}{Exemplo de projeto expandido: HR de um aglomerado}
@@ -5917,7 +5917,7 @@ O modelo padrão assume que a energia escura é uma constante cosmológica, com 
 
 Levantamentos espectroscópicos de larga escala, com destaque para o DESI, publicaram desde 2024 medidas que, combinadas com CMB e supernovas, favorecem levemente modelos em que $w$ varia com o tempo, em vez de $w=-1$ fixo. A significância depende de qual combinação de dados se usa e ficou, nas análises publicadas, na faixa de dois a quatro desvios-padrão. Isso é exatamente a zona cinzenta em que a comunidade fica dividida: forte demais para ignorar, fraco demais para declarar descoberta. O levantamento Euclid, lançado em 2023, e os dados finais do próprio DESI devem decidir a questão nos próximos anos.
 
-Para o estudante, esse é um caso de estudo valioso sobre como significância estatística se comporta: nenhuma das análises isoladas grita ``energia escura dinâmica'', mas a combinação empurra numa direção, e a interpretação depende de escolhas de priors e de conjuntos de dados que precisam ser explicitadas.
+Vale acompanhar esse caso de perto, porque ele mostra como significância estatística se comporta na prática: nenhuma das análises isoladas grita ``energia escura dinâmica'', mas a combinação empurra numa direção, e a interpretação depende de escolhas de priors e de conjuntos de dados que precisam ser explicitadas.
 
 \subsection*{Do que é feita a matéria escura}
 
