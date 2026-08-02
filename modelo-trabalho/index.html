@@ -43,10 +43,12 @@
       <div class="badge">Prof. Dr. Rafael Camargo Rodrigues de Lima</div>
     </header>
 
-    <p>Capa da UDESC já montada e as quatro seções exigidas — Introdução, Teoria Básica,
-    Dados e Conclusão — com exemplos prontos de equação, tabela, figura, citação e
-    referências. Os comentários dentro do arquivo explicam o que se espera de cada seção
-    e como fazer cada coisa em LaTeX.</p>
+    <p>Formato de artigo de revista científica: duas colunas, logo da UDESC no alto à
+    direita, título, resumo destacado e as seções Introdução, Revisão Teórica, Dados e
+    Discussão, Conclusão e Bibliografia. Traz exemplos prontos de equação, tabela, figura
+    em uma coluna, figura larga nas duas colunas, citação e lista de referências. Os
+    comentários dentro do arquivo explicam o que se espera de cada seção e como fazer
+    cada coisa em LaTeX.</p>
 
     <section class="grid">
       <a class="card" href="modelo-trabalho.zip" download>
@@ -59,7 +61,7 @@
       </a>
       <a class="card" href="main.pdf" target="_blank" rel="noopener">
         <strong>Ver o resultado</strong>
-        <span>PDF compilado, para conferir como deve ficar.</span>
+        <span>PDF compilado: veja como o artigo deve ficar.</span>
       </a>
       <a class="card" href="udesc.png" download>
         <strong>udesc.png</strong>
@@ -78,10 +80,22 @@ pdflatex main.tex</pre>
 
     <h2>O que preencher</h2>
     <p>No começo do <code>main.tex</code>, quatro linhas:</p>
-    <pre>\newcommand{\aluno}{Nome Completo do Aluno}
-\newcommand{\titulotrabalho}{Título do Trabalho}
-\newcommand{\disciplina}{ASTRONOMIA (AST0001)}
+    <pre>\newcommand{\titulo}{Título do trabalho: uma frase que diz o que foi medido}
+\newcommand{\aluno}{Nome Completo do Aluno}
+\newcommand{\email}{email@edu.udesc.br}
+\newcommand{\tituloCurto}{Título curto para o cabeçalho}
 \newcommand{\semestre}{2026/2}</pre>
+    <p>O título curto aparece no cabeçalho das páginas seguintes, como em periódico.</p>
+
+    <h2>A estrutura</h2>
+    <ul>
+      <li><strong>Resumo</strong> — um parágrafo, com o resultado numérico dentro. Escrito por último, lido primeiro.</li>
+      <li><strong>Introdução</strong> — do que trata, por que importa, o que já se sabe e qual pergunta este trabalho responde.</li>
+      <li><strong>Revisão Teórica</strong> — só as equações que serão usadas, com símbolos definidos e hipóteses declaradas.</li>
+      <li><strong>Dados e Discussão</strong> — origem dos dados, tabelas, figuras, resultado com incerteza e comparação com o esperado.</li>
+      <li><strong>Conclusão</strong> — o que o número significa e o que dominaria uma medida melhor. Sem resultado novo.</li>
+      <li><strong>Bibliografia</strong> — apenas o que foi consultado de fato.</li>
+    </ul>
 
     <h2>Erros mais comuns</h2>
     <ul>

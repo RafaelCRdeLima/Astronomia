@@ -1,15 +1,16 @@
-# Modelo de trabalho / relatório — Astronomia (AST0001)
+# Modelo de trabalho — Astronomia (AST0001)
 
-Modelo em LaTeX para os trabalhos e relatórios da disciplina, com capa da
-UDESC e as quatro seções exigidas: Introdução, Teoria Básica, Dados e Conclusão.
+Modelo em LaTeX no formato de artigo de revista científica: duas colunas,
+logo da UDESC no alto à direita, título, resumo destacado e as seções
+Introdução, Revisão Teórica, Dados e Discussão, Conclusão e Bibliografia.
 
 ## Arquivos
 
 | Arquivo | Para que serve |
 |---|---|
 | `main.tex` | O modelo. É o único arquivo que você edita. |
-| `udesc.png` | Logo usado na capa. Não renomeie. |
-| `figura_exemplo.pdf` | Figura de exemplo, para você ver como incluir gráficos. Substitua pela sua. |
+| `udesc.png` | Logo do cabeçalho. Não renomeie. |
+| `figura_exemplo.pdf` | Figura de exemplo, para ver como incluir gráficos. Substitua pela sua. |
 | `main.pdf` | O resultado compilado, para conferência. |
 
 ## Como usar
@@ -17,50 +18,64 @@ UDESC e as quatro seções exigidas: Introdução, Teoria Básica, Dados e Concl
 **No Overleaf (mais simples):** crie um projeto novo, envie os três arquivos
 (`main.tex`, `udesc.png`, `figura_exemplo.pdf`) e clique em *Recompile*.
 
-**No seu computador:** com uma distribuição LaTeX instalada (TeX Live ou MiKTeX),
-rode duas vezes:
+**No seu computador:** com TeX Live ou MiKTeX instalado, rode duas vezes:
 
 ```
 pdflatex main.tex
 pdflatex main.tex
 ```
 
-A segunda passagem é necessária para que as referências cruzadas — números de
-equação, de figura e de tabela — apareçam corretamente. Se ainda estiverem como
-`??`, rode mais uma vez.
+A segunda passagem resolve as referências cruzadas — números de equação, de
+figura, de tabela e de citação. Se ainda aparecerem como `??`, rode mais uma vez.
 
 ## O que preencher
 
-No início do `main.tex`, quatro linhas:
+No início do `main.tex`, cinco linhas:
 
 ```latex
+\newcommand{\titulo}{Título do trabalho: uma frase que diz o que foi medido}
 \newcommand{\aluno}{Nome Completo do Aluno}
-\newcommand{\titulotrabalho}{Título do Trabalho}
-\newcommand{\disciplina}{ASTRONOMIA (AST0001)}
+\newcommand{\email}{email@edu.udesc.br}
+\newcommand{\tituloCurto}{Título curto para o cabeçalho}
 \newcommand{\semestre}{2026/2}
 ```
 
-Depois escreva o conteúdo nas quatro seções. Os comentários do arquivo — as
-linhas que começam com `%` — explicam o que se espera de cada seção e como
-fazer equações, tabelas, figuras e citações. Leia esses comentários: eles são
-a parte mais útil do modelo. Você pode apagá-los na versão final.
+O título curto aparece no cabeçalho das páginas seguintes, como em periódico.
 
-## Exemplos incluídos
+## A estrutura, seção por seção
 
-- equação numerada com rótulo e citação por `\eqref`;
+| Seção | O que se espera |
+|---|---|
+| **Resumo** | Um parágrafo de 120 a 200 palavras: contexto, o que foi feito, que dados, o resultado numérico com incerteza, e a conclusão em uma frase. Escrito por último, lido primeiro. |
+| **Introdução** | Do que trata, por que importa, o que já se sabe (com citação) e qual pergunta este trabalho responde. |
+| **Revisão Teórica** | Só as equações que serão usadas, com o significado de cada símbolo e as hipóteses assumidas. |
+| **Dados e Discussão** | Origem dos dados, critério de seleção, tabelas e figuras, o resultado com incerteza e a comparação com o valor esperado. |
+| **Conclusão** | O que o número significa, qual é a maior fonte de incerteza e o que melhoraria a medida. Sem resultado novo. |
+| **Bibliografia** | Apenas o que foi consultado de fato. |
+
+## Exemplos incluídos no arquivo
+
+- equação numerada com rótulo, citada por `\eqref`;
 - várias linhas alinhadas com `align`;
 - equação sem numeração;
-- matemática dentro do texto e unidades com `\SI{}{}`;
-- tabela com `booktabs`, com legenda e rótulo;
-- figura com `includegraphics`, com legenda e rótulo;
-- como apresentar um resultado com valor, incerteza e unidade;
-- lista de referências e citação com `\cite`.
+- matemática no meio do texto e unidades com `\SI{}{}`;
+- tabela com `booktabs`, em uma coluna;
+- figura em uma coluna, com legenda e rótulo;
+- figura larga ocupando as duas colunas (`figure*`), comentada e pronta para usar;
+- resultado apresentado com valor, incerteza e unidade;
+- citações com `\cite` e lista de referências.
+
+Os comentários do arquivo — linhas que começam com `%` — explicam cada comando
+e o que se espera de cada seção. Pode apagá-los na versão final.
 
 ## Erros mais comuns
 
 - **Acento aparece errado:** salve o arquivo em UTF-8.
-- **Figura não aparece:** o arquivo precisa estar na mesma pasta do `main.tex`,
-  e o nome diferencia maiúsculas de minúsculas.
+- **Figura não aparece:** ela precisa estar na mesma pasta do `main.tex`, e o nome
+  diferencia maiúsculas de minúsculas.
 - **Referência vira `??`:** falta compilar uma segunda vez.
-- **`Undefined control sequence`:** quase sempre um comando escrito errado ou
-  um pacote que faltou no preâmbulo. A mensagem indica a linha.
+- **A figura foi parar em outra página:** é o comportamento normal de figuras
+  flutuantes em duas colunas. O `[t]` pede o topo da página; use `figure*` para
+  figuras largas, que sempre vão para o topo de uma página.
+- **`Undefined control sequence`:** comando escrito errado ou pacote faltando;
+  a mensagem indica a linha.

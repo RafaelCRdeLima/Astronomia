@@ -1,323 +1,323 @@
 % =====================================================================
-%  MODELO DE TRABALHO / RELATÓRIO
+%  MODELO DE TRABALHO EM FORMATO DE ARTIGO
 %  Astronomia (AST0001) -- Curso de Física -- UDESC Joinville
 %
-%  COMO USAR:
-%   1. Preencha os quatro campos logo abaixo (nome, título do trabalho).
-%   2. Escreva o conteúdo nas seções marcadas.
-%   3. Compile com pdfLaTeX duas vezes (a segunda resolve as referências).
+%  COMO USAR
+%   1. Preencha os campos marcados "PREENCHA AQUI", logo abaixo.
+%   2. Escreva o conteúdo nas seções indicadas.
+%   3. Compile com pdfLaTeX DUAS vezes (a segunda resolve as referências).
 %
-%  Tudo que começa com % é comentário: o LaTeX ignora, e serve para
-%  explicar o que cada comando faz. Leia os comentários -- eles são a
-%  parte mais útil deste arquivo.
+%  Linhas que começam com % são comentários: o LaTeX as ignora. Elas
+%  explicam o que cada comando faz e o que se espera de cada seção.
+%  Pode apagá-las na versão final.
 % =====================================================================
 
-\documentclass[12pt,a4paper]{article}
+\documentclass[10pt,a4paper,twocolumn]{article}
 
 % ---------------------------------------------------------------- pacotes
-\usepackage[utf8]{inputenc}      % acentuação no arquivo fonte
-\usepackage[T1]{fontenc}         % acentuação correta no PDF gerado
-\usepackage[brazil]{babel}       % hifenização e nomes em português
-\usepackage{lmodern}
-\usepackage[margin=2.5cm]{geometry}
-\usepackage{graphicx}            % incluir figuras
-\usepackage{amsmath,amssymb}     % equações
-\usepackage{booktabs}            % tabelas com traços de qualidade
-\usepackage{siunitx}             % unidades físicas bem formatadas
-\usepackage{float}               % opção [H] para fixar figuras
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb}
+\let\Bbbk\relax                    % evita choque entre amssymb e newtxmath
+\usepackage{newtxtext,newtxmath}   % tipografia de periódico (Times)
+\usepackage{microtype}
+\usepackage[a4paper,top=2.4cm,bottom=2.2cm,left=1.9cm,right=1.9cm,
+            columnsep=0.7cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{siunitx}
 \usepackage{caption}
-\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=udescverde,citecolor=udescverde,
+            urlcolor=udescverde]{hyperref}
 
-% output-decimal-marker faz o PDF sair com vírgula decimal, mesmo escrevendo ponto
+\definecolor{udescverde}{HTML}{1B6B3A}
+\definecolor{cinza}{HTML}{5A5A5A}
+
 \sisetup{output-decimal-marker={,}, per-mode=symbol}
 
+% --------------------------------------------------- estilo das seções
+\captionsetup{font=small,labelfont={bf,color=udescverde},labelsep=period}
+\titleformat{\section}{\normalfont\bfseries\color{udescverde}}
+            {\thesection.}{0.5em}{\MakeUppercase}
+\titleformat{\subsection}{\normalfont\bfseries\itshape}{\thesubsection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.6ex}{0.8ex}
+\setlength{\parindent}{1.2em}
+
 % ---------------------------------------------------- PREENCHA AQUI
+\newcommand{\titulo}{Título do trabalho: uma frase que diz o que foi medido}
 \newcommand{\aluno}{Nome Completo do Aluno}
-\newcommand{\titulotrabalho}{Título do Trabalho}
-\newcommand{\disciplina}{ASTRONOMIA (AST0001)}
+\newcommand{\email}{email@edu.udesc.br}
+\newcommand{\tituloCurto}{Título curto para o cabeçalho}
 \newcommand{\semestre}{2026/2}
 % -------------------------------------------------------------------
+
+% ------------------------------------------------ cabeçalho das páginas
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\textcolor{cinza}{\aluno}}
+\fancyhead[R]{\footnotesize\textcolor{cinza}{\tituloCurto}}
+\fancyfoot[C]{\footnotesize\textcolor{cinza}{\thepage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancypagestyle{primeira}{%
+  \fancyhf{}\renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[C]{\footnotesize\textcolor{cinza}{\thepage}}}
 
 \begin{document}
 
 % =====================================================================
-%  CAPA
+%  CABEÇALHO DA PRIMEIRA PÁGINA -- ocupa as duas colunas
 % =====================================================================
-\begin{titlepage}
-\centering
+\twocolumn[
+\begin{@twocolumnfalse}
 
-\includegraphics[width=0.30\textwidth]{udesc.png}\par
-\vspace{0.8cm}
+% tarja superior: identificação do periódico à esquerda, logo à direita
+\noindent
+\begin{minipage}{0.78\textwidth}
+  {\footnotesize\textcolor{udescverde}{\textbf{ASTRONOMIA (AST0001)}}\\[2pt]
+   \textcolor{cinza}{Universidade do Estado de Santa Catarina\, $\cdot$\,
+   Centro de Ciências Tecnológicas\, $\cdot$\, Curso de Física}\\[2pt]
+   \textcolor{cinza}{Joinville, \semestre}}
+\end{minipage}
+\hfill
+\begin{minipage}{0.20\textwidth}
+  \raggedleft{\includegraphics[height=1.5cm]{udesc.png}}
+\end{minipage}
 
-{\large UNIVERSIDADE DO ESTADO DE SANTA CATARINA\par}
-{\large Centro de Ciências Tecnológicas --- CCT\par}
-{\large Curso de Física\par}
+\vspace{2pt}
+{\color{udescverde}\rule{\textwidth}{1pt}}
 
-\vspace{2.5cm}
+\vspace{1.1em}
+\begin{center}
+  {\LARGE\bfseries \titulo\par}
+  \vspace{0.9em}
+  {\large \aluno\par}
+  \vspace{0.3em}
+  {\footnotesize\itshape\textcolor{cinza}{\email}\par}
+  \vspace{0.3em}
+  {\footnotesize\textcolor{cinza}{Recebido em \today}\par}
+\end{center}
 
-{\Large \disciplina\par}
+\vspace{0.9em}
 
-\vspace{1.5cm}
+% ------------------------------------------------------------ RESUMO
+% O QUE ESCREVER: um parágrafo único, de 120 a 200 palavras, com
+%   (i) contexto em uma frase, (ii) o que foi feito, (iii) que dados
+%   foram usados, (iv) o RESULTADO NUMÉRICO principal, com incerteza,
+%   (v) a conclusão em uma frase.
+% O resumo é escrito POR ÚLTIMO, mas lido primeiro. Não cite equações
+% nem figuras aqui, e não use referências.
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{0.5em}
 
-\rule{\textwidth}{0.4pt}\par
-\vspace{0.6cm}
-{\huge\bfseries \titulotrabalho\par}
-\vspace{0.6cm}
-\rule{\textwidth}{0.4pt}\par
+{\small
+\noindent\textbf{Resumo.}
+Escreva aqui o resumo em um único parágrafo. Comece dizendo qual pergunta
+o trabalho responde e por que ela importa. Diga o que foi feito e com que
+dados: quantas medidas, de que catálogo ou de que laboratório, com que
+critério de seleção. Apresente o resultado principal em números, sempre
+com incerteza e unidade --- por exemplo, ``obteve-se
+$H_0 = 69 \pm 3\ \mathrm{km\,s^{-1}\,Mpc^{-1}}$''. Termine com uma frase
+dizendo o que esse número significa e qual é a maior limitação da medida.
+Um resumo bem escrito permite que o leitor decida, em trinta segundos, se
+precisa ler o resto.
 
-\vspace{2.5cm}
+\vspace{0.6em}
+\noindent\textbf{Palavras-chave:} três a cinco termos, separados por
+travessão --- astronomia observacional --- fotometria --- paralaxe
+}
 
-{\Large \aluno\par}
+\vspace{0.5em}
+\noindent\rule{\textwidth}{0.3pt}
+\vspace{1.4em}
 
-\vfill
-
-{\large Joinville --- SC\par}
-{\large \semestre\par}
-
-\end{titlepage}
-
-% Sumário: útil em trabalhos longos. Apague as duas linhas se não quiser.
-\tableofcontents
-\newpage
+\end{@twocolumnfalse}
+]
+\thispagestyle{primeira}
 
 % =====================================================================
 \section{Introdução}
 % =====================================================================
-% O QUE ESCREVER AQUI:
-%  - de que assunto trata o trabalho e por que ele importa;
-%  - qual pergunta você quer responder;
-%  - se for um relatório de experimento ou laboratório, descreva o que
-%    foi feito, com que dados e em que condições;
-%  - o que o leitor vai encontrar nas seções seguintes.
-% Escreva em 2 ou 3 parágrafos. Não copie texto de fonte alguma.
+% O QUE ESCREVER AQUI (2 a 4 parágrafos):
+%   - do que trata o trabalho e por que o assunto importa;
+%   - o que já se sabe, com referência: \cite{carroll};
+%   - a pergunta específica que ESTE trabalho responde;
+%   - como o texto está organizado.
 
-Escreva aqui a apresentação do assunto. Explique o contexto físico, diga
-qual pergunta o trabalho responde e descreva brevemente a experiência ou
-o conjunto de dados utilizado.
+Escreva aqui a apresentação do assunto. Situe o problema físico e diga por
+que ele é interessante. Use referências para o que já é conhecido, como em
+\cite{carroll}, e reserve para o final do texto o que é resultado seu.
 
-No último parágrafo, anuncie a organização do texto. Por exemplo: a
-Seção~\ref{sec:teoria} apresenta as equações usadas, a
-Seção~\ref{sec:dados} traz os dados e os resultados, e a
-Seção~\ref{sec:conclusao} discute o que foi obtido.
+O último parágrafo anuncia a estrutura: a Seção~\ref{sec:teoria} reúne as
+relações usadas, a Seção~\ref{sec:dados} apresenta os dados e a análise, e
+a Seção~\ref{sec:conclusao} discute o alcance e os limites do resultado.
 
 % =====================================================================
-\section{Teoria Básica}
+\section{Revisão Teórica}
 \label{sec:teoria}
 % =====================================================================
 % O QUE ESCREVER AQUI:
-%  - as equações que você vai efetivamente usar, e nada além disso;
-%  - o significado de cada símbolo;
-%  - as hipóteses que cada equação assume.
-% Regra prática: toda equação que aparece aqui precisa ser usada na
-% Seção de Dados. Equação que não é usada não entra.
+%   - apenas as equações que você vai usar de fato;
+%   - o significado de cada símbolo;
+%   - as hipóteses que cada equação assume.
+% Regra prática: equação que não é usada na Seção 3 não entra aqui.
 
-Apresente aqui as relações físicas empregadas. Cada símbolo deve ser
-definido, e cada hipótese, declarada.
-
-% --- EXEMPLO 1: equação numerada, para ser citada depois -------------
-A energia recebida por unidade de área e tempo cai com o quadrado da
-distância:
+O fluxo recebido de uma fonte isotrópica cai com o quadrado da distância,
 \begin{equation}
     F = \frac{L}{4\pi d^{2}},
-    \label{eq:inverso-quadrado}
+    \label{eq:inverso}
 \end{equation}
-em que $F$ é o fluxo, $L$ a luminosidade da fonte e $d$ a distância. A
-Equação~\eqref{eq:inverso-quadrado} supõe emissão isotrópica e ausência
-de absorção no caminho.
+em que $F$ é o fluxo, $L$ a luminosidade e $d$ a distância. A
+Equação~\eqref{eq:inverso} supõe emissão isotrópica e meio transparente.
 
-% --- EXEMPLO 2: como citar uma equação no meio do texto --------------
-Note que a Equação~\eqref{eq:inverso-quadrado} é a base do módulo de
-distância. Para citar uma equação, use \verb|\eqref{rótulo}|; o número é
-atualizado sozinho se você inserir outra equação antes dela.
-
-% --- EXEMPLO 3: várias linhas alinhadas ------------------------------
-Quando há uma sequência de passos, use o ambiente \texttt{align} e
-alinhe pelo sinal de igual:
+% Como citar: \eqref{rótulo} produz "(1)" com os parênteses e atualiza
+% o número sozinho se você inserir outra equação antes.
+Comparando o fluxo observado ao que a mesma fonte teria a $10\,\mathrm{pc}$
+obtém-se o módulo de distância:
 \begin{align}
-    m - M &= -2{,}5\log_{10}\left(\frac{F(d)}{F(10\,\mathrm{pc})}\right)
-           = -2{,}5\log_{10}\left(\frac{10\,\mathrm{pc}}{d}\right)^{2} \nonumber\\
+    m - M &= -2{,}5\log_{10}\left(\frac{10\,\mathrm{pc}}{d}\right)^{2}
+    \nonumber \\
           &= 5\log_{10}\left(\frac{d}{\mathrm{pc}}\right) - 5.
     \label{eq:modulo}
 \end{align}
 
-% --- EXEMPLO 4: equação sem número -----------------------------------
-Se a equação for auxiliar e você não pretende citá-la, use o ambiente
-com asterisco, que não gera numeração:
+% Equação sem numeração: use o ambiente com asterisco.
+Quando há poeira no caminho, soma-se o termo de extinção $A$, e a relação
+de trabalho passa a ser
 \begin{equation*}
-    d\,[\mathrm{pc}] = \frac{1000}{p\,[\mathrm{mas}]}.
+    m - M = 5\log_{10}d - 5 + A .
 \end{equation*}
 
-% --- EXEMPLO 5: matemática dentro do texto e unidades ----------------
-Símbolos no meio da frase vão entre cifrões: a paralaxe de Proxima
-Centauri vale $p = \SI{768}{mas}$, o que corresponde a
-$d = \SI{1.30}{pc}$. Para números com unidade, o comando
-\verb|\SI{valor}{unidade}| cuida do espaçamento e da formatação, e
-escreve $\SI{3.0e8}{\meter\per\second}$ corretamente.
+Símbolos no meio da frase vão entre cifrões, e valores com unidade saem
+melhor com o comando \verb|\SI|: a paralaxe de Proxima Centauri vale
+$p = \SI{768}{mas}$, o que corresponde a $d = \SI{1.30}{pc}$.
 
 % =====================================================================
-\section{Dados}
+\section{Dados e Discussão}
 \label{sec:dados}
 % =====================================================================
 % O QUE ESCREVER AQUI:
-%  - de onde vieram os dados (arquivo, laboratório, catálogo);
-%  - a tabela com os valores medidos e os calculados;
-%  - as figuras;
-%  - o resultado numérico principal, COM incerteza e COM unidade.
-% Toda tabela e toda figura precisam ser citadas no texto. Uma figura
-% que ninguém menciona não deveria estar no trabalho.
+%   - origem dos dados: catálogo, laboratório, número de medidas,
+%     critério de seleção;
+%   - o tratamento aplicado;
+%   - as figuras e tabelas, TODAS citadas no texto;
+%   - o resultado numérico com incerteza e unidade;
+%   - a comparação com o valor esperado e a discussão dos desvios.
 
-Descreva a origem dos dados e apresente os resultados. Diga quantas
-medidas foram usadas e que critério de seleção foi aplicado.
+Descreva a origem dos dados e o critério de seleção. Diga quantas medidas
+sobraram e por quê.
 
-% --- EXEMPLO 6: tabela ----------------------------------------------
-% Estrutura: \begin{table} -> \caption -> \begin{tabular} -> dados.
-% O argumento {lccc} diz o alinhamento de cada coluna:
-%   l = esquerda, c = centro, r = direita.
-% O & separa colunas e o \\ termina a linha.
-A Tabela~\ref{tab:exemplo} mostra o formato recomendado: uma linha por
-objeto, uma coluna por grandeza, unidades no cabeçalho e incertezas
-junto do valor.
+% ------------------------------------------------ TABELA (uma coluna)
+% Estrutura: table -> caption -> label -> tabular
+%   {lccc} = uma letra por coluna: l esquerda, c centro, r direita
+%   & separa colunas   \\ termina a linha
+%   \toprule \midrule \bottomrule vêm do pacote booktabs
+% Para acrescentar uma linha, copie uma linha e edite. Para acrescentar
+% uma coluna, some uma letra em {lccc} e um & em cada linha.
+A Tabela~\ref{tab:estrelas} traz a amostra analisada.
 
-\begin{table}[H]
+\begin{table}[t]
     \centering
     \caption{Paralaxe, distância e magnitude absoluta de quatro estrelas
-             próximas. As distâncias vêm de $d = 1/p$ e as magnitudes
+             próximas. As distâncias vêm de $d=1/p$ e as magnitudes
              absolutas da Equação~\eqref{eq:modulo}.}
-    \label{tab:exemplo}
-    \begin{tabular}{lcccc}
+    \label{tab:estrelas}
+    \small
+    \begin{tabular}{lccc}
         \toprule
-        Estrela & $p$ (mas) & $d$ (pc) & $G$ (mag) & $M_G$ (mag) \\
+        Estrela & $p$ (mas) & $d$ (pc) & $M_G$ \\
         \midrule
-        Proxima Centauri & $768{,}07 \pm 0{,}05$ & $1{,}302$ & $8{,}98$ & $15{,}5$ \\
-        Estrela de Barnard & $546{,}98 \pm 0{,}04$ & $1{,}828$ & $8{,}19$ & $13{,}9$ \\
-        Wolf 359 & $415{,}18 \pm 0{,}07$ & $2{,}409$ & $11{,}04$ & $16{,}1$ \\
-        Lalande 21185 & $392{,}75 \pm 0{,}03$ & $2{,}546$ & $6{,}55$ & $11{,}5$ \\
+        Proxima Centauri   & $768{,}07$ & $1{,}302$ & $15{,}5$ \\
+        Estrela de Barnard & $546{,}98$ & $1{,}828$ & $13{,}9$ \\
+        Wolf 359           & $415{,}18$ & $2{,}409$ & $16{,}1$ \\
+        Lalande 21185      & $392{,}75$ & $2{,}546$ & $11{,}5$ \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-% --- EXEMPLO 6b: o código da tabela, impresso no PDF ----------------
-% O bloco verbatim abaixo mostra, dentro do PDF, os comandos que geram
-% a tabela. É só material de consulta: apague-o na versão final.
-O código que produziu a Tabela~\ref{tab:exemplo} é este:
+% ------------------------------------------------ FIGURA (uma coluna)
+% width=\linewidth ocupa a largura da COLUNA.
+% A legenda vai sempre ABAIXO da figura.
+A Figura~\ref{fig:hr} mostra o diagrama cor-magnitude da amostra.
 
-\begin{quote}\small
-\begin{verbatim}
-\begin{table}[H]
+\begin{figure}[t]
     \centering
-    \caption{Legenda da tabela, sempre ACIMA dela.}
-    \label{tab:exemplo}
-    \begin{tabular}{lcc}    % uma letra por coluna: l, c ou r
-        \toprule
-        Estrela & p (mas) & d (pc) \\   % & separa, \\ termina a linha
-        \midrule
-        Proxima Centauri & 768,07 & 1,302 \\
-        Wolf 359         & 415,18 & 2,409 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-\end{verbatim}
-\end{quote}
-
-Para acrescentar uma linha, copie uma linha de dados e edite os valores.
-Para acrescentar uma coluna, some uma letra em \verb|{lcc}| e um \verb|&|
-em cada linha. Se as colunas não baterem, o LaTeX acusa
-\texttt{Extra alignment tab} ou \texttt{Misplaced \textbackslash noalign}.
-
-% --- EXEMPLO 7: figura ----------------------------------------------
-% width=0.75\linewidth faz a figura ocupar 75% da largura do texto.
-% O [H] exige que a figura fique exatamente aqui; sem ele, o LaTeX
-% escolhe a melhor posição sozinho (o que costuma ser melhor).
-A Figura~\ref{fig:exemplo} mostra o diagrama cor-magnitude construído a
-partir das \num{2000} estrelas do catálogo. A sequência principal
-aparece como a faixa diagonal, e o grupo isolado no canto inferior
-esquerdo corresponde às anãs brancas.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\linewidth]{figura_exemplo.pdf}
+    \includegraphics[width=\linewidth]{figura_exemplo.pdf}
     \caption{Diagrama cor-magnitude de estrelas a menos de
-             \SI{25}{pc} do Sol, com dados da missão Gaia. Cada ponto é
-             uma estrela; o eixo vertical está invertido para que as
-             mais luminosas apareçam em cima.}
-    \label{fig:exemplo}
+             \SI{25}{pc} do Sol, com dados da missão Gaia. O eixo vertical
+             está invertido para que as mais luminosas fiquem em cima.}
+    \label{fig:hr}
 \end{figure}
 
-% --- EXEMPLO 7b: o código da figura, impresso no PDF ----------------
-E este é o código que inseriu a Figura~\ref{fig:exemplo}:
+% ------------------------------------ FIGURA LARGA (duas colunas)
+% Para uma figura que ocupe a página inteira, use figure* em vez de
+% figure e \textwidth em vez de \linewidth. Ela aparecerá no topo de
+% uma página, não necessariamente aqui. Descomente para usar:
+%
+% \begin{figure*}[t]
+%     \centering
+%     \includegraphics[width=0.85\textwidth]{sua_figura_larga.pdf}
+%     \caption{Legenda da figura larga.}
+%     \label{fig:larga}
+% \end{figure*}
 
-\begin{quote}\small
-\begin{verbatim}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\linewidth]{figura_exemplo.pdf}
-    \caption{Legenda da figura, sempre ABAIXO dela.}
-    \label{fig:exemplo}
-\end{figure}
-\end{verbatim}
-\end{quote}
+Discuta o que a figura mostra. Aponte a estrutura principal, as exceções e
+o que elas significam fisicamente. Evite descrever o gráfico em palavras
+--- o leitor está vendo o gráfico; o que ele não vê é a sua interpretação.
 
-Troque \verb|figura_exemplo.pdf| pelo nome do seu arquivo, que precisa
-estar na mesma pasta do \verb|main.tex|. O \verb|width| controla o
-tamanho: \verb|0.75\linewidth| ocupa 75\% da largura do texto. O
-\verb|[H]| força a figura a ficar exatamente onde você a escreveu; sem
-ele, o LaTeX escolhe a melhor posição, o que costuma dar um resultado
-mais bonito.
-
-% --- EXEMPLO 8: como apresentar um resultado -------------------------
-% Um resultado numérico tem três partes obrigatórias: valor, incerteza
-% e unidade. Sem as três, ele não é um resultado.
-O valor obtido para a grandeza de interesse foi
-\begin{equation*}
+O resultado principal deve aparecer destacado, com incerteza e unidade:
+\begin{equation}
     H_0 = 69 \pm 3\ \mathrm{km\,s^{-1}\,Mpc^{-1}},
-\end{equation*}
-em que a incerteza citada é apenas estatística. Discuta separadamente as
-fontes sistemáticas, se houver.
+    \label{eq:resultado}
+\end{equation}
+em que a incerteza citada é apenas estatística. Compare com o valor de
+referência e diga se a diferença é compatível: uma discrepância de
+$2\sigma$ pede explicação; uma de $0{,}5\sigma$, não.
 
 % =====================================================================
 \section{Conclusão}
 \label{sec:conclusao}
 % =====================================================================
 % O QUE ESCREVER AQUI:
-%  - o que os números obtidos significam fisicamente;
-%  - comparação com o valor esperado ou de referência, quando existir;
-%  - a maior fonte de incerteza, e se ela é estatística ou sistemática;
-%  - o que você mudaria para melhorar a medida.
-% NÃO repita a introdução, e não introduza resultado novo aqui.
+%   - o que os números significam fisicamente;
+%   - a maior fonte de incerteza, e se é estatística ou sistemática;
+%   - o que uma medida melhor exigiria.
+% NÃO repita a introdução e NÃO apresente resultado novo aqui.
 
-Discuta os resultados. Compare o valor obtido com o esperado e diga se a
-diferença é compatível com as incertezas: uma discrepância de
-$2\sigma$ pede explicação, uma de $0{,}5\sigma$ não.
+Retome o resultado da Equação~\eqref{eq:resultado} e diga o que ele
+significa. Identifique a etapa que domina a incerteza: é mais informativo
+escrever ``a incerteza vem da calibração de distância, não da fotometria''
+do que listar genericamente fontes de erro.
 
-Identifique a etapa que domina a incerteza final. Costuma ser mais
-informativo dizer ``a incerteza vem da calibração de distância, não da
-fotometria'' do que apresentar uma lista genérica de fontes de erro.
-
-Termine dizendo o que uma medida melhor exigiria: mais dados, outro
-instrumento, ou uma hipótese diferente no modelo.
+Termine dizendo o que seria necessário para melhorar a medida: mais dados,
+outro instrumento, ou uma hipótese diferente no modelo.
 
 % =====================================================================
-% REFERÊNCIAS
+%  BIBLIOGRAFIA
 % =====================================================================
-% Liste apenas o que você realmente consultou. Para citar no texto, use
-% \cite{rótulo} -- por exemplo: segundo Carroll e Ostlie \cite{carroll}.
+% Liste apenas o que você consultou de fato. No texto, cite com
+% \cite{rótulo} -- por exemplo: \cite{gaia}.
 \begin{thebibliography}{9}
+\small
 
 \bibitem{carroll}
 CARROLL, B. W.; OSTLIE, D. A.
-\textit{An Introduction to Modern Astrophysics}. 2. ed.
-Cambridge: Cambridge University Press, 2017.
+\textit{An Introduction to Modern Astrophysics}.
+2. ed. Cambridge: Cambridge University Press, 2017.
 
 \bibitem{apostila}
 LIMA, R. C. R. de.
-\textit{Astrofísica Moderna: capítulos de estudo}. UDESC, 2026.
-Disponível em:
+\textit{Astrofísica Moderna: capítulos de estudo}.
+UDESC, 2026. Disponível em:
 \url{https://rafaelcrdelima.github.io/Astronomia/}.
 
 \bibitem{gaia}
 GAIA COLLABORATION.
-\textit{Gaia Data Release 3}. Arquivo público do ESA Gaia, 2022.
-Disponível em: \url{https://gea.esac.esa.int/archive/}.
+\textit{Gaia Data Release 3}. ESA, 2022. Disponível em:
+\url{https://gea.esac.esa.int/archive/}.
 
 \end{thebibliography}
 
