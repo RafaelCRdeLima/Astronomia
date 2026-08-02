@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slides das aulas | Astronomia</title>
+  <style>
+    :root { --bg:#050505; --panel:#101010; --line:#343434; --text:#f4f4f1; --muted:#aaa69c; --accent:#d7b46a; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--text); background:var(--bg);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .shell { width:min(1080px, calc(100vw - 32px)); margin:0 auto; padding:28px 0 48px; }
+    header { display:flex; justify-content:space-between; gap:18px; align-items:end;
+      padding-bottom:18px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+    h1 { margin:0; font-size:clamp(28px,4vw,46px); line-height:1.05; }
+    h2 { margin:34px 0 0; font-size:19px; color:var(--accent); }
+    p { margin:10px 0 0; color:var(--muted); line-height:1.6; }
+    a { color:var(--accent); }
+    .badge { color:var(--accent); border:1px solid var(--line); padding:8px 10px; border-radius:8px; font-size:14px; }
+    .grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); margin-top:24px; }
+    .card { border:1px solid var(--line); background:var(--panel); border-radius:12px;
+      padding:18px; text-decoration:none; color:var(--text); display:block; }
+    .card:hover { border-color:var(--accent); }
+    .card strong { display:block; font-size:18px; }
+    .card .meta { display:block; color:var(--accent); font-size:13px; margin-top:4px;
+      text-transform:uppercase; letter-spacing:.06em; }
+    .card span.txt { display:block; color:var(--muted); font-size:14px; margin-top:10px; line-height:1.55; }
+    kbd { background:#1a1a1a; border:1px solid var(--line); border-bottom-width:2px;
+      border-radius:5px; padding:1px 7px; font-size:13px; font-family:inherit; color:var(--text); }
+    ul { color:var(--muted); line-height:1.9; margin:10px 0 0; padding-left:20px; }
+    .nav { margin-top:32px; display:flex; gap:12px; flex-wrap:wrap; }
+    .nav a { border:1px solid var(--line); background:var(--panel); border-radius:10px;
+      padding:12px 14px; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Slides das aulas</h1>
+        <p>Apresentações para projeção, Astronomia (AST0001) — 2026/2.</p>
+      </div>
+      <div class="badge">Prof. Dr. Rafael Camargo Rodrigues de Lima</div>
+    </header>
+
+    <section class="grid">
+      <a class="card" href="aula-01.html">
+        <span class="meta">Aula 1 &middot; 40 slides</span>
+        <strong>O céu como laboratório físico</strong>
+        <span class="txt">Ângulos e ângulo sólido; os quatro sistemas de coordenadas;
+        trigonometria esférica e a equação da altura; eclíptica, obliquidade e estações;
+        equação do tempo; tempo sideral; precessão e nutação; ICRS e a cadeia de reduções.</span>
+      </a>
+      <a class="card" href="aula-02.html">
+        <span class="meta">Aula 2 &middot; 40 slides</span>
+        <strong>Coordenadas, distâncias e brilhos</strong>
+        <span class="txt">Paralaxe e o parsec; unidades exatas da IAU; movimento próprio e
+        velocidade espacial; viés de Lutz-Kelker; fluxo, luminosidade e a escala de magnitudes;
+        módulo de distância; cores, extinção e correção bolométrica.</span>
+      </a>
+    </section>
+
+    <h2>Como apresentar</h2>
+    <ul>
+      <li>Abra a aula e pressione <kbd>F</kbd> para tela cheia (ou o botão no canto).</li>
+      <li>Avançar: <kbd>&rarr;</kbd> <kbd>&darr;</kbd> <kbd>espaço</kbd> <kbd>PageDown</kbd> — ou clique na tela.</li>
+      <li>Voltar: <kbd>&larr;</kbd> <kbd>&uarr;</kbd> <kbd>PageUp</kbd> — ou clique no terço esquerdo.</li>
+      <li>Primeiro e último slide: <kbd>Home</kbd> e <kbd>End</kbd>.</li>
+      <li>O número do slide fica no endereço: dá para abrir direto em <code>aula-01.html#25</code>.</li>
+      <li>Em tablet ou celular, deslize para os lados.</li>
+    </ul>
+
+    <h2>Sobre o conteúdo</h2>
+    <p>As duas aulas cobrem integralmente o Capítulo 1 da apostila — a Aula 1 corresponde à
+    Parte I e a Aula 2 à Parte II. As figuras foram geradas a partir dos mesmos dados usados
+    nos laboratórios, e as equações são as mesmas do texto, para que slide e apostila possam
+    ser lidos em paralelo.</p>
+
+    <div class="nav">
+      <a href="../">Página do curso</a>
+      <a href="../apostila-astrofisica-moderna/">Apostila</a>
+      <a href="../modelo-trabalho/">Modelo de trabalho</a>
+    </div>
+  </main>
+</body>
+</html>

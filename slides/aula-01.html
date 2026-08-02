@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aula 1 — O céu como laboratório físico</title><style>
+:root{--bg:#050505;--panel:#101010;--line:#343434;--text:#f4f4f1;--muted:#aaa69c;--accent:#d7b46a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+#palco{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.slide{position:absolute;width:1280px;height:720px;padding:64px 78px;display:none;
+ flex-direction:column;transform-origin:center center}
+.slide.on{display:flex}
+h1{font-size:60px;line-height:1.08;font-weight:700;letter-spacing:-.5px}
+h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(--text)}
+.sub{margin-top:22px;font-size:24px;color:var(--muted)}
+.conteudo{flex:1;display:flex;flex-direction:column;min-height:0;gap:16px}
+.conteudo.centro{justify-content:center}
+.corpo{font-size:27px;line-height:1.55;color:#e8e6e0}
+.corpo ul{list-style:none}
+.corpo li{margin:14px 0;padding-left:34px;position:relative}
+.corpo li::before{content:"";position:absolute;left:6px;top:16px;width:10px;height:10px;
+ border-radius:50%;background:var(--accent)}
+.corpo ol.cadeia-num{counter-reset:c;list-style:none;column-count:2;column-gap:48px}
+.corpo ol.cadeia-num li{counter-increment:c;margin:10px 0;padding-left:44px;position:relative;font-size:25px}
+.corpo ol.cadeia-num li::before{content:counter(c);position:absolute;left:0;top:0;width:30px;height:30px;
+ border-radius:8px;background:none;border:1px solid var(--line);color:var(--accent);
+ font-size:17px;display:flex;align-items:center;justify-content:center}
+.d{color:var(--accent);font-weight:600}
+.cadeia{font-size:32px;color:var(--accent);text-align:center;margin:26px 0;letter-spacing:.5px}
+.eqs{display:flex;flex-direction:column;align-items:center;gap:30px}
+.eqs img{max-width:92%;max-height:150px}
+.figura{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.figura img{max-width:100%;max-height:100%;object-fit:contain}
+.nota{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);
+ font-size:20px;color:var(--muted);line-height:1.5}
+.tb{width:100%;border-collapse:collapse;font-size:24px;margin-top:8px}
+.tb th{text-align:left;padding:12px 10px;color:var(--accent);font-weight:600;
+ border-bottom:1px solid var(--line);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+.tb td{padding:12px 10px;border-bottom:1px solid #1e1e1e}
+.capa{justify-content:center;text-align:center}
+.capa h1{font-size:76px}
+.capa .marca{margin-bottom:36px;font-size:20px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
+.capa .rodape{margin-top:52px;font-size:21px;color:var(--muted)}
+.roteiro h2,.fecho h2{color:var(--accent)}
+.barra{position:fixed;left:0;bottom:0;height:3px;background:var(--accent);transition:width .18s}
+.hud{position:fixed;right:20px;bottom:14px;font-size:15px;color:var(--muted);
+ display:flex;gap:16px;align-items:center;user-select:none}
+.hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;
+ padding:5px 11px;font-size:15px;cursor:pointer;font-family:inherit}
+.hud button:hover{border-color:var(--accent);color:var(--accent)}
+.tit{position:fixed;left:20px;bottom:14px;font-size:15px;color:#4f4f4f}
+@media print{.hud,.barra,.tit{display:none}}
+</style></head>
+<body>
+<div id="palco">
+<section class="slide capa"><div class="marca">Astronomia (AST0001) &middot; Curso de Física &middot; UDESC</div><h1>O céu como laboratório físico</h1><div class="sub">Aula 1 &middot; Fundamentos observacionais e escalas de medida</div><div class="rodape">Prof. Dr. Rafael Camargo Rodrigues de Lima &middot; 2026/2</div></section>
+<section class="slide roteiro"><h2>O que esta aula responde</h2><div class="conteudo"><div class="corpo"><ul><li>Como se mede uma direção no céu, e com que precisão</li><li>Que sistemas de coordenadas existem e quando usar cada um</li><li>De onde saem a altura de um objeto, o nascer e o poente</li><li>Por que existem estações, e por que não é pela excentricidade</li><li>Por que o dia solar e o sideral diferem de 3 min 56 s</li><li>Por que todo catálogo precisa declarar uma época</li></ul></div></div></section>
+<section class="slide "><h2>A limitação que virou método</h2><div class="conteudo"><div class="corpo"><p>Quase tudo que sabemos do universo vem de observação à distância.</p><ul><li>Não se coloca uma estrela em uma bancada</li><li>Não se repete a formação de uma galáxia</li><li>Não se acelera a história cósmica</li></ul></div></div><div class="nota">O que chega até nós: luz, posição, tempo, movimento — e, em casos especiais, partículas e ondas gravitacionais.</div></section>
+<section class="slide "><h2>A cadeia que atravessa o curso inteiro</h2><div class="conteudo"><div class="corpo"><p class="cadeia">observável &rarr; calibração &rarr; modelo &rarr; grandeza física</p><ul><li>Fluxo, posição e tempo de chegada são o que se mede</li><li>Massa, distância, temperatura e idade são o que se <span class="d">infere</span></li><li>Toda inferência carrega hipóteses — e elas precisam ser ditas</li></ul></div></div></section>
+<section class="slide "><h2>Medir uma direção é medir um ângulo</h2><div class="conteudo centro"><div class="corpo"><ul><li>A esfera celeste tem duas dimensões: só direção, nunca distância</li><li>Unidade prática: o segundo de arco</li></ul></div><div class="eqs"><img src="assets/eq/rad.svg" alt=""></div></div><div class="nota">1° = 60′ = 3600″</div></section>
+<section class="slide "><h2>A constante mais usada da astronomia prática</h2><div class="conteudo centro"><div class="corpo"><p>Converter radianos em segundos de arco:</p></div><div class="eqs"><img src="assets/eq/206265.svg" alt=""></div></div><div class="nota">Não é constante física: é só 180 × 3600 / π.</div></section>
+<section class="slide "><h2>Aproximação de pequenos ângulos</h2><div class="conteudo centro"><div class="corpo"><p>Um objeto de tamanho ℓ a distância d subtende:</p></div><div class="eqs"><img src="assets/eq/peqang.svg" alt=""></div></div><div class="nota">Erro menor que 1% para θ &lt; 10°. Em segundos de arco, é exata para qualquer propósito.</div></section>
+<section class="slide "><h2>Calibrando a intuição</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/escalas.png" alt=""></div></div><div class="nota">Doze ordens de grandeza separam o olho nu da interferometria de base planetária.</div></section>
+<section class="slide "><h2>Ângulo sólido</h2><div class="conteudo centro"><div class="corpo"><p>Direções ocupam área na esfera; um cone de meia-abertura α subtende:</p></div><div class="eqs"><img src="assets/eq/omega.svg" alt=""><img src="assets/eq/cone.svg" alt=""></div></div><div class="nota">Para α pequeno, é a área do disco de raio angular α — e é essa integral que reaparece no Capítulo 3, ao converter intensidade em fluxo.</div></section>
+<section class="slide "><h2>O céu em graus quadrados</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/degquad.svg" alt=""></div></div><div class="nota">Guarde esse número: ele converte a área de um levantamento em fração do céu, e portanto contagens em densidade.</div></section>
+<section class="slide "><h2>A esfera celeste</h2><div class="conteudo"><div class="corpo"><ul><li>Não é uma casca real: é uma construção geométrica</li><li>Duas estrelas próximas no céu podem estar a kiloparsecs uma da outra</li><li>Coordenadas celestes fixam <span class="d">direção</span>, não posição</li></ul></div></div></section>
+<section class="slide "><h2>Sistema horizontal</h2><div class="conteudo"><div class="corpo"><ul><li>Plano fundamental: o horizonte do observador</li><li>Coordenadas: azimute A<sub>z</sub> e altura h</li><li>Responde à pergunta operacional: dá para observar agora?</li><li>Problema: muda a cada minuto, e depende do lugar</li></ul></div></div></section>
+<section class="slide "><h2>Sistema equatorial</h2><div class="conteudo"><div class="corpo"><ul><li>Plano fundamental: o equador celeste</li><li>Coordenadas: ascensão reta α e declinação δ</li><li>É o sistema de catálogo — acompanha a rotação do céu</li><li>Depende da época, por causa da precessão</li></ul></div></div></section>
+<section class="slide "><h2>Eclíptico e galáctico</h2><div class="conteudo"><div class="corpo"><ul><li><b>Eclíptico</b>: plano da órbita da Terra — natural para o Sistema Solar</li><li><b>Galáctico</b>: plano da Via Láctea — separa disco de halo imediatamente</li><li>A escolha do sistema é operacional, não estética</li></ul></div></div></section>
+<section class="slide "><h2>Os quatro sistemas</h2><div class="conteudo"><div class="corpo"><table class="tb"><tr><th>Sistema</th><th>Plano</th><th>Coordenadas</th><th>Depende de</th></tr><tr><td>Horizontal</td><td>horizonte</td><td>A<sub>z</sub>, h</td><td>local e instante</td></tr><tr><td>Equatorial</td><td>equador celeste</td><td>α, δ</td><td>época</td></tr><tr><td>Eclíptico</td><td>eclíptica</td><td>λ, β</td><td>época</td></tr><tr><td>Galáctico</td><td>plano da Galáxia</td><td>ℓ, b</td><td>nada</td></tr></table></div></div></section>
+<section class="slide "><h2>Por que ascensão reta em horas</h2><div class="conteudo"><div class="corpo"><ul><li>A Terra gira 360° em 24 horas siderais</li><li>1<sup>h</sup> de ascensão reta = 15°</li><li>A diferença de α entre dois objetos é o intervalo entre suas culminações</li></ul></div></div><div class="nota">A unidade codifica um relógio.</div></section>
+<section class="slide "><h2>Trigonometria esférica</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/triangulo.png" alt=""></div></div><div class="nota">Todo problema de posição vira um triângulo sobre a esfera.</div></section>
+<section class="slide "><h2>Dedução: lei dos cossenos esférica</h2><div class="conteudo centro"><div class="corpo"><p>Vetores unitários do centro a cada vértice, com A na origem:</p></div><div class="eqs"><img src="assets/eq/vetores.svg" alt=""></div></div><div class="nota">O produto escalar û_B · û_C dá o resultado direto.</div></section>
+<section class="slide "><h2>Lei dos cossenos esférica</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/coss.svg" alt=""></div></div><div class="nota">Para triângulos pequenos, cos x ≈ 1 − x²/2 e sen x ≈ x: recupera-se a lei plana.</div></section>
+<section class="slide "><h2>Lei dos senos esférica</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/senos.svg" alt=""></div></div><div class="nota">Sai do produto vetorial, calculando a mesma área de dois modos.</div></section>
+<section class="slide "><h2>O triângulo polo–zênite–objeto</h2><div class="conteudo centro"><div class="corpo"><p>Os três lados do triângulo PZX:</p></div><div class="eqs"><img src="assets/eq/lados.svg" alt=""></div></div><div class="nota">O ângulo no polo é o ângulo horário H = Θ − α, com Θ o tempo sideral local.</div></section>
+<section class="slide "><h2>A equação da altura</h2><div class="conteudo centro"><div class="corpo"><p>Aplicando a lei dos cossenos ao lado ZX — e a dos senos, para o azimute:</p></div><div class="eqs"><img src="assets/eq/altura.svg" alt=""><img src="assets/eq/azimute.svg" alt=""></div></div><div class="nota">A primeira responde a quase toda pergunta prática de observação.</div></section>
+<section class="slide "><h2>Consequência 1: culminação</h2><div class="conteudo centro"><div class="corpo"><p>Em H = 0 o objeto cruza o meridiano:</p></div><div class="eqs"><img src="assets/eq/hmax.svg" alt=""></div></div><div class="nota">Em Joinville (φ ≈ −26°), objetos com δ = −26° passam pelo zênite.</div></section>
+<section class="slide "><h2>Consequência 2: nascer e poente</h2><div class="conteudo centro"><div class="corpo"><p>Impondo h = 0:</p></div><div class="eqs"><img src="assets/eq/h0.svg" alt=""></div></div><div class="nota">Daí sai a duração do arco diurno: 2H₀, convertido para horas.</div></section>
+<section class="slide "><h2>Consequência 3: circumpolaridade</h2><div class="conteudo"><div class="corpo"><ul><li>Se |tan φ tan δ| &gt; 1, não há solução</li><li>O objeto nunca se põe, ou nunca nasce</li><li>Em Joinville: δ &lt; −64° é circumpolar</li></ul></div></div></section>
+<section class="slide "><h2>A eclíptica e a obliquidade</h2><div class="conteudo"><div class="corpo"><ul><li>O Sol descreve um grande círculo ao longo do ano: a eclíptica</li><li>Inclinação em relação ao equador: ε = 23°26′</li><li>Essa é a inclinação do eixo de rotação da Terra</li></ul></div></div></section>
+<section class="slide "><h2>Por que existem estações</h2><div class="conteudo centro"><div class="corpo"><p>O fluxo por unidade de área horizontal:</p></div><div class="eqs"><img src="assets/eq/fluxosup.svg" alt=""></div></div><div class="nota">No verão local, δ tem o mesmo sinal de φ, o Sol sobe mais e sen h é maior.</div></section>
+<section class="slide "><h2>Os dois efeitos somam</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/estacoes.png" alt=""></div></div><div class="nota">Mais fluxo por unidade de área e mais horas de insolação — os dois na mesma direção.</div></section>
+<section class="slide "><h2>A excentricidade não explica</h2><div class="conteudo centro"><div class="corpo"><p>Variação de fluxo ao longo da órbita:</p></div><div class="eqs"><img src="assets/eq/excent.svg" alt=""></div></div><div class="nota">7%, e o periélio é em janeiro — verão do hemisfério sul. O efeito existe, é secundário, e tem sinal oposto entre hemisférios.</div></section>
+<section class="slide "><h2>A equação do tempo</h2><div class="conteudo"><div class="corpo"><ul><li>O Sol verdadeiro não é bom relógio: adianta e atrasa</li><li>A diferença em relação a um Sol médio tem <span class="d">duas causas independentes</span></li></ul></div></div></section>
+<section class="slide "><h2>Componente da excentricidade</h2><div class="conteudo centro"><div class="corpo"><p>Segunda lei de Kepler: a Terra corre mais no periélio.</p></div><div class="eqs"><img src="assets/eq/eqtempo_e.svg" alt=""></div></div><div class="nota">Período de um ano.</div></section>
+<section class="slide "><h2>Componente da obliquidade</h2><div class="conteudo centro"><div class="corpo"><p>A projeção da eclíptica sobre o equador não é uniforme:</p></div><div class="eqs"><img src="assets/eq/eqtempo_o.svg" alt=""></div></div><div class="nota">Período de meio ano, porque depende de sen 2λ.</div></section>
+<section class="slide "><h2>A curva resultante</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/eqtempo.png" alt=""></div></div><div class="nota">Duas propriedades geométricas independentes deixam assinatura em um único gráfico observável.</div></section>
+<section class="slide "><h2>Tempo sideral e tempo solar</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/sideral.png" alt=""></div></div></section>
+<section class="slide "><h2>Dedução dos 3 min 56 s</h2><div class="conteudo centro"><div class="corpo"><p>Em um dia a Terra avança na órbita:</p></div><div class="eqs"><img src="assets/eq/sideral1.svg" alt=""><img src="assets/eq/sideral2.svg" alt=""></div></div><div class="nota">O dia sideral vale 23ʰ56ᵐ04ˢ. Em seis meses a defasagem chega a 12 h — e o céu da meia-noite é o oposto.</div></section>
+<section class="slide "><h2>Precessão dos equinócios</h2><div class="conteudo centro"><div class="corpo"><ul><li>A Terra é achatada: tem bojo equatorial</li><li>Sol e Lua exercem torque sobre esse bojo</li><li>Um giroscópio não se alinha — ele precessa</li></ul></div><div class="eqs"><img src="assets/eq/precessao.svg" alt=""></div></div></section>
+<section class="slide "><h2>A taxa e o período</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/precnum.svg" alt=""></div></div><div class="nota">Sol contribui ~16″/ano, Lua ~34″/ano — a Lua domina, porque o torque escala com M/r³. Sobreposta, a nutação oscila com período de 18,6 anos.</div></section>
+<section class="slide "><h2>Época, equinócio e o ICRS</h2><div class="conteudo"><div class="corpo"><ul><li><b>Época</b>: instante a que se referem posição e movimento próprio (J2000,0)</li><li><b>Equinócio</b>: instante que define a orientação dos eixos</li><li><b>ICRS</b>: sistema ancorado em quasares — não precisa de correção de precessão</li><li><b>Gaia-CRF</b>: a realização óptica, base de toda a astrometria moderna</li></ul></div></div><div class="nota">Sem indicação de época, um catálogo é inutilizável: 50″/ano acumulam um minuto de arco em cinquenta anos.</div></section>
+<section class="slide "><h2>Da posição de catálogo ao telescópio</h2><div class="conteudo"><div class="corpo"><ol class="cadeia-num"><li>movimento próprio</li><li>paralaxe anual</li><li>aberração (20,5″)</li><li>deflexão gravitacional pelo Sol (1,75″ no limbo)</li><li>precessão e nutação</li><li>orientação instantânea da Terra</li><li>refração atmosférica</li></ol></div></div><div class="nota">A soma pode passar de um minuto de arco. Nenhuma etapa é opcional em trabalho de precisão.</div></section>
+<section class="slide fecho"><h2>Na próxima aula</h2><div class="conteudo"><div class="corpo"><ul><li>Paralaxe, parsec e as unidades modernas</li><li>Movimento próprio e velocidade espacial</li><li>Fluxo, luminosidade e a escala de magnitudes</li><li>Extinção e a ponte para a física estelar</li></ul></div></div></section>
+</div>
+<div class="barra"></div>
+<div class="tit">Aula 1 &middot; Astronomia (AST0001)</div>
+<div class="hud">
+  <button onclick="ant()">&larr;</button>
+  <span id="cnt"></span>
+  <button onclick="prox()">&rarr;</button>
+  <button onclick="telaCheia()">tela cheia (F)</button>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+const palco=document.getElementById('palco');
+function escala(){
+  const k=Math.min(window.innerWidth/1280,window.innerHeight/720);
+  slides.forEach(s=>s.style.transform='scale('+k+')');
+}
+function mostra(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.getElementById('cnt').textContent=(i+1)+' / '+slides.length;
+  document.querySelector('.barra').style.width=((i+1)/slides.length*100)+'%';
+  location.hash=i+1;
+}
+function prox(){mostra(i+1)} function ant(){mostra(i-1)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','n','N','Enter'].includes(e.key)){prox();e.preventDefault()}
+  else if(['ArrowLeft','ArrowUp','PageUp','p','P','Backspace'].includes(e.key)){ant();e.preventDefault()}
+  else if(e.key==='Home'){mostra(0)} else if(e.key==='End'){mostra(slides.length-1)}
+  else if(e.key==='f'||e.key==='F'){telaCheia()}
+});
+addEventListener('click',e=>{
+  if(e.target.closest('.hud'))return;
+  (e.clientX < window.innerWidth*0.28) ? ant() : prox();
+});
+function telaCheia(){
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen()}
+  else{document.exitFullscreen()}
+}
+addEventListener('resize',escala);
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+addEventListener('touchend',e=>{if(x0===null)return;
+  const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>50){dx<0?prox():ant()} x0=null});
+escala();
+mostra(parseInt(location.hash.replace('#',''))-1||0);
+</script>
+</body></html>
