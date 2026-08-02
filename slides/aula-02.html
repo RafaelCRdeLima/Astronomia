@@ -30,7 +30,8 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 .eqs{display:flex;flex-direction:column;align-items:center;gap:30px}
 .eqs img{max-width:92%;max-height:150px}
 .figura{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
-.figura img{max-width:100%;max-height:100%;object-fit:contain}
+.figura img{height:100%;width:100%;object-fit:contain}
+.figura.claro img{background:#fff;border-radius:14px;padding:16px}
 .nota{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);
  font-size:20px;color:var(--muted);line-height:1.5}
 .tb{width:100%;border-collapse:collapse;font-size:24px;margin-top:8px}
@@ -59,6 +60,7 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <section class="slide "><h2>Paralaxe: a única medida geométrica</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/paralaxe.png" alt=""></div></div></section>
 <section class="slide "><h2>A definição do parsec</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/paralaxe.svg" alt=""><img src="assets/eq/parsec.svg" alt=""></div></div><div class="nota">O parsec é definido exatamente para que d = 1/p seja exato.</div></section>
 <section class="slide "><h2>A relação de trabalho</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/dpc.svg" alt=""></div></div><div class="nota">Proxima Centauri: p = 768 mas → d = 1,30 pc; nenhuma estrela tem paralaxe maior que 1″. O parsec não é unidade natural: ele codifica o tamanho da órbita da Terra. (1 pc = 3,26 anos-luz.)</div></section>
+<section class="slide "><h2>O que a paralaxe entrega hoje</h2><div class="conteudo centro"><div class="figura"><img src="assets/img/gaia.jpg" alt=""></div></div><div class="nota">O Gaia mediu paralaxes de quase dois bilhões de estrelas. O catálogo de vizinhança solar, usado no laboratório, sai daí. &mdash; ESA/Gaia/DPAC, CC BY-SA 3.0 IGO</div></section>
 <section class="slide "><h2>A UA virou exata em 2012</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/ua.svg" alt=""></div></div><div class="nota">Antes era uma medida sujeita a revisão; e o Sol perde massa, o que a fazia variar. Fixar o número elimina a ambiguidade.</div></section>
 <section class="slide "><h2>E o parsec, por consequência</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/pcexato.svg" alt=""></div></div><div class="nota">648 000″ = 180°. A definição é puramente geométrica.</div></section>
 <section class="slide "><h2>Valores nominais da IAU 2015</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/nominal.svg" alt=""></div></div><div class="nota">Adota-se GM☉, não M☉: o produto é medido com dez algarismos pelas órbitas; G, com quatro. Dividir degradaria a precisão.</div></section>
@@ -87,6 +89,8 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <section class="slide "><h2>Extinção</h2><div class="conteudo centro"><div class="corpo"><p>Profundidade óptica ao longo da linha de visada:</p></div><div class="eqs"><img src="assets/eq/extincao.svg" alt=""></div></div></section>
 <section class="slide "><h2>Da profundidade óptica à magnitude</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a1086.svg" alt=""></div></div><div class="nota">O fator 1,086 é apenas 2,5/ln 10. Uma magnitude de extinção ≈ profundidade óptica unitária.</div></section>
 <section class="slide "><h2>Avermelhamento</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/extincao.png" alt=""></div></div><div class="nota">A extinção cresce para o azul: o objeto fica mais fraco E mais vermelho.</div></section>
+<section class="slide "><h2>Poeira, vista de frente</h2><div class="conteudo centro"><div class="figura"><img src="assets/img/b68.jpg" alt=""></div></div><div class="nota">A nuvem escura Barnard 68, a 500 anos-luz: nenhuma estrela de fundo atravessa o centro no visível. Não é um buraco no céu &mdash; é extinção. &mdash; ESO, CC BY 4.0</div></section>
+<section class="slide "><h2>A mesma nuvem, banda por banda</h2><div class="conteudo centro"><div class="figura"><img src="assets/img/b68_bandas.jpg" alt=""></div></div><div class="nota">De 0,44 µm (canto superior esquerdo) a 2,16 µm (canto inferior direito): quanto maior o comprimento de onda, mais transparente a nuvem fica. É a curva de extinção, medida em imagens. &mdash; ESO, CC BY 4.0</div></section>
 <section class="slide "><h2>Excesso de cor e R_V</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/rv.svg" alt=""></div></div><div class="nota">Mede-se a cor observada, compara-se com a intrínseca do tipo espectral, obtém-se E(B−V) e multiplica-se por R_V.</div></section>
 <section class="slide "><h2>Quanto isso importa</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/sensib.svg" alt=""></div></div><div class="nota">0,1 mag de erro em A_V → 5% de erro em distância. No plano galáctico, A_V chega a dezenas de magnitudes.</div></section>
 <section class="slide "><h2>Correção bolométrica</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/bc.svg" alt=""></div></div><div class="nota">A magnitude em uma banda mede só a fração do fluxo que passa pelo filtro. BC depende quase inteiramente da temperatura efetiva.</div></section>
