@@ -1,4 +1,4 @@
-# Modelo de trabalho — Astronomia (AST0001)
+# Modelo de artigo — Astronomia (AST0001)
 
 Modelo em LaTeX no formato de artigo de revista científica: duas colunas,
 logo da UDESC no alto à direita, título, resumo destacado e as seções
@@ -33,7 +33,7 @@ figura, de tabela e de citação. Se ainda aparecerem como `??`, rode mais uma v
 No início do `main.tex`, cinco linhas:
 
 ```latex
-\newcommand{\titulo}{Título do trabalho: uma frase que diz o que foi medido}
+\newcommand{\titulo}{Título do artigo: uma frase que diz o que foi medido}
 \newcommand{\aluno}{Nome Completo do Aluno}
 \newcommand{\email}{email@edu.udesc.br}
 \newcommand{\tituloCurto}{Título curto para o cabeçalho}
@@ -47,7 +47,7 @@ O título curto aparece no cabeçalho das páginas seguintes, como em periódico
 | Seção | O que se espera |
 |---|---|
 | **Resumo** | Um parágrafo de 120 a 200 palavras: contexto, o que foi feito, que dados, o resultado numérico com incerteza, e a conclusão em uma frase. Escrito por último, lido primeiro. |
-| **Introdução** | Do que trata, por que importa, o que já se sabe (com citação) e qual pergunta este trabalho responde. |
+| **Introdução** | Do que trata, por que importa, o que já se sabe (com citação) e qual pergunta este artigo responde. |
 | **Revisão Teórica** | Só as equações que serão usadas, com o significado de cada símbolo e as hipóteses assumidas. |
 | **Dados e Discussão** | Origem dos dados, critério de seleção, tabelas e figuras, o resultado com incerteza e a comparação com o valor esperado. |
 | **Conclusão** | O que o número significa, qual é a maior fonte de incerteza e o que melhoraria a medida. Sem resultado novo. |

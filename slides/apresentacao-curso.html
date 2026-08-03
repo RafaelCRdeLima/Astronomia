@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Astronomia (AST0001) — apresentação da disciplina</title><style>
+:root{--bg:#050505;--panel:#101010;--line:#343434;--text:#f4f4f1;--muted:#aaa69c;--accent:#d7b46a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+#palco{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.slide{position:absolute;width:1280px;height:720px;padding:64px 78px;display:none;
+ flex-direction:column;transform-origin:center center}
+.slide.on{display:flex}
+h1{font-size:60px;line-height:1.08;font-weight:700;letter-spacing:-.5px}
+h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(--text)}
+.sub{margin-top:22px;font-size:24px;color:var(--muted)}
+.conteudo{flex:1;display:flex;flex-direction:column;min-height:0;gap:16px}
+.conteudo.centro{justify-content:center}
+.corpo{font-size:27px;line-height:1.55;color:#e8e6e0}
+.corpo ul{list-style:none}
+.corpo li{margin:14px 0;padding-left:34px;position:relative}
+.corpo li::before{content:"";position:absolute;left:6px;top:16px;width:10px;height:10px;
+ border-radius:50%;background:var(--accent)}
+.corpo ol.cadeia-num{counter-reset:c;list-style:none;column-count:2;column-gap:48px}
+.corpo ol.cadeia-num li{counter-increment:c;margin:10px 0;padding-left:44px;position:relative;font-size:25px}
+.corpo ol.cadeia-num li::before{content:counter(c);position:absolute;left:0;top:0;width:30px;height:30px;
+ border-radius:8px;background:none;border:1px solid var(--line);color:var(--accent);
+ font-size:17px;display:flex;align-items:center;justify-content:center}
+.d{color:var(--accent);font-weight:600}
+.cadeia{font-size:32px;color:var(--accent);text-align:center;margin:26px 0;letter-spacing:.5px}
+.eqs{display:flex;flex-direction:column;align-items:center;gap:30px}
+.eqs img{max-width:92%;max-height:150px}
+.figura{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.figura img{height:100%;width:100%;object-fit:contain}
+.figura.claro img{background:#fff;border-radius:14px;padding:16px}
+.nota{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);
+ font-size:20px;color:var(--muted);line-height:1.5}
+.tb{width:100%;border-collapse:collapse;font-size:24px;margin-top:8px}
+.tb th{text-align:left;padding:12px 10px;color:var(--accent);font-weight:600;
+ border-bottom:1px solid var(--line);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+.tb td{padding:12px 10px;border-bottom:1px solid #1e1e1e}
+.capa{justify-content:center;text-align:center}
+.capa h1{font-size:76px}
+.capa .marca{margin-bottom:36px;font-size:20px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
+.capa .rodape{margin-top:52px;font-size:21px;color:var(--muted)}
+.roteiro h2,.fecho h2{color:var(--accent)}
+.barra{position:fixed;left:0;bottom:0;height:3px;background:var(--accent);transition:width .18s}
+.hud{position:fixed;right:20px;bottom:14px;font-size:15px;color:var(--muted);
+ display:flex;gap:16px;align-items:center;user-select:none}
+.hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;
+ padding:5px 11px;font-size:15px;cursor:pointer;font-family:inherit}
+.hud button:hover{border-color:var(--accent);color:var(--accent)}
+.tit{position:fixed;left:20px;bottom:14px;font-size:15px;color:#4f4f4f}
+@media print{.hud,.barra,.tit{display:none}}
+
+.link{display:block;line-height:1.35;color:var(--accent);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:24px;letter-spacing:-.5px;white-space:nowrap}
+.linkbox{border:1px solid var(--line);background:var(--panel);border-radius:14px;
+ padding:26px 30px;margin:10px 0;text-align:center}
+.qr{display:flex;gap:40px;align-items:center;justify-content:center;flex:1;min-height:0}
+.qr img{height:100%;max-height:330px;background:#fff;padding:12px;border-radius:14px}
+.qr .lado{display:flex;flex-direction:column;gap:14px;max-width:620px}
+.chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:21px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px 34px}
+.grid2 .cx{border-left:2px solid var(--accent);padding-left:16px}
+.grid2 .cx b{display:block;font-size:25px;margin-bottom:4px}
+.grid2 .cx span{font-size:21px;color:var(--muted);line-height:1.45}
+.tb.compacta th,.tb.compacta td{font-size:20px;padding:9px 14px}
+</style></head>
+<body>
+<div id="palco">
+<section class="slide capa"><div class="marca">Universidade do Estado de Santa Catarina &middot; CCT</div><h1>Astronomia</h1><div class="sub">AST0001 &middot; Curso de Física &middot; apresentação da disciplina</div><div class="rodape">Prof. Dr. Rafael Camargo Rodrigues de Lima &middot; 2026/2</div></section>
+<section class="slide "><h2>O que este curso pergunta</h2><div class="conteudo"><div class="corpo"><p class="cadeia">Como sabemos o que sabemos sobre o universo?</p><ul><li>Não dá para pôr uma estrela numa bancada</li><li>Não dá para repetir a formação de uma galáxia</li><li>O que chega até nós é luz, posição, tempo de chegada — e pouco mais</li><li>Todo o resto é <span class="d">inferência</span>, e inferência tem hipóteses</li></ul></div></div></section>
+<section class="slide "><h2>A cadeia que atravessa o semestre</h2><div class="conteudo"><div class="corpo"><p class="cadeia">observável &rarr; calibração &rarr; modelo &rarr; grandeza física</p><ul><li>Fluxo, ângulo e tempo são medidos</li><li>Massa, distância, temperatura, idade e composição são deduzidos</li><li>A pergunta que se repete em toda aula: o que foi medido e o que foi suposto?</li></ul></div></div></section>
+<section class="slide roteiro"><h2>Ao final do semestre, você deve conseguir</h2><div class="conteudo"><div class="corpo"><ul><li>Transformar uma medida bruta em uma grandeza física, e dizer que hipóteses usou</li><li>Deduzir as relações centrais, não apenas aplicá-las</li><li>Trabalhar com dados reais de arquivos públicos</li><li>Estimar ordens de grandeza antes de calcular</li><li>Escrever o resultado como um artigo curto, com incerteza e discussão</li></ul></div></div></section>
+<section class="slide "><h2>O semestre em seis blocos</h2><div class="conteudo"><div class="corpo"><table class="tb"><tr><th>Aulas</th><th>Bloco</th></tr><tr><td>1–6</td><td>Ferramentas observacionais: céu, órbitas, luz e telescópios</td></tr><tr><td>7–21</td><td>Estrelas: parâmetros, interiores, o Sol, formação e evolução</td></tr><tr><td>22–25</td><td>Objetos compactos, relatividade e ondas gravitacionais</td></tr><tr><td>26–34</td><td>Sistema Solar e exoplanetas</td></tr><tr><td>35–42</td><td>Via Láctea, galáxias e estrutura cósmica</td></tr><tr><td>43–48</td><td>Núcleos ativos, cosmologia e universo primordial</td></tr></table></div></div><div class="nota">48 aulas. Cada bloco tem um capítulo de apoio correspondente na apostila.</div></section>
+<section class="slide "><h2>O material do curso</h2><div class="conteudo"><div class="corpo"><div class="grid2"><div class="cx"><b>Site</b><span>tudo em um endereço só, sem senha</span></div><div class="cx"><b>Apostila</b><span>205 páginas, 19 capítulos, com deduções</span></div><div class="cx"><b>Laboratórios</b><span>simuladores interativos no navegador</span></div><div class="cx"><b>Dados</b><span>12 arquivos com medidas reais</span></div><div class="cx"><b>Modelo de artigo</b><span>template LaTeX pronto</span></div><div class="cx"><b>Slides</b><span>as aulas, para revisar depois</span></div></div></div></div></section>
+<section class="slide "><h2>O site da disciplina</h2><div class="conteudo"><div class="corpo"><div class="qr"><img src="assets/qr/site.png" alt=""><div class="lado"><div class="linkbox"><span class="link">rafaelcrdelima.github.io/Astronomia</span></div><div class="chips"><span class="chip">apostila</span><span class="chip">plano de aulas</span><span class="chip">laboratórios</span><span class="chip">dados</span><span class="chip">modelo de artigo</span><span class="chip">slides</span></div></div></div></div></div><div class="nota">Nada aqui exige login. Funciona no celular, e os PDFs podem ser baixados para ler sem internet.</div></section>
+<section class="slide "><h2>O programa da disciplina</h2><div class="conteudo"><div class="corpo"><ul><li>O plano das 48 aulas está no site, em PDF</li><li>Cada aula tem objetivos, ideias-chave, atividade e exercícios</li><li>As duas primeiras já vêm com roteiro de 50 minutos, minuto a minuto</li><li>Serve para você saber o que vem antes de vir</li></ul></div></div></section>
+<section class="slide "><h2>A apostila</h2><div class="conteudo"><div class="corpo"><div class="grid2"><div class="cx"><b>19 capítulos</b><span>de fundamentos observacionais à busca por vida</span></div><div class="cx"><b>205 páginas</b><span>escritas em português, para este curso</span></div><div class="cx"><b>Deduções completas</b><span>Kepler, Planck, Chandrasekhar, Friedmann</span></div><div class="cx"><b>Apêndice</b><span>análise dimensional, constantes, ordens de grandeza</span></div></div></div></div><div class="nota">Baseada na organização do Carroll &amp; Ostlie, mas com texto próprio — e com o material moderno que o livro não tem: LIGO, JWST, Gaia, Rubin.</div></section>
+<section class="slide "><h2>Como usar a apostila</h2><div class="conteudo"><div class="corpo"><ul><li>Leia o capítulo <span class="d">antes</span> do bloco de aulas</li><li>Marque os trechos que ligam observação a inferência</li><li>Refaça as contas: é a maneira mais rápida de descobrir se entendeu a hipótese</li><li>Cada capítulo é independente, mas a sequência é cumulativa</li></ul></div></div></section>
+<section class="slide "><h2>Os laboratórios interativos</h2><div class="conteudo"><div class="corpo"><div class="grid2"><div class="cx"><b>Laboratório 1</b><span>paralaxe, fluxo, magnitude e extinção</span></div><div class="cx"><b>Laboratório 2</b><span>órbitas, leis de Kepler e massa central</span></div><div class="cx"><b>Laboratório 3</b><span>espectros, temperatura, cores e velocidade radial</span></div><div class="cx"><b>Laboratório 3b</b><span>fotometria em campo real do SDSS</span></div></div></div></div><div class="nota">Rodam no navegador, sem instalar nada. Cada acesso gera um catálogo diferente — os números do seu grupo não serão os do grupo ao lado.</div></section>
+<section class="slide "><h2>Os dados: medidas de verdade</h2><div class="conteudo"><div class="corpo"><ul><li>Doze arquivos CSV com dados de arquivos públicos</li><li>Nada foi simulado: cada linha é uma medida que alguém fez</li><li>Abrem no Excel, no LibreOffice, no Python ou no Mathematica</li><li>Cada um vem com a equação a aplicar e um valor de referência para conferir</li></ul></div></div></section>
+<section class="slide "><h2>O que há nos arquivos</h2><div class="conteudo"><div class="corpo"><table class="tb compacta"><tr><th>Dado</th><th>Origem</th><th>Serve para</th></tr><tr><td>2000 estrelas próximas</td><td>Gaia DR3</td><td>distâncias, diagrama HR</td></tr><tr><td>581 binárias eclipsantes</td><td>Eker et al. 2018</td><td>massa e luminosidade</td></tr><tr><td>Espectro solar medido</td><td>LASP/LISIRD</td><td>Wien e Stefan-Boltzmann</td></tr><tr><td>2052 pulsares</td><td>ATNF</td><td>diagrama P–Ṗ</td></tr><tr><td>GW150914</td><td>LIGO / GWOSC</td><td>ver a onda gravitacional</td></tr><tr><td>1573 supernovas Ia</td><td>Pantheon+</td><td>medir H<sub>0</sub></td></tr><tr><td>176 curvas de rotação</td><td>SPARC</td><td>matéria escura</td></tr></table></div></div><div class="nota">E mais cinco: trânsitos do Kepler, exoplanetas do NASA Archive, planetas do Sistema Solar e zona habitável.</div></section>
+<section class="slide "><h2>Onde baixar os dados</h2><div class="conteudo"><div class="corpo"><div class="qr"><img src="assets/qr/dados.png" alt=""><div class="lado"><div class="linkbox"><span class="link">rafaelcrdelima.github.io/Astronomia/<br>apostila-astrofisica-moderna/dados/</span></div><div class="chips"><span class="chip">CSV</span><span class="chip">sem cadastro</span><span class="chip">menos de 1 MB cada</span></div></div></div></div></div><div class="nota">A página lista, para cada arquivo, o que ele contém, de onde veio e em que capítulo ele é usado.</div></section>
+<section class="slide "><h2>O artigo</h2><div class="conteudo"><div class="corpo"><ul><li>A entrega do curso não é um relatório de laboratório: é um <span class="d">artigo curto</span></li><li>Formato de revista científica: duas colunas, resumo, seções e bibliografia</li><li>O template já vem pronto — você preenche cinco linhas e escreve</li><li>O que se avalia é a cadeia: dado, método, resultado com incerteza, discussão</li></ul></div></div></section>
+<section class="slide "><h2>A estrutura do artigo</h2><div class="conteudo"><div class="corpo"><div class="grid2"><div class="cx"><b>Resumo</b><span>um parágrafo, com o resultado numérico dentro</span></div><div class="cx"><b>Introdução</b><span>o que se pergunta e por que importa</span></div><div class="cx"><b>Revisão Teórica</b><span>só as equações que você vai usar</span></div><div class="cx"><b>Dados e Discussão</b><span>origem, tabelas, figuras, resultado, comparação</span></div><div class="cx"><b>Conclusão</b><span>o que o número significa e o que o limita</span></div><div class="cx"><b>Bibliografia</b><span>só o que foi realmente consultado</span></div></div></div></div></section>
+<section class="slide "><h2>O modelo de artigo</h2><div class="conteudo"><div class="corpo"><div class="qr"><img src="assets/qr/artigo.png" alt=""><div class="lado"><div class="linkbox"><span class="link">rafaelcrdelima.github.io/Astronomia/modelo-artigo/</span></div><div class="chips"><span class="chip">LaTeX</span><span class="chip">Overleaf</span><span class="chip">.zip com tudo</span></div></div></div></div></div><div class="nota">Baixe o zip, envie os três arquivos ao Overleaf e compile. O PDF de exemplo mostra como deve ficar.</div></section>
+<section class="slide "><h2>Três regras para o artigo</h2><div class="conteudo"><div class="corpo"><ul><li><span class="d">Todo resultado tem valor, incerteza e unidade</span> — sem os três, não é resultado</li><li><span class="d">Toda figura e toda tabela são citadas no texto</span> — o que ninguém menciona não deveria estar lá</li><li><span class="d">Toda hipótese é declarada</span> — inclusive as que você não gostaria de ter feito</li></ul></div></div></section>
+<section class="slide "><h2>O que vale mais que um número bonito</h2><div class="conteudo"><div class="corpo"><ul><li>Qual foi o observável direto, e o que veio de modelo</li><li>Qual é a maior fonte de incerteza — e se é estatística ou sistemática</li><li>O que aconteceria se a hipótese principal estivesse errada</li><li>Um resultado com incerteza honesta vale mais que um resultado preciso e ingênuo</li></ul></div></div></section>
+<section class="slide "><h2>As ferramentas</h2><div class="conteudo"><div class="corpo"><div class="grid2"><div class="cx"><b>Excel ou LibreOffice</b><span>suficiente para a maioria dos laboratórios</span></div><div class="cx"><b>Python</b><span>pandas e matplotlib, se você já usa</span></div><div class="cx"><b>Mathematica</b><span>disponível na universidade</span></div><div class="cx"><b>Overleaf</b><span>LaTeX no navegador, sem instalar nada</span></div></div></div></div><div class="nota">Os roteiros trazem a fórmula pronta para Excel e para Python. Escolha a ferramenta com que você trabalha mais rápido.</div></section>
+<section class="slide "><h2>Os slides</h2><div class="conteudo"><div class="corpo"><div class="qr"><img src="assets/qr/slides.png" alt=""><div class="lado"><div class="linkbox"><span class="link">rafaelcrdelima.github.io/Astronomia/slides/</span></div><div class="chips"><span class="chip">para revisar</span><span class="chip">funciona no celular</span></div></div></div></div></div><div class="nota">As aulas ficam publicadas. Servem para revisar, não para substituir a aula — o que se discute em sala não está escrito nos slides.</div></section>
+<section class="slide "><h2>Bibliografia</h2><div class="conteudo"><div class="corpo"><ul><li><b>Carroll &amp; Ostlie</b>, <i>An Introduction to Modern Astrophysics</i>, 2ª ed. — a referência do curso</li><li><b>Ryden &amp; Peterson</b>, <i>Foundations of Astrophysics</i></li><li><b>Karttunen et al.</b>, <i>Fundamental Astronomy</i></li><li>Arquivos públicos: Gaia, MAST, GWOSC, NASA Exoplanet Archive, ESO</li><li>Para acompanhar o que é recente: arXiv, seções astro-ph</li></ul></div></div></section>
+<section class="slide "><h2>Como começamos</h2><div class="conteudo"><div class="corpo"><ul><li>Aula 1: o céu como laboratório físico — ângulos, coordenadas, e por que existem estações</li><li>Aula 2: paralaxe, magnitudes e a ponte entre brilho e física</li><li>Leitura: Capítulo 1 da apostila, as duas partes</li><li>Primeiro laboratório de dados: 2000 estrelas do Gaia</li></ul></div></div></section>
+<section class="slide fecho"><h2>Uma última coisa</h2><div class="conteudo"><div class="corpo"><p class="cadeia">Ninguém aqui vai decorar o céu.</p><ul><li>O objetivo é aprender a transformar medida em conhecimento</li><li>E a dizer, com honestidade, o quanto se sabe e o quanto não se sabe</li><li>Isso serve para astrofísica — e para qualquer coisa que você meça depois</li></ul></div></div></section>
+</div>
+<div class="barra"></div>
+<div class="tit">Apresentação do curso &middot; Astronomia (AST0001)</div>
+<div class="hud">
+  <button onclick="ant()">&larr;</button>
+  <span id="cnt"></span>
+  <button onclick="prox()">&rarr;</button>
+  <button onclick="telaCheia()">tela cheia (F)</button>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+const palco=document.getElementById('palco');
+function escala(){
+  const k=Math.min(window.innerWidth/1280,window.innerHeight/720);
+  slides.forEach(s=>s.style.transform='scale('+k+')');
+}
+function mostra(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.getElementById('cnt').textContent=(i+1)+' / '+slides.length;
+  document.querySelector('.barra').style.width=((i+1)/slides.length*100)+'%';
+  location.hash=i+1;
+}
+function prox(){mostra(i+1)} function ant(){mostra(i-1)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','n','N','Enter'].includes(e.key)){prox();e.preventDefault()}
+  else if(['ArrowLeft','ArrowUp','PageUp','p','P','Backspace'].includes(e.key)){ant();e.preventDefault()}
+  else if(e.key==='Home'){mostra(0)} else if(e.key==='End'){mostra(slides.length-1)}
+  else if(e.key==='f'||e.key==='F'){telaCheia()}
+});
+addEventListener('click',e=>{
+  if(e.target.closest('.hud'))return;
+  (e.clientX < window.innerWidth*0.28) ? ant() : prox();
+});
+function telaCheia(){
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen()}
+  else{document.exitFullscreen()}
+}
+addEventListener('resize',escala);
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+addEventListener('touchend',e=>{if(x0===null)return;
+  const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>50){dx<0?prox():ant()} x0=null});
+escala();
+mostra(parseInt(location.hash.replace('#',''))-1||0);
+</script>
+</body></html>
