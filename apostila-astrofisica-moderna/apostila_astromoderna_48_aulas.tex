@@ -301,7 +301,7 @@ A astrofísica moderna começa com uma limitação que é também sua força: qu
 \begin{noticebox}
 \textbf{Como este capítulo se divide.} O conteúdo está organizado em duas partes, e vale estudá-las separadamente.
 
-\textbf{Parte I --- a geometria do céu e os sistemas de referência.} Ângulos e ângulo sólido; a esfera celeste e os três sistemas de coordenadas; trigonometria esférica e a equação da altura; eclíptica, obliquidade e estações; a equação do tempo; tempo sideral; precessão, nutação e o conceito de época; os sistemas de referência ICRS e Gaia-CRF; a cadeia de reduções que leva de uma posição de catálogo à posição aparente no telescópio.
+\textbf{Parte I --- a geometria do céu e os sistemas de referência.} Ângulos e ângulo sólido; a esfera celeste e os quatro sistemas de coordenadas; trigonometria esférica e a equação da altura; eclíptica, obliquidade e estações; a equação do tempo; tempo sideral; precessão, nutação e o conceito de época; os sistemas de referência ICRS e Gaia-CRF; a cadeia de reduções que leva de uma posição de catálogo à posição aparente no telescópio.
 
 \textbf{Parte II --- distâncias, brilhos e a ponte para a física.} Paralaxe e a definição do parsec; as unidades astronômicas e suas definições modernas; movimento próprio, velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; fluxo, luminosidade e a lei do inverso do quadrado; a escala de magnitudes deduzida; módulo de distância; cores e sistemas fotométricos; extinção e avermelhamento; correção bolométrica.
 
@@ -346,20 +346,19 @@ Como $F_2/F_1=1/9$, obtemos $\Delta m\simeq2{,}4$. A estrela mais distante parec
 
 \textbf{Para praticar.} Escolha uma estrela brilhante visível no céu da estação. Pesquise sua magnitude aparente, distância aproximada e tipo espectral. Estime sua magnitude absoluta e compare com o Sol. Separe três ideias: aparência no céu, luminosidade intrínseca e posição física no espaço. O resultado costuma ser revelador: algumas estrelas famosas são brilhantes por estarem próximas; outras são brilhantes porque são intrinsicamente enormes ou muito luminosas.
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: fluxo, luminosidade e módulo de distância}
-Se uma fonte emite luminosidade total $L$ de modo aproximadamente isotrópico, essa energia atravessa uma esfera de raio $d$ e área $4\pi d^2$. O fluxo medido por unidade de área é, portanto,
+\begin{lessonblock}{As três relações que estruturam o capítulo}
+Três expressões aparecem em quase todas as páginas seguintes, e todas serão deduzidas
+adiante, na Parte II, com as hipóteses explicitadas:
 \[
-F=\frac{L}{4\pi d^2}.
+F=\frac{L}{4\pi d^{2}},
+\qquad
+m_2-m_1=-2{,}5\log_{10}\frac{F_2}{F_1},
+\qquad
+m-M=5\log_{10}d-5+A.
 \]
-A escala de magnitudes é definida por
-\[
-m_2-m_1=-2{,}5\log_{10}\left(\frac{F_2}{F_1}\right).
-\]
-Comparando o fluxo observado a uma distância $d$ com o fluxo que o mesmo objeto teria a $10\,\mathrm{pc}$, obtemos o módulo de distância:
-\[
-m-M=5\log_{10}\left(\frac{d}{10\,\mathrm{pc}}\right).
-\]
-Essa dedução mostra onde entram as hipóteses: emissão isotrópica, ausência de extinção e distância em parsecs. Quando houver poeira, a forma observacional passa a incluir uma correção $A$: $m-M=5\log_{10}(d/10\,\mathrm{pc})+A$.
+A primeira supõe emissão isotrópica e meio transparente; a segunda é uma definição, não
+uma lei; a terceira é a primeira aplicada à segunda, com $d$ em parsecs e $A$ a extinção
+em magnitudes. Guarde a estrutura agora; a origem de cada número vem depois.
 \end{lessonblock}
 
 \begin{lessonblock}{Exemplo de aplicação: distância por módulo}
@@ -400,9 +399,9 @@ Um cone de meia-abertura $\alpha$ subtende $\Omega=2\pi(1-\cos\alpha)$, que para
 \]
 e o céu inteiro tem $41\,253\,\mathrm{deg^{2}}$. Guarde esse número: ele converte imediatamente a área de um levantamento em fração do céu, e portanto qualquer contagem de objetos em densidade por unidade de área.
 
-Duas escalas de referência ajudam a calibrar a intuição. O olho humano resolve cerca de $1'$; a Lua e o Sol subtendem ambos aproximadamente $0{,}5^\circ$ --- coincidência que torna possíveis os eclipses totais. Um telescópio de $8\,\mathrm{m}$ tem limite de difração de $0{,}015''$ no visível, e a interferometria de base muito longa chega a $20\,\mu$as, doze ordens de grandeza abaixo do olho nu.
+Duas escalas de referência ajudam a calibrar a intuição. O olho humano resolve cerca de $1'$; a Lua e o Sol subtendem ambos aproximadamente $0{,}5^\circ$ --- coincidência que torna possíveis os eclipses totais. Um telescópio de $8\,\mathrm{m}$ tem limite de difração de $0{,}015''$ no visível, e a interferometria de base muito longa chega a $20\,\mu$as. Do olho nu ao VLBI vão seis ordens e meia de grandeza: $60''/20\,\mu\mathrm{as}=3\times10^{6}$.
 
-\subsection*{Os três sistemas de coordenadas e quando usar cada um}
+\subsection*{Os quatro sistemas de coordenadas e quando usar cada um}
 
 A esfera celeste admite vários sistemas, todos definidos por um plano fundamental e uma origem sobre ele.
 
@@ -419,11 +418,13 @@ Galáctico & plano da Via Láctea & $\ell$, $b$ & nada (convencionado) \\
 \end{tabular}
 \end{lessonblock}
 
-A escolha não é estética. O sistema \textbf{horizontal} responde à pergunta operacional --- ``dá para observar agora?'' --- mas suas coordenadas mudam a cada minuto. O \textbf{equatorial} é o de catálogo, porque acompanha a rotação do céu; é nele que telescópios são apontados. O \textbf{eclíptico} é natural para o Sistema Solar, já que os planetas orbitam perto de um único plano. O \textbf{galáctico} é o de escolha em estudos da Via Láctea, porque separa imediatamente disco de halo.
+Antes de usar qualquer fórmula, é preciso fixar a convenção do azimute, que varia entre livros e programas. \textbf{Neste texto, e em todo o curso, o azimute é contado a partir do ponto cardeal Norte, no sentido Norte $\to$ Leste $\to$ Sul $\to$ Oeste}, de $0^\circ$ a $360^\circ$; a altura é medida sobre o círculo vertical que passa pelo astro, positiva acima do horizonte. É a convenção do IAU SOFA, do Stellarium e do \textit{astropy}. Alguns textos clássicos de astronomia de posição contam o azimute a partir do Sul --- trocar de convenção sem perceber inverte o sinal do azimute calculado e é um erro que não deixa sintoma.
+
+A escolha do sistema não é estética. O sistema \textbf{horizontal} responde à pergunta operacional --- ``dá para observar agora?'' --- mas suas coordenadas mudam a cada minuto. O \textbf{equatorial} é o de catálogo, porque acompanha a rotação do céu; é nele que telescópios são apontados. O \textbf{eclíptico} é natural para o Sistema Solar, já que os planetas orbitam perto de um único plano. O \textbf{galáctico} é o de escolha em estudos da Via Láctea, porque separa imediatamente disco de halo.
 
 A ascensão reta é medida em horas, minutos e segundos, e não em graus, por uma razão prática: como a Terra gira $360^\circ$ em $24$ horas siderais, $1^{\rm h}$ de ascensão reta corresponde a $15^\circ$, e o intervalo entre a culminação de dois objetos é lido diretamente da diferença de suas ascensões retas. A unidade codifica um relógio.
 
-A conversão entre horizontal e equatorial já foi deduzida pela lei dos cossenos esférica, e vale reescrever o resultado central destacando o que ele contém:
+A conversão entre horizontal e equatorial será deduzida em detalhe duas subseções adiante, a partir da lei dos cossenos esférica. Vale adiantar aqui o resultado central, porque ele responde sozinho a quase toda pergunta prática:
 \[
 \sin h=\sin\varphi\sin\delta+\cos\varphi\cos\delta\cos H.
 \]
@@ -456,6 +457,12 @@ Tomando o produto vetorial em vez do escalar, e usando que a área do paralelogr
 \]
 
 \subsection*{Transformação entre sistemas de coordenadas}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{esfera_celeste.pdf}
+\caption{\textbf{A esfera celeste e o triângulo que resolve tudo.} \textbf{(a)} O céu visto de Joinville ($\varphi=-26{,}30^\circ$): o horizonte, o equador celeste, o polo sul celeste elevado de $|\varphi|$ sobre o ponto Sul e um astro $X$ com seu azimute $A_z$ (em dourado, contado do Norte para Leste) e sua altura $h$ (em ciano, sobre o círculo vertical). \textbf{(b)} Os mesmos três pontos formam o triângulo esférico $PZX$: os lados são $90^\circ-\varphi$, $90^\circ-\delta$ e $90^\circ-h$, e o ângulo no polo é o ângulo horário $H$. Aplicar a lei dos cossenos a esse triângulo produz a equação da altura, e ela responde sozinha a quase toda pergunta prática de observação.}
+\end{figure}
 
 A aplicação mais frequente dessas fórmulas é converter coordenadas equatoriais --- ascensão reta $\alpha$ e declinação $\delta$, fixas na esfera celeste --- em coordenadas horizontais --- altura $h$ e azimute $A_z$, que dependem do observador e do instante.
 
@@ -492,6 +499,91 @@ Para que o Sol volte ao meridiano, a Terra precisa girar esse tanto a mais. O di
 \]
 donde o dia sideral vale $23^{\rm h}56^{\rm m}04^{\rm s}$. É esse acúmulo de quase quatro minutos por dia que faz o céu noturno girar ao longo do ano: em seis meses, a defasagem chega a doze horas, e as constelações visíveis à meia-noite são exatamente as opostas.
 
+\subsection*{Da data civil à altura no céu: um exemplo completo}
+
+As fórmulas anteriores só se tornam úteis quando se sabe obter $\Theta$, o tempo sideral
+local, a partir de uma data e de uma hora de relógio. A cadeia tem quatro elos, e vale
+percorrê-la uma vez inteira com números.
+
+\textbf{Elo 1: data juliana.} A data juliana JD conta dias corridos desde
+$-4712$, e existe justamente para eliminar meses de comprimentos diferentes e anos
+bissextos das contas. Para uma data do calendário gregoriano, com $Y$, $M$, $D$ e a hora
+universal UT em horas, e fazendo $Y\to Y-1$, $M\to M+12$ quando $M\le2$:
+\[
+\mathrm{JD}=\left\lfloor365{,}25\,(Y+4716)\right\rfloor
++\left\lfloor30{,}6001\,(M+1)\right\rfloor+D+B-1524{,}5+\frac{\mathrm{UT}}{24},
+\]
+com $B=2-A+\lfloor A/4\rfloor$ e $A=\lfloor Y/100\rfloor$.
+
+\textbf{Elo 2: tempo sideral de Greenwich.} O tempo sideral médio em Greenwich cresce
+linearmente com a data juliana:
+\[
+\mathrm{GMST}=280{,}46061837^\circ+360{,}98564736629^\circ\,(\mathrm{JD}-2\,451\,545{,}0).
+\]
+O primeiro número é o GMST em J2000{,}0; o segundo é o ângulo que a Terra gira em um dia
+solar, e por isso excede $360^\circ$ --- é a mesma diferença de $3^{\rm m}56^{\rm s}$
+deduzida acima, escrita como taxa.
+
+\textbf{Elo 3: tempo sideral local e ângulo horário.} Somando a longitude do observador
+(positiva a leste) e subtraindo a ascensão reta:
+\[
+\Theta=\mathrm{GMST}+\lambda_{\rm obs},\qquad H=\Theta-\alpha.
+\]
+
+\textbf{Elo 4: altura e azimute.} Aplicam-se as duas expressões já deduzidas.
+
+\begin{lessonblock}{Exemplo resolvido: Antares vista de Joinville}
+\textbf{Pergunta.} Em 20 de agosto de 2026, às 21h00 do horário local (UTC$-3$), a que
+altura e em que direção está Antares ($\alpha$ Sco) vista de Joinville?
+
+\textbf{Dados.} Antares em J2000: $\alpha=16^{\rm h}29^{\rm m}24{,}5^{\rm s}=247{,}352^\circ$,
+$\delta=-26^\circ25'55''=-26{,}432^\circ$. Joinville: $\varphi=-26{,}30^\circ$,
+$\lambda_{\rm obs}=-48{,}85^\circ$.
+
+\textbf{Passo 1.} 21h00 local $=$ 00h00 UT do dia 21. Com $Y=2026$, $M=8$, $D=21$,
+$\mathrm{UT}=0$: $A=20$, $B=-13$, e
+\[
+\mathrm{JD}=2\,461\,273{,}5.
+\]
+
+\textbf{Passo 2.} $\mathrm{JD}-2\,451\,545{,}0=9728{,}5$ dias, logo
+\[
+\mathrm{GMST}=280{,}4606^\circ+360{,}98564737^\circ\times9728{,}5
+=329{,}331^\circ \pmod{360^\circ}=21^{\rm h}57^{\rm m}19^{\rm s}.
+\]
+
+\textbf{Passo 3.} $\Theta=329{,}331^\circ-48{,}85^\circ=280{,}481^\circ=18^{\rm h}41^{\rm m}55^{\rm s}$,
+e portanto
+\[
+H=280{,}481^\circ-247{,}352^\circ=33{,}129^\circ=2^{\rm h}12^{\rm m}31^{\rm s}.
+\]
+O sinal positivo diz que Antares já passou pelo meridiano há pouco mais de duas horas: a
+estrela está a oeste.
+
+\textbf{Passo 4.} Com $\varphi=-26{,}30^\circ$ e $\delta=-26{,}432^\circ$:
+\[
+\sin h=\sin\varphi\sin\delta+\cos\varphi\cos\delta\cos H
+=0{,}1973+0{,}6722=0{,}8695,
+\]
+logo $h=60{,}4^\circ$. Para o azimute, em vez da lei dos senos --- que deixa ambiguidade
+de quadrante --- usa-se a forma com arco-tangente de dois argumentos:
+\[
+A_z=\operatorname{atan2}\big(-\cos\delta\sin H,\;
+\cos\varphi\sin\delta-\sin\varphi\cos\delta\cos H\big)
+=262{,}2^\circ,
+\]
+ou seja, oeste-sudoeste. \textbf{Resposta:} Antares está a $60^\circ$ de altura, a
+oeste-sudoeste.
+
+\textbf{Duas verificações que não custam nada.} Primeira: como
+$\delta\simeq\varphi$, a altura máxima dessa estrela em Joinville é
+$h_{\max}=90^\circ-|\varphi-\delta|=89{,}9^\circ$ --- Antares passa praticamente pelo
+zênite daqui, o que explica os $60^\circ$ mesmo duas horas depois da culminação. Segunda:
+o arco diurno vale $2H_0/15$ com $\cos H_0=-\tan\varphi\tan\delta=-0{,}2456$, ou seja
+$H_0=104{,}2^\circ$ e $13{,}9$ horas acima do horizonte. Se um desses dois números
+destoasse do resultado, o erro estaria na cadeia, não no céu.
+\end{lessonblock}
+
 \subsection*{A eclíptica, a obliquidade e as estações}
 
 O movimento anual aparente do Sol descreve um grande círculo, a \textbf{eclíptica}, inclinado de $\varepsilon=23^\circ26'$ em relação ao equador celeste. Essa inclinação --- a obliquidade --- é a inclinação do eixo de rotação da Terra em relação ao polo de sua órbita, e é ela, e não a variação de distância ao Sol, que produz as estações.
@@ -501,6 +593,12 @@ O argumento quantitativo é direto. O fluxo por unidade de área horizontal em u
 F_{\rm sup}=F_0\sin h,
 \]
 com $F_0$ o fluxo perpendicular ao feixe. Combinando com a altura máxima do Sol, $h_{\max}=90^\circ-|\varphi-\delta_\odot|$, e sabendo que a declinação solar varia entre $-\varepsilon$ e $+\varepsilon$ ao longo do ano, tem-se toda a explicação: no verão local, $\delta_\odot$ tem o mesmo sinal de $\varphi$, o Sol sobe mais e $\sin h$ é maior; simultaneamente, o arco diurno se alonga, porque $\cos H_0=-\tan\varphi\tan\delta_\odot$ torna-se negativo. Mais fluxo por unidade de área \emph{e} mais horas de insolação, os dois efeitos na mesma direção.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{sol_joinville.pdf}
+\caption{\textbf{Por que existem estações, em números, para Joinville.} \textbf{(a)} A declinação do Sol varia entre $\pm\varepsilon$ ao longo do ano, e com ela a altura máxima $h_{\max}=90^\circ-|\varphi-\delta_\odot|$. Como $|\varphi|=26{,}3^\circ$ excede a obliquidade, o Sol nunca alcança o zênite aqui: no solstício de dezembro ele para a $87{,}1^\circ$. \textbf{(b)} Os dois efeitos caminham juntos e no mesmo sentido: no verão o dia dura mais ($13{,}6\,\mathrm{h}$ contra $10{,}4\,\mathrm{h}$ no inverno) \emph{e} cada metro quadrado recebe mais fluxo ao meio-dia, porque $\sin h_{\max}$ é maior. É a soma dos dois, e não a distância ao Sol, que produz as estações.}
+\end{figure}
 
 Para comparação, a excentricidade orbital terrestre, $e=0{,}0167$, produz variação de fluxo de
 \[
@@ -538,6 +636,12 @@ e período de \emph{meio} ano, porque depende de $\sin2\lambda$.
 A soma das duas, com fases diferentes, produz a curva assimétrica de dois máximos e dois mínimos, variando de $-14{,}2$ a $+16{,}4$ minutos ao longo do ano. É por isso que o dia mais curto do ano não coincide com o nascer do Sol mais tardio, e é por isso que relógios de sol precisam de tabela de correção. Duas propriedades geométricas independentes --- órbita elíptica e eixo inclinado --- deixam sua assinatura em um único gráfico observável.
 \end{lessonblock}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{equacao_tempo.pdf}
+\caption{\textbf{A equação do tempo e suas duas causas.} A curva dourada é a diferença entre o Sol verdadeiro e o Sol médio, calculada a partir das duas expressões deduzidas acima. A componente da excentricidade (tracejada longa) tem período anual e amplitude $7{,}7$ minutos; a da obliquidade (tracejada curta) tem período semestral e amplitude $9{,}9$ minutos. A soma, com as fases reais, vai de $-14{,}4$ minutos em meados de fevereiro a $+16{,}5$ minutos no início de novembro. Duas propriedades geométricas independentes deixam sua assinatura em um único gráfico observável --- e é por isso que um relógio de sol precisa de tabela de correção.}
+\end{figure}
+
 \subsection*{Precessão, nutação e a necessidade de uma época}
 
 A Terra não é esférica: a rotação a achata, produzindo um bojo equatorial com excesso de momento de inércia. O Sol e a Lua exercem torque sobre esse bojo, tentando alinhá-lo com a eclíptica. Como a Terra é um giroscópio, a resposta não é o alinhamento, e sim a \textbf{precessão} do eixo de rotação.
@@ -552,7 +656,13 @@ Com a elipticidade dinâmica da Terra, $(C-A)/C=3{,}27\times10^{-3}$, obtém-se 
 \]
 corresponde a um período de $360^\circ/50{,}3''\simeq25\,800$ anos.
 
-As consequências observacionais são grandes. O ponto vernal --- origem da ascensão reta --- desliza ao longo da eclíptica; a estrela polar muda ao longo dos milênios; e as coordenadas equatoriais de \emph{todos} os objetos mudam continuamente, a taxas de até $50''$ por ano em ascensão reta. Um catálogo sem indicação de época é, portanto, inutilizável: em cinquenta anos o erro acumulado é de quase um minuto de arco, muito acima do campo de visão de qualquer instrumento moderno.
+As consequências observacionais são grandes. O ponto vernal --- origem da ascensão reta --- desliza ao longo da eclíptica; a estrela polar muda ao longo dos milênios; e as coordenadas equatoriais de \emph{todos} os objetos mudam continuamente, a taxas de até $50''$ por ano em ascensão reta. Um catálogo sem indicação de época é, portanto, inutilizável. Em um único ano o deslocamento já é de quase um minuto de arco ($50{,}3''$); em cinquenta anos acumula $2515''$, ou seja $42'$ --- sete décimos de grau, muito acima do campo de visão de qualquer instrumento moderno.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{precessao.pdf}
+\caption{\textbf{O polo celeste não fica parado.} Trajetória do polo celeste norte entre as estrelas, calculada com $50{,}3''$ por ano: um círculo de raio $\varepsilon=23{,}44^\circ$ em torno do polo da eclíptica, percorrido em cerca de $25\,800$ anos. Polaris ocupa o posto hoje quase por acaso; Thuban o ocupava quando as pirâmides foram erguidas, e Vega o ocupará por volta do ano $13\,700$. As posições das estrelas foram convertidas de coordenadas equatoriais J2000 para eclípticas. É essa deriva que obriga todo catálogo a declarar sua época.}
+\end{figure}
 
 Sobreposta à precessão há a \textbf{nutação}, uma oscilação de pequena amplitude cujo termo principal tem período de $18{,}6$ anos --- o período de regressão dos nodos da órbita lunar --- e amplitude de $9{,}2''$ em obliquidade. Precessão é o movimento secular suave; nutação é o tremor periódico superposto.
 
@@ -594,6 +704,12 @@ com $p$ em radianos. A aproximação de ângulo pequeno é excelente: mesmo a es
 \]
 e a relação de trabalho torna-se $d\,[\mathrm{pc}]=1/p\,['']$. O parsec não é uma unidade arbitrária: ele é definido precisamente para que essa inversão seja exata.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{paralaxe.pdf}
+\caption{\textbf{A única distância medida por geometria pura.} \textbf{(a)} A base do triângulo é o raio da órbita terrestre; o ângulo $p$ é metade do deslocamento aparente entre duas observações separadas por seis meses. O ângulo está muito exagerado: para a estrela mais próxima ele vale $0{,}77''$, dez mil vezes menor que o desenho sugere. \textbf{(b)} A relação $d=1/p$ em escala logarítmica, com marcos reais. O Gaia mede paralaxes com incerteza de dezenas de microssegundos de arco, o que mantém a régua utilizável até alguns quiloparsecs; além disso, a geometria cede lugar a métodos indiretos.}
+\end{figure}
+
 Dois efeitos são frequentemente confundidos com a paralaxe e precisam ser separados dela.
 
 A \textbf{aberração da luz} decorre da composição de velocidades entre a velocidade orbital da Terra, $v_\oplus\simeq29{,}8\,\mathrm{km\,s^{-1}}$, e a da luz. A direção aparente da fonte desloca-se de um ângulo
@@ -606,7 +722,7 @@ O \textbf{movimento próprio} $\mu$ é o deslocamento angular real da estrela no
 \[
 v_t=\mu\,d,
 \]
-que em unidades práticas fica $v_t\,[\mathrm{km\,s^{-1}}]=4{,}74\,\mu\,['' \mathrm{ano^{-1}}]\,d\,[\mathrm{pc}]$. O fator $4{,}74$ é apenas a conversão de $\mathrm{UA\,ano^{-1}}$ para $\mathrm{km\,s^{-1}}$. Combinando $v_t$ com a velocidade radial obtida por Doppler, tem-se o vetor velocidade completo --- e é essa combinação, feita para bilhões de estrelas, que transformou o Gaia em um instrumento de dinâmica galáctica.
+que em unidades práticas fica $v_t\,[\mathrm{km\,s^{-1}}]=4{,}74\,\mu\,['' \mathrm{ano^{-1}}]\,d\,[\mathrm{pc}]$. O fator $4{,}74$ é apenas a conversão de $\mathrm{UA\,ano^{-1}}$ para $\mathrm{km\,s^{-1}}$, deduzido adiante em \emph{Velocidade espacial completa}. Combinando $v_t$ com a velocidade radial obtida por Doppler, tem-se o vetor velocidade completo --- e é essa combinação, feita para bilhões de estrelas, que transformou o Gaia em um instrumento de dinâmica galáctica.
 
 \subsection*{A escala de magnitudes, deduzida}
 
@@ -746,6 +862,12 @@ A_\lambda\equiv m_{\rm obs}-m_0=-2{,}5\log_{10}e^{-\tau_\lambda}=2{,}5\,\tau_\la
 \]
 Esse fator $1{,}086$ é apenas $2{,}5/\ln10$, e explica por que ``uma magnitude de extinção'' corresponde aproximadamente a uma profundidade óptica unitária --- coincidência numérica conveniente que se usa o tempo todo.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{extincao.pdf}
+\caption{\textbf{A poeira empobrece e avermelha.} \textbf{(a)} A extinção relativa $A_\lambda/A_V$ para a lei padrão do meio difuso ($R_V=3{,}1$): cresce monotonicamente para o azul, e no infravermelho próximo cai a um décimo do valor no visível --- razão pela qual regiões de formação estelar só se abrem em $K$ ou no infravermelho médio. \textbf{(b)} O efeito no diagrama cor--magnitude construído com as 2000 estrelas do laboratório de dados: a poeira desloca a estrela ao longo da seta, para baixo e para a direita. Sem corrigir, ela seria classificada como mais fria e mais distante do que é.}
+\end{figure}
+
 Como a extinção cresce para o azul, aproximadamente como $A_\lambda\propto\lambda^{-1}$ no visível, o objeto fica mais fraco \emph{e} mais vermelho. Definindo o excesso de cor $E(B-V)=A_B-A_V$ e a razão de extinção total para seletiva $R_V=A_V/E(B-V)\simeq3{,}1$, a correção completa do módulo de distância torna-se
 \[
 m-M=5\log_{10}d-5+A_V=5\log_{10}d-5+R_V\,E(B-V).
@@ -833,7 +955,7 @@ A atmosfera desvia a luz, elevando aparentemente os objetos. Para distâncias ze
 \[
 R\simeq\left(n_0-1\right)\tan z\simeq58''\tan z,
 \]
-com $n_0-1\simeq2{,}9\times10^{-4}$ ao nível do mar. A $45^\circ$ do zênite o desvio é de quase um minuto de arco --- centenas de vezes maior que a precisão astrométrica desejada. Perto do horizonte a expansão falha e a refração chega a $35'$, aproximadamente o diâmetro do Sol: quando o disco solar aparenta tocar o horizonte, geometricamente ele já se pôs por inteiro.
+com $n_0-1\simeq2{,}8\times10^{-4}$ para ar a $15\,^\circ$C ao nível do mar; a $0\,^\circ$C o índice sobe para $2{,}9\times10^{-4}$ e o coeficiente vai a $60''$, razão pela qual tabelas de refração sempre trazem temperatura e pressão. A $45^\circ$ do zênite o desvio é de quase um minuto de arco --- centenas de vezes maior que a precisão astrométrica desejada. Perto do horizonte a expansão falha e a refração chega a $35'$, aproximadamente o diâmetro do Sol: quando o disco solar aparenta tocar o horizonte, geometricamente ele já se pôs por inteiro.
 
 Como $n$ depende do comprimento de onda, existe também \textbf{refração diferencial}: a imagem de uma estrela se alonga em um pequeno espectro vertical, com o azul acima do vermelho. Em observações espectroscópicas com fenda estreita, isso causa perda seletiva de luz azul se a fenda não estiver orientada ao longo do círculo vertical --- erro clássico que distorce a forma do contínuo medido.
 
@@ -841,9 +963,40 @@ Como $n$ depende do comprimento de onda, existe também \textbf{refração difer
 
 Medidas de precisão exigem distinguir escalas de tempo que diferem por termos pequenos mas sistemáticos.
 
-\textbf{UT1} acompanha a rotação da Terra, que não é uniforme: marés desaceleram o planeta e movimentos internos produzem variações irregulares. \textbf{TAI} é o tempo atômico, uniforme por construção. \textbf{UTC} é atômico mas mantido dentro de $0{,}9\,\mathrm{s}$ de UT1 pela inserção de segundos intercalares. \textbf{TT} é a escala usada em efemérides, $TT=TAI+32{,}184\,\mathrm{s}$.
+\textbf{UT1} acompanha a rotação da Terra, que não é uniforme: marés desaceleram o planeta e movimentos internos produzem variações irregulares. \textbf{TAI} é o tempo atômico, uniforme por construção. \textbf{UTC} é atômico mas mantido dentro de $0{,}9\,\mathrm{s}$ de UT1 pela inserção de segundos intercalares --- prática com os dias contados: a Conferência Geral de Pesos e Medidas decidiu em 2022 abandonar o segundo intercalar até 2035, deixando UTC e UT1 divergirem livremente, porque as interrupções de um segundo causavam mais problemas em sistemas digitais do que resolviam. \textbf{TT} é a escala usada em efemérides, $TT=TAI+32{,}184\,\mathrm{s}$.
 
 Para trabalho de alta precisão --- cronometragem de pulsares, trânsitos, ondas gravitacionais --- usa-se \textbf{BJD}$_\mathrm{TDB}$: a data juliana corrigida para o baricentro do Sistema Solar e expressa em uma escala relativisticamente consistente. A correção baricêntrica chega a $\pm8{,}3$ minutos --- o tempo que a luz leva para cruzar $1\,\mathrm{UA}$ --- e ignorá-la introduz uma modulação anual espúria de mesmo período em qualquer série temporal. Muitos ``sinais anuais'' na literatura têm essa origem.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Propagação de incertezas: o mínimo necessário}
+Todo resultado deste curso é um valor \emph{com} incerteza; sem ela, não é resultado. A
+regra geral, para $q=q(x_1,\ldots,x_n)$ com erros independentes, é
+\[
+\sigma_q^{2}=\sum_i\left(\frac{\partial q}{\partial x_i}\right)^{2}\sigma_{x_i}^{2},
+\]
+deduzida no Capítulo 15. Três casos cobrem quase tudo o que aparece aqui.
+
+\textbf{Potência.} Se $q=x^{n}$, então $\sigma_q/q=|n|\,\sigma_x/x$. Daí sai
+imediatamente o resultado usado no laboratório: como $d=1/p$,
+\[
+\frac{\sigma_d}{d}=\frac{\sigma_p}{p}.
+\]
+Uma paralaxe com $5\%$ de erro dá distância com $5\%$ de erro --- desde que a inversão
+seja legítima, o que deixa de valer acima de $20\%$.
+
+\textbf{Logaritmo e magnitudes.} Se $m=-2{,}5\log_{10}F$, então
+\[
+\sigma_m=\frac{2{,}5}{\ln10}\frac{\sigma_F}{F}=1{,}0857\,\frac{\sigma_F}{F},
+\]
+de modo que $1\%$ de erro em fluxo é $0{,}011$ magnitude. O caminho inverso,
+$\sigma_F/F=0{,}921\,\sigma_m$, converte incerteza fotométrica em incerteza de fluxo.
+
+\textbf{Módulo de distância.} De $m-M=5\log_{10}d-5$ segue
+\[
+\frac{\sigma_d}{d}=\frac{\ln10}{5}\,\sigma_{(m-M)}\simeq0{,}46\,\sigma_{(m-M)},
+\]
+que é a mesma conta já feita para a extinção: $0{,}1$ magnitude de erro no módulo, ou em
+$A_V$, vale $4{,}6\%$ na distância.
+\end{lessonblock}
 
 \subsection*{Laboratório}
 \addcontentsline{toc}{subsection}{Laboratório -- Capítulo 1}
@@ -867,7 +1020,7 @@ No laboratório, a escala do mapa é indicada em mas por pixel. Estime a paralax
 \[
 p_{\rm grid}(\mathrm{mas})=\frac{\Delta_{\rm px}}{2}\,s_{\rm mapa}.
 \]
-Compare $p_{\rm grid}$ com a paralaxe exportada no CSV. Em seguida calcule a distância:
+O arquivo exportado já traz as colunas \texttt{deslocamento\_jan\_jul\_px} e \texttt{paralaxe\_por\_grid\_mas}: use-as apenas para \emph{conferir} a sua conta, depois de tê-la feito. Se os dois valores não baterem, o erro está na escala do mapa ou no fator 2 --- lembre que o deslocamento total entre janeiro e julho vale $2p$, não $p$. Em seguida compare ambos com a paralaxe medida que consta do CSV. Em seguida calcule a distância:
 \[
 d(\mathrm{pc})=\frac{1000}{p(\mathrm{mas})}.
 \]
@@ -889,6 +1042,7 @@ Converta magnitude absoluta em luminosidade relativa ao Sol usando $M_{\odot,V}=
 \[
 \frac{L}{L_\odot}=10^{(4{,}83-M)/2{,}5}.
 \]
+Atenção a uma diferença que passa despercebida: aqui $M$ é a magnitude absoluta na banda $V$, e a constante é $M_{V,\odot}=4{,}83$; na seção sobre correção bolométrica a constante era $M_{{\rm bol},\odot}=4{,}74$, que só vale para magnitudes bolométricas. As duas escalas diferem exatamente pela correção bolométrica, e misturá-las produz luminosidades erradas sem gerar nenhum sintoma.
 Ordene as 8 estrelas por luminosidade. Depois ordene as mesmas estrelas por magnitude aparente. As duas ordenações coincidem? Escolha dois casos em que não coincidam e explique, com números, se a diferença vem principalmente de distância, luminosidade intrínseca ou extinção.
 
 \textbf{Experimento 4: fotometria em filtros.}
@@ -919,7 +1073,7 @@ As respostas devem ser numéricas. Frases como ``a estrela está longe'' ou ``a 
 \end{lessonblock}
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Laboratório de dados 1 -- distâncias e magnitudes com o Gaia}
-\textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- 2000 estrelas reais a menos de $25\,\mathrm{pc}$ do Sol, medidas pela missão Gaia. Colunas: \texttt{ra\_deg}, \texttt{dec\_deg}, \texttt{paralaxe\_mas}, \texttt{erro\_paralaxe\_mas}, \texttt{pmra\_mas\_ano}, \texttt{pmdec\_mas\_ano}, \texttt{vel\_radial\_km\_s}, \texttt{G\_mag}, \texttt{BP\_RP}. Os movimentos próprios já vêm na convenção $\mu_{\alpha*}=\mu_\alpha\cos\delta$.
+\textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- 2000 estrelas reais a menos de $25\,\mathrm{pc}$ do Sol, medidas pela missão Gaia. Colunas, nesta ordem: \texttt{source\_id} (A), \texttt{ra\_deg} (B), \texttt{dec\_deg} (C), \texttt{paralaxe\_mas} (D), \texttt{erro\_paralaxe\_mas} (E), \texttt{pmra\_mas\_ano} (F), \texttt{pmdec\_mas\_ano} (G), \texttt{vel\_radial\_km\_s} (H), \texttt{G\_mag} (I), \texttt{BP\_RP} (J) --- as letras são as colunas do Excel ou do LibreOffice quando o arquivo é aberto sem alterações. Os movimentos próprios já vêm na convenção $\mu_{\alpha*}=\mu_\alpha\cos\delta$.
 
 \textbf{Física.} A paralaxe dá a distância por geometria pura, e a distância converte brilho aparente em brilho intrínseco:
 \[
@@ -929,17 +1083,17 @@ M=m-5\log_{10}\!\left(\frac{d}{\mathrm{pc}}\right)+5.
 
 \textbf{Roteiro.}
 \begin{enumerate}
-\item Crie uma coluna de distância. No Excel: \texttt{=1000/B2}. Em Python: \texttt{df["d"]=1000/df.paralaxe\_mas}.
-\item Crie a coluna de magnitude absoluta: \texttt{=D2-5*LOG10(F2)+5}.
+\item Crie uma coluna de distância, em K. No Excel: \texttt{=1000/D2} (a paralaxe está na coluna D). Em Python: \texttt{df["d"]=1000/df.paralaxe\_mas}.
+\item Crie a coluna de magnitude absoluta, em L: \texttt{=I2-5*LOG10(K2)+5} (magnitude $G$ em I, distância em K). Em Python: \texttt{df["M"]=df.G\_mag-5*np.log10(df.d)+5}.
 \item Faça o gráfico de dispersão de $M$ (eixo $y$, invertido) contra \texttt{BP\_RP} (eixo $x$). Você acaba de construir um diagrama HR com dados próprios.
 \item Identifique a sequência principal e o grupo isolado embaixo à esquerda. Quantas estrelas há em cada grupo?
-\item Propague a incerteza: $\sigma_d/d=\sigma_p/p$. Para quantas estrelas a distância é melhor que $1\%$? Verifique também quantas têm $\sigma_p/p>0{,}2$, faixa em que inverter a paralaxe deixa de ser legítimo.
+\item Propague a incerteza: $\sigma_d/d=\sigma_p/p$. Para quantas estrelas a distância é melhor que $1\%$? Depois conte quantas têm $\sigma_p/p>0{,}2$, faixa em que inverter a paralaxe deixa de ser legítimo --- e explique o resultado que encontrar. A resposta diz algo sobre a amostra, não sobre o método: pense em que tipo de catálogo o viés de Lutz-Kelker passaria a importar.
 \item Monte a velocidade espacial. Calcule $\mu=\sqrt{\mu_{\alpha*}^{2}+\mu_\delta^{2}}$ em segundos de arco por ano (as colunas estão em mas/ano), depois $v_t=4{,}74\,\mu\,d$ e, para as estrelas que têm velocidade radial medida, $v=\sqrt{v_r^{2}+v_t^{2}}$. Ordene por $v$ e identifique as estrelas de alta velocidade.
 \end{enumerate}
 
 \textbf{Entrega.} O diagrama, a contagem dos dois grupos e uma resposta curta: por que uma amostra limitada por volume, como esta, contém tantas estrelas fracas e quase nenhuma gigante?
 
-\textbf{Confira.} A estrela mais próxima da lista tem $p\simeq768\,\mathrm{mas}$, ou seja $d\simeq1{,}30\,\mathrm{pc}$ --- é Proxima Centauri. O maior movimento próprio da amostra passa de $10''$ por ano: é a estrela de Barnard, e sua velocidade tangencial fica em torno de $90\,\mathrm{km\,s^{-1}}$. Estrelas com $v>100\,\mathrm{km\,s^{-1}}$ na vizinhança solar pertencem tipicamente ao disco espesso ou ao halo --- a cinemática já separa populações antes de qualquer espectro.
+\textbf{Confira.} A estrela mais próxima da lista tem $p=768{,}07\,\mathrm{mas}$, ou seja $d=1{,}302\,\mathrm{pc}$ --- é Proxima Centauri. Das 2000 estrelas, 1958 têm distância melhor que $1\%$ e \emph{nenhuma} passa de $4{,}9\%$ de erro relativo: em uma amostra limitada por volume e tão próxima, inverter a paralaxe é sempre legítimo, e o viés de Lutz-Kelker só entra quando se trabalha com amostras distantes ou limitadas por magnitude. O maior movimento próprio da amostra passa de $10''$ por ano: é a estrela de Barnard, e sua velocidade tangencial fica em torno de $90\,\mathrm{km\,s^{-1}}$. Estrelas com $v>100\,\mathrm{km\,s^{-1}}$ na vizinhança solar pertencem tipicamente ao disco espesso ou ao halo --- a cinemática já separa populações antes de qualquer espectro.
 \end{lessonblock}
 
 \newpage
