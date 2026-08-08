@@ -1072,28 +1072,119 @@ A entrega deve conter:
 As respostas devem ser numéricas. Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' só contam se vierem acompanhadas de valores calculados.
 \end{lessonblock}
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Laboratório de dados 1 -- distâncias e magnitudes com o Gaia}
-\textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- 2000 estrelas reais a menos de $25\,\mathrm{pc}$ do Sol, medidas pela missão Gaia. Colunas, nesta ordem: \texttt{source\_id} (A), \texttt{ra\_deg} (B), \texttt{dec\_deg} (C), \texttt{paralaxe\_mas} (D), \texttt{erro\_paralaxe\_mas} (E), \texttt{pmra\_mas\_ano} (F), \texttt{pmdec\_mas\_ano} (G), \texttt{vel\_radial\_km\_s} (H), \texttt{G\_mag} (I), \texttt{BP\_RP} (J) --- as letras são as colunas do Excel ou do LibreOffice quando o arquivo é aberto sem alterações. Os movimentos próprios já vêm na convenção $\mu_{\alpha*}=\mu_\alpha\cos\delta$.
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Laboratório de dados 1 -- a vizinhança solar medida com o Gaia}
+\textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- as 2000 estrelas mais próximas
+do Sol com paralaxe medida pelo Gaia. Colunas, nesta ordem: \texttt{source\_id} (A),
+\texttt{ra\_deg} (B), \texttt{dec\_deg} (C), \texttt{paralaxe\_mas} (D),
+\texttt{erro\_paralaxe\_mas} (E), \texttt{pmra\_mas\_ano} (F), \texttt{pmdec\_mas\_ano} (G),
+\texttt{vel\_radial\_km\_s} (H), \texttt{G\_mag} (I), \texttt{BP\_RP} (J) --- as letras são
+as colunas do Excel ou do LibreOffice quando o arquivo é aberto sem alterações. Os
+movimentos próprios já vêm na convenção $\mu_{\alpha*}=\mu_\alpha\cos\delta$.
 
-\textbf{Física.} A paralaxe dá a distância por geometria pura, e a distância converte brilho aparente em brilho intrínseco:
+\textbf{Limites da amostra --- leia antes de dividir qualquer coisa por um volume.}
+Três características precisam entrar na discussão de qualquer resultado obtido daqui:
+
+\begin{enumerate}
+\item \textbf{O raio real é $18{,}4\,\mathrm{pc}$, não $25$.} A menor paralaxe do arquivo é
+$54{,}33\,\mathrm{mas}$: a lista foi truncada nas 2000 mais próximas. Usar $25\,\mathrm{pc}$
+como raio em um cálculo de densidade erra o resultado por um fator $2{,}5$, e sem sintoma
+nenhum.
+\item \textbf{Faltam as estrelas brilhantes.} A mais brilhante do arquivo tem $G=2{,}68$,
+porque o Gaia satura antes disso. Estão ausentes Sirius A, $\alpha$ Centauri A e B,
+Procyon A, Altair, Vega, Fomalhaut --- e as três gigantes que existem dentro de
+$18{,}4\,\mathrm{pc}$: Pollux, Arcturus e Capella. Nas posições de Sirius e de Capella o
+arquivo traz apenas as companheiras fracas.
+\item \textbf{$28\%$ não têm velocidade radial.} São $561$ células vazias na coluna H, e o
+Excel trata célula vazia como zero em contas aritméticas.
+\end{enumerate}
+
+\textbf{Física.} A paralaxe dá distância por geometria pura; a distância converte brilho
+aparente em brilho intrínseco; e uma contagem dentro de um volume dá densidade:
 \[
 d\,[\mathrm{pc}]=\frac{1000}{p\,[\mathrm{mas}]},\qquad
-M=m-5\log_{10}\!\left(\frac{d}{\mathrm{pc}}\right)+5.
+M=m-5\log_{10} d+5,\qquad
+n=\frac{N}{\tfrac{4}{3}\pi R^{3}},\qquad
+\frac{\sigma_n}{n}=\frac{1}{\sqrt{N}} .
 \]
+A última é a incerteza de Poisson: contagens de $N$ objetos independentes flutuam com
+$\sqrt{N}$.
 
 \textbf{Roteiro.}
 \begin{enumerate}
-\item Crie uma coluna de distância, em K. No Excel: \texttt{=1000/D2} (a paralaxe está na coluna D). Em Python: \texttt{df["d"]=1000/df.paralaxe\_mas}.
-\item Crie a coluna de magnitude absoluta, em L: \texttt{=I2-5*LOG10(K2)+5} (magnitude $G$ em I, distância em K). Em Python: \texttt{df["M"]=df.G\_mag-5*np.log10(df.d)+5}.
-\item Faça o gráfico de dispersão de $M$ (eixo $y$, invertido) contra \texttt{BP\_RP} (eixo $x$). Você acaba de construir um diagrama HR com dados próprios.
-\item Identifique a sequência principal e o grupo isolado embaixo à esquerda. Quantas estrelas há em cada grupo?
-\item Propague a incerteza: $\sigma_d/d=\sigma_p/p$. Para quantas estrelas a distância é melhor que $1\%$? Depois conte quantas têm $\sigma_p/p>0{,}2$, faixa em que inverter a paralaxe deixa de ser legítimo --- e explique o resultado que encontrar. A resposta diz algo sobre a amostra, não sobre o método: pense em que tipo de catálogo o viés de Lutz-Kelker passaria a importar.
-\item Monte a velocidade espacial. Calcule $\mu=\sqrt{\mu_{\alpha*}^{2}+\mu_\delta^{2}}$ em segundos de arco por ano (as colunas estão em mas/ano), depois $v_t=4{,}74\,\mu\,d$ e, para as estrelas que têm velocidade radial medida, $v=\sqrt{v_r^{2}+v_t^{2}}$. Ordene por $v$ e identifique as estrelas de alta velocidade.
+\item \textbf{Distância}, em K: \texttt{=1000/D2}. Em Python:
+\texttt{df["d"]=1000/df.paralaxe\_mas}.
+\item \textbf{Magnitude absoluta}, em L: \texttt{=I2-5*LOG10(K2)+5}. Em Python:
+\texttt{df["M"]=df.G\_mag-5*np.log10(df.d)+5}.
+\item \textbf{Diagrama HR:} dispersão de $M_G$ (eixo $y$, invertido) contra
+\texttt{BP\_RP}. Você acaba de construir um diagrama cor--magnitude com dados próprios.
+\item \textbf{Os dois grupos.} A nuvem principal, que corta o gráfico na diagonal, é a
+\emph{sequência principal}: estrelas que ainda queimam hidrogênio no núcleo. O grupo
+isolado embaixo à esquerda --- fraco, mas azul --- são \emph{anãs brancas}, restos
+compactos de estrelas que já morreram; ambos serão estudados nos Capítulos 5 e 6. Conte
+quantas há em cada grupo adotando um critério explícito e dizendo qual é. Um critério
+razoável é $M_G>10$ e $\mathrm{BP}-\mathrm{RP}<1{,}5$; se você escolher outro, a
+contagem muda, e é por isso que o critério tem de estar escrito no artigo.
+\item \textbf{Incerteza das distâncias:} $\sigma_d/d=\sigma_p/p$, em M:
+\texttt{=E2/D2}. Para quantas estrelas a distância é melhor que $1\%$? E quantas passam de
+$20\%$, faixa em que inverter a paralaxe deixa de ser legítimo? Explique o resultado que
+encontrar --- ele diz respeito a esta amostra, não ao método.
+\item \textbf{Teste de completeza.} Se as estrelas estivessem distribuídas com densidade
+uniforme, o número dentro de um raio $d$ cresceria como $N(<d)\propto d^{3}$. Conte
+$N(<d)$ para $d=6,8,10,\ldots,18\,\mathrm{pc}$ (no Excel:
+\texttt{=CONT.SE(K:K;"<10")}, ou \texttt{COUNTIF} em inglês) e faça o gráfico de
+$N(<d)/d^{3}$ contra $d$. Se a curva for plana, a amostra é completa até ali; se cair, o
+catálogo está perdendo objetos. Registre até que raio ela se mantém plana.
+\item \textbf{Densidade estelar local.} Com o raio validado no passo anterior, calcule
+$n=N/(\tfrac{4}{3}\pi R^{3})$ e sua incerteza de Poisson. Compare com o censo da
+vizinhança solar, que dá cerca de $0{,}10$ estrela por $\mathrm{pc^{3}}$ contando também
+anãs marrons e companheiras de sistemas múltiplos. \textbf{Este é o resultado principal do
+seu artigo}: um número, com incerteza, comparado a um valor de referência. A diferença
+não é erro --- é o que a discussão tem de explicar, usando os três limites listados no
+início.
+\item \textbf{Velocidades.} Calcule $\mu=\sqrt{\mu_{\alpha*}^{2}+\mu_\delta^{2}}$ em
+segundos de arco por ano (as colunas estão em mas/ano, então divida por 1000), depois
+$v_t=4{,}74\,\mu\,d$. Para a velocidade espacial, use \emph{apenas} as estrelas com
+velocidade radial medida: \texttt{=SE(H2="";"";RAIZ(H2\textasciicircum2+O2\textasciicircum2))}
+--- se você não proteger a fórmula, as 561 células vazias entram como zero e viram
+velocidades espaciais falsas.
+\item \textbf{Verificação de sanidade.} Ordene por $v$ e olhe as cinco maiores antes de
+usá-las. Duas delas têm $|v_r|\simeq400\,\mathrm{km\,s^{-1}}$ com $v_t$ quase nulo, e
+caem na região das anãs brancas do diagrama. Para isso ser real, o vetor velocidade
+teria de estar alinhado com a linha de visada dentro de cerca de um grau --- duas vezes,
+em pouco mais de cem objetos. Diga no artigo o que você fez com essas medidas e por quê.
 \end{enumerate}
 
-\textbf{Entrega.} O diagrama, a contagem dos dois grupos e uma resposta curta: por que uma amostra limitada por volume, como esta, contém tantas estrelas fracas e quase nenhuma gigante?
+\textbf{Entrega: um artigo curto, no modelo da disciplina.}
+\begin{itemize}
+\item \textbf{Resumo} --- um parágrafo com a densidade medida, sua incerteza e a
+comparação com a referência, em números.
+\item \textbf{Introdução} --- o que é uma amostra limitada por volume e por que a
+vizinhança solar é o único lugar onde se pode contar estrelas quase uma a uma.
+\item \textbf{Revisão Teórica} --- somente o que você usou: $d=1/p$, o módulo de
+distância, $n=N/V$ e a incerteza de Poisson, com as hipóteses declaradas.
+\item \textbf{Dados e Discussão} --- origem dos dados; o diagrama HR com os dois grupos e
+o critério adotado; o gráfico de completeza; a densidade com incerteza; e a discussão da
+diferença em relação ao valor de referência, nomeando cada efeito e, quando possível,
+estimando seu tamanho.
+\item \textbf{Conclusão} --- o que o número significa e o que dominaria uma medida
+melhor.
+\item \textbf{Bibliografia} --- Gaia DR3 e a fonte do valor de referência.
+\end{itemize}
 
-\textbf{Confira.} A estrela mais próxima da lista tem $p=768{,}07\,\mathrm{mas}$, ou seja $d=1{,}302\,\mathrm{pc}$ --- é Proxima Centauri. Das 2000 estrelas, 1958 têm distância melhor que $1\%$ e \emph{nenhuma} passa de $4{,}9\%$ de erro relativo: em uma amostra limitada por volume e tão próxima, inverter a paralaxe é sempre legítimo, e o viés de Lutz-Kelker só entra quando se trabalha com amostras distantes ou limitadas por magnitude. O maior movimento próprio da amostra passa de $10''$ por ano: é a estrela de Barnard, e sua velocidade tangencial fica em torno de $90\,\mathrm{km\,s^{-1}}$. Estrelas com $v>100\,\mathrm{km\,s^{-1}}$ na vizinhança solar pertencem tipicamente ao disco espesso ou ao halo --- a cinemática já separa populações antes de qualquer espectro.
+\textbf{Confira.} A estrela mais próxima da lista tem $p=768{,}07\,\mathrm{mas}$, ou seja
+$d=1{,}302\,\mathrm{pc}$: é Proxima Centauri. Das 2000 estrelas, 1958 têm distância melhor
+que $1\%$ e \emph{nenhuma} chega a $5\%$ --- em uma amostra tão próxima, inverter a
+paralaxe é sempre legítimo, e o viés de Lutz-Kelker só passa a importar em amostras
+distantes ou limitadas por magnitude. O teste de completeza dá $N(<d)/d^{3}$ praticamente
+constante, em torno de $0{,}31$, de $8\,\mathrm{pc}$ até o limite da amostra: a densidade
+é uniforme e a lista é completa até $R=18{,}4\,\mathrm{pc}$. Daí sai
+$n=0{,}077\pm0{,}002\,\mathrm{pc^{-3}}$, cerca de $77\%$ do censo de referência --- o
+déficit está nas anãs marrons, nas companheiras não resolvidas e no corte de brilho. As
+anãs brancas somam 116 objetos com o critério sugerido, ou $5{,}8\%\pm0{,}5\%$ da amostra.
+O maior movimento próprio passa de $10''$ por ano: é a estrela de Barnard, com
+$v_t\simeq90\,\mathrm{km\,s^{-1}}$. Entre as 1439 estrelas com velocidade radial, 97
+ultrapassam $100\,\mathrm{km\,s^{-1}}$ --- essas pertencem tipicamente ao disco espesso ou
+ao halo, e a cinemática já separa populações antes de qualquer espectro.
 \end{lessonblock}
 
 \newpage
