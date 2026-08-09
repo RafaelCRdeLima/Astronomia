@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Laboratório 1A | Os planos do céu</title>
+  <title>Laboratório 1A | O céu de Joinville</title>
   <style>
     :root {
       --bg: #050505;
@@ -503,7 +503,7 @@
   <main class="shell">
     <header>
       <div>
-        <h1>Laboratório 1A:<br>Os planos do céu</h1>
+        <h1>Laboratório 1A:<br>O céu de Joinville</h1>
         <p>Capítulo 1 · Parte A · Ângulos e sistemas de referências</p>
       </div>
       <div class="badge">Astrofísica Moderna</div>
@@ -525,17 +525,18 @@
 
     <section class="layout view active" id="observationView">
       <section class="panel">
-        <h2>Carta equatorial</h2>
+        <h2>A abóbada, vista do centro</h2>
         <div class="body">
           <div class="sky-wrap">
-            <canvas id="sky" width="1500" height="820" aria-label="Carta do céu em coordenadas equatoriais"></canvas>
+            <canvas id="sky" width="1080" height="1080" aria-label="Abóbada celeste vista de Joinville"></canvas>
             <div class="sky-measure" id="skyReadout">Clique em um objeto para medir</div>
-            <div class="sky-tip">Eixo horizontal: ascensão reta &alpha;. Eixo vertical: declinação &delta;. Clique perto de um objeto para lê-lo; depois registre a medida.</div>
+            <div class="sky-tip">Você está no centro, olhando para cima. A borda é o horizonte, o centro é o zênite. Norte em cima, Leste à esquerda. Clique perto de um objeto para medir azimute e altura.</div>
           </div>
           <div class="metrics">
-            <div class="metric"><small>&alpha; medida</small><strong id="mRa">--</strong></div>
-            <div class="metric"><small>&delta; medida</small><strong id="mDec">--</strong></div>
+            <div class="metric"><small>azimute A</small><strong id="mAz">--</strong></div>
+            <div class="metric"><small>altura h</small><strong id="mAlt">--</strong></div>
             <div class="metric"><small>população</small><strong id="mPop">--</strong></div>
+            <div class="metric"><small>tempo sideral local &Theta;</small><strong id="mTheta">--</strong></div>
             <div class="metric"><small>medidas registradas</small><strong id="mCount">0</strong></div>
           </div>
         </div>
@@ -550,9 +551,14 @@
             <span class="readout" id="jitterOut">0,30&deg;</span>
           </div>
           <div class="control">
-            <label for="dayOfYear">Data para o Sol (dia do ano)</label>
-            <input id="dayOfYear" type="range" min="1" max="365" step="1" value="1">
-            <span class="readout" id="dayOut">1</span>
+            <label for="dia">Dia do ano</label>
+            <input id="dia" type="range" min="1" max="365" step="1" value="1">
+            <span class="readout" id="diaOut">1</span>
+          </div>
+          <div class="control">
+            <label for="hora">Hora local (UTC&minus;3)</label>
+            <input id="hora" type="range" min="0" max="23.75" step="0.25" value="21">
+            <span class="readout" id="horaOut">21h00</span>
           </div>
           <div class="control">
             <label>Populações visíveis</label>
@@ -563,9 +569,10 @@
           </div>
           <div class="control">
             <button class="button" id="registerBtn" type="button" disabled>Registrar medida</button>
-            <button class="button" id="sunSweep" type="button">Registrar o Sol em 12 datas</button>
+            <button class="button" id="tresHoras" type="button">Medir a selecionada em 3 horários</button>
+            <button class="button" id="sunSweep" type="button">Medir o Sol ao meio-dia, em 12 datas</button>
           </div>
-          <p class="sky-tip">O catálogo é sorteado a cada acesso: os seus números não serão os do grupo ao lado. Registre pelo menos 15 objetos da faixa galáctica e 8 posições do Sol.</p>
+          <p class="sky-tip">Sítio: Joinville, &phi; = &minus;26,30°, &lambda; = &minus;48,85°. O catálogo é sorteado a cada acesso. Registre pelo menos 15 objetos da faixa galáctica, 8 posições do Sol, e uma estrela em três horários.</p>
         </div>
       </section>
 
@@ -574,7 +581,7 @@
         <div class="body">
           <div class="table-wrap">
             <table id="measTable">
-              <thead><tr><th>#</th><th>população</th><th>&alpha; (&deg;)</th><th>&delta; (&deg;)</th><th>dia</th></tr></thead>
+              <thead><tr><th>#</th><th>pop.</th><th>dia</th><th>hora</th><th>A (&deg;)</th><th>h (&deg;)</th><th>&alpha; (&deg;)</th><th>&delta; (&deg;)</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>
@@ -597,6 +604,18 @@
         </div>
       </section>
       <section class="panel">
+        <h2>O mesmo objeto, horários diferentes</h2>
+        <div class="body">
+          <div class="table-wrap">
+            <table id="invTable">
+              <thead><tr><th>objeto</th><th>n</th><th>&Delta;A</th><th>&Delta;h</th><th>&Delta;&alpha;</th><th>&Delta;&delta;</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="sky-tip">Azimute e altura mudam dezenas de graus em duas horas. Ascensão reta e declinação não mudam além do erro de leitura. É essa a diferença entre um sistema <b>local e instantâneo</b> e um sistema de <b>catálogo</b>.</p>
+        </div>
+      </section>
+      <section class="panel">
         <h2>Resultados</h2>
         <div class="body">
           <div class="table-wrap">
@@ -614,7 +633,7 @@
       <section class="panel">
         <h2>Template de Relatório</h2>
         <div class="body">
-          <p>Preencha o nome e clique em <b>Gerar template</b>. O laboratório salva <b>main.tex</b> já no modelo de artigo da disciplina, com o seu nome, <b>a tabela das medidas que você registrou</b>, a tabela de resultados, as figuras e os CSVs.</p>
+          <p>Preencha o nome e clique em <b>Gerar template</b>. O laboratório salva <b>main.tex</b> já no modelo de artigo da disciplina, com o seu nome, <b>a tabela das medidas que você registrou</b>, a tabela de resultados, a tabela de invariância, as figuras e os CSVs.</p>
           <div class="control">
             <label for="studentName">Nome do aluno</label>
             <input id="studentName" type="text" placeholder="Nome Completo">
@@ -629,31 +648,36 @@
   </main>
   <script>
 // =====================================================================
-//  Laboratorio 1A -- Os planos do ceu
-//  O aluno le coordenadas equatoriais de tres populacoes e mede a
-//  inclinacao dos planos fundamentais. Fato geometrico usado:
-//  um circulo maximo inclinado de i em relacao ao equador atinge
-//  declinacao maxima exatamente i.
+//  Laboratorio 1A -- O ceu de Joinville
+//  O observador esta no centro da abobada. O aluno mede azimute e
+//  altura -- que e o que um instrumento entrega -- e converte para
+//  coordenadas equatoriais usando a latitude e o tempo sideral.
 // =====================================================================
 const D2R = Math.PI / 180, R2D = 180 / Math.PI;
 const rad = d => d * D2R, deg = r => r * R2D;
 const wrap360 = a => ((a % 360) + 360) % 360;
 
-// referencias J2000
+// sitio e referencias J2000
+const SITIO = { nome: "Joinville", phi: -26.30, lam: -48.85, fuso: -3 };
 const NGP = { ra: 192.85948, dec: 27.12825, lonNCP: 122.93192 };
 const OBL = 23.4393;
-const REF = {
-  iGal: 90 - NGP.dec,          // 62.872
-  raNodeGal: wrap360(NGP.ra + 90),  // 282.859 -- no ascendente
-  eps: OBL,
-  raNodeEcl: 0,
-};
+const JD_2026 = 2461041.5;                       // 2026-01-01 00:00 UT
+const REF = { iGal: 90 - NGP.dec, eps: OBL, poloRa: NGP.ra, poloDec: NGP.dec };
+
+// ---------------------------------------------------------- tempo
+function julianDay(dia, horaLocal) {
+  return JD_2026 + (dia - 1) + (horaLocal - SITIO.fuso) / 24;
+}
+function tempoSideralLocal(dia, horaLocal) {
+  const J = julianDay(dia, horaLocal);
+  const gmst = wrap360(280.46061837 + 360.98564736629 * (J - 2451545.0));
+  return wrap360(gmst + SITIO.lam);
+}
 
 // ---------------------------------------------------------- transformacoes
 function galToEq(l, b) {
   const lr = rad(l), br = rad(b), dp = rad(NGP.dec), ln = rad(NGP.lonNCP);
-  const sd = Math.sin(br) * Math.sin(dp) + Math.cos(br) * Math.cos(dp) * Math.cos(ln - lr);
-  const dec = Math.asin(sd);
+  const dec = Math.asin(Math.sin(br) * Math.sin(dp) + Math.cos(br) * Math.cos(dp) * Math.cos(ln - lr));
   const y = Math.cos(br) * Math.sin(ln - lr);
   const x = Math.sin(br) * Math.cos(dp) - Math.cos(br) * Math.sin(dp) * Math.cos(ln - lr);
   return { ra: wrap360(deg(Math.atan2(y, x)) + NGP.ra), dec: deg(dec) };
@@ -662,17 +686,29 @@ function eclToEq(lam, beta) {
   const l = rad(lam), b = rad(beta), e = rad(OBL);
   const dec = Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l));
   const y = Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e);
-  const x = Math.cos(l);
-  return { ra: wrap360(deg(Math.atan2(y, x))), dec: deg(dec) };
+  return { ra: wrap360(deg(Math.atan2(y, Math.cos(l)))), dec: deg(dec) };
 }
-// posicao solar de baixa precisao (melhor que 0,01 grau)
-function sunEq(dayOfYear) {
-  const n = dayOfYear - 1 + 0.5;                  // dias desde 1 de janeiro
-  const nJ2000 = n - 0.5 + 365.25 * 26;           // ancorado em um ano generico
-  const L = wrap360(280.460 + 0.9856474 * nJ2000);
-  const g = rad(wrap360(357.528 + 0.9856003 * nJ2000));
-  const lam = wrap360(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g));
-  return eclToEq(lam, 0);
+// equatorial -> horizontal (azimute contado do Norte para Leste)
+function eqToHor(ra, dec, theta) {
+  const H = rad(theta - ra), p = rad(SITIO.phi), d = rad(dec);
+  const h = Math.asin(Math.sin(p) * Math.sin(d) + Math.cos(p) * Math.cos(d) * Math.cos(H));
+  const A = Math.atan2(-Math.cos(d) * Math.sin(H),
+                        Math.cos(p) * Math.sin(d) - Math.sin(p) * Math.cos(d) * Math.cos(H));
+  return { az: wrap360(deg(A)), alt: deg(h) };
+}
+// horizontal -> equatorial: e esta que o aluno aplica no CSV
+function horToEq(az, alt, theta) {
+  const A = rad(az), h = rad(alt), p = rad(SITIO.phi);
+  const dec = Math.asin(Math.sin(h) * Math.sin(p) + Math.cos(h) * Math.cos(p) * Math.cos(A));
+  const H = Math.atan2(-Math.sin(A) * Math.cos(h),
+                        Math.cos(p) * Math.sin(h) - Math.sin(p) * Math.cos(h) * Math.cos(A));
+  return { ra: wrap360(theta - deg(H)), dec: deg(dec) };
+}
+function sunEq(dia) {
+  const n = julianDay(dia, 12) - 2451545.0;
+  const L = wrap360(280.460 + 0.9856474 * n);
+  const g = rad(wrap360(357.528 + 0.9856003 * n));
+  return eclToEq(wrap360(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)), 0);
 }
 
 // ---------------------------------------------------------- catalogo
@@ -680,189 +716,216 @@ let rngState = (Math.random() * 4294967296) >>> 0;
 function rnd() { rngState = (rngState * 1664525 + 1013904223) >>> 0; return rngState / 4294967296; }
 function gauss() { return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd()); }
 
-const PLANETAS = [
-  { nome: "Mercurio", inc: 7.00 }, { nome: "Venus", inc: 3.39 },
-  { nome: "Marte", inc: 1.85 }, { nome: "Jupiter", inc: 1.30 },
-  { nome: "Saturno", inc: 2.49 },
-];
-
+const PLANETAS = [{ nome: "Mercúrio", inc: 7.00 }, { nome: "Vênus", inc: 3.39 },
+                  { nome: "Marte", inc: 1.85 }, { nome: "Júpiter", inc: 1.30 },
+                  { nome: "Saturno", inc: 2.49 }];
 let catalogo = [];
 function gerarCatalogo() {
-  catalogo = [];
-  let id = 0;
-  for (let i = 0; i < 420; i++) {                       // campo, uniforme na esfera
-    const ra = rnd() * 360, dec = deg(Math.asin(2 * rnd() - 1));
-    catalogo.push({ id: id++, pop: "campo", ra, dec });
+  catalogo = []; let id = 0;
+  for (let i = 0; i < 500; i++)
+    catalogo.push({ id: id++, pop: "campo", ...{ ra: rnd() * 360, dec: deg(Math.asin(2 * rnd() - 1)) } });
+  for (let i = 0; i < 320; i++) {
+    const b = Math.max(-22, Math.min(22, 3.2 * Math.tan(Math.PI * (rnd() - 0.5) * 0.72)));
+    catalogo.push({ id: id++, pop: "galactico", ...galToEq(rnd() * 360, b) });
   }
-  for (let i = 0; i < 260; i++) {                       // faixa da Via Lactea
-    const l = rnd() * 360;
-    const b = 3.2 * Math.tan(Math.PI * (rnd() - 0.5) * 0.72); // asas largas, disco fino
-    const e = galToEq(l, Math.max(-25, Math.min(25, b)));
-    catalogo.push({ id: id++, pop: "galactico", ra: e.ra, dec: e.dec });
-  }
-  for (const p of PLANETAS) {                            // planetas, perto da ecliptica
-    const lam = rnd() * 360, beta = p.inc * Math.sin(rnd() * 2 * Math.PI);
-    const e = eclToEq(lam, beta);
-    catalogo.push({ id: id++, pop: "planeta", nome: p.nome, ra: e.ra, dec: e.dec });
-  }
+  for (const p of PLANETAS)
+    catalogo.push({ id: id++, pop: "planeta", nome: p.nome,
+                    ...eclToEq(rnd() * 360, p.inc * Math.sin(rnd() * 2 * Math.PI)) });
 }
 gerarCatalogo();
 
 // ---------------------------------------------------------- estado
-let medidas = [];
-let selecionado = null;
-let jitter = 0.30;
-let diaAno = 1;
+let medidas = [], selecionado = null;
+let jitter = 0.30, dia = 1, hora = 21.0;
 const mostra = { campo: true, galactico: true, planeta: true, sol: true };
-
 const $ = id => document.getElementById(id);
 const sky = $("sky"), sctx = sky.getContext("2d");
+const theta = () => tempoSideralLocal(dia, hora);
 
-// ---------------------------------------------------------- desenho da carta
-const MARG = { l: 88, r: 24, t: 40, b: 104 };
-const xOf = ra => MARG.l + (ra / 360) * (sky.width - MARG.l - MARG.r);
-const yOf = dec => MARG.t + ((90 - dec) / 180) * (sky.height - MARG.t - MARG.b);
-const raOf = x => ((x - MARG.l) / (sky.width - MARG.l - MARG.r)) * 360;
-const decOf = y => 90 - ((y - MARG.t) / (sky.height - MARG.t - MARG.b)) * 180;
-
-const COR = { campo: "#5c6470", galactico: "#6fd3d8", planeta: "#d7b46a", sol: "#ffd27f" };
-
-function desenhaCarta() {
-  sctx.clearRect(0, 0, sky.width, sky.height);
-  sctx.fillStyle = "#080808"; sctx.fillRect(0, 0, sky.width, sky.height);
-  // grade
-  sctx.strokeStyle = "#242424"; sctx.lineWidth = 1;
-  sctx.fillStyle = "#8a8a8a"; sctx.font = "16px ui-sans-serif, system-ui";
-  for (let a = 0; a <= 360; a += 30) {
-    sctx.beginPath(); sctx.moveTo(xOf(a), yOf(90)); sctx.lineTo(xOf(a), yOf(-90)); sctx.stroke();
-    sctx.textAlign = "center"; sctx.fillText(a + "°", xOf(a), sky.height - MARG.b + 26);
-  }
-  for (let d = -90; d <= 90; d += 30) {
-    sctx.beginPath(); sctx.moveTo(xOf(0), yOf(d)); sctx.lineTo(xOf(360), yOf(d)); sctx.stroke();
-    sctx.textAlign = "right"; sctx.fillText((d > 0 ? "+" : "") + d + "°", MARG.l - 12, yOf(d) + 6);
-  }
-  sctx.strokeStyle = "#3a3a3a";
-  sctx.beginPath(); sctx.moveTo(xOf(0), yOf(0)); sctx.lineTo(xOf(360), yOf(0)); sctx.stroke();
-  sctx.fillStyle = "#aaa69c"; sctx.textAlign = "center";
-  sctx.fillText("ascensão reta  α", (xOf(0) + xOf(360)) / 2, sky.height - MARG.b + 56);
-  sctx.save(); sctx.translate(24, (yOf(90) + yOf(-90)) / 2); sctx.rotate(-Math.PI / 2);
-  sctx.fillText("declinação  δ", 0, 0); sctx.restore();
-
+// objetos visiveis agora, ja em coordenadas horizontais
+function visiveis() {
+  const th = theta(), out = [];
   for (const o of catalogo) {
     if (!mostra[o.pop]) continue;
+    const hh = eqToHor(o.ra, o.dec, th);
+    if (hh.alt > 0) out.push({ ...o, ...hh });
+  }
+  if (mostra.sol) {
+    const s = sunEq(dia), hh = eqToHor(s.ra, s.dec, th);
+    if (hh.alt > 0) out.push({ id: -1, pop: "sol", ra: s.ra, dec: s.dec, ...hh });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------- abobada
+const COR = { campo: "#5c6470", galactico: "#6fd3d8", planeta: "#d7b46a", sol: "#ffd27f" };
+const domo = () => ({ cx: sky.width / 2, cy: sky.height / 2, R: Math.min(sky.width, sky.height) / 2 - 46 });
+function proj(az, alt) {                       // azimutal equidistante, zenite no centro
+  const { cx, cy, R } = domo(), r = R * (90 - alt) / 90, a = rad(az);
+  return { x: cx - r * Math.sin(a), y: cy - r * Math.cos(a) };   // N em cima, L a esquerda
+}
+function desenhaDomo() {
+  const { cx, cy, R } = domo();
+  sctx.clearRect(0, 0, sky.width, sky.height);
+  sctx.fillStyle = "#080808"; sctx.fillRect(0, 0, sky.width, sky.height);
+  sctx.strokeStyle = "#2c2c2c"; sctx.lineWidth = 1;
+  for (const alt of [30, 60]) {
+    sctx.beginPath(); sctx.arc(cx, cy, R * (90 - alt) / 90, 0, 2 * Math.PI); sctx.stroke();
+  }
+  sctx.strokeStyle = "#4a4a4a"; sctx.lineWidth = 1.6;
+  sctx.beginPath(); sctx.arc(cx, cy, R, 0, 2 * Math.PI); sctx.stroke();
+  sctx.strokeStyle = "#242424"; sctx.lineWidth = 1;
+  for (let a = 0; a < 360; a += 30) {
+    const p = proj(a, 0);
+    sctx.beginPath(); sctx.moveTo(cx, cy); sctx.lineTo(p.x, p.y); sctx.stroke();
+  }
+  sctx.fillStyle = "#8a8a8a"; sctx.font = "20px ui-sans-serif, system-ui"; sctx.textAlign = "center";
+  for (const [a, s] of [[0, "N"], [90, "L"], [180, "S"], [270, "O"]]) {
+    const p = proj(a, -5.5); sctx.fillText(s, p.x, p.y + 7);
+  }
+  sctx.font = "14px ui-sans-serif, system-ui"; sctx.fillStyle = "#6a6a6a";
+  sctx.fillText("zênite", cx, cy - 10);
+  sctx.fillText("h = 30°", cx, cy + R * 60 / 90 + 18);
+
+  for (const o of visiveis()) {
+    const p = proj(o.az, o.alt);
     sctx.fillStyle = COR[o.pop];
-    const r = o.pop === "planeta" ? 6 : (o.pop === "galactico" ? 3.1 : 2.1);
-    sctx.globalAlpha = o.pop === "campo" ? 0.55 : 0.95;
-    sctx.beginPath(); sctx.arc(xOf(o.ra), yOf(o.dec), r, 0, 2 * Math.PI); sctx.fill();
+    sctx.globalAlpha = o.pop === "campo" ? 0.6 : 0.95;
+    const r = o.pop === "sol" ? 10 : (o.pop === "planeta" ? 6 : (o.pop === "galactico" ? 3.2 : 2.2));
+    sctx.beginPath(); sctx.arc(p.x, p.y, r, 0, 2 * Math.PI); sctx.fill();
   }
   sctx.globalAlpha = 1;
-  if (mostra.sol) {
-    const s = sunEq(diaAno);
-    sctx.fillStyle = COR.sol;
-    sctx.beginPath(); sctx.arc(xOf(s.ra), yOf(s.dec), 9, 0, 2 * Math.PI); sctx.fill();
-    sctx.strokeStyle = "#ffd27f"; sctx.globalAlpha = 0.45;
-    sctx.beginPath(); sctx.arc(xOf(s.ra), yOf(s.dec), 15, 0, 2 * Math.PI); sctx.stroke();
-    sctx.globalAlpha = 1;
-  }
   for (const m of medidas) {
+    if (m.dia !== dia || Math.abs(m.hora - hora) > 1e-6) continue;
+    const p = proj(m.az, m.alt);
     sctx.strokeStyle = "#f4f4f1"; sctx.lineWidth = 1.4; sctx.globalAlpha = 0.8;
-    sctx.beginPath(); sctx.arc(xOf(m.ra), yOf(m.dec), 7, 0, 2 * Math.PI); sctx.stroke();
-    sctx.globalAlpha = 1;
+    sctx.beginPath(); sctx.arc(p.x, p.y, 8, 0, 2 * Math.PI); sctx.stroke(); sctx.globalAlpha = 1;
   }
   if (selecionado) {
+    const p = proj(selecionado.az, selecionado.alt);
     sctx.strokeStyle = "#d7b46a"; sctx.lineWidth = 2;
-    sctx.beginPath(); sctx.arc(xOf(selecionado.ra), yOf(selecionado.dec), 12, 0, 2 * Math.PI); sctx.stroke();
+    sctx.beginPath(); sctx.arc(p.x, p.y, 13, 0, 2 * Math.PI); sctx.stroke();
   }
 }
 
-// ---------------------------------------------------------- selecao
+// ---------------------------------------------------------- medida
+function mede(o) {
+  const az = wrap360(o.az + gauss() * jitter / Math.max(0.2, Math.cos(rad(o.alt))));
+  const alt = Math.max(0.05, Math.min(90, o.alt + gauss() * jitter));
+  const th = theta();
+  return { pop: o.pop, idCat: o.id, dia, hora, theta: th, az, alt, ...horToEq(az, alt, th) };
+}
 sky.addEventListener("click", ev => {
   const r = sky.getBoundingClientRect();
-  const x = (ev.clientX - r.left) * (sky.width / r.width);
-  const y = (ev.clientY - r.top) * (sky.height / r.height);
-  const ra0 = raOf(x), dec0 = decOf(y);
+  const x = (ev.clientX - r.left) * (sky.width / r.width), y = (ev.clientY - r.top) * (sky.height / r.height);
   let melhor = null, dmin = 1e9;
-  const cand = catalogo.filter(o => mostra[o.pop]);
-  if (mostra.sol) { const s = sunEq(diaAno); cand.push({ id: -1, pop: "sol", ra: s.ra, dec: s.dec }); }
-  for (const o of cand) {
-    const dx = xOf(o.ra) - x, dy = yOf(o.dec) - y;
-    const d = Math.hypot(dx, dy);
+  for (const o of visiveis()) {
+    const p = proj(o.az, o.alt), d = Math.hypot(p.x - x, p.y - y);
     if (d < dmin) { dmin = d; melhor = o; }
   }
-  if (!melhor || dmin > 28) { selecionado = null; $("registerBtn").disabled = true; atualiza(); return; }
-  selecionado = {
-    pop: melhor.pop, idCat: melhor.id, dia: melhor.pop === "sol" ? diaAno : null,
-    ra: wrap360(melhor.ra + gauss() * jitter / Math.cos(rad(melhor.dec))),
-    dec: Math.max(-90, Math.min(90, melhor.dec + gauss() * jitter)),
-  };
+  if (!melhor || dmin > 26) { selecionado = null; $("registerBtn").disabled = true; atualiza(); return; }
+  selecionado = mede(melhor);
   $("registerBtn").disabled = false;
   atualiza();
 });
+function registra(m) { medidas.push({ n: medidas.length + 1, ...m }); atualiza(); }
 
-function registra(m) {
-  medidas.push({ n: medidas.length + 1, ...m });
-  atualiza();
-}
-$("registerBtn").addEventListener("click", () => { if (selecionado) { registra(selecionado); selecionado = null; $("registerBtn").disabled = true; } });
-$("sunSweep").addEventListener("click", () => {
-  for (let k = 0; k < 12; k++) {
-    const d = Math.round(1 + k * 365 / 12);
-    const s = sunEq(d);
-    registra({ pop: "sol", idCat: -1, dia: d, ra: wrap360(s.ra + gauss() * jitter / Math.cos(rad(s.dec))), dec: s.dec + gauss() * jitter });
-  }
+// ---------------------------------------------------------- controles
+$("registerBtn").addEventListener("click", () => {
+  if (selecionado) { registra(selecionado); selecionado = null; $("registerBtn").disabled = true; }
 });
-$("clearMeas").addEventListener("click", () => { medidas = []; atualiza(); });
+$("tresHoras").addEventListener("click", () => {
+  if (!selecionado) return;
+  const alvo = catalogo.find(o => o.id === selecionado.idCat);
+  if (!alvo) return;
+  const h0 = hora;
+  for (const dh of [0, 2, 4]) {
+    hora = h0 + dh;
+    const th = tempoSideralLocal(dia, hora), hh = eqToHor(alvo.ra, alvo.dec, th);
+    if (hh.alt > 3) registra(mede({ ...alvo, ...hh }));
+  }
+  hora = h0; $("horaOut").textContent = fmtHora(hora); atualiza();
+});
+$("sunSweep").addEventListener("click", () => {
+  const d0 = dia, h0 = hora;
+  for (let k = 0; k < 12; k++) {
+    dia = Math.round(1 + k * 365 / 12); hora = 12;
+    const s = sunEq(dia), th = tempoSideralLocal(dia, hora), hh = eqToHor(s.ra, s.dec, th);
+    if (hh.alt > 0) registra(mede({ id: -1, pop: "sol", ra: s.ra, dec: s.dec, ...hh }));
+  }
+  dia = d0; hora = h0; $("diaOut").textContent = dia; $("horaOut").textContent = fmtHora(hora); atualiza();
+});
+$("clearMeas").addEventListener("click", () => { medidas = []; selecionado = null; atualiza(); });
+$("jitter").addEventListener("input", e => { jitter = +e.target.value; $("jitterOut").textContent = fmt(jitter, 2) + "°"; });
+$("dia").addEventListener("input", e => { dia = +e.target.value; $("diaOut").textContent = dia; selecionado = null; atualiza(); });
+$("hora").addEventListener("input", e => { hora = +e.target.value; $("horaOut").textContent = fmtHora(hora); selecionado = null; atualiza(); });
+for (const [id, k] of [["showField", "campo"], ["showGal", "galactico"], ["showPla", "planeta"], ["showSun", "sol"]])
+  $(id).addEventListener("change", e => { mostra[k] = e.target.checked; atualiza(); });
+for (const b of document.querySelectorAll(".view-tab"))
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".view-tab").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+    document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === b.dataset.view));
+  });
+
+const fmt = (v, n = 2) => (v === null || v === undefined || !isFinite(v)) ? "--" : v.toFixed(n).replace(".", ",");
+const fmtHora = h => `${String(Math.floor(h)).padStart(2, "0")}h${String(Math.round((h % 1) * 60)).padStart(2, "0")}`;
 
 // ---------------------------------------------------------- ajuste do circulo maximo
-// modelo: tan(dec) = tan(i) * sin(alpha - alpha0)
+// tan(dec) = tan(i) sin(alpha - alpha0)
 function ajusta(pts) {
   if (pts.length < 4) return null;
-  let best = { i: 0, a0: 0, rms: 1e9 };
   const custo = (i, a0) => {
     let s = 0;
     for (const p of pts) {
-      // circulo maximo em coordenadas equatoriais: tan(dec) = tan(i) sin(alpha - alpha0)
       const dm = deg(Math.atan(Math.tan(rad(i)) * Math.sin(rad(p.ra - a0))));
       s += (dm - p.dec) ** 2;
     }
     return Math.sqrt(s / pts.length);
   };
+  let best = { i: 0, a0: 0, rms: 1e9 };
   for (let i = 1; i <= 89; i += 0.5)
-    for (let a0 = 0; a0 < 360; a0 += 1) {
-      const r = custo(i, a0);
-      if (r < best.rms) best = { i, a0, rms: r };
-    }
-  // o refinamento precisa de limites FIXOS: usar best aqui faria o laco
-  // caminhar, porque best muda dentro dele
-  const c0 = { i: best.i, a0: best.a0 };
+    for (let a0 = 0; a0 < 360; a0 += 1) { const r = custo(i, a0); if (r < best.rms) best = { i, a0, rms: r }; }
+  const c0 = { i: best.i, a0: best.a0 };        // limites FIXOS: usar best faria o laco caminhar
   for (let i = c0.i - 0.6; i <= c0.i + 0.6; i += 0.02)
     for (let a0 = c0.a0 - 1.5; a0 <= c0.a0 + 1.5; a0 += 0.05) {
-      const r = custo(i, wrap360(a0));
-      if (r < best.rms) best = { i, a0: wrap360(a0), rms: r };
+      const r = custo(i, wrap360(a0)); if (r < best.rms) best = { i, a0: wrap360(a0), rms: r };
     }
-  // incerteza da amplitude de uma senoide de frequencia conhecida: s*sqrt(2/N)
-  best.sigma = best.rms * Math.sqrt(2 / pts.length);
+  best.sigma = best.rms * Math.sqrt(2 / pts.length);   // incerteza da amplitude
   best.n = pts.length;
   best.poloRa = wrap360(best.a0 + 270);
   best.poloDec = 90 - best.i;
   return best;
 }
-const maxDec = pts => pts.length ? Math.max(...pts.map(p => p.dec)) : null;
+const maxDec = p => p.length ? Math.max(...p.map(x => x.dec)) : null;
 
+// invariancia: mesmo objeto, horarios diferentes
+function invariancia() {
+  const grupos = new Map();
+  for (const m of medidas) {
+    if (m.idCat < 0) continue;
+    if (!grupos.has(m.idCat)) grupos.set(m.idCat, []);
+    grupos.get(m.idCat).push(m);
+  }
+  const linhas = [];
+  for (const [id, g] of grupos) {
+    if (g.length < 2) continue;
+    const amp = arr => Math.max(...arr) - Math.min(...arr);
+    const dRa = arr => { const a = arr.map(x => x.ra); return amp(a) > 180 ? amp(a.map(v => v > 180 ? v - 360 : v)) : amp(a); };
+    linhas.push({ id, n: g.length, dAz: amp(g.map(x => x.az)), dAlt: amp(g.map(x => x.alt)),
+                  dRa: dRa(g), dDec: amp(g.map(x => x.dec)) });
+  }
+  return linhas;
+}
 function resultados() {
-  const gal = medidas.filter(m => m.pop === "galactico");
-  const sol = medidas.filter(m => m.pop === "sol");
-  return { gal: ajusta(gal), galMax: maxDec(gal), nGal: gal.length,
-           sol: ajusta(sol), solMax: maxDec(sol), nSol: sol.length };
+  const gal = medidas.filter(m => m.pop === "galactico"), sol = medidas.filter(m => m.pop === "sol");
+  return { gal: ajusta(gal), galMax: maxDec(gal), sol: ajusta(sol), solMax: maxDec(sol), inv: invariancia() };
 }
 
 // ---------------------------------------------------------- graficos
-function desenhaChart(cv, pts, fit, titulo, corPt) {
-  const c = cv.getContext("2d"), W = cv.width, H = cv.height;
-  const M = { l: 78, r: 20, t: 20, b: 56 };
+function desenhaChart(cv, pts, fit, titulo, cor) {
+  const c = cv.getContext("2d"), W = cv.width, H = cv.height, M = { l: 78, r: 20, t: 26, b: 52 };
   c.clearRect(0, 0, W, H); c.fillStyle = "#080808"; c.fillRect(0, 0, W, H);
-  const X = a => M.l + (a / 360) * (W - M.l - M.r);
-  const Y = d => M.t + ((90 - d) / 180) * (H - M.t - M.b);
+  const X = a => M.l + (a / 360) * (W - M.l - M.r), Y = d => M.t + ((90 - d) / 180) * (H - M.t - M.b);
   c.strokeStyle = "#242424"; c.fillStyle = "#8a8a8a"; c.font = "15px ui-sans-serif, system-ui";
   for (let a = 0; a <= 360; a += 60) { c.beginPath(); c.moveTo(X(a), Y(90)); c.lineTo(X(a), Y(-90)); c.stroke(); c.textAlign = "center"; c.fillText(a + "°", X(a), H - M.b + 24); }
   for (let d = -90; d <= 90; d += 30) { c.beginPath(); c.moveTo(X(0), Y(d)); c.lineTo(X(360), Y(d)); c.stroke(); c.textAlign = "right"; c.fillText((d > 0 ? "+" : "") + d + "°", M.l - 10, Y(d) + 5); }
@@ -874,91 +937,76 @@ function desenhaChart(cv, pts, fit, titulo, corPt) {
     }
     c.stroke();
   }
-  c.fillStyle = corPt;
+  c.fillStyle = cor;
   for (const p of pts) { c.beginPath(); c.arc(X(p.ra), Y(p.dec), 4.5, 0, 2 * Math.PI); c.fill(); }
   c.fillStyle = "#aaa69c"; c.textAlign = "left"; c.font = "17px ui-sans-serif, system-ui";
-  c.fillText(titulo, M.l, 16);
+  c.fillText(titulo + "   (α convertida a partir de azimute e altura)", M.l, 18);
 }
 
 // ---------------------------------------------------------- atualizacao
-function fmt(v, n = 2) { return v === null || v === undefined || !isFinite(v) ? "--" : v.toFixed(n).replace(".", ","); }
-
 function atualiza() {
-  desenhaCarta();
-  $("mRa").textContent = selecionado ? fmt(selecionado.ra, 2) + "°" : "--";
-  $("mDec").textContent = selecionado ? fmt(selecionado.dec, 2) + "°" : "--";
+  desenhaDomo();
+  const th = theta();
+  $("mAz").textContent = selecionado ? fmt(selecionado.az) + "°" : "--";
+  $("mAlt").textContent = selecionado ? fmt(selecionado.alt) + "°" : "--";
   $("mPop").textContent = selecionado ? selecionado.pop : "--";
   $("mCount").textContent = medidas.length;
+  $("mTheta").textContent = fmt(th) + "°  =  " + fmtHora(th / 15);
   $("skyReadout").textContent = selecionado
-    ? `α = ${fmt(selecionado.ra, 2)}°   δ = ${fmt(selecionado.dec, 2)}°   (${selecionado.pop})`
+    ? `A = ${fmt(selecionado.az)}°   h = ${fmt(selecionado.alt)}°   →   α = ${fmt(selecionado.ra)}°  δ = ${fmt(selecionado.dec)}°`
     : "Clique em um objeto para medir";
-  $("datasetInfo").textContent = `${catalogo.length} objetos no catálogo`;
+  $("datasetInfo").textContent = `${visiveis().length} objetos acima do horizonte`;
 
-  const tb = $("measTable").querySelector("tbody");
-  tb.innerHTML = medidas.map(m =>
-    `<tr><td>${m.n}</td><td>${m.pop}</td><td>${fmt(m.ra, 2)}</td><td>${fmt(m.dec, 2)}</td><td>${m.dia ?? "--"}</td></tr>`).join("");
+  $("measTable").querySelector("tbody").innerHTML = medidas.map(m =>
+    `<tr><td>${m.n}</td><td>${m.pop}</td><td>${m.dia}</td><td>${fmtHora(m.hora)}</td><td>${fmt(m.az)}</td><td>${fmt(m.alt)}</td><td>${fmt(m.ra)}</td><td>${fmt(m.dec)}</td></tr>`).join("");
 
   const R = resultados();
   desenhaChart($("chartGal"), medidas.filter(m => m.pop === "galactico"), R.gal, "faixa da Via Láctea", "#6fd3d8");
   desenhaChart($("chartSun"), medidas.filter(m => m.pop === "sol"), R.sol, "Sol ao longo do ano", "#ffd27f");
 
-  const linhas = [];
+  const L = [];
   if (R.gal) {
-    linhas.push(["inclinação do plano galáctico", `${fmt(R.gal.i)}° ± ${fmt(R.gal.sigma)}°`, `${fmt(R.galMax)}°`, `${fmt(REF.iGal)}°`]);
-    linhas.push(["polo galáctico: α", `${fmt(R.gal.poloRa)}°`, "--", `${fmt(NGP.ra)}°`]);
-    linhas.push(["polo galáctico: δ", `${fmt(R.gal.poloDec)}°`, "--", `${fmt(NGP.dec)}°`]);
+    L.push(["inclinação do plano galáctico", `${fmt(R.gal.i)}° ± ${fmt(R.gal.sigma)}°`, `${fmt(R.galMax)}°`, `${fmt(REF.iGal)}°`]);
+    L.push(["polo galáctico α", `${fmt(R.gal.poloRa)}°`, "--", `${fmt(REF.poloRa)}°`]);
+    L.push(["polo galáctico δ", `${fmt(R.gal.poloDec)}°`, "--", `${fmt(REF.poloDec)}°`]);
   }
-  if (R.sol) {
-    linhas.push(["obliquidade ε", `${fmt(R.sol.i)}° ± ${fmt(R.sol.sigma)}°`, `${fmt(R.solMax)}°`, `${fmt(REF.eps)}°`]);
-    linhas.push(["nó ascendente da eclíptica: α", `${fmt(R.sol.a0)}°`, "--", "0,00°"]);
-  }
-  $("resTable").querySelector("tbody").innerHTML = linhas.length
-    ? linhas.map(l => `<tr><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td><td>${l[3]}</td></tr>`).join("")
-    : `<tr><td colspan="4">Registre pelo menos 4 objetos de uma população para o ajuste aparecer.</td></tr>`;
+  if (R.sol) L.push(["obliquidade ε", `${fmt(R.sol.i)}° ± ${fmt(R.sol.sigma)}°`, `${fmt(R.solMax)}°`, `${fmt(REF.eps)}°`]);
+  $("resTable").querySelector("tbody").innerHTML = L.length
+    ? L.map(l => `<tr><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td><td>${l[3]}</td></tr>`).join("")
+    : `<tr><td colspan="4">Registre pelo menos 4 objetos de uma população.</td></tr>`;
+
+  $("invTable").querySelector("tbody").innerHTML = R.inv.length
+    ? R.inv.map(i => `<tr><td>${i.id}</td><td>${i.n}</td><td>${fmt(i.dAz)}</td><td>${fmt(i.dAlt)}</td><td>${fmt(i.dRa)}</td><td>${fmt(i.dDec)}</td></tr>`).join("")
+    : `<tr><td colspan="6">Selecione uma estrela e use “medir em 3 horários”.</td></tr>`;
 }
 
-// ---------------------------------------------------------- controles
-$("jitter").addEventListener("input", e => { jitter = +e.target.value; $("jitterOut").textContent = fmt(jitter, 2) + "°"; });
-$("dayOfYear").addEventListener("input", e => { diaAno = +e.target.value; $("dayOut").textContent = diaAno; atualiza(); });
-for (const [id, key] of [["showField", "campo"], ["showGal", "galactico"], ["showPla", "planeta"], ["showSun", "sol"]])
-  $(id).addEventListener("change", e => { mostra[key] = e.target.checked; atualiza(); });
-for (const b of document.querySelectorAll(".view-tab"))
-  b.addEventListener("click", () => {
-    document.querySelectorAll(".view-tab").forEach(x => x.setAttribute("aria-selected", String(x === b)));
-    document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === b.dataset.view));
-  });
-
 // ---------------------------------------------------------- exportacao
-function csvValue(v) { return typeof v === "number" ? (isFinite(v) ? v.toPrecision(8) : "") : `"${String(v ?? "").replaceAll('"', '""')}"`; }
+const csvValue = v => typeof v === "number" ? (isFinite(v) ? v.toPrecision(8) : "") : `"${String(v ?? "").replaceAll('"', '""')}"`;
 const rowsToCsv = rows => rows.map(r => r.map(csvValue).join(",")).join("\n");
 function baixa(nome, blob) {
   const url = URL.createObjectURL(blob), a = document.createElement("a");
   a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
-function medidasCsvRows() {
-  return [["n", "populacao", "ra_deg", "dec_deg", "dia_do_ano"],
-    ...medidas.map(m => [m.n, m.pop, m.ra, m.dec, m.dia ?? ""])];
-}
-function catalogoCsvRows() {
-  return [["id", "populacao", "ra_deg", "dec_deg"], ...catalogo.map(o => [o.id, o.pop, o.ra, o.dec])];
-}
-$("exportCsv").addEventListener("click", () => {
-  baixa("laboratorio_1a_medidas.csv", new Blob([rowsToCsv(medidasCsvRows())], { type: "text/csv;charset=utf-8" }));
-});
+const medidasCsvRows = () => [["n", "populacao", "dia", "hora_local", "theta_deg", "azimute_deg", "altura_deg", "ra_deg", "dec_deg"],
+  ...medidas.map(m => [m.n, m.pop, m.dia, m.hora, m.theta, m.az, m.alt, m.ra, m.dec])];
+const catalogoCsvRows = () => [["id", "populacao", "ra_deg", "dec_deg"], ...catalogo.map(o => [o.id, o.pop, o.ra, o.dec])];
+$("exportCsv").addEventListener("click", () =>
+  baixa("laboratorio_1a_medidas.csv", new Blob([rowsToCsv(medidasCsvRows())], { type: "text/csv;charset=utf-8" })));
 
 // ---------------------------------------------------------- tabelas em LaTeX
-function texEscape(s) { return String(s ?? "").replace(/([&%$#_{}])/g, "\\$1"); }
+const texEscape = s => String(s ?? "").replace(/([&%$#_{}])/g, "\\$1");
+const fm = (v, n = 2) => v.toFixed(n).replace(".", "{,}");
 function tabelaMedidas() {
   const linhas = medidas.map(m =>
-    `${m.n} & ${texEscape(m.pop)} & ${m.ra.toFixed(2).replace(".", ",")} & ${m.dec.toFixed(2).replace(".", ",")} & ${m.dia ?? "--"} \\\\`).join("\n");
+    `${m.n} & ${texEscape(m.pop)} & ${m.dia} & ${m.hora.toFixed(1).replace(".", ",")} & ${m.az.toFixed(2).replace(".", ",")} & ${m.alt.toFixed(2).replace(".", ",")} & ${m.ra.toFixed(2).replace(".", ",")} & ${m.dec.toFixed(2).replace(".", ",")} \\\\`).join("\n");
   return `\\begin{table*}[t]
 \\centering
 \\footnotesize
-\\caption{Medidas registradas no laboratório. Cada linha é uma leitura de coordenadas equatoriais feita pelo aluno, com a precisão do instrumento aplicada.}
+\\caption{Medidas registradas. As colunas de azimute e altura são o que o instrumento entrega; as de ascensão reta e declinação foram obtidas delas com a latitude do sítio e o tempo sideral local.}
 \\label{tab:medidas}
-\\begin{tabular}{rlrrr}
+\\begin{tabular}{rlrrrrrr}
 \\toprule
-\\# & população & $\\alpha$ (°) & $\\delta$ (°) & dia \\\\
+\\# & população & dia & hora & $A$ (°) & $h$ (°) & $\\alpha$ (°) & $\\delta$ (°) \\\\
 \\midrule
 ${linhas}
 \\bottomrule
@@ -967,18 +1015,14 @@ ${linhas}
 `;
 }
 function tabelaResultados() {
-  const R = resultados();
-  const L = [];
-  const fm = (v, n = 2) => v.toFixed(n).replace(".", "{,}");   // vírgula sem espaço em modo matemático
+  const R = resultados(), L = [];
   if (R.gal) {
-    L.push(`inclinação do plano galáctico & $${fm(R.gal.i)} \\pm ${fm(R.gal.sigma)}$ & ${R.galMax.toFixed(2).replace(".", ",")} & ${REF.iGal.toFixed(2).replace(".", ",")} \\\\`);
-    L.push(`polo galáctico $\\alpha_p$ & ${R.gal.poloRa.toFixed(2).replace(".", ",")} & -- & ${NGP.ra.toFixed(2).replace(".", ",")} \\\\`);
-    L.push(`polo galáctico $\\delta_p$ & ${R.gal.poloDec.toFixed(2).replace(".", ",")} & -- & ${NGP.dec.toFixed(2).replace(".", ",")} \\\\`);
+    L.push(`inclinação do plano galáctico & $${fm(R.gal.i)} \\pm ${fm(R.gal.sigma)}$ & ${fm(R.galMax)} & ${fm(REF.iGal)} \\\\`);
+    L.push(`polo galáctico $\\alpha_p$ & ${fm(R.gal.poloRa)} & -- & ${fm(REF.poloRa)} \\\\`);
+    L.push(`polo galáctico $\\delta_p$ & ${fm(R.gal.poloDec)} & -- & ${fm(REF.poloDec)} \\\\`);
   }
-  if (R.sol) {
-    L.push(`obliquidade $\\varepsilon$ & $${fm(R.sol.i)} \\pm ${fm(R.sol.sigma)}$ & ${R.solMax.toFixed(2).replace(".", ",")} & ${REF.eps.toFixed(2).replace(".", ",")} \\\\`);
-  }
-  return `\\begin{table}[t]
+  if (R.sol) L.push(`obliquidade $\\varepsilon$ & $${fm(R.sol.i)} \\pm ${fm(R.sol.sigma)}$ & ${fm(R.solMax)} & ${fm(REF.eps)} \\\\`);
+  return `\\begin{table*}[t]
 \\centering
 \\footnotesize
 \\caption{Resultados. A coluna do ajuste usa todos os pontos; a do máximo usa apenas a maior declinação registrada, e erra dos dois lados.}
@@ -988,6 +1032,24 @@ function tabelaResultados() {
 grandeza & ajuste (°) & máximo (°) & referência (°) \\\\
 \\midrule
 ${L.join("\n")}
+\\bottomrule
+\\end{tabular}
+\\end{table*}
+`;
+}
+function tabelaInvariancia() {
+  const R = resultados();
+  const L = R.inv.map(i => `${i.id} & ${i.n} & ${fm(i.dAz)} & ${fm(i.dAlt)} & ${fm(i.dRa)} & ${fm(i.dDec)} \\\\`).join("\n");
+  return `\\begin{table}[t]
+\\centering
+\\footnotesize
+\\caption{O mesmo objeto medido em horários diferentes. Azimute e altura mudam dezenas de graus; ascensão reta e declinação não mudam além do erro de leitura.}
+\\label{tab:invariancia}
+\\begin{tabular}{rrrrrr}
+\\toprule
+objeto & $n$ & $\\Delta A$ & $\\Delta h$ & $\\Delta\\alpha$ & $\\Delta\\delta$ \\\\
+\\midrule
+${L || "-- & -- & -- & -- & -- & -- \\\\\\\\"}
 \\bottomrule
 \\end{tabular}
 \\end{table}
@@ -1002,7 +1064,7 @@ function reportMainTex(nome) {
   const ei = R.sol ? R.sol.i.toFixed(2).replace(".", "{,}") : "--";
   const es = R.sol ? R.sol.sigma.toFixed(2).replace(".", "{,}") : "--";
   return `% =====================================================================
-%  ARTIGO -- Laboratório 1A: os planos do céu
+%  ARTIGO -- Laboratório 1A: o céu de Joinville
 %  Astronomia (AST0001) -- Curso de Física -- UDESC Joinville
 %
 %  Gerado pelo laboratório, no modelo de artigo da disciplina.
@@ -1047,7 +1109,7 @@ function reportMainTex(nome) {
 \\setlength{\\parindent}{1.2em}
 
 % ---------------------------------------------------- PREENCHA AQUI
-\\newcommand{\\titulo}{Os planos fundamentais do céu medidos em coordenadas equatoriais}
+\\newcommand{\\titulo}{Do azimute ao catálogo: medindo os planos fundamentais do céu}
 \\newcommand{\\aluno}{${texEscape(nome)}}
 \\newcommand{\\email}{seu.email@edu.udesc.br}
 \\newcommand{\\tituloCurto}{Planos fundamentais}
@@ -1101,9 +1163,11 @@ function reportMainTex(nome) {
 
 {\\small
 \\noindent\\textbf{Resumo.}
-Escreva aqui, por último. Diga que mediu coordenadas equatoriais de
-duas populações de objetos e que, ajustando um círculo máximo a cada
-uma, determinou a orientação de dois planos fundamentais. Apresente os
+Escreva aqui, por último. Diga que mediu azimute e altura de objetos a
+partir de um sítio de latitude conhecida, converteu essas leituras em
+coordenadas equatoriais usando o tempo sideral local, e ajustou um
+círculo máximo a duas populações para determinar a orientação de dois
+planos fundamentais. Apresente os
 dois resultados com incerteza: a inclinação do plano galáctico,
 $${gi} \\pm ${gs}$ graus, e a obliquidade da eclíptica, $${ei} \\pm ${es}$
 graus. Compare com os valores de referência e diga o que a diferença
@@ -1136,6 +1200,25 @@ Escreva aqui.
 \\section{Revisão Teórica}
 % =====================================================================
 
+O que um instrumento entrega é azimute $A$ e altura $h$, medidos a
+partir do horizonte do observador. Para transformá-los em coordenadas
+de catálogo é preciso saber \\emph{onde} e \\emph{quando}: a latitude
+$\\varphi$ do sítio e o tempo sideral local $\\Theta$. A conversão é
+\\begin{equation}
+\\sin\\delta = \\sin h \\sin\\varphi + \\cos h \\cos\\varphi \\cos A ,
+\\label{eq:dec}
+\\end{equation}
+\\begin{multline}
+H = \\operatorname{atan2}\\big(-\\sin A\\cos h,\\\\
+\\cos\\varphi\\sin h-\\sin\\varphi\\cos h\\cos A\\big),
+\\label{eq:ra}
+\\end{multline}
+e a ascensão reta sai de $\\alpha=\\Theta-H$.
+
+É essa dependência de $\\varphi$ e de $\\Theta$ que faz do sistema
+horizontal um sistema local e instantâneo, e do equatorial um sistema
+de catálogo.
+
 Um círculo máximo inclinado de $i$ em relação ao equador celeste tem,
 em coordenadas equatoriais,
 \\begin{equation}
@@ -1163,20 +1246,28 @@ Os dois não são equivalentes, e a Seção~3 mostra por quê.
 
 Os dados vêm do laboratório interativo da Parte A do Capítulo~1, que
 sorteia um catálogo diferente a cada acesso. Cada linha da
-Tabela~\\ref{tab:medidas} é uma leitura de coordenadas equatoriais
-feita na carta, com a precisão do instrumento já aplicada.
+Tabela~\\ref{tab:medidas} é uma leitura de azimute e altura feita na
+abóbada, com a precisão do instrumento aplicada, e a conversão para
+$(\\alpha,\\delta)$ pelas Eqs.~\\eqref{eq:dec} e~\\eqref{eq:ra}.
+
+A Tabela~\\ref{tab:invariancia} mostra o mesmo objeto medido em
+horários diferentes: azimute e altura mudam dezenas de graus, e as
+coordenadas equatoriais não mudam além do erro de leitura.
 
 \\input{tabelas/tabela_medidas.tex}
+
+\\input{tabelas/tabela_invariancia.tex}
 
 \\input{tabelas/tabela_resultados.tex}
 
 \\begin{figure*}[t]
 \\centering
 \\includegraphics[width=0.98\\textwidth]{figuras/carta_equatorial.png}
-\\caption{Carta em coordenadas equatoriais. As estrelas de campo se
-espalham por toda a esfera; os objetos da Via Láctea desenham uma
-faixa; os planetas se alinham perto da eclíptica. Os círculos brancos
-marcam as medidas registradas.}
+\\caption{A abóbada vista do centro, no instante da observação. A borda
+é o horizonte e o centro é o zênite; Norte em cima, Leste à esquerda.
+Os objetos da Via Láctea desenham uma faixa, os planetas se alinham
+perto da eclíptica, e os círculos brancos marcam as medidas
+registradas.}
 \\label{fig:carta}
 \\end{figure*}
 
@@ -1251,6 +1342,7 @@ async function buildReportFiles(nome) {
     { name: "udesc.png", blob: logo },
     { name: "tabelas/tabela_medidas.tex", blob: tex(tabelaMedidas()) },
     { name: "tabelas/tabela_resultados.tex", blob: tex(tabelaResultados()) },
+    { name: "tabelas/tabela_invariancia.tex", blob: tex(tabelaInvariancia()) },
     { name: "dados/medidas.csv", blob: csv(rowsToCsv(medidasCsvRows())) },
     { name: "dados/catalogo.csv", blob: csv(rowsToCsv(catalogoCsvRows())) },
     { name: "figuras/carta_equatorial.png", blob: await canvasBlob(sky) },
@@ -1287,6 +1379,9 @@ $("genReport").addEventListener("click", async () => {
 
 // ---------------------------------------------------------- inicio
 $("jitterOut").textContent = fmt(jitter, 2) + "°";
+atualiza();
+
+$("jitterOut").textContent = fmt(jitter, 2) + "\u00b0";
 atualiza();
 
   </script>
