@@ -663,8 +663,8 @@
         <div class="body">
           <div class="tasks">
             <div class="task">
-              <strong>Gerar relatório em LaTeX no formato A&amp;A</strong>
-              Preencha o nome do aluno e clique em Gerar template. O laboratório salvará o arquivo main.tex, a classe oficial aa.cls, figuras do mapa e dos gráficos, tabelas auxiliares e CSVs do catálogo simulado.
+              <strong>Gerar o artigo em LaTeX, no modelo da disciplina</strong>
+              Preencha o nome do aluno e clique em Gerar template. O laboratório salvará main.tex já no modelo de artigo da disciplina, o logo, as figuras do mapa e dos gráficos, as tabelas em LaTeX e os CSVs do catálogo simulado. Só falta escrever.
             </div>
           </div>
           <div class="control">
@@ -1392,112 +1392,273 @@
     }
 
     function reportMainTex(studentName) {
-      return `\\documentclass{aa}
+      return `% =====================================================================
+%  ARTIGO -- Laboratório do Capítulo 1
+%  Astronomia (AST0001) -- Curso de Física -- UDESC Joinville
+%
+%  Este arquivo foi gerado pelo laboratório, no modelo de artigo da
+%  disciplina. As figuras, as tabelas e os CSVs já vieram junto e já
+%  estão referenciados no texto. O que falta é escrever.
+%
+%  COMO USAR
+%   1. Preencha os campos marcados "PREENCHA AQUI".
+%   2. Escreva o conteúdo nas seções indicadas, apagando as instruções.
+%   3. Compile com pdfLaTeX DUAS vezes (a segunda resolve as referências).
+% =====================================================================
 
+\\documentclass[10pt,a4paper,twocolumn]{article}
+
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[brazil]{babel}
+\\usepackage{amsmath,amssymb}
+\\let\\Bbbk\\relax
+\\usepackage{newtxtext,newtxmath}
+\\usepackage{microtype}
+\\usepackage[a4paper,top=2.4cm,bottom=2.2cm,left=1.9cm,right=1.9cm,
+            columnsep=0.7cm]{geometry}
 \\usepackage{graphicx}
-\\usepackage{amsmath}
 \\usepackage{booktabs}
-\\usepackage{txfonts}
+\\usepackage{siunitx}
+\\usepackage{caption}
+\\usepackage{titlesec}
+\\usepackage{fancyhdr}
+\\usepackage{xcolor}
+\\usepackage[colorlinks=true,linkcolor=udescverde,citecolor=udescverde,
+            urlcolor=udescverde]{hyperref}
 
-\\newcommand{\\aluno}{${latexEscape(studentName)}}
-\\newcommand{\\experimento}{Paralaxe, brilho aparente e distância}
-\\newcommand{\\disciplina}{Astronomia}
-\\newcommand{\\professor}{Prof. Dr. Rafael C. R. de Lima}
-\\newcommand{\\datarelatorio}{\\today}
+\\definecolor{udescverde}{HTML}{1B6B3A}
+\\definecolor{cinza}{HTML}{5A5A5A}
+
+\\sisetup{output-decimal-marker={,}, per-mode=symbol}
+
+\\captionsetup{font=small,labelfont={bf,color=udescverde},labelsep=period}
+\\titleformat{\\section}{\\normalfont\\bfseries\\color{udescverde}}
+            {\\thesection.}{0.5em}{\\MakeUppercase}
+\\titleformat{\\subsection}{\\normalfont\\bfseries\\itshape}{\\thesubsection.}{0.5em}{}
+\\titlespacing*{\\section}{0pt}{1.6ex}{0.8ex}
+\\setlength{\\parindent}{1.2em}
+
+% usado pelas tabelas que o laboratório gerou
 \\newcommand{\\compacttables}{\\footnotesize\\setlength{\\tabcolsep}{3pt}}
+
+% ---------------------------------------------------- PREENCHA AQUI
+\\newcommand{\\titulo}{Distâncias e luminosidades de um campo estelar medidas por paralaxe anual}
+\\newcommand{\\aluno}{${latexEscape(studentName)}}
+\\newcommand{\\email}{seu.email@edu.udesc.br}
+\\newcommand{\\tituloCurto}{Paralaxe e luminosidade}
+\\newcommand{\\semestre}{2026/2}
+% -------------------------------------------------------------------
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\fancyhead[L]{\\footnotesize\\textcolor{cinza}{\\aluno}}
+\\fancyhead[R]{\\footnotesize\\textcolor{cinza}{\\tituloCurto}}
+\\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}
+\\renewcommand{\\headrulewidth}{0.3pt}
+\\fancypagestyle{primeira}{%
+  \\fancyhf{}\\renewcommand{\\headrulewidth}{0pt}
+  \\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}}
 
 \\begin{document}
 
-\\title{\\experimento}
-\\subtitle{Relatório de laboratório em formato Astronomy \\& Astrophysics}
+\\twocolumn[
+\\begin{@twocolumnfalse}
 
-\\author{\\aluno}
+\\noindent
+\\begin{minipage}{0.78\\textwidth}
+  {\\footnotesize\\textcolor{udescverde}{\\textbf{ASTRONOMIA (AST0001)}}\\\\[2pt]
+   \\textcolor{cinza}{Universidade do Estado de Santa Catarina\\, \$\\cdot\$\\,
+   Centro de Ciências Tecnológicas\\, \$\\cdot\$\\, Curso de Física}\\\\[2pt]
+   \\textcolor{cinza}{Joinville, \\semestre}}
+\\end{minipage}
+\\hfill
+\\begin{minipage}{0.20\\textwidth}
+  \\raggedleft{\\includegraphics[height=1.5cm]{udesc.png}}
+\\end{minipage}
 
-\\institute{
-Universidade do Estado de Santa Catarina, Centro de Ciências Tecnológicas -- CCT\\\\
-\\email{Disciplina: \\disciplina; professor: \\professor}
+\\vspace{2pt}
+{\\color{udescverde}\\rule{\\textwidth}{1pt}}
+
+\\vspace{1.1em}
+\\begin{center}
+  {\\LARGE\\bfseries \\titulo\\par}
+  \\vspace{0.9em}
+  {\\large \\aluno\\par}
+  \\vspace{0.3em}
+  {\\footnotesize\\itshape\\textcolor{cinza}{\\email}\\par}
+  \\vspace{0.3em}
+  {\\footnotesize\\textcolor{cinza}{Recebido em \\today}\\par}
+\\end{center}
+
+\\vspace{0.9em}
+
+% ------------------------------------------------------------ RESUMO
+% Um parágrafo, de 120 a 200 palavras: contexto em uma frase, o que foi
+% feito, que dados, o RESULTADO NUMÉRICO com incerteza, e a conclusão em
+% uma frase. Escrito por último, lido primeiro. Sem citar figuras.
+\\noindent\\rule{\\textwidth}{0.3pt}
+\\vspace{0.5em}
+
+{\\small
+\\noindent\\textbf{Resumo.}
+Escreva aqui. Diga que mediu a paralaxe anual de um campo estelar
+simulado a partir do deslocamento aparente entre duas épocas separadas
+por seis meses, e que converteu essas paralaxes em distâncias,
+magnitudes absolutas e luminosidades. Diga quantas estrelas mediu.
+Apresente o resultado principal em números, com incerteza: por exemplo,
+a diferença típica entre a paralaxe medida na régua e a paralaxe do
+catálogo, ou o erro relativo da distância da estrela mais distante da
+amostra. Termine dizendo o que limita a medida.
+
+\\vspace{0.6em}
+\\noindent\\textbf{Palavras-chave:} astronomia observacional --- paralaxe
+--- fotometria --- distâncias estelares
 }
 
-\\date{\\datarelatorio}
+\\vspace{0.5em}
+\\noindent\\rule{\\textwidth}{0.3pt}
+\\vspace{1.4em}
 
-\\abstract
-{Este relatório apresenta medidas simuladas de paralaxe, brilho aparente, cor e luminosidade para um campo estelar.}
-{O objetivo é inferir distâncias a partir de paralaxe anual e combinar essas distâncias com fotometria para obter magnitudes absolutas e luminosidades.}
-{O laboratório exportou o mapa do céu, gráficos de inferência e uma tabela com paralaxe, distância, magnitudes, extinção e luminosidade para as estrelas simuladas.}
-{O aluno deve completar a análise quantitativa, comparando o deslocamento entre duas épocas com a paralaxe exportada e avaliando como o erro relativo cresce para paralaxes pequenas.}
-{A simulação usa uma direção de paralaxe comum para o campo observado, com amplitudes diferentes conforme a distância de cada estrela.}
+\\end{@twocolumnfalse}
+]
+\\thispagestyle{primeira}
 
-\\keywords{Astrometry -- Parallaxes -- Stars: distances -- Techniques: photometric}
-
-\\maketitle
-
+% =====================================================================
 \\section{Introdução}
+% =====================================================================
+% Do que trata, por que importa, e qual pergunta este artigo responde.
+% Aqui: por que o movimento da Terra ao longo da órbita produz um
+% deslocamento aparente anual das estrelas próximas contra o fundo
+% distante, e por que esse deslocamento mede distância por geometria
+% pura, sem hipótese sobre a estrela.
 
-Descreva o objetivo do experimento e explique por que a mudança da posição da Terra ao longo da órbita produz um deslocamento aparente anual das estrelas próximas em relação ao fundo distante.
+Escreva aqui.
 
-\\section{Fundamentação teórica}
+% =====================================================================
+\\section{Revisão Teórica}
+% =====================================================================
+% Apenas as equações que você vai usar, com o significado de cada
+% símbolo e as hipóteses assumidas.
 
 A paralaxe anual relaciona distância e ângulo por
 \\begin{equation}
-d({\\rm pc}) = \\frac{1}{p({\\rm arcsec})} = \\frac{1000}{p({\\rm mas})}.
+d\\,[\\mathrm{pc}] = \\frac{1}{p\\,[\\mathrm{arcsec}]} = \\frac{1000}{p\\,[\\mathrm{mas}]}.
+\\label{eq:paralaxe}
 \\end{equation}
 
-No mapa do laboratório, se a separação entre duas observações opostas da órbita terrestre é $\\Delta_{px}$, uma estimativa da paralaxe é
+No mapa do laboratório, se a separação entre duas observações opostas da
+órbita terrestre é \$\\Delta_{\\rm px}\$, uma estimativa da paralaxe é
 \\begin{equation}
-p_{\\rm grid}({\\rm mas}) = \\frac{\\Delta_{px}}{2}\\,s,
+p_{\\rm grid}\\,[\\mathrm{mas}] = \\frac{\\Delta_{\\rm px}}{2}\\,s,
+\\label{eq:grid}
 \\end{equation}
-em que $s$ é a escala angular do mapa em mas por pixel.
+em que \$s\$ é a escala angular do mapa, em mas por pixel. O fator 2
+aparece porque o deslocamento total entre janeiro e julho vale duas
+paralaxes, e não uma.
 
-A magnitude absoluta inferida é
+A magnitude absoluta, já corrigida de extinção, é
 \\begin{equation}
-M = m - 5\\log_{10}\\left(\\frac{d}{10\\,{\\rm pc}}\\right) - A_V,
+M = m - 5\\log_{10}\\!\\left(\\frac{d}{10\\,\\mathrm{pc}}\\right) - A_V,
+\\label{eq:modulo}
 \\end{equation}
-e a luminosidade relativa pode ser estimada por
+e a luminosidade relativa ao Sol sai de
 \\begin{equation}
-\\frac{L}{L_\\odot}=10^{(M_{V,\\odot}-M)/2.5}.
+\\frac{L}{L_\\odot} = 10^{(M_{V,\\odot}-M)/2{,}5},
+\\qquad M_{V,\\odot}=4{,}83.
+\\label{eq:lum}
 \\end{equation}
 
-\\section{Dados observacionais}
+A incerteza da distância herda a da paralaxe:
+\\begin{equation}
+\\frac{\\sigma_d}{d} = \\frac{\\sigma_p}{p}.
+\\label{eq:sigma}
+\\end{equation}
 
-\\input{tabelas/tabela_catalogo_resumo.tex}
+% =====================================================================
+\\section{Dados e Discussão}
+% =====================================================================
+% Origem dos dados, critério de seleção, tabelas e figuras, o resultado
+% com incerteza e a comparação com o esperado. Toda figura e toda tabela
+% precisam ser citadas no texto -- o que ninguém menciona não deveria
+% estar aqui.
+
+Os dados vêm do laboratório interativo do Capítulo 1, que gera um campo
+estelar simulado diferente a cada acesso. O catálogo completo está em
+\\texttt{dados/catalogo.csv} e as medidas feitas com a régua estão em
+\\texttt{dados/medidas\\_paralaxe\\_regua.csv}.
 
 \\input{tabelas/tabela_medidas_paralaxe.tex}
+
+\\input{tabelas/tabela_catalogo_resumo.tex}
 
 \\begin{figure*}[t]
 \\centering
 \\includegraphics[width=0.98\\textwidth]{figuras/mapa_celeste.png}
-\\caption{Mapa do céu simulado na data selecionada no laboratório. Estrelas próximas apresentam deslocamento paralático maior, mas a orientação geral do deslocamento é comum ao campo.}
+\\caption{Campo estelar simulado. As estrelas mais proximas apresentam
+deslocamento paralático maior, mas a direção do deslocamento é comum a
+todo o campo -- e é isso que distingue paralaxe de movimento próprio.}
+\\label{fig:mapa}
 \\end{figure*}
 
 \\begin{figure*}[t]
 \\centering
 \\includegraphics[width=0.92\\textwidth]{figuras/grafico_distancia.png}
-\\caption{Magnitude aparente em função da distância inferida por paralaxe.}
+\\caption{Magnitude aparente em função da distância inferida por
+paralaxe.}
+\\label{fig:distancia}
 \\end{figure*}
 
 \\begin{figure*}[t]
 \\centering
 \\includegraphics[width=0.92\\textwidth]{figuras/grafico_luminosidade.png}
-\\caption{Comparação entre luminosidade real simulada e luminosidade inferida.}
+\\caption{Luminosidade inferida contra luminosidade real simulada. O
+afastamento da diagonal mede o erro acumulado na cadeia paralaxe --
+distância -- magnitude absoluta -- luminosidade.}
+\\label{fig:luminosidade}
 \\end{figure*}
 
 \\begin{figure*}[t]
 \\centering
 \\includegraphics[width=0.92\\textwidth]{figuras/grafico_erro_paralaxe.png}
-\\caption{Erro relativo da distância/paralaxe em função da paralaxe medida.}
+\\caption{Erro relativo da distância em função da paralaxe medida.}
+\\label{fig:erro}
 \\end{figure*}
 
-\\section{Análise}
+Discuta, com números: quanto a paralaxe que você mediu na régua difere
+da paralaxe do catálogo, e se a diferença é compatível com
+\$\\sigma_p\$; por que o erro relativo da distância cresce quando a
+paralaxe diminui, usando a Eq.~\\eqref{eq:sigma} e a
+Fig.~\\ref{fig:erro}; e o que acontece com a luminosidade inferida
+quando a extinção \$A_V\$ é ignorada.
 
-Use o arquivo \\texttt{dados/catalogo.csv} para calcular distâncias, magnitudes absolutas e luminosidades. Use também \\texttt{dados/medidas_paralaxe_regua.csv} para comparar as paralaxes medidas manualmente com a régua e as paralaxes exportadas pelo catálogo.
+% =====================================================================
+\\section{Conclusão}
+% =====================================================================
+% O que o número significa, qual é a maior fonte de incerteza e o que
+% melhoraria a medida. Sem resultado novo.
 
-\\section{Discussão}
+Escreva aqui.
 
-Discuta por que estrelas distantes têm paralaxes menores, por que o erro relativo cresce quando a paralaxe diminui e como extinção e cor observada afetam a interpretação fotométrica.
+% =====================================================================
+%  BIBLIOGRAFIA -- apenas o que você consultou de fato.
+%  No texto, cite com \\cite{rótulo} -- por exemplo: \\cite{apostila}.
+% =====================================================================
+\\begin{thebibliography}{9}
+\\small
 
-\\section{Conclusões}
+\\bibitem{carroll}
+CARROLL, B. W.; OSTLIE, D. A.
+\\textit{An Introduction to Modern Astrophysics}.
+2. ed. Cambridge: Cambridge University Press, 2017.
 
-Escreva aqui as principais conclusões do experimento.
+\\bibitem{apostila}
+LIMA, R. C. R. de.
+\\textit{Astrofísica Moderna: capítulos de estudo}.
+UDESC, 2026. Capítulo 1. Disponível em:
+\\url{https://rafaelcrdelima.github.io/Astronomia/}.
+
+\\end{thebibliography}
 
 \\end{document}
 `;
@@ -1632,20 +1793,12 @@ ${latexRows(rows)}
     }
 
     async function buildReportFiles(studentName) {
-      const [aaClass, aaBibstyle, linenoStyle, linenoAaStyle, aaReadme] = await Promise.all([
-        fetchBlob("../template_relatorio/aa.cls"),
-        fetchBlob("../template_relatorio/aa.bst"),
-        fetchBlob("../template_relatorio/lineno.sty"),
-        fetchBlob("../template_relatorio/linenoaa.sty"),
-        fetchBlob("../template_relatorio/readme-aa.txt"),
+      const [udescLogo] = await Promise.all([
+        fetchBlob("../modelo-artigo/udesc.png"),
       ]);
       return [
         { name: "main.tex", blob: new Blob([reportMainTex(studentName)], { type: "text/x-tex;charset=utf-8" }) },
-        { name: "aa.cls", blob: aaClass },
-        { name: "aa.bst", blob: aaBibstyle },
-        { name: "lineno.sty", blob: linenoStyle },
-        { name: "linenoaa.sty", blob: linenoAaStyle },
-        { name: "readme-aa.txt", blob: aaReadme },
+        { name: "udesc.png", blob: udescLogo },
         { name: "tabelas/tabela_catalogo_resumo.tex", blob: new Blob([summaryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "tabelas/tabela_medidas_paralaxe.tex", blob: new Blob([parallaxMeasurementsLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "dados/catalogo.csv", blob: new Blob([rowsToCsv(catalogCsvRows())], { type: "text/csv;charset=utf-8" }) },

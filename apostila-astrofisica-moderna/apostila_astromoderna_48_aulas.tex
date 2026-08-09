@@ -1160,19 +1160,27 @@ Escolha pares de estrelas com luminosidades inferidas parecidas, mas distâncias
 Calcule pelo menos três razões de fluxo previstas e compare com o CSV. Interprete quando a diferença é dominada por distância, luminosidade intrínseca ou extinção.
 \end{lessonblock}
 
-\begin{lessonblock}{Formato da entrega}
-A entrega deve conter:
-\begin{enumerate}
-\item uma tabela com as 8 estrelas analisadas e as grandezas calculadas;
-\item pelo menos dois gráficos feitos a partir do CSV: um de deslocamento/paralaxe e outro de magnitude ou luminosidade versus distância;
-\item as contas dos cinco experimentos, com unidades;
-\item uma interpretação curta separando observáveis, grandezas inferidas e hipóteses usadas;
-\item uma conclusão respondendo: por que brilho aparente sozinho não permite saber se uma estrela é fisicamente luminosa?
-\end{enumerate}
-As respostas devem ser numéricas. Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' só contam se vierem acompanhadas de valores calculados.
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{A entrega: o artigo do Capítulo 1}
+\textbf{Este laboratório é o primeiro artigo do semestre.} A entrega é um artigo curto, no modelo da disciplina, e o próprio laboratório monta o esqueleto para você.
+
+\textbf{Gerando o esqueleto.} Na aba \textit{Template de Relatório}, escreva seu nome e clique em \textit{Gerar template}. O laboratório salva um conjunto pronto: \texttt{main.tex} já no modelo de artigo da disciplina, o logotipo, as quatro figuras (o mapa do céu e os três gráficos de inferência), as duas tabelas em LaTeX e os dois CSVs. Envie tudo ao Overleaf e compile duas vezes. As figuras e as tabelas já estão referenciadas no texto: o que falta é escrever.
+
+\textbf{O que cada seção deve conter.}
+\begin{itemize}
+\item \textbf{Resumo} --- quantas estrelas você mediu, e o resultado principal em números: a diferença típica entre a paralaxe medida na régua e a do catálogo, ou o erro relativo da distância da estrela mais distante da amostra, sempre com incerteza.
+\item \textbf{Introdução} --- por que o deslocamento aparente anual mede distância por geometria pura, sem hipótese alguma sobre a estrela.
+\item \textbf{Revisão Teórica} --- apenas o que você usou: $d=1/p$, a estimativa $p_{\rm grid}=(\Delta_{\rm px}/2)\,s$, o módulo de distância com extinção, a conversão para luminosidade e $\sigma_d/d=\sigma_p/p$.
+\item \textbf{Dados e Discussão} --- os cinco experimentos acima, com as contas e as unidades. Cada figura e cada tabela precisa ser citada no texto.
+\item \textbf{Conclusão} --- responda com números: por que o brilho aparente sozinho não permite saber se uma estrela é fisicamente luminosa?
+\item \textbf{Bibliografia} --- só o que você consultou de fato.
+\end{itemize}
+
+Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' não contam sozinhas: precisam vir acompanhadas do valor calculado.
 \end{lessonblock}
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Laboratório de dados 1 -- a vizinhança solar medida com o Gaia}
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Projeto extra -- a vizinhança solar medida com o Gaia}
+\textbf{Este projeto é opcional.} Ele não substitui o artigo do laboratório acima; é para quem quiser trabalhar com um catálogo real, e não simulado, e chegar a um número que se compara com a literatura. Vale como trabalho complementar.
+
 \textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- as 2000 estrelas mais próximas
 do Sol com paralaxe medida pelo Gaia. Colunas, nesta ordem: \texttt{source\_id} (A),
 \texttt{ra\_deg} (B), \texttt{dec\_deg} (C), \texttt{paralaxe\_mas} (D),
@@ -1254,7 +1262,7 @@ teria de estar alinhado com a linha de visada dentro de cerca de um grau --- dua
 em pouco mais de cem objetos. Diga no artigo o que você fez com essas medidas e por quê.
 \end{enumerate}
 
-\textbf{Entrega: um artigo curto, no modelo da disciplina.}
+\textbf{Se você fizer o projeto extra}, entregue-o também como artigo curto, no modelo da disciplina, separado do artigo do laboratório.
 \begin{itemize}
 \item \textbf{Resumo} --- um parágrafo com a densidade medida, sua incerteza e a
 comparação com a referência, em números.
