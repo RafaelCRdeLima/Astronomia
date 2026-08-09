@@ -126,6 +126,15 @@
       align-items: start;
     }
 
+    .table-wrap.rolavel {
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .layout.uma-coluna {
+      grid-template-columns: 1fr;
+    }
+
     .view {
       display: none;
     }
@@ -596,7 +605,19 @@
       </section>
     </section>
 
-    <section class="layout view" id="analysisView">
+    <section class="layout uma-coluna view" id="analysisView">
+      <section class="panel">
+        <h2>As medidas que entram no ajuste</h2>
+        <div class="body">
+          <div class="table-wrap rolavel">
+            <table id="measTable2">
+              <thead><tr><th>#</th><th>pop.</th><th>dia</th><th>hora</th><th>A (&deg;)</th><th>h (&deg;)</th><th>&alpha; (&deg;)</th><th>&delta; (&deg;)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="nota-painel">São as mesmas linhas da aba de observação. As colunas &alpha; e &delta; foram calculadas a partir de A e h com a latitude do sítio e o tempo sideral do instante da medida — e é sobre elas que os ajustes abaixo trabalham.</p>
+        </div>
+      </section>
       <section class="panel">
         <h2>Faixa galáctica: &delta; contra &alpha;</h2>
         <div class="body">
@@ -637,7 +658,7 @@
       </section>
     </section>
 
-    <section class="layout view" id="dataView">
+    <section class="layout uma-coluna view" id="dataView">
       <section class="panel">
         <h2>Template de Relatório</h2>
         <div class="body">
@@ -984,8 +1005,11 @@ function atualiza() {
     : "Clique em um objeto para medir";
   $("datasetInfo").textContent = `${visiveis().length} objetos acima do horizonte`;
 
-  $("measTable").querySelector("tbody").innerHTML = medidas.map(m =>
-    `<tr><td>${m.n}</td><td>${m.pop}</td><td>${m.dia}</td><td>${fmtHora(m.hora)}</td><td>${fmt(m.az)}</td><td>${fmt(m.alt)}</td><td>${fmt(m.ra)}</td><td>${fmt(m.dec)}</td></tr>`).join("");
+  const linhasMed = medidas.map(m =>
+    `<tr><td>${m.n}</td><td>${m.pop}</td><td>${m.dia}</td><td>${fmtHora(m.hora)}</td><td>${fmt(m.az)}</td><td>${fmt(m.alt)}</td><td>${fmt(m.ra)}</td><td>${fmt(m.dec)}</td></tr>`).join("")
+    || `<tr><td colspan="8">Nenhuma medida ainda. Volte à aba de observação e clique em objetos.</td></tr>`;
+  $("measTable").querySelector("tbody").innerHTML = linhasMed;
+  $("measTable2").querySelector("tbody").innerHTML = linhasMed;
 
   const R = resultados();
   desenhaChart($("chartGal"), medidas.filter(m => m.pop === "galactico"), R.gal, "faixa da Via Láctea", "#6fd3d8");
