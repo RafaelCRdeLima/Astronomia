@@ -790,7 +790,7 @@ A necessidade de corrigir precessão desaparece se o sistema de coordenadas for 
 
 Os eixos do ICRS foram escolhidos para coincidir, dentro da incerteza, com o equador e o equinócio médios de J2000.0. Mas a coincidência é histórica, não definitória: o ICRS \emph{não} é definido pelo equador terrestre, e é justamente por isso que ele não precisa de correção de precessão.
 
-No óptico, a realização é o \textbf{Gaia-CRF}, construído a partir de centenas de milhares de quasares medidos pela própria missão e alinhado ao ICRF por rotação global. Todo o catálogo do Gaia --- e, por extensão, quase toda a astrometria moderna --- está expresso nesse referencial. Quando o laboratório de dados deste capítulo pede paralaxes e movimentos próprios, o que está sendo usado é essa infraestrutura.
+No óptico, a realização é o \textbf{Gaia-CRF}, construído a partir de centenas de milhares de quasares medidos pela própria missão e alinhado ao ICRF por rotação global. Todo o catálogo do Gaia --- e, por extensão, quase toda a astrometria moderna --- está expresso nesse referencial. Quando o projeto extra deste capítulo pede paralaxes e movimentos próprios do Gaia, o que está sendo usado é essa infraestrutura.
 
 \subsection*{Da posição de catálogo à posição no telescópio}
 
@@ -867,7 +867,11 @@ Duas verificações baratas evitam o problema. Primeira: a paralaxe obtida tem d
 
 \subsection*{A incerteza da distância}
 
-Nenhuma medida vem sem incerteza, e a da paralaxe se propaga para a distância de maneira particularmente simples. Como $d=1/p$, a derivada é $\mathrm{d}d/\mathrm{d}p=-1/p^{2}$, e a regra geral de propagação dá $\sigma_d=|{-}1/p^{2}|\,\sigma_p=\sigma_p/p^{2}$. Dividindo por $d=1/p$:
+Nenhuma medida vem sem incerteza, e a da paralaxe se propaga para a distância de maneira particularmente simples. A regra geral, para uma grandeza $q=q(x_1,\ldots,x_n)$ calculada a partir de medidas com erros independentes, é
+\[
+\sigma_q^{2}=\sum_i\left(\frac{\partial q}{\partial x_i}\right)^{2}\sigma_{x_i}^{2},
+\]
+deduzida no Capítulo 15. Aqui há uma variável só. Como $d=1/p$, a derivada é $\mathrm{d}d/\mathrm{d}p=-1/p^{2}$, e a regra dá $\sigma_d=|{-}1/p^{2}|\,\sigma_p=\sigma_p/p^{2}$. Dividindo por $d=1/p$:
 \[
 \boxed{\ \frac{\sigma_d}{d}=\frac{\sigma_p}{p}\ }
 \]
@@ -934,7 +938,7 @@ Uma consequência quantitativa que vale internalizar: um erro de $0{,}1$ magnitu
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{extincao.pdf}
-\caption{\textbf{A poeira empobrece e avermelha.} \textbf{(a)} A extinção relativa $A_\lambda/A_V$ para a lei padrão do meio difuso ($R_V=3{,}1$): cresce monotonicamente para o azul, e no infravermelho próximo cai a um décimo do valor no visível --- razão pela qual regiões de formação estelar só se abrem em $K$ ou no infravermelho médio. \textbf{(b)} O efeito no diagrama cor--magnitude construído com as 2000 estrelas do laboratório de dados: a poeira desloca a estrela ao longo da seta, para baixo e para a direita. Sem corrigir, ela seria classificada como mais fria e mais distante do que é.}
+\caption{\textbf{A poeira empobrece e avermelha.} \textbf{(a)} A extinção relativa $A_\lambda/A_V$ para a lei padrão do meio difuso ($R_V=3{,}1$): cresce monotonicamente para o azul, e no infravermelho próximo cai a um décimo do valor no visível --- razão pela qual regiões de formação estelar só se abrem em $K$ ou no infravermelho médio. \textbf{(b)} O efeito no diagrama cor--magnitude construído com as 2000 estrelas do Gaia do projeto extra deste capítulo: a poeira desloca a estrela ao longo da seta, para baixo e para a direita. Sem corrigir, ela seria classificada como mais fria e mais distante do que é.}
 \end{figure}
 
 \subsection*{Cor: o que $B-V$ mede}
@@ -1034,7 +1038,7 @@ O \textbf{movimento próprio} $\mu$ é o deslocamento angular real da estrela no
 \[
 v_t=\mu\,d,
 \]
-que em unidades práticas fica $v_t\,[\mathrm{km\,s^{-1}}]=4{,}74\,\mu\,['' \mathrm{ano^{-1}}]\,d\,[\mathrm{pc}]$. O fator $4{,}74$ é apenas a conversão de $\mathrm{UA\,ano^{-1}}$ para $\mathrm{km\,s^{-1}}$, deduzido adiante em \emph{Velocidade espacial completa}. Combinando $v_t$ com a velocidade radial obtida por Doppler, tem-se o vetor velocidade completo --- e é essa combinação, feita para bilhões de estrelas, que transformou o Gaia em um instrumento de dinâmica galáctica.
+que em unidades práticas fica $v_t\,[\mathrm{km\,s^{-1}}]=4{,}74\,\mu\,['' \mathrm{ano^{-1}}]\,d\,[\mathrm{pc}]$. O fator $4{,}74$ é apenas a conversão de $\mathrm{UA\,ano^{-1}}$ para $\mathrm{km\,s^{-1}}$, deduzido adiante em \emph{Velocidade espacial completa}. \textbf{Cuidado com uma coincidência de dígitos:} este $4{,}74$ é uma velocidade em $\mathrm{km\,s^{-1}}$ e nada tem a ver com $M_{{\rm bol},\odot}=4{,}74$, a magnitude bolométrica absoluta do Sol. São grandezas diferentes, com unidades diferentes, e o mesmo número por acaso. Combinando $v_t$ com a velocidade radial obtida por Doppler, tem-se o vetor velocidade completo --- e é essa combinação, feita para bilhões de estrelas, que transformou o Gaia em um instrumento de dinâmica galáctica.
 
 \subsection*{As unidades e o que elas significam hoje}
 
@@ -1135,11 +1139,13 @@ L_0=3{,}0128\times10^{28}\,\mathrm{W}.
 \]
 Com a luminosidade nominal solar, isso dá $M_{{\rm bol},\odot}=4{,}74$ exatamente. Note que esse valor deixou de ser uma medida do Sol e passou a ser uma consequência de duas convenções --- outro exemplo do movimento geral da metrologia astronômica em direção a definições fixas.
 
-Para uso prático, a expressão que converte magnitude absoluta em luminosidade solar,
+Para uso prático, a expressão que converte magnitude \emph{bolométrica} absoluta em luminosidade solar é
 \[
 \frac{L}{L_\odot}=10^{-0{,}4\left(M_{\rm bol}-4{,}74\right)},
 \]
-é a que aparece nos laboratórios deste capítulo --- e agora se sabe de onde vem cada um dos seus números.
+e agora se sabe de onde vem cada um dos seus números.
+
+\textbf{Não é esta a expressão usada no laboratório deste capítulo.} Lá as magnitudes são de banda $V$, e a conversão correta é a da Parte B, com $M_{V,\odot}=4{,}83$. As duas formas diferem exatamente pela correção bolométrica: só coincidem para uma estrela com $BC=0$. Usar $4{,}74$ sobre uma magnitude $V$ desloca a luminosidade em cerca de $8\%$, sem produzir sintoma algum.
 
 \subsection*{Sistemas fotométricos e a definição de magnitude}
 
@@ -1208,19 +1214,10 @@ Para trabalho de alta precisão --- cronometragem de pulsares, trânsitos, ondas
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Propagação de incertezas: o mínimo necessário}
 Todo resultado deste curso é um valor \emph{com} incerteza; sem ela, não é resultado. A
-regra geral, para $q=q(x_1,\ldots,x_n)$ com erros independentes, é
-\[
-\sigma_q^{2}=\sum_i\left(\frac{\partial q}{\partial x_i}\right)^{2}\sigma_{x_i}^{2},
-\]
-deduzida no Capítulo 15. Três casos cobrem quase tudo o que aparece aqui.
-
-\textbf{Potência.} Se $q=x^{n}$, então $\sigma_q/q=|n|\,\sigma_x/x$. Daí sai
-imediatamente o resultado usado no laboratório: como $d=1/p$,
-\[
-\frac{\sigma_d}{d}=\frac{\sigma_p}{p}.
-\]
-Uma paralaxe com $5\%$ de erro dá distância com $5\%$ de erro --- desde que a inversão
-seja legítima, o que deixa de valer acima de $20\%$.
+regra geral, $\sigma_q^{2}=\sum_i(\partial q/\partial x_i)^{2}\sigma_{x_i}^{2}$, está
+enunciada na Parte B e deduzida no Capítulo 15. Lá também está o caso da potência, que dá
+$\sigma_d/d=\sigma_p/p$ para a inversão da paralaxe. Faltam dois casos, igualmente
+frequentes.
 
 \textbf{Logaritmo e magnitudes.} Se $m=-2{,}5\log_{10}F$, então
 \[
