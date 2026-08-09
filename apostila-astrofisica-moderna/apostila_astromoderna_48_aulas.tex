@@ -161,6 +161,18 @@
   \textbf{Como estudar este bloco:} #3
   \end{noticebox}
 }
+% divisor de parte dentro de um capítulo
+\newcommand{\parte}[2]{%
+  \bigskip\Needspace{10\baselineskip}%
+  \phantomsection\addcontentsline{toc}{subsection}{Parte #1 -- #2}%
+  {\color{astroGold}\rule{\textwidth}{1.2pt}}\par
+  \vspace{0.30em}
+  {\Large\bfseries\color{astroNavy}Parte #1}\quad{\Large\color{astroBlue}#2}\par
+  \vspace{0.22em}
+  {\color{astroLine}\rule{\textwidth}{0.6pt}}\par
+  \medskip
+}
+
 % espacejamento de letras para as linhas em versalete da capa
 \providecommand{\spacedout}[1]{\textls[200]{#1}}
 
@@ -399,13 +411,15 @@ transversal & Projetos guiados com dados públicos & 17 \\
 A astrofísica moderna começa com uma limitação que é também sua força: quase tudo que sabemos sobre o universo vem de observações à distância. Não podemos colocar uma estrela em uma bancada, mudar sua massa e medir a resposta; não podemos repetir a formação de uma galáxia em laboratório; não podemos acelerar a história cósmica para ver o resultado final. Em vez disso, observamos luz, posição, tempo, movimento e, em casos especiais, partículas e ondas gravitacionais. A tarefa central do astrofísico é transformar sinais recebidos em propriedades físicas: distância, massa, temperatura, composição química, densidade, idade e história evolutiva.
 
 \begin{noticebox}
-\textbf{Como este capítulo se divide.} O conteúdo está organizado em duas partes, e vale estudá-las separadamente.
+\textbf{Como este capítulo se divide.} O conteúdo está organizado em três partes, e vale estudá-las separadamente.
 
-\textbf{Parte I --- a geometria do céu e os sistemas de referência.} Ângulos e ângulo sólido; a esfera celeste e os quatro sistemas de coordenadas; trigonometria esférica e a equação da altura; eclíptica, obliquidade e estações; a equação do tempo; tempo sideral; precessão, nutação e o conceito de época; os sistemas de referência ICRS e Gaia-CRF; a cadeia de reduções que leva de uma posição de catálogo à posição aparente no telescópio.
+\textbf{Parte A --- sobre ângulos e sistemas de referências.} Ângulos e ângulo sólido; a esfera celeste e os quatro sistemas de coordenadas; trigonometria esférica e a equação da altura; a cadeia da data civil ao tempo sideral e à altura no céu; eclíptica, obliquidade e estações; a equação do tempo; precessão, nutação e o conceito de época; os sistemas de referência ICRS e Gaia-CRF; a cadeia de reduções que leva de uma posição de catálogo à posição aparente no telescópio. Responde a pergunta \emph{onde}.
 
-\textbf{Parte II --- distâncias, brilhos e a ponte para a física.} Paralaxe e a definição do parsec; as unidades astronômicas e suas definições modernas; movimento próprio, velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; fluxo, luminosidade e a lei do inverso do quadrado; a escala de magnitudes deduzida; módulo de distância; cores e sistemas fotométricos; extinção e avermelhamento; correção bolométrica.
+\textbf{Parte B --- paralaxe.} A paralaxe trigonométrica e o parsec; como medir uma paralaxe em uma imagem, e o fator 2 que a maioria esquece; a propagação da incerteza, $\sigma_d/d=\sigma_p/p$, e quando inverter a paralaxe deixa de ser legítimo; fluxo, luminosidade e a lei do inverso do quadrado; a escala de magnitudes deduzida; magnitude absoluta e módulo de distância; extinção; cor; e a conversão final de magnitude absoluta em luminosidade. Responde a pergunta \emph{quão longe e quão luminosa}. \textbf{É esta parte que o laboratório deste capítulo cobra}, e ela é autocontida: quem leu A e B tem tudo para escrever o artigo.
 
-As seções de instrumentação --- redução de imagens, astrometria de placa e refração --- são leitura complementar: elas não são pré-requisito para as duas partes acima, mas você vai precisar delas nos laboratórios.
+\textbf{Parte C --- movimentos, unidades e fotometria.} Aberração e movimento próprio; as unidades astronômicas e suas definições modernas; velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; correção bolométrica e o zero da escala; sistemas fotométricos. É o aprofundamento do que a Parte B introduziu para uso imediato.
+
+As seções de instrumentação --- redução de imagens, astrometria de placa e refração --- e as escalas de tempo são leitura complementar: não são pré-requisito para as partes acima, mas você vai precisar delas nos laboratórios.
 \end{noticebox}
 
 O céu aparente é descrito por coordenadas. A esfera celeste não é uma casca real ao redor da Terra, mas uma construção geométrica extremamente útil. Quando dizemos que uma estrela tem certa ascensão reta e declinação, estamos especificando uma direção no céu, não uma posição tridimensional completa. Essa distinção é importante: duas estrelas podem aparecer próximas angularmente e estar separadas por centenas ou milhares de parsecs ao longo da linha de visada. A geometria celeste permite prever quando um objeto nasce, culmina e se põe; a física permite interpretar o que sua luz revela.
@@ -448,7 +462,7 @@ Como $F_2/F_1=1/9$, obtemos $\Delta m\simeq2{,}4$. A estrela mais distante parec
 
 \begin{lessonblock}{As três relações que estruturam o capítulo}
 Três expressões aparecem em quase todas as páginas seguintes, e todas serão deduzidas
-adiante, na Parte II, com as hipóteses explicitadas:
+adiante, na Parte B, com as hipóteses explicitadas:
 \[
 F=\frac{L}{4\pi d^{2}},
 \qquad
@@ -468,6 +482,8 @@ Uma Cefeida em uma galáxia próxima tem magnitude aparente média $m=24{,}0$. P
 \]
 logo $28=5\log_{10}(d/10\,\mathrm{pc})$ e $\log_{10}(d/10)=5{,}6$. Portanto $d\simeq10^{6{,}6}\,\mathrm{pc}\simeq4{,}0\,\mathrm{Mpc}$. Uma extinção de apenas $0{,}2$ magnitude já deslocaria a distância inferida; por isso calibração fotométrica e poeira não são detalhes cosméticos.
 \end{lessonblock}
+
+\parte{A}{Sobre ângulos e sistemas de referências}
 
 \subsection*{Medir uma direção: ângulos, ângulo sólido e resolução}
 
@@ -792,23 +808,219 @@ Apontar um telescópio exige uma cadeia de correções, e é instrutivo enumerá
 
 A soma dessas correções pode ultrapassar um minuto de arco. Nenhuma delas é opcional em trabalho de precisão, e a ordem importa --- é por isso que existem bibliotecas padronizadas de redução astrométrica, e por que reimplementá-las manualmente é um caminho conhecido para erros silenciosos.
 
-\subsection*{Paralaxe, aberração e movimento próprio}
+\parte{B}{Paralaxe}
 
-A \textbf{paralaxe trigonométrica} sai da definição de tangente aplicada ao triângulo retângulo formado pelo Sol, pela Terra e pela estrela:
+A Parte A ensinou a dizer \emph{onde} um objeto está: uma direção, em um sistema de referência declarado, em uma época declarada. Isso já permite apontar um telescópio, mas não permite dizer nada sobre a estrela em si. Uma direção não distingue uma anã fraca e próxima de uma supergigante distante.
+
+Esta parte fecha essa lacuna com uma única medida geométrica --- a paralaxe --- e com a cadeia que sai dela. O percurso é sempre o mesmo, e vale tê-lo na cabeça antes de começar:
+
+\begin{center}
+\textbf{ângulo medido} $\rightarrow$ \textbf{distância} $\rightarrow$ \textbf{magnitude absoluta} $\rightarrow$ \textbf{luminosidade}
+\end{center}
+
+Cada seta é uma equação de uma linha, e cada uma carrega uma hipótese que precisa ser dita em voz alta. É esta parte, e não a anterior, que o laboratório deste capítulo cobra.
+
+\subsection*{A paralaxe: a única distância medida por geometria}
+
+Ao longo de um ano a Terra percorre uma órbita de raio $a_\oplus=1\,\mathrm{UA}$. Vista de uma estrela próxima, essa órbita tem um tamanho angular; visto da Terra, o efeito é o inverso: a estrela parece descrever uma pequena elipse contra o fundo de objetos muito mais distantes. Metade do deslocamento total ao longo do ano é a \textbf{paralaxe} $p$.
+
+A relação sai da definição de tangente aplicada ao triângulo retângulo formado pelo Sol, pela Terra e pela estrela:
 \[
 \tan p=\frac{a_\oplus}{d}\quad\Longrightarrow\quad p\simeq\frac{a_\oplus}{d},
 \]
-com $p$ em radianos. A aproximação de ângulo pequeno é excelente: mesmo a estrela mais próxima tem $p<10^{-5}$ rad. Definindo o parsec como a distância em que $p=1''$, e usando $1''=4{,}848\times10^{-6}$ rad,
+com $p$ em radianos. A aproximação de ângulo pequeno, deduzida na Parte A, é excelente aqui: mesmo a estrela mais próxima tem $p<10^{-5}$ rad.
+
+Definindo o \textbf{parsec} como a distância em que $p=1''$, e usando $1''=4{,}848\times10^{-6}$ rad,
 \[
 1\,\mathrm{pc}=\frac{1\,\mathrm{UA}}{4{,}848\times10^{-6}}=3{,}086\times10^{16}\,\mathrm{m},
 \]
-e a relação de trabalho torna-se $d\,[\mathrm{pc}]=1/p\,['']$. O parsec não é uma unidade arbitrária: ele é definido precisamente para que essa inversão seja exata.
+e a relação de trabalho torna-se
+\[
+\boxed{\ d\,[\mathrm{pc}]=\frac{1}{p\,['']}=\frac{1000}{p\,[\mathrm{mas}]}\ }
+\]
+O parsec não é uma unidade arbitrária: ele foi definido exatamente para que essa inversão fosse exata. Repare que a segunda forma, com a paralaxe em milissegundos de arco, é a que se usa na prática, porque é assim que os catálogos publicam.
+
+Vale insistir em por que essa medida é especial. Ela não supõe nada sobre a estrela --- nem temperatura, nem tamanho, nem composição. Supõe apenas que a Terra orbita o Sol e que a geometria euclidiana vale nessa escala. Todas as outras réguas da astronomia --- Cefeidas, supernovas, a própria escada de distâncias --- são calibradas, direta ou indiretamente, contra esta.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{paralaxe.pdf}
 \caption{\textbf{A única distância medida por geometria pura.} \textbf{(a)} A base do triângulo é o raio da órbita terrestre; o ângulo $p$ é metade do deslocamento aparente entre duas observações separadas por seis meses. O ângulo está muito exagerado: para a estrela mais próxima ele vale $0{,}77''$, dez mil vezes menor que o desenho sugere. \textbf{(b)} A relação $d=1/p$ em escala logarítmica, com marcos reais. O Gaia mede paralaxes com incerteza de dezenas de microssegundos de arco, o que mantém a régua utilizável até alguns quiloparsecs; além disso, a geometria cede lugar a métodos indiretos.}
 \end{figure}
+
+\subsection*{Medir uma paralaxe em uma imagem}
+
+Na prática ninguém mede $p$ diretamente: mede-se o \emph{deslocamento} de uma estrela entre duas imagens do mesmo campo, tomadas em épocas separadas por seis meses, e converte-se esse deslocamento em ângulo.
+
+Se as duas imagens estão no mesmo sistema de pixels, e a estrela se deslocou de
+\[
+\Delta_{\rm px}=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
+\]
+pixels, basta conhecer a \textbf{escala da imagem} $s$, em milissegundos de arco por pixel, para obter
+\[
+\boxed{\ p\,[\mathrm{mas}]=\frac{\Delta_{\rm px}}{2}\,s\ }
+\]
+
+\textbf{O fator 2 é onde quase todo mundo erra na primeira vez.} O deslocamento entre janeiro e julho vai de um extremo ao outro da elipse paraláctica: ele vale $2p$, e não $p$. Quem esquece de dividir obtém uma paralaxe duas vezes maior, uma distância duas vezes menor e --- porque o fluxo cai com o quadrado --- uma luminosidade quatro vezes menor. O erro não gera nenhum sintoma: todas as contas seguintes funcionam, e o resultado simplesmente está errado por um fator conhecido.
+
+Duas verificações baratas evitam o problema. Primeira: a paralaxe obtida tem de ser positiva e menor que $770\,\mathrm{mas}$, que é o valor de Proxima Centauri, a maior do céu. Segunda: se o catálogo trouxer a paralaxe medida, compare --- a sua conta e a dele têm de coincidir dentro da incerteza.
+
+\subsection*{A incerteza da distância}
+
+Nenhuma medida vem sem incerteza, e a da paralaxe se propaga para a distância de maneira particularmente simples. Como $d=1/p$, a derivada é $\mathrm{d}d/\mathrm{d}p=-1/p^{2}$, e a regra geral de propagação dá $\sigma_d=|{-}1/p^{2}|\,\sigma_p=\sigma_p/p^{2}$. Dividindo por $d=1/p$:
+\[
+\boxed{\ \frac{\sigma_d}{d}=\frac{\sigma_p}{p}\ }
+\]
+
+O erro \emph{relativo} passa intacto de uma grandeza para a outra. Uma paralaxe com $5\%$ de incerteza dá distância com $5\%$ de incerteza; uma com $30\%$ dá distância com $30\%$ --- e é aí que começa o problema.
+
+O ponto delicado é que $d=1/p$ é exata para os valores \emph{verdadeiros}, mas não para os medidos. Quando $\sigma_p/p$ é grande, a distribuição de $1/p_{\rm obs}$ deixa de ser simétrica e a inversão passa a enviesar o resultado. A regra prática, hoje padrão em trabalhos com dados do Gaia, é:
+\begin{itemize}
+\item $\sigma_p/p\lesssim0{,}1$: inverter é perfeitamente aceitável;
+\item $\sigma_p/p\gtrsim0{,}2$: não inverta --- infira, com o tratamento estatístico discutido na Parte C.
+\end{itemize}
+
+Em qualquer relatório, portanto, a distância se escreve $d\pm\sigma_d$, e a razão $\sigma_p/p$ se calcula \emph{antes} de decidir se a inversão vale.
+
+\subsection*{Fluxo, luminosidade e a lei do inverso do quadrado}
+
+Com a distância na mão, o brilho aparente passa a dizer algo sobre a estrela. \textbf{Fluxo} $F$ é energia recebida por unidade de área e de tempo, aqui na Terra; \textbf{luminosidade} $L$ é energia emitida por unidade de tempo, lá na estrela. Se a emissão é isotrópica e o meio entre nós e ela é transparente, toda a energia emitida em um segundo atravessa uma esfera de raio $d$, de área $4\pi d^{2}$:
+\[
+\boxed{\ F=\frac{L}{4\pi d^{2}}\ }
+\]
+
+As duas hipóteses são reais e podem falhar: emissão isotrópica falha em objetos colimados, e meio transparente falha sempre que há poeira --- que é o assunto de duas seções adiante. Enquanto valerem, esta é a ponte entre o que se mede e o que a estrela é.
+
+\subsection*{A escala de magnitudes, deduzida}
+
+Hiparco classificou estrelas em seis graus de brilho. No século XIX, Pogson percebeu que a resposta do olho é aproximadamente logarítmica e que as seis classes correspondiam a um fator de cerca de $100$ em fluxo. Ele então \emph{definiu} a escala de modo que cinco magnitudes correspondam exatamente a um fator $100$:
+\[
+\frac{F_1}{F_2}=100^{(m_2-m_1)/5}
+\qquad\Longrightarrow\qquad
+m_2-m_1=-2{,}5\log_{10}\frac{F_2}{F_1}.
+\]
+O coeficiente $2{,}5$ não é escolha estética: ele é $5/\log_{10}100=5/2$, forçado pela definição. O sinal negativo preserva a convenção histórica de que objetos mais brilhantes têm magnitude menor --- fonte inesgotável de confusão, e que não vai mudar.
+
+\subsection*{Magnitude absoluta e módulo de distância}
+
+A magnitude aparente $m$ mistura duas coisas: quanto a estrela emite e quão longe ela está. Para separá-las, define-se a \textbf{magnitude absoluta} $M$ como a magnitude que o objeto teria se estivesse a $10\,\mathrm{pc}$.
+
+Aplicando a lei do inverso do quadrado, $F(d)/F(10\,\mathrm{pc})=(10/d)^{2}$ com $d$ em parsecs, e substituindo na relação de Pogson:
+\[
+m-M=-2{,}5\log_{10}\left(\frac{10}{d}\right)^{2}=5\log_{10}d-5 .
+\]
+A diferença $m-M$ chama-se \textbf{módulo de distância}, e é uma das expressões mais usadas de toda a astronomia. Na forma que se aplica a uma estrela medida, com a distância já conhecida pela paralaxe, é mais cômodo escrevê-la resolvida em $M$:
+\[
+\boxed{\ M=m-5\log_{10}\!\left(\frac{d}{10\,\mathrm{pc}}\right)\ }
+\]
+
+\subsection*{Extinção: quando a poeira entra na conta}
+
+A hipótese de meio transparente falha com frequência. A poeira interestelar remove fótons da linha de visada por absorção e espalhamento: se a profundidade óptica na direção observada é $\tau_\lambda$, o fluxo transmitido é $F_{\rm obs}=F_0e^{-\tau_\lambda}$. Convertendo para magnitudes pela relação de Pogson,
+\[
+A_\lambda\equiv m_{\rm obs}-m_0=-2{,}5\log_{10}e^{-\tau_\lambda}=1{,}0857\,\tau_\lambda .
+\]
+Esse fator $1{,}086$ é apenas $2{,}5/\ln10$, e explica por que ``uma magnitude de extinção'' corresponde aproximadamente a uma profundidade óptica unitária.
+
+A extinção $A_V$ é sempre positiva: ela faz a estrela parecer \emph{mais fraca} do que é. Corrigi-la é subtraí-la da magnitude observada, e a magnitude absoluta completa fica
+\[
+\boxed{\ M=m-5\log_{10}\!\left(\frac{d}{10\,\mathrm{pc}}\right)-A_V\ }
+\]
+
+Ignorar $A_V$ não produz nenhum sintoma: a conta fecha, as unidades batem, e a luminosidade sai sistematicamente baixa. No plano galáctico, onde $A_V$ pode chegar a dezenas de magnitudes, ignorá-la não introduz erro --- torna a medida sem sentido.
+
+Uma consequência quantitativa que vale internalizar: um erro de $0{,}1$ magnitude em $A_V$ produz erro de $5\%$ na distância inferida, pois $\Delta d/d=\ln(10)\,\Delta A/5\simeq0{,}46\,\Delta A$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{extincao.pdf}
+\caption{\textbf{A poeira empobrece e avermelha.} \textbf{(a)} A extinção relativa $A_\lambda/A_V$ para a lei padrão do meio difuso ($R_V=3{,}1$): cresce monotonicamente para o azul, e no infravermelho próximo cai a um décimo do valor no visível --- razão pela qual regiões de formação estelar só se abrem em $K$ ou no infravermelho médio. \textbf{(b)} O efeito no diagrama cor--magnitude construído com as 2000 estrelas do laboratório de dados: a poeira desloca a estrela ao longo da seta, para baixo e para a direita. Sem corrigir, ela seria classificada como mais fria e mais distante do que é.}
+\end{figure}
+
+\subsection*{Cor: o que $B-V$ mede}
+
+Uma cor é uma diferença de magnitudes em duas bandas, por exemplo $B-V$. Pela relação de Pogson, isso equivale a uma razão de fluxos:
+\[
+B-V=-2{,}5\log_{10}\frac{F_B}{F_V}+\text{const},
+\]
+com a constante fixada pela calibração do sistema fotométrico. Como a razão $F_B/F_V$ depende da \emph{forma} do espectro e não do brilho total, \textbf{a cor é independente da distância} --- e é por isso que ela é tão útil: mede temperatura sem exigir que se saiba onde o objeto está.
+
+Mas só enquanto não houver poeira. Como a extinção é maior no azul, a cor observada fica mais vermelha que a intrínseca, e a diferença é o \textbf{excesso de cor}
+\[
+E(B-V)=(B-V)_{\rm obs}-(B-V)_{\rm intr}=A_B-A_V .
+\]
+A razão entre extinção total e seletiva, $R_V=A_V/E(B-V)$, vale tipicamente $3{,}1$ no meio interestelar difuso. Daí a advertência que vale para qualquer trabalho fotométrico: uma estrela avermelhada pode ser fria, ou pode ser quente e empoeirada, e a cor sozinha não distingue os dois casos.
+
+\subsection*{Da magnitude absoluta à luminosidade}
+
+O último elo converte magnitude absoluta em luminosidade, e é onde mora uma armadilha silenciosa.
+
+Aplicando a relação de Pogson entre a estrela e o Sol, ambos colocados a $10\,\mathrm{pc}$,
+\[
+M-M_\odot=-2{,}5\log_{10}\frac{L}{L_\odot}
+\qquad\Longrightarrow\qquad
+\boxed{\ \frac{L}{L_\odot}=10^{(M_\odot-M)/2{,}5}\ }
+\]
+
+A armadilha está em qual $M_\odot$ usar. \textbf{As duas constantes não são intercambiáveis:}
+\begin{itemize}
+\item $M_{V,\odot}=4{,}83$ --- a magnitude absoluta do Sol \emph{na banda $V$}. É esta que se usa quando $M$ foi obtida a partir de uma magnitude aparente $V$, como em quase todo trabalho fotométrico introdutório.
+\item $M_{{\rm bol},\odot}=4{,}74$ --- a magnitude \emph{bolométrica}, que corresponde ao fluxo integrado em todos os comprimentos de onda. Só vale se $M$ também for bolométrica, isto é, se a correção bolométrica já tiver sido aplicada.
+\end{itemize}
+
+As duas escalas diferem exatamente pela correção bolométrica, tratada na Parte C. Trocar uma pela outra desloca a luminosidade em cerca de $8\%$ --- pouco para estragar uma ordem de grandeza, o bastante para inutilizar uma comparação, e sem produzir sintoma nenhum.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Exemplo resolvido: de um deslocamento em pixels até a luminosidade}
+\textbf{Medidas.} Em duas imagens do mesmo campo, separadas por seis meses, uma estrela se deslocou $\Delta_{\rm px}=12{,}5$ pixels. A escala da imagem é $s=4\,\mathrm{mas/pixel}$. O catálogo informa $\sigma_p=1{,}2\,\mathrm{mas}$, magnitude aparente $m_V=9{,}40$ e extinção $A_V=0{,}18$.
+
+\textbf{Passo 1 --- a paralaxe.}
+\[
+p=\frac{\Delta_{\rm px}}{2}\,s=\frac{12{,}5}{2}\times4=25{,}0\,\mathrm{mas}.
+\]
+
+\textbf{Passo 2 --- a distância e sua incerteza.}
+\[
+d=\frac{1000}{25{,}0}=40{,}0\,\mathrm{pc},
+\qquad
+\frac{\sigma_d}{d}=\frac{\sigma_p}{p}=\frac{1{,}2}{25{,}0}=0{,}048 ,
+\]
+logo $\sigma_d=1{,}9\,\mathrm{pc}$ e $d=40{,}0\pm1{,}9\,\mathrm{pc}$. Como $\sigma_p/p=4{,}8\%$ está bem abaixo de $10\%$, inverter a paralaxe é legítimo.
+
+\textbf{Passo 3 --- a magnitude absoluta.}
+\[
+M=9{,}40-5\log_{10}\!\left(\frac{40{,}0}{10}\right)-0{,}18
+ =9{,}40-3{,}01-0{,}18=6{,}21 .
+\]
+
+\textbf{Passo 4 --- a luminosidade.}
+\[
+\frac{L}{L_\odot}=10^{(4{,}83-6{,}21)/2{,}5}=10^{-0{,}552}=0{,}28 .
+\]
+
+\textbf{Resposta.} A estrela está a $40\pm2\,\mathrm{pc}$ e emite cerca de $0{,}28$ da luminosidade solar --- é intrinsecamente mais fraca que o Sol, apesar de estar entre as vizinhas. Note que os quatro passos usam quatro equações diferentes, e que a incerteza foi carregada desde o início: um resultado sem ela não seria resultado.
+\end{lessonblock}
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Quatro erros que não deixam sintoma}
+Todos os quatro produzem um número plausível, com unidade certa, e nenhuma mensagem de erro. Aplicados ao exemplo acima, dão:
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.46\textwidth}>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}p{0.22\textwidth}}
+\toprule
+Erro & $L/L_\odot$ obtida & Desvio \\
+\midrule
+--- (conta correta) & $0{,}28$ & --- \\
+Esquecer o fator 2 na paralaxe & $0{,}070$ & $4\times$ menor \\
+Esquecer a extinção $A_V$ & $0{,}24$ & $15\%$ menor \\
+Usar $4{,}74$ no lugar de $4{,}83$ & $0{,}26$ & $8\%$ menor \\
+\bottomrule
+\end{tabular}
+
+\medskip
+O quarto erro possível não aparece na tabela porque não muda o número, e sim o seu significado: \textbf{inverter uma paralaxe com $\sigma_p/p$ acima de $20\%$}. Nesse regime a distância obtida é enviesada, e nenhuma verificação interna à conta denuncia isso --- só a razão $\sigma_p/p$, calculada antes.
+\end{lessonblock}
+
+\parte{C}{Movimentos, unidades e fotometria}
+
+\subsection*{Aberração e movimento próprio}
 
 Dois efeitos são frequentemente confundidos com a paralaxe e precisam ser separados dela.
 
@@ -823,53 +1035,6 @@ O \textbf{movimento próprio} $\mu$ é o deslocamento angular real da estrela no
 v_t=\mu\,d,
 \]
 que em unidades práticas fica $v_t\,[\mathrm{km\,s^{-1}}]=4{,}74\,\mu\,['' \mathrm{ano^{-1}}]\,d\,[\mathrm{pc}]$. O fator $4{,}74$ é apenas a conversão de $\mathrm{UA\,ano^{-1}}$ para $\mathrm{km\,s^{-1}}$, deduzido adiante em \emph{Velocidade espacial completa}. Combinando $v_t$ com a velocidade radial obtida por Doppler, tem-se o vetor velocidade completo --- e é essa combinação, feita para bilhões de estrelas, que transformou o Gaia em um instrumento de dinâmica galáctica.
-
-\subsection*{A escala de magnitudes, deduzida}
-
-Hiparco classificou estrelas em seis graus de brilho. No século XIX, Pogson percebeu que a resposta do olho é aproximadamente logarítmica e que as seis classes correspondiam a um fator de cerca de 100 em fluxo. Ele então \emph{definiu} a escala de modo que cinco magnitudes correspondam exatamente a um fator 100:
-\[
-\frac{F_1}{F_2}=100^{(m_2-m_1)/5}.
-\]
-Tomando logaritmos,
-\[
-m_2-m_1=-2{,}5\log_{10}\frac{F_2}{F_1}.
-\]
-O coeficiente $2{,}5$ não é escolha estética: ele é $5/\log_{10}100=5/2$, forçado pela definição. O sinal negativo preserva a convenção histórica de que objetos mais brilhantes têm magnitude menor.
-
-A \textbf{magnitude absoluta} $M$ é definida como a magnitude que o objeto teria a $10\,\mathrm{pc}$. Usando a lei do inverso do quadrado, $F(d)/F(10\,\mathrm{pc})=(10/d)^2$ com $d$ em parsecs, e substituindo na relação de Pogson:
-\[
-m-M=-2{,}5\log_{10}\left(\frac{10}{d}\right)^{2}=5\log_{10}d-5.
-\]
-Essa é a \textbf{equação do módulo de distância}, e ela é uma das mais usadas de toda a astronomia. Na presença de poeira, um termo de extinção $A$ (em magnitudes, sempre positivo) soma-se ao lado esquerdo:
-\[
-m-M=5\log_{10}d-5+A.
-\]
-Ignorar $A$ leva a superestimar sistematicamente a distância, e é por isso que mapas de extinção são parte obrigatória de qualquer trabalho fotométrico no plano galáctico.
-
-\subsection*{Cores, índices e o que eles medem}
-
-Uma cor é uma diferença de magnitudes em duas bandas, por exemplo $B-V$. Pela relação de Pogson, isso equivale a uma razão de fluxos:
-\[
-B-V=-2{,}5\log_{10}\frac{F_B}{F_V}+\text{const},
-\]
-em que a constante é fixada pela calibração do sistema fotométrico. Como a razão $F_B/F_V$ depende da forma do espectro e não do brilho total, \textbf{a cor é independente da distância} --- desde que não haja poeira. Essa independência é o que torna cores tão úteis: elas medem temperatura sem exigir que se saiba onde o objeto está.
-
-A poeira quebra essa propriedade de maneira previsível. Como a extinção é maior no azul, a cor observada fica mais vermelha que a intrínseca, e define-se o \textbf{excesso de cor}
-\[
-E(B-V)=(B-V)_{\rm obs}-(B-V)_{\rm intr}=A_B-A_V.
-\]
-A razão entre extinção total e seletiva,
-\[
-R_V=\frac{A_V}{E(B-V)},
-\]
-vale tipicamente $3{,}1$ no meio interestelar difuso da Galáxia e é maior em regiões densas, onde os grãos são maiores. Medindo $E(B-V)$ e adotando $R_V$, obtém-se $A_V$ e corrige-se a fotometria. Toda essa cadeia é uma aplicação direta da relação de Pogson combinada com a física de espalhamento.
-
-Por fim, a \textbf{correção bolométrica} liga a magnitude em uma banda à magnitude bolométrica, que corresponde ao fluxo integrado em todos os comprimentos de onda:
-\[
-BC=m_{\rm bol}-V.
-\]
-Ela depende fortemente da temperatura: é próxima de zero para estrelas de tipo solar, cuja emissão tem pico no visível, e fortemente negativa tanto para estrelas muito quentes (que emitem no ultravioleta) quanto para estrelas muito frias (que emitem no infravermelho). Sem essa correção, não se converte magnitude observada em luminosidade --- e sem luminosidade não existe diagrama HR físico.
-
 
 \subsection*{As unidades e o que elas significam hoje}
 
@@ -949,32 +1114,6 @@ P(d\,|\,p_{\rm obs})\propto d^{2}\exp\left[-\frac{(p_{\rm obs}-1/d)^{2}}{2\sigma
 \]
 em que o fator $d^{2}$ vem do elemento de volume. Para $\sigma_p/p\lesssim0{,}1$ a correção é pequena e $1/p$ é aceitável; para $\sigma_p/p\gtrsim0{,}2$ ela domina, e usar $1/p$ produz erro sistemático de dezenas de por cento. A regra prática, hoje padrão em trabalhos com Gaia, é: acima de $20\%$ de erro relativo em paralaxe, não inverta --- infira.
 \end{lessonblock}
-
-\subsection*{Extinção: da profundidade óptica à magnitude}
-
-A poeira interestelar remove fótons da linha de visada por absorção e espalhamento. Se a profundidade óptica na direção observada é $\tau_\lambda$, o fluxo transmitido é
-\[
-F_{\rm obs}=F_0e^{-\tau_\lambda}.
-\]
-Convertendo para magnitudes pela relação de Pogson:
-\[
-A_\lambda\equiv m_{\rm obs}-m_0=-2{,}5\log_{10}e^{-\tau_\lambda}=2{,}5\,\tau_\lambda\log_{10}e=1{,}0857\,\tau_\lambda.
-\]
-Esse fator $1{,}086$ é apenas $2{,}5/\ln10$, e explica por que ``uma magnitude de extinção'' corresponde aproximadamente a uma profundidade óptica unitária --- coincidência numérica conveniente que se usa o tempo todo.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{extincao.pdf}
-\caption{\textbf{A poeira empobrece e avermelha.} \textbf{(a)} A extinção relativa $A_\lambda/A_V$ para a lei padrão do meio difuso ($R_V=3{,}1$): cresce monotonicamente para o azul, e no infravermelho próximo cai a um décimo do valor no visível --- razão pela qual regiões de formação estelar só se abrem em $K$ ou no infravermelho médio. \textbf{(b)} O efeito no diagrama cor--magnitude construído com as 2000 estrelas do laboratório de dados: a poeira desloca a estrela ao longo da seta, para baixo e para a direita. Sem corrigir, ela seria classificada como mais fria e mais distante do que é.}
-\end{figure}
-
-Como a extinção cresce para o azul, aproximadamente como $A_\lambda\propto\lambda^{-1}$ no visível, o objeto fica mais fraco \emph{e} mais vermelho. Definindo o excesso de cor $E(B-V)=A_B-A_V$ e a razão de extinção total para seletiva $R_V=A_V/E(B-V)\simeq3{,}1$, a correção completa do módulo de distância torna-se
-\[
-m-M=5\log_{10}d-5+A_V=5\log_{10}d-5+R_V\,E(B-V).
-\]
-A cadeia inteira é: mede-se a cor observada, compara-se com a cor intrínseca esperada para o tipo espectral, obtém-se $E(B-V)$, multiplica-se por $R_V$ e corrige-se. Cada elo introduz incerteza, e o segundo --- conhecer a cor intrínseca --- exige classificação espectral prévia. É por isso que fotometria sem espectroscopia é sempre uma inferência mais frágil.
-
-Uma consequência quantitativa que vale internalizar: um erro de $0{,}1$ magnitude em $A_V$ produz erro de $5\%$ em distância, pois $\Delta d/d=\ln(10)\,\Delta A/5\simeq0{,}46\,\Delta A$. No plano galáctico, onde $A_V$ pode chegar a dezenas de magnitudes, ignorar extinção não introduz erro --- torna a medida sem sentido.
 
 \subsection*{Correção bolométrica e o zero da escala}
 
