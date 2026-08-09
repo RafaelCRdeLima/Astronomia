@@ -571,7 +571,7 @@
             <label>Populações visíveis</label>
             <label><input type="checkbox" id="showField" checked> estrelas de campo</label>
             <label><input type="checkbox" id="showGal" checked> faixa da Via Láctea</label>
-            <label><input type="checkbox" id="showPla" checked> planetas</label>
+            <label><input type="checkbox" id="showPla" checked> corpos do Sistema Solar</label>
             <label><input type="checkbox" id="showSun" checked> Sol</label>
           </div>
           <div class="control">
@@ -579,7 +579,7 @@
             <button class="button" id="tresHoras" type="button">Medir a selecionada em 3 horários</button>
             <button class="button" id="sunSweep" type="button">Medir o Sol ao meio-dia, em 12 datas</button>
           </div>
-          <p class="nota-painel">Sítio: Joinville, &phi; = &minus;26,30°, &lambda; = &minus;48,85°. O catálogo é sorteado a cada acesso. Registre pelo menos 15 objetos da faixa galáctica, 8 posições do Sol, e uma estrela em três horários.</p>
+          <p class="nota-painel">Sítio: Joinville, &phi; = &minus;26,30°, &lambda; = &minus;48,85°. O catálogo é sorteado a cada acesso. Registre pelo menos 15 objetos da faixa galáctica, 15 corpos do Sistema Solar, 8 posições do Sol, e uma estrela em três horários.</p>
         </div>
       </section>
 
@@ -605,9 +605,10 @@
         </div>
       </section>
       <section class="panel">
-        <h2>Sol: &delta; ao longo do ano</h2>
+        <h2>Eclíptica: Sol e corpos do Sistema Solar</h2>
         <div class="body">
           <canvas id="chartSun" class="chart" width="1200" height="620"></canvas>
+          <p class="nota-painel">Em amarelo claro, o Sol medido em datas diferentes; em dourado, os corpos do Sistema Solar medidos em um instante só. As duas populações caem sobre o <b>mesmo</b> círculo máximo — e é isso que justifica existir um sistema de coordenadas eclípticas. Mas o Sol está <i>exatamente</i> sobre ele, enquanto os corpos têm inclinações próprias: um é traçador preciso, o outro é ruidoso.</p>
         </div>
       </section>
       <section class="panel">
@@ -631,7 +632,7 @@
               <tbody></tbody>
             </table>
           </div>
-          <p class="nota-painel">O método do máximo usa <b>um único ponto</b> e erra dos dois lados: <b>superestima</b> quando a população tem espessura própria, como a faixa galáctica, porque o ruído e a espessura só empurram o maior valor para cima; e <b>subestima</b> quando a amostragem não acerta o extremo, como o Sol medido em poucas datas. O ajuste usa todos os pontos e escapa dos dois.</p>
+          <p class="nota-painel">O método do máximo usa <b>um único ponto</b> e erra dos dois lados: <b>superestima</b> quando a população tem espessura própria, como a faixa galáctica, porque o ruído e a espessura só empurram o maior valor para cima; e <b>subestima</b> quando a amostragem não acerta o extremo, como o Sol medido em poucas datas. O ajuste usa todos os pontos e escapa dos dois. Repare também na tabela: juntar o Sol com os corpos <b>sem pesos</b> costuma piorar o resultado em vez de melhorar, porque a população ruidosa domina a soma.</p>
         </div>
       </section>
     </section>
@@ -735,9 +736,13 @@ function gerarCatalogo() {
     const b = Math.max(-22, Math.min(22, 3.2 * Math.tan(Math.PI * (rnd() - 0.5) * 0.72)));
     catalogo.push({ id: id++, pop: "galactico", ...galToEq(rnd() * 360, b) });
   }
-  for (const p of PLANETAS)
-    catalogo.push({ id: id++, pop: "planeta", nome: p.nome,
+  for (const p of PLANETAS)                              // os cinco visiveis a olho nu
+    catalogo.push({ id: id++, pop: "planeta", nome: p.nome, grande: true,
                     ...eclToEq(rnd() * 360, p.inc * Math.sin(rnd() * 2 * Math.PI)) });
+  for (let i = 0; i < 110; i++) {                         // cinturao de asteroides
+    const beta = Math.max(-24, Math.min(24, 4.5 * Math.tan(Math.PI * (rnd() - 0.5) * 0.70)));
+    catalogo.push({ id: id++, pop: "planeta", ...eclToEq(rnd() * 360, beta) });
+  }
 }
 gerarCatalogo();
 
@@ -798,7 +803,7 @@ function desenhaDomo() {
     const p = proj(o.az, o.alt);
     sctx.fillStyle = COR[o.pop];
     sctx.globalAlpha = o.pop === "campo" ? 0.6 : 0.95;
-    const r = o.pop === "sol" ? 10 : (o.pop === "planeta" ? 6 : (o.pop === "galactico" ? 3.2 : 2.2));
+    const r = o.pop === "sol" ? 10 : (o.pop === "planeta" ? (o.grande ? 6.5 : 3.0) : (o.pop === "galactico" ? 3.2 : 2.2));
     sctx.beginPath(); sctx.arc(p.x, p.y, r, 0, 2 * Math.PI); sctx.fill();
   }
   sctx.globalAlpha = 1;
@@ -881,11 +886,19 @@ const fmtHora = h => `${String(Math.floor(h)).padStart(2, "0")}h${String(Math.ro
 // tan(dec) = tan(i) sin(alpha - alpha0)
 function ajusta(pts) {
   if (pts.length < 4) return null;
+  // custo = distancia ANGULAR ao circulo maximo, nao residuo em declinacao.
+  // minimizar residuo em delta enviesa a amplitude para cima quando a
+  // populacao tem espessura propria, porque a dispersao real e perpendicular
+  // ao circulo e nao vertical.
   const custo = (i, a0) => {
+    const ap = rad(wrap360(a0 + 270)), dp = rad(90 - i);
+    const nx = Math.cos(dp) * Math.cos(ap), ny = Math.cos(dp) * Math.sin(ap), nz = Math.sin(dp);
     let s = 0;
     for (const p of pts) {
-      const dm = deg(Math.atan(Math.tan(rad(i)) * Math.sin(rad(p.ra - a0))));
-      s += (dm - p.dec) ** 2;
+      const a = rad(p.ra), d = rad(p.dec);
+      const dot = nx * Math.cos(d) * Math.cos(a) + ny * Math.cos(d) * Math.sin(a) + nz * Math.sin(d);
+      const ang = deg(Math.asin(Math.max(-1, Math.min(1, dot))));
+      s += ang * ang;
     }
     return Math.sqrt(s / pts.length);
   };
@@ -924,12 +937,18 @@ function invariancia() {
   return linhas;
 }
 function resultados() {
-  const gal = medidas.filter(m => m.pop === "galactico"), sol = medidas.filter(m => m.pop === "sol");
-  return { gal: ajusta(gal), galMax: maxDec(gal), sol: ajusta(sol), solMax: maxDec(sol), inv: invariancia() };
+  const gal = medidas.filter(m => m.pop === "galactico");
+  const sol = medidas.filter(m => m.pop === "sol");
+  const cor = medidas.filter(m => m.pop === "planeta");
+  const ecl = sol.concat(cor);                 // Sol e corpos definem a mesma ecliptica
+  return { gal: ajusta(gal), galMax: maxDec(gal),
+           sol: ajusta(sol), solMax: maxDec(sol),
+           corpos: ajusta(cor), ecl: ajusta(ecl), eclMax: maxDec(ecl),
+           nSol: sol.length, nCorpos: cor.length, inv: invariancia() };
 }
 
 // ---------------------------------------------------------- graficos
-function desenhaChart(cv, pts, fit, titulo, cor) {
+function desenhaChart(cv, pts, fit, titulo, cor, pts2) {
   const c = cv.getContext("2d"), W = cv.width, H = cv.height, M = { l: 78, r: 20, t: 26, b: 52 };
   c.clearRect(0, 0, W, H); c.fillStyle = "#080808"; c.fillRect(0, 0, W, H);
   const X = a => M.l + (a / 360) * (W - M.l - M.r), Y = d => M.t + ((90 - d) / 180) * (H - M.t - M.b);
@@ -946,6 +965,7 @@ function desenhaChart(cv, pts, fit, titulo, cor) {
   }
   c.fillStyle = cor;
   for (const p of pts) { c.beginPath(); c.arc(X(p.ra), Y(p.dec), 4.5, 0, 2 * Math.PI); c.fill(); }
+  if (pts2) { c.fillStyle = "#d7b46a"; for (const p of pts2) { c.beginPath(); c.arc(X(p.ra), Y(p.dec), 3.4, 0, 2 * Math.PI); c.fill(); } }
   c.fillStyle = "#aaa69c"; c.textAlign = "left"; c.font = "17px ui-sans-serif, system-ui";
   c.fillText(titulo + "   (α convertida a partir de azimute e altura)", M.l, 18);
 }
@@ -969,7 +989,8 @@ function atualiza() {
 
   const R = resultados();
   desenhaChart($("chartGal"), medidas.filter(m => m.pop === "galactico"), R.gal, "faixa da Via Láctea", "#6fd3d8");
-  desenhaChart($("chartSun"), medidas.filter(m => m.pop === "sol"), R.sol, "Sol ao longo do ano", "#ffd27f");
+  desenhaChart($("chartSun"), medidas.filter(m => m.pop === "sol" || m.pop === "planeta"), R.ecl,
+               "eclíptica: Sol e corpos do Sistema Solar", "#ffd27f", medidas.filter(m => m.pop === "planeta"));
 
   const L = [];
   if (R.gal) {
@@ -977,7 +998,9 @@ function atualiza() {
     L.push(["polo galáctico α", `${fmt(R.gal.poloRa)}°`, "--", `${fmt(REF.poloRa)}°`]);
     L.push(["polo galáctico δ", `${fmt(R.gal.poloDec)}°`, "--", `${fmt(REF.poloDec)}°`]);
   }
-  if (R.sol) L.push(["obliquidade ε", `${fmt(R.sol.i)}° ± ${fmt(R.sol.sigma)}°`, `${fmt(R.solMax)}°`, `${fmt(REF.eps)}°`]);
+  if (R.sol) L.push(["obliquidade ε — pelo Sol", `${fmt(R.sol.i)}° ± ${fmt(R.sol.sigma)}°`, `${fmt(R.solMax)}°`, `${fmt(REF.eps)}°`]);
+  if (R.corpos) L.push(["ε — pelos corpos do Sistema Solar", `${fmt(R.corpos.i)}° ± ${fmt(R.corpos.sigma)}°`, "--", `${fmt(REF.eps)}°`]);
+  if (R.ecl) L.push(["ε — as duas populações juntas", `${fmt(R.ecl.i)}° ± ${fmt(R.ecl.sigma)}°`, `${fmt(R.eclMax)}°`, `${fmt(REF.eps)}°`]);
   $("resTable").querySelector("tbody").innerHTML = L.length
     ? L.map(l => `<tr><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td><td>${l[3]}</td></tr>`).join("")
     : `<tr><td colspan="4">Registre pelo menos 4 objetos de uma população.</td></tr>`;
@@ -1028,7 +1051,9 @@ function tabelaResultados() {
     L.push(`polo galáctico $\\alpha_p$ & ${fm(R.gal.poloRa)} & -- & ${fm(REF.poloRa)} \\\\`);
     L.push(`polo galáctico $\\delta_p$ & ${fm(R.gal.poloDec)} & -- & ${fm(REF.poloDec)} \\\\`);
   }
-  if (R.sol) L.push(`obliquidade $\\varepsilon$ & $${fm(R.sol.i)} \\pm ${fm(R.sol.sigma)}$ & ${fm(R.solMax)} & ${fm(REF.eps)} \\\\`);
+  if (R.sol) L.push(`obliquidade $\\varepsilon$ --- pelo Sol & $${fm(R.sol.i)} \\pm ${fm(R.sol.sigma)}$ & ${fm(R.solMax)} & ${fm(REF.eps)} \\\\`);
+  if (R.corpos) L.push(`$\\varepsilon$ --- pelos corpos do Sistema Solar & $${fm(R.corpos.i)} \\pm ${fm(R.corpos.sigma)}$ & -- & ${fm(REF.eps)} \\\\`);
+  if (R.ecl) L.push(`$\\varepsilon$ --- as duas juntas, sem peso & $${fm(R.ecl.i)} \\pm ${fm(R.ecl.sigma)}$ & ${fm(R.eclMax)} & ${fm(REF.eps)} \\\\`);
   return `\\begin{table*}[t]
 \\centering
 \\footnotesize
