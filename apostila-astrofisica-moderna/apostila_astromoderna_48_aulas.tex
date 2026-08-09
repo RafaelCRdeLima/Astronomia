@@ -42,7 +42,7 @@
   linkcolor=astroBlue,
   urlcolor=astroBlue,
   pdftitle={Astrofisica Moderna: Apostila de capitulos de estudo},
-  pdfauthor={Material didatico em portugues}
+  pdfauthor={Rafael Camargo Rodrigues de Lima}
 }
 
 \setlength{\parindent}{0pt}
@@ -172,7 +172,7 @@
   \end{figure}
 }
 \title{\textbf{Astrofísica Moderna}\\Apostila de capítulos de estudo}
-\author{Material didático em português baseado na organização conceitual de\\Bradley W. Carroll e Dale A. Ostlie, \textit{An Introduction to Modern Astrophysics}, 2ª ed.}
+\author{Prof. Dr. Rafael Camargo Rodrigues de Lima\\Universidade do Estado de Santa Catarina -- Centro de Ciências Tecnológicas}
 \date{2026}
 
 \begin{document}
@@ -269,16 +269,17 @@
     {\color{astroLine}\fontsize{13}{18}\selectfont
      Material para alunos de graduação em Física};
 
-  % nota de referência, com filete dourado casado à altura do texto
+  % autoria, com filete dourado casado à altura do bloco
   \node[anchor=north west, inner sep=0, text width=13.2cm, align=left]
-    (nota) at (3.6,7.1)
-    {\color{astroLine!85!astroNavy}\fontsize{9.5}{13.5}\selectfont
-     Material didático em português baseado na organização conceitual de
-     Bradley W. Carroll e Dale A. Ostlie, \textit{An Introduction to Modern
-     Astrophysics}, 2\textsuperscript{a} ed. O texto é original e não reproduz
-     o do livro.};
+    (autor) at (3.6,7.3)
+    {\color{white}\fontsize{15}{20}\selectfont
+     Prof.\ Dr.\ Rafael Camargo Rodrigues de Lima\par
+     \vspace{0.18cm}
+     {\color{astroLine!70!astroNavy}\fontsize{10.5}{14}\selectfont
+      Universidade do Estado de Santa Catarina\\
+      Centro de Ciências Tecnológicas}};
   \fill[astroGold, opacity=0.85]
-    ([xshift=-0.50cm]nota.north west) rectangle ([xshift=-0.44cm]nota.south west);
+    ([xshift=-0.50cm]autor.north west) rectangle ([xshift=-0.44cm]autor.south west);
 
   % ---------- rodapé ----------
   \draw[astroLine, opacity=0.28, line width=0.5pt] (3.1,3.3) -- (17.9,3.3);
@@ -6785,10 +6786,17 @@ Ao terminar qualquer dedução, três testes rápidos detectam a maioria dos err
 
 \section*{Bibliografia}
 \addcontentsline{toc}{section}{Bibliografia}
+
+\textbf{Livros de base.} A organização conceitual, a sequência dos temas e o grau de aprofundamento desta apostila seguem os três títulos abaixo. O texto é original e não reproduz o deles; para demonstrações completas, exemplos resolvidos e listas de problemas, é a eles que se deve recorrer.
+
 \begin{itemize}
-\item Carroll, B. W.; Ostlie, D. A. \textit{An Introduction to Modern Astrophysics}. 2ª ed. Cambridge University Press, 2017.
+\item Carroll, B. W.; Ostlie, D. A. \textit{An Introduction to Modern Astrophysics}. 2ª ed. Cambridge University Press, 2017. --- referência principal, capítulo a capítulo.
 \item Karttunen, H. et al. \textit{Fundamental Astronomy}. Springer.
 \item Ryden, B.; Peterson, B. M. \textit{Foundations of Astrophysics}. Cambridge University Press.
+\end{itemize}
+
+\textbf{Arquivos de dados e acompanhamento.}
+\begin{itemize}
 \item NASA/IPAC Extragalactic Database, SIMBAD, ESA Gaia Archive e NASA Exoplanet Archive para consultas orientadas de dados.
 \item \textit{Gravitational Wave Open Science Center} (GWOSC): dados públicos de LIGO, Virgo e KAGRA, com tutoriais.
 \item MAST (\textit{Mikulski Archive for Space Telescopes}): arquivos públicos de JWST, Hubble, Kepler e TESS.
