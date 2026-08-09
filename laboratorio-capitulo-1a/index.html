@@ -580,7 +580,7 @@
             <label>Populações visíveis</label>
             <label><input type="checkbox" id="showField" checked> estrelas de campo</label>
             <label><input type="checkbox" id="showGal" checked> faixa da Via Láctea</label>
-            <label><input type="checkbox" id="showPla" checked> corpos do Sistema Solar</label>
+            <label><input type="checkbox" id="showPla" checked> planetas</label>
             <label><input type="checkbox" id="showSun" checked> Sol</label>
           </div>
           <div class="control">
@@ -588,7 +588,7 @@
             <button class="button" id="tresHoras" type="button">Medir a selecionada em 3 horários</button>
             <button class="button" id="sunSweep" type="button">Medir o Sol ao meio-dia, em 12 datas</button>
           </div>
-          <p class="nota-painel">Sítio: Joinville, &phi; = &minus;26,30°, &lambda; = &minus;48,85°. O catálogo é sorteado a cada acesso. Registre pelo menos 15 objetos da faixa galáctica, 15 corpos do Sistema Solar, 8 posições do Sol, e uma estrela em três horários.</p>
+          <p class="nota-painel">Sítio: Joinville, &phi; = &minus;26,30°, &lambda; = &minus;48,85°. O catálogo é sorteado a cada acesso. Registre pelo menos 15 objetos da faixa galáctica, os cinco planetas, 8 posições do Sol, e uma estrela em três horários.</p>
         </div>
       </section>
 
@@ -626,10 +626,22 @@
         </div>
       </section>
       <section class="panel">
-        <h2>Eclíptica: Sol e corpos do Sistema Solar</h2>
+        <h2>Eclíptica: o Sol ao longo do ano</h2>
         <div class="body">
           <canvas id="chartSun" class="chart" width="1200" height="620"></canvas>
-          <p class="nota-painel">Em amarelo claro, o Sol medido em datas diferentes; em dourado, os corpos do Sistema Solar medidos em um instante só. As duas populações caem sobre o <b>mesmo</b> círculo máximo — e é isso que justifica existir um sistema de coordenadas eclípticas. Mas o Sol está <i>exatamente</i> sobre ele, enquanto os corpos têm inclinações próprias: um é traçador preciso, o outro é ruidoso.</p>
+          <p class="nota-painel">O Sol medido em datas diferentes desenha a eclíptica: ele está <i>exatamente</i> sobre ela, e por isso é o traçador ideal. Os pontos coloridos são os planetas — não entram no ajuste, mas caem perto da curva, e é isso que a tabela abaixo mede.</p>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Os planetas estão na eclíptica?</h2>
+        <div class="body">
+          <div class="table-wrap">
+            <table id="plaTable">
+              <thead><tr><th>planeta</th><th>&alpha; (&deg;)</th><th>&delta; (&deg;)</th><th>&lambda; (&deg;)</th><th>&beta; (&deg;)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="nota-painel">Convertendo cada planeta para coordenadas eclípticas com a obliquidade que <i>você</i> mediu pelo Sol: a longitude &lambda; se espalha por todo o círculo, mas a latitude &beta; fica presa a poucos graus. Se o Sistema Solar não fosse plano, &beta; se espalharia por &plusmn;90&deg;. É essa a razão de existir um sistema de coordenadas eclípticas.</p>
         </div>
       </section>
       <section class="panel">
@@ -653,7 +665,7 @@
               <tbody></tbody>
             </table>
           </div>
-          <p class="nota-painel">O método do máximo usa <b>um único ponto</b> e erra dos dois lados: <b>superestima</b> quando a população tem espessura própria, como a faixa galáctica, porque o ruído e a espessura só empurram o maior valor para cima; e <b>subestima</b> quando a amostragem não acerta o extremo, como o Sol medido em poucas datas. O ajuste usa todos os pontos e escapa dos dois. Repare também na tabela: juntar o Sol com os corpos <b>sem pesos</b> costuma piorar o resultado em vez de melhorar, porque a população ruidosa domina a soma.</p>
+          <p class="nota-painel">O método do máximo usa <b>um único ponto</b> e erra dos dois lados: <b>superestima</b> quando a população tem espessura própria, como a faixa galáctica, porque o ruído e a espessura só empurram o maior valor para cima; e <b>subestima</b> quando a amostragem não acerta o extremo, como o Sol medido em poucas datas. O ajuste usa todos os pontos e escapa dos dois.</p>
         </div>
       </section>
     </section>
@@ -717,6 +729,13 @@ function eclToEq(lam, beta) {
   const y = Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e);
   return { ra: wrap360(deg(Math.atan2(y, Math.cos(l)))), dec: deg(dec) };
 }
+// equatorial -> ecliptico, com a obliquidade que o aluno mediu
+function eqToEcl(ra, dec, eps) {
+  const a = rad(ra), d = rad(dec), e = rad(eps);
+  const beta = Math.asin(Math.sin(d) * Math.cos(e) - Math.cos(d) * Math.sin(e) * Math.sin(a));
+  const y = Math.sin(a) * Math.cos(e) + Math.tan(d) * Math.sin(e);
+  return { lam: wrap360(deg(Math.atan2(y, Math.cos(a)))), beta: deg(beta) };
+}
 // equatorial -> horizontal (azimute contado do Norte para Leste)
 function eqToHor(ra, dec, theta) {
   const H = rad(theta - ra), p = rad(SITIO.phi), d = rad(dec);
@@ -745,9 +764,14 @@ let rngState = (Math.random() * 4294967296) >>> 0;
 function rnd() { rngState = (rngState * 1664525 + 1013904223) >>> 0; return rngState / 4294967296; }
 function gauss() { return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd()); }
 
-const PLANETAS = [{ nome: "Mercúrio", inc: 7.00 }, { nome: "Vênus", inc: 3.39 },
-                  { nome: "Marte", inc: 1.85 }, { nome: "Júpiter", inc: 1.30 },
-                  { nome: "Saturno", inc: 2.49 }];
+// cores aproximadas do aspecto real de cada planeta
+const PLANETAS = [
+  { nome: "Mercúrio", inc: 7.00, cor: "#b9b1a4", r: 4.5 },
+  { nome: "Vênus",    inc: 3.39, cor: "#f6e7c6", r: 7.0 },
+  { nome: "Marte",    inc: 1.85, cor: "#d1603d", r: 5.5 },
+  { nome: "Júpiter",  inc: 1.30, cor: "#d8b48a", r: 6.5 },
+  { nome: "Saturno",  inc: 2.49, cor: "#e3c77b", r: 5.5 },
+];
 let catalogo = [];
 function gerarCatalogo() {
   catalogo = []; let id = 0;
@@ -757,13 +781,9 @@ function gerarCatalogo() {
     const b = Math.max(-22, Math.min(22, 3.2 * Math.tan(Math.PI * (rnd() - 0.5) * 0.72)));
     catalogo.push({ id: id++, pop: "galactico", ...galToEq(rnd() * 360, b) });
   }
-  for (const p of PLANETAS)                              // os cinco visiveis a olho nu
-    catalogo.push({ id: id++, pop: "planeta", nome: p.nome, grande: true,
+  for (const p of PLANETAS)                              // so os cinco visiveis a olho nu
+    catalogo.push({ id: id++, pop: "planeta", nome: p.nome, cor: p.cor, raio: p.r,
                     ...eclToEq(rnd() * 360, p.inc * Math.sin(rnd() * 2 * Math.PI)) });
-  for (let i = 0; i < 110; i++) {                         // cinturao de asteroides
-    const beta = Math.max(-24, Math.min(24, 4.5 * Math.tan(Math.PI * (rnd() - 0.5) * 0.70)));
-    catalogo.push({ id: id++, pop: "planeta", ...eclToEq(rnd() * 360, beta) });
-  }
 }
 gerarCatalogo();
 
@@ -822,10 +842,28 @@ function desenhaDomo() {
 
   for (const o of visiveis()) {
     const p = proj(o.az, o.alt);
-    sctx.fillStyle = COR[o.pop];
+    if (o.pop === "sol") {                                  // halo do Sol
+      const g = sctx.createRadialGradient(p.x, p.y, 2, p.x, p.y, 46);
+      g.addColorStop(0, "rgba(255,222,140,0.95)");
+      g.addColorStop(0.22, "rgba(255,205,105,0.38)");
+      g.addColorStop(0.55, "rgba(255,190,90,0.12)");
+      g.addColorStop(1, "rgba(255,190,90,0)");
+      sctx.fillStyle = g;
+      sctx.beginPath(); sctx.arc(p.x, p.y, 46, 0, 2 * Math.PI); sctx.fill();
+      sctx.fillStyle = "#ffd98c";
+      sctx.beginPath(); sctx.arc(p.x, p.y, 11, 0, 2 * Math.PI); sctx.fill();
+      continue;
+    }
+    sctx.fillStyle = o.cor || COR[o.pop];
     sctx.globalAlpha = o.pop === "campo" ? 0.6 : 0.95;
-    const r = o.pop === "sol" ? 10 : (o.pop === "planeta" ? (o.grande ? 6.5 : 3.0) : (o.pop === "galactico" ? 3.2 : 2.2));
+    const r = o.raio || (o.pop === "galactico" ? 3.2 : 2.2);
     sctx.beginPath(); sctx.arc(p.x, p.y, r, 0, 2 * Math.PI); sctx.fill();
+    if (o.nome) {                                           // nome do planeta ao lado
+      sctx.globalAlpha = 0.9; sctx.fillStyle = o.cor;
+      sctx.font = "14px ui-sans-serif, system-ui"; sctx.textAlign = "left";
+      sctx.fillText(o.nome, p.x + r + 6, p.y + 5);
+    }
+    sctx.globalAlpha = 1;
   }
   sctx.globalAlpha = 1;
   for (const m of medidas) {
@@ -846,7 +884,7 @@ function mede(o) {
   const az = wrap360(o.az + gauss() * jitter / Math.max(0.2, Math.cos(rad(o.alt))));
   const alt = Math.max(0.05, Math.min(90, o.alt + gauss() * jitter));
   const th = theta();
-  return { pop: o.pop, idCat: o.id, dia, hora, theta: th, az, alt, ...horToEq(az, alt, th) };
+  return { pop: o.pop, idCat: o.id, nome: o.nome, dia, hora, theta: th, az, alt, ...horToEq(az, alt, th) };
 }
 sky.addEventListener("click", ev => {
   const r = sky.getBoundingClientRect();
@@ -960,12 +998,15 @@ function invariancia() {
 function resultados() {
   const gal = medidas.filter(m => m.pop === "galactico");
   const sol = medidas.filter(m => m.pop === "sol");
-  const cor = medidas.filter(m => m.pop === "planeta");
-  const ecl = sol.concat(cor);                 // Sol e corpos definem a mesma ecliptica
+  const pla = medidas.filter(m => m.pop === "planeta");
+  const fitSol = ajusta(sol);
+  // com o epsilon medido pelo Sol, converte cada planeta para coordenadas
+  // eclipticas: se o Sistema Solar e plano, a latitude beta tem de ser pequena
+  const epsUsado = fitSol ? fitSol.i : REF.eps;
+  const planetas = pla.map(m => ({ ...m, ...eqToEcl(m.ra, m.dec, epsUsado) }));
   return { gal: ajusta(gal), galMax: maxDec(gal),
-           sol: ajusta(sol), solMax: maxDec(sol),
-           corpos: ajusta(cor), ecl: ajusta(ecl), eclMax: maxDec(ecl),
-           nSol: sol.length, nCorpos: cor.length, inv: invariancia() };
+           sol: fitSol, solMax: maxDec(sol), epsUsado,
+           planetas, nSol: sol.length, inv: invariancia() };
 }
 
 // ---------------------------------------------------------- graficos
@@ -1013,8 +1054,9 @@ function atualiza() {
 
   const R = resultados();
   desenhaChart($("chartGal"), medidas.filter(m => m.pop === "galactico"), R.gal, "faixa da Via Láctea", "#6fd3d8");
-  desenhaChart($("chartSun"), medidas.filter(m => m.pop === "sol" || m.pop === "planeta"), R.ecl,
-               "eclíptica: Sol e corpos do Sistema Solar", "#ffd27f", medidas.filter(m => m.pop === "planeta"));
+  desenhaChart($("chartSun"), medidas.filter(m => m.pop === "sol"), R.sol,
+               "eclíptica: o Sol ao longo do ano, e os planetas", "#ffd27f",
+               medidas.filter(m => m.pop === "planeta"));
 
   const L = [];
   if (R.gal) {
@@ -1023,11 +1065,13 @@ function atualiza() {
     L.push(["polo galáctico δ", `${fmt(R.gal.poloDec)}°`, "--", `${fmt(REF.poloDec)}°`]);
   }
   if (R.sol) L.push(["obliquidade ε — pelo Sol", `${fmt(R.sol.i)}° ± ${fmt(R.sol.sigma)}°`, `${fmt(R.solMax)}°`, `${fmt(REF.eps)}°`]);
-  if (R.corpos) L.push(["ε — pelos corpos do Sistema Solar", `${fmt(R.corpos.i)}° ± ${fmt(R.corpos.sigma)}°`, "--", `${fmt(REF.eps)}°`]);
-  if (R.ecl) L.push(["ε — as duas populações juntas", `${fmt(R.ecl.i)}° ± ${fmt(R.ecl.sigma)}°`, `${fmt(R.eclMax)}°`, `${fmt(REF.eps)}°`]);
   $("resTable").querySelector("tbody").innerHTML = L.length
     ? L.map(l => `<tr><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td><td>${l[3]}</td></tr>`).join("")
     : `<tr><td colspan="4">Registre pelo menos 4 objetos de uma população.</td></tr>`;
+
+  $("plaTable").querySelector("tbody").innerHTML = R.planetas.length
+    ? R.planetas.map(p => `<tr><td>${p.nome ?? "--"}</td><td>${fmt(p.ra)}</td><td>${fmt(p.dec)}</td><td>${fmt(p.lam)}</td><td><b>${fmt(p.beta)}</b></td></tr>`).join("")
+    : `<tr><td colspan="5">Meça os planetas na abóbada.</td></tr>`;
 
   $("invTable").querySelector("tbody").innerHTML = R.inv.length
     ? R.inv.map(i => `<tr><td>${i.id}</td><td>${i.n}</td><td>${fmt(i.dAz)}</td><td>${fmt(i.dAlt)}</td><td>${fmt(i.dRa)}</td><td>${fmt(i.dDec)}</td></tr>`).join("")
@@ -1075,9 +1119,7 @@ function tabelaResultados() {
     L.push(`polo galáctico $\\alpha_p$ & ${fm(R.gal.poloRa)} & -- & ${fm(REF.poloRa)} \\\\`);
     L.push(`polo galáctico $\\delta_p$ & ${fm(R.gal.poloDec)} & -- & ${fm(REF.poloDec)} \\\\`);
   }
-  if (R.sol) L.push(`obliquidade $\\varepsilon$ --- pelo Sol & $${fm(R.sol.i)} \\pm ${fm(R.sol.sigma)}$ & ${fm(R.solMax)} & ${fm(REF.eps)} \\\\`);
-  if (R.corpos) L.push(`$\\varepsilon$ --- pelos corpos do Sistema Solar & $${fm(R.corpos.i)} \\pm ${fm(R.corpos.sigma)}$ & -- & ${fm(REF.eps)} \\\\`);
-  if (R.ecl) L.push(`$\\varepsilon$ --- as duas juntas, sem peso & $${fm(R.ecl.i)} \\pm ${fm(R.ecl.sigma)}$ & ${fm(R.eclMax)} & ${fm(REF.eps)} \\\\`);
+  if (R.sol) L.push(`obliquidade $\\varepsilon$ & $${fm(R.sol.i)} \\pm ${fm(R.sol.sigma)}$ & ${fm(R.solMax)} & ${fm(REF.eps)} \\\\`);
   return `\\begin{table*}[t]
 \\centering
 \\footnotesize
@@ -1091,6 +1133,25 @@ ${L.join("\n")}
 \\bottomrule
 \\end{tabular}
 \\end{table*}
+`;
+}
+function tabelaPlanetas() {
+  const R = resultados();
+  const L = R.planetas.map(p =>
+    `${texEscape(p.nome ?? "--")} & ${fm(p.ra)} & ${fm(p.dec)} & ${fm(p.lam)} & ${fm(p.beta)} \\\\`).join("\n");
+  return `\\begin{table}[t]
+\\centering
+\\footnotesize
+\\caption{Os cinco planetas visíveis a olho nu, convertidos para coordenadas eclípticas com a obliquidade medida pelo Sol. Se o Sistema Solar fosse uma distribuição isotrópica, $\\beta$ se espalharia por $\\pm90^\\circ$; ele não se espalha.}
+\\label{tab:planetas}
+\\begin{tabular}{lrrrr}
+\\toprule
+planeta & $\\alpha$ (°) & $\\delta$ (°) & $\\lambda$ (°) & $\\beta$ (°) \\\\
+\\midrule
+${L || "-- & -- & -- & -- & -- \\\\"}
+\\bottomrule
+\\end{tabular}
+\\end{table}
 `;
 }
 function tabelaInvariancia() {
@@ -1310,9 +1371,16 @@ A Tabela~\\ref{tab:invariancia} mostra o mesmo objeto medido em
 horários diferentes: azimute e altura mudam dezenas de graus, e as
 coordenadas equatoriais não mudam além do erro de leitura.
 
+A Tabela~\\ref{tab:planetas} traz os cinco planetas convertidos para
+coordenadas eclípticas com a obliquidade medida pelo Sol: a longitude
+$\\lambda$ se espalha por todo o círculo, e a latitude $\\beta$ fica
+presa a poucos graus.
+
 \\input{tabelas/tabela_medidas.tex}
 
 \\input{tabelas/tabela_invariancia.tex}
+
+\\input{tabelas/tabela_planetas.tex}
 
 \\input{tabelas/tabela_resultados.tex}
 
@@ -1399,6 +1467,7 @@ async function buildReportFiles(nome) {
     { name: "tabelas/tabela_medidas.tex", blob: tex(tabelaMedidas()) },
     { name: "tabelas/tabela_resultados.tex", blob: tex(tabelaResultados()) },
     { name: "tabelas/tabela_invariancia.tex", blob: tex(tabelaInvariancia()) },
+    { name: "tabelas/tabela_planetas.tex", blob: tex(tabelaPlanetas()) },
     { name: "dados/medidas.csv", blob: csv(rowsToCsv(medidasCsvRows())) },
     { name: "dados/catalogo.csv", blob: csv(rowsToCsv(catalogoCsvRows())) },
     { name: "figuras/carta_equatorial.png", blob: await canvasBlob(sky) },
