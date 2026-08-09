@@ -1,0 +1,1295 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Laboratório 1A | Os planos do céu</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel-2: #151515;
+      --line: #343434;
+      --text: #f4f4f1;
+      --muted: #aaa69c;
+      --accent: #d7b46a;
+      --blue: #72a7ff;
+      --cyan: #6fd3d8;
+      --warn: #e6a15b;
+      --bad: #d96d6d;
+      --good: #8fd18f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 10px;
+    }
+
+    .shell {
+      width: min(1760px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 22px 0 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 3.7vw, 52px);
+      line-height: 1.02;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .badge,
+    .chip {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .view-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      padding: 9px 11px;
+      cursor: pointer;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .view-tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(860px, 1fr) minmax(340px, 0.28fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .layout.view.active {
+      display: grid;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #0b0b0b);
+      border: 1px solid var(--line);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--accent);
+      font-size: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel .body {
+      padding: 12px 14px 14px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      background: radial-gradient(circle at 50% 30%, #11172a, #050505 70%);
+      border: 1px solid var(--line);
+    }
+
+    .sky-wrap {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .sky-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .sky-action {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(5, 5, 5, 0.8);
+      padding: 7px 9px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .sky-action:hover,
+    .sky-action:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .sky-wrap.map-fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: #050505;
+      padding: 12px;
+      display: grid;
+      align-items: stretch;
+    }
+
+    .sky-wrap.map-fullscreen canvas {
+      width: 100%;
+      height: calc(100vh - 24px);
+      object-fit: contain;
+    }
+
+    .sky-wrap.map-fullscreen .sky-tip {
+      right: auto;
+      width: min(560px, calc(100vw - 24px));
+    }
+
+    .sky-measure {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      color: var(--accent);
+      background: rgba(5, 5, 5, 0.78);
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      font-size: 12px;
+      line-height: 1.35;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .sky-tip {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      background: rgba(5, 5, 5, 0.76);
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      pointer-events: none;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 10px;
+      min-height: 70px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 9px;
+    }
+
+    .control {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.72);
+    }
+
+    .control:last-child {
+      border-bottom: 0;
+    }
+
+    .readout {
+      color: var(--text);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
+    }
+
+    .formula {
+      color: var(--muted);
+      background: #080808;
+      border: 1px solid var(--line);
+      padding: 9px;
+      line-height: 1.45;
+      font-family: "Latin Modern Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 14px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: #0b0b0b;
+      color: var(--muted);
+      padding: 8px 9px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .chart {
+      width: 100%;
+      height: 420px;
+      border: 1px solid var(--line);
+      background: #080808;
+    }
+
+    .table-wrap {
+      max-height: 68vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.7);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      color: var(--accent);
+      background: #090909;
+      z-index: 1;
+    }
+
+    tr.selected td {
+      background: rgba(215, 180, 106, 0.12);
+    }
+
+    .tasks {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .task {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #0b0b0b;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .task strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 1220px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: calc(100vw - 16px);
+      }
+
+      header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .view-tabs {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .view-tabs .button {
+        width: 100%;
+        text-align: left;
+      }
+
+      .panel {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 12px;
+      }
+
+      #sky,
+      .chart {
+        width: calc(100vw - 48px);
+        max-width: calc(100vw - 48px);
+      }
+
+      .sky-actions {
+        top: 48px;
+        left: 12px;
+        right: auto;
+      }
+
+      h1 {
+        font-size: 25px;
+        line-height: 1.08;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      .badge {
+        justify-self: start;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Laboratório 1A:<br>Os planos do céu</h1>
+        <p>Capítulo 1 · Parte A · Ângulos e sistemas de referências</p>
+      </div>
+      <div class="badge">Astrofísica Moderna</div>
+    </header>
+
+    <div class="toolbar">
+      <a class="button" href="../">Página principal</a>
+      <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
+      <button class="button" id="exportCsv" type="button">Exportar CSV</button>
+      <button class="button" id="clearMeas" type="button">Limpar medidas</button>
+      <span class="chip" id="datasetInfo">catálogo</span>
+    </div>
+
+    <div class="view-tabs" role="tablist" aria-label="Áreas do laboratório">
+      <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
+      <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência física</button>
+      <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Template de Relatório</button>
+    </div>
+
+    <section class="layout view active" id="observationView">
+      <section class="panel">
+        <h2>Carta equatorial</h2>
+        <div class="body">
+          <div class="sky-wrap">
+            <canvas id="sky" width="1500" height="820" aria-label="Carta do céu em coordenadas equatoriais"></canvas>
+            <div class="sky-measure" id="skyReadout">Clique em um objeto para medir</div>
+            <div class="sky-tip">Eixo horizontal: ascensão reta &alpha;. Eixo vertical: declinação &delta;. Clique perto de um objeto para lê-lo; depois registre a medida.</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><small>&alpha; medida</small><strong id="mRa">--</strong></div>
+            <div class="metric"><small>&delta; medida</small><strong id="mDec">--</strong></div>
+            <div class="metric"><small>população</small><strong id="mPop">--</strong></div>
+            <div class="metric"><small>medidas registradas</small><strong id="mCount">0</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Instrumento</h2>
+        <div class="body">
+          <div class="control">
+            <label for="jitter">Precisão de leitura (graus)</label>
+            <input id="jitter" type="range" min="0.05" max="1.5" step="0.05" value="0.30">
+            <span class="readout" id="jitterOut">0,30&deg;</span>
+          </div>
+          <div class="control">
+            <label for="dayOfYear">Data para o Sol (dia do ano)</label>
+            <input id="dayOfYear" type="range" min="1" max="365" step="1" value="1">
+            <span class="readout" id="dayOut">1</span>
+          </div>
+          <div class="control">
+            <label>Populações visíveis</label>
+            <label><input type="checkbox" id="showField" checked> estrelas de campo</label>
+            <label><input type="checkbox" id="showGal" checked> faixa da Via Láctea</label>
+            <label><input type="checkbox" id="showPla" checked> planetas</label>
+            <label><input type="checkbox" id="showSun" checked> Sol</label>
+          </div>
+          <div class="control">
+            <button class="button" id="registerBtn" type="button" disabled>Registrar medida</button>
+            <button class="button" id="sunSweep" type="button">Registrar o Sol em 12 datas</button>
+          </div>
+          <p class="sky-tip">O catálogo é sorteado a cada acesso: os seus números não serão os do grupo ao lado. Registre pelo menos 15 objetos da faixa galáctica e 8 posições do Sol.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Medidas registradas</h2>
+        <div class="body">
+          <div class="table-wrap">
+            <table id="measTable">
+              <thead><tr><th>#</th><th>população</th><th>&alpha; (&deg;)</th><th>&delta; (&deg;)</th><th>dia</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="layout view" id="analysisView">
+      <section class="panel">
+        <h2>Faixa galáctica: &delta; contra &alpha;</h2>
+        <div class="body">
+          <canvas id="chartGal" class="chart" width="1200" height="620"></canvas>
+          <p class="sky-tip">Um círculo máximo inclinado de <i>i</i> em relação ao equador desenha uma senoide de amplitude <i>i</i>. O ajuste usa todos os pontos; o método do máximo usa um só.</p>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Sol: &delta; ao longo do ano</h2>
+        <div class="body">
+          <canvas id="chartSun" class="chart" width="1200" height="620"></canvas>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Resultados</h2>
+        <div class="body">
+          <div class="table-wrap">
+            <table id="resTable">
+              <thead><tr><th>grandeza</th><th>ajuste</th><th>máximo</th><th>referência</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="sky-tip">O método do máximo usa <b>um único ponto</b> e erra dos dois lados: <b>superestima</b> quando a população tem espessura própria, como a faixa galáctica, porque o ruído e a espessura só empurram o maior valor para cima; e <b>subestima</b> quando a amostragem não acerta o extremo, como o Sol medido em poucas datas. O ajuste usa todos os pontos e escapa dos dois.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="layout view" id="dataView">
+      <section class="panel">
+        <h2>Template de Relatório</h2>
+        <div class="body">
+          <p>Preencha o nome e clique em <b>Gerar template</b>. O laboratório salva <b>main.tex</b> já no modelo de artigo da disciplina, com o seu nome, <b>a tabela das medidas que você registrou</b>, a tabela de resultados, as figuras e os CSVs.</p>
+          <div class="control">
+            <label for="studentName">Nome do aluno</label>
+            <input id="studentName" type="text" placeholder="Nome Completo">
+          </div>
+          <div class="control">
+            <button class="button" id="genReport" type="button">Gerar template</button>
+          </div>
+          <p class="readout" id="reportStatus">Aguardando geração do relatório.</p>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script>
+// =====================================================================
+//  Laboratorio 1A -- Os planos do ceu
+//  O aluno le coordenadas equatoriais de tres populacoes e mede a
+//  inclinacao dos planos fundamentais. Fato geometrico usado:
+//  um circulo maximo inclinado de i em relacao ao equador atinge
+//  declinacao maxima exatamente i.
+// =====================================================================
+const D2R = Math.PI / 180, R2D = 180 / Math.PI;
+const rad = d => d * D2R, deg = r => r * R2D;
+const wrap360 = a => ((a % 360) + 360) % 360;
+
+// referencias J2000
+const NGP = { ra: 192.85948, dec: 27.12825, lonNCP: 122.93192 };
+const OBL = 23.4393;
+const REF = {
+  iGal: 90 - NGP.dec,          // 62.872
+  raNodeGal: wrap360(NGP.ra + 90),  // 282.859 -- no ascendente
+  eps: OBL,
+  raNodeEcl: 0,
+};
+
+// ---------------------------------------------------------- transformacoes
+function galToEq(l, b) {
+  const lr = rad(l), br = rad(b), dp = rad(NGP.dec), ln = rad(NGP.lonNCP);
+  const sd = Math.sin(br) * Math.sin(dp) + Math.cos(br) * Math.cos(dp) * Math.cos(ln - lr);
+  const dec = Math.asin(sd);
+  const y = Math.cos(br) * Math.sin(ln - lr);
+  const x = Math.sin(br) * Math.cos(dp) - Math.cos(br) * Math.sin(dp) * Math.cos(ln - lr);
+  return { ra: wrap360(deg(Math.atan2(y, x)) + NGP.ra), dec: deg(dec) };
+}
+function eclToEq(lam, beta) {
+  const l = rad(lam), b = rad(beta), e = rad(OBL);
+  const dec = Math.asin(Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l));
+  const y = Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e);
+  const x = Math.cos(l);
+  return { ra: wrap360(deg(Math.atan2(y, x))), dec: deg(dec) };
+}
+// posicao solar de baixa precisao (melhor que 0,01 grau)
+function sunEq(dayOfYear) {
+  const n = dayOfYear - 1 + 0.5;                  // dias desde 1 de janeiro
+  const nJ2000 = n - 0.5 + 365.25 * 26;           // ancorado em um ano generico
+  const L = wrap360(280.460 + 0.9856474 * nJ2000);
+  const g = rad(wrap360(357.528 + 0.9856003 * nJ2000));
+  const lam = wrap360(L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g));
+  return eclToEq(lam, 0);
+}
+
+// ---------------------------------------------------------- catalogo
+let rngState = (Math.random() * 4294967296) >>> 0;
+function rnd() { rngState = (rngState * 1664525 + 1013904223) >>> 0; return rngState / 4294967296; }
+function gauss() { return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd()); }
+
+const PLANETAS = [
+  { nome: "Mercurio", inc: 7.00 }, { nome: "Venus", inc: 3.39 },
+  { nome: "Marte", inc: 1.85 }, { nome: "Jupiter", inc: 1.30 },
+  { nome: "Saturno", inc: 2.49 },
+];
+
+let catalogo = [];
+function gerarCatalogo() {
+  catalogo = [];
+  let id = 0;
+  for (let i = 0; i < 420; i++) {                       // campo, uniforme na esfera
+    const ra = rnd() * 360, dec = deg(Math.asin(2 * rnd() - 1));
+    catalogo.push({ id: id++, pop: "campo", ra, dec });
+  }
+  for (let i = 0; i < 260; i++) {                       // faixa da Via Lactea
+    const l = rnd() * 360;
+    const b = 3.2 * Math.tan(Math.PI * (rnd() - 0.5) * 0.72); // asas largas, disco fino
+    const e = galToEq(l, Math.max(-25, Math.min(25, b)));
+    catalogo.push({ id: id++, pop: "galactico", ra: e.ra, dec: e.dec });
+  }
+  for (const p of PLANETAS) {                            // planetas, perto da ecliptica
+    const lam = rnd() * 360, beta = p.inc * Math.sin(rnd() * 2 * Math.PI);
+    const e = eclToEq(lam, beta);
+    catalogo.push({ id: id++, pop: "planeta", nome: p.nome, ra: e.ra, dec: e.dec });
+  }
+}
+gerarCatalogo();
+
+// ---------------------------------------------------------- estado
+let medidas = [];
+let selecionado = null;
+let jitter = 0.30;
+let diaAno = 1;
+const mostra = { campo: true, galactico: true, planeta: true, sol: true };
+
+const $ = id => document.getElementById(id);
+const sky = $("sky"), sctx = sky.getContext("2d");
+
+// ---------------------------------------------------------- desenho da carta
+const MARG = { l: 88, r: 24, t: 40, b: 104 };
+const xOf = ra => MARG.l + (ra / 360) * (sky.width - MARG.l - MARG.r);
+const yOf = dec => MARG.t + ((90 - dec) / 180) * (sky.height - MARG.t - MARG.b);
+const raOf = x => ((x - MARG.l) / (sky.width - MARG.l - MARG.r)) * 360;
+const decOf = y => 90 - ((y - MARG.t) / (sky.height - MARG.t - MARG.b)) * 180;
+
+const COR = { campo: "#5c6470", galactico: "#6fd3d8", planeta: "#d7b46a", sol: "#ffd27f" };
+
+function desenhaCarta() {
+  sctx.clearRect(0, 0, sky.width, sky.height);
+  sctx.fillStyle = "#080808"; sctx.fillRect(0, 0, sky.width, sky.height);
+  // grade
+  sctx.strokeStyle = "#242424"; sctx.lineWidth = 1;
+  sctx.fillStyle = "#8a8a8a"; sctx.font = "16px ui-sans-serif, system-ui";
+  for (let a = 0; a <= 360; a += 30) {
+    sctx.beginPath(); sctx.moveTo(xOf(a), yOf(90)); sctx.lineTo(xOf(a), yOf(-90)); sctx.stroke();
+    sctx.textAlign = "center"; sctx.fillText(a + "°", xOf(a), sky.height - MARG.b + 26);
+  }
+  for (let d = -90; d <= 90; d += 30) {
+    sctx.beginPath(); sctx.moveTo(xOf(0), yOf(d)); sctx.lineTo(xOf(360), yOf(d)); sctx.stroke();
+    sctx.textAlign = "right"; sctx.fillText((d > 0 ? "+" : "") + d + "°", MARG.l - 12, yOf(d) + 6);
+  }
+  sctx.strokeStyle = "#3a3a3a";
+  sctx.beginPath(); sctx.moveTo(xOf(0), yOf(0)); sctx.lineTo(xOf(360), yOf(0)); sctx.stroke();
+  sctx.fillStyle = "#aaa69c"; sctx.textAlign = "center";
+  sctx.fillText("ascensão reta  α", (xOf(0) + xOf(360)) / 2, sky.height - MARG.b + 56);
+  sctx.save(); sctx.translate(24, (yOf(90) + yOf(-90)) / 2); sctx.rotate(-Math.PI / 2);
+  sctx.fillText("declinação  δ", 0, 0); sctx.restore();
+
+  for (const o of catalogo) {
+    if (!mostra[o.pop]) continue;
+    sctx.fillStyle = COR[o.pop];
+    const r = o.pop === "planeta" ? 6 : (o.pop === "galactico" ? 3.1 : 2.1);
+    sctx.globalAlpha = o.pop === "campo" ? 0.55 : 0.95;
+    sctx.beginPath(); sctx.arc(xOf(o.ra), yOf(o.dec), r, 0, 2 * Math.PI); sctx.fill();
+  }
+  sctx.globalAlpha = 1;
+  if (mostra.sol) {
+    const s = sunEq(diaAno);
+    sctx.fillStyle = COR.sol;
+    sctx.beginPath(); sctx.arc(xOf(s.ra), yOf(s.dec), 9, 0, 2 * Math.PI); sctx.fill();
+    sctx.strokeStyle = "#ffd27f"; sctx.globalAlpha = 0.45;
+    sctx.beginPath(); sctx.arc(xOf(s.ra), yOf(s.dec), 15, 0, 2 * Math.PI); sctx.stroke();
+    sctx.globalAlpha = 1;
+  }
+  for (const m of medidas) {
+    sctx.strokeStyle = "#f4f4f1"; sctx.lineWidth = 1.4; sctx.globalAlpha = 0.8;
+    sctx.beginPath(); sctx.arc(xOf(m.ra), yOf(m.dec), 7, 0, 2 * Math.PI); sctx.stroke();
+    sctx.globalAlpha = 1;
+  }
+  if (selecionado) {
+    sctx.strokeStyle = "#d7b46a"; sctx.lineWidth = 2;
+    sctx.beginPath(); sctx.arc(xOf(selecionado.ra), yOf(selecionado.dec), 12, 0, 2 * Math.PI); sctx.stroke();
+  }
+}
+
+// ---------------------------------------------------------- selecao
+sky.addEventListener("click", ev => {
+  const r = sky.getBoundingClientRect();
+  const x = (ev.clientX - r.left) * (sky.width / r.width);
+  const y = (ev.clientY - r.top) * (sky.height / r.height);
+  const ra0 = raOf(x), dec0 = decOf(y);
+  let melhor = null, dmin = 1e9;
+  const cand = catalogo.filter(o => mostra[o.pop]);
+  if (mostra.sol) { const s = sunEq(diaAno); cand.push({ id: -1, pop: "sol", ra: s.ra, dec: s.dec }); }
+  for (const o of cand) {
+    const dx = xOf(o.ra) - x, dy = yOf(o.dec) - y;
+    const d = Math.hypot(dx, dy);
+    if (d < dmin) { dmin = d; melhor = o; }
+  }
+  if (!melhor || dmin > 28) { selecionado = null; $("registerBtn").disabled = true; atualiza(); return; }
+  selecionado = {
+    pop: melhor.pop, idCat: melhor.id, dia: melhor.pop === "sol" ? diaAno : null,
+    ra: wrap360(melhor.ra + gauss() * jitter / Math.cos(rad(melhor.dec))),
+    dec: Math.max(-90, Math.min(90, melhor.dec + gauss() * jitter)),
+  };
+  $("registerBtn").disabled = false;
+  atualiza();
+});
+
+function registra(m) {
+  medidas.push({ n: medidas.length + 1, ...m });
+  atualiza();
+}
+$("registerBtn").addEventListener("click", () => { if (selecionado) { registra(selecionado); selecionado = null; $("registerBtn").disabled = true; } });
+$("sunSweep").addEventListener("click", () => {
+  for (let k = 0; k < 12; k++) {
+    const d = Math.round(1 + k * 365 / 12);
+    const s = sunEq(d);
+    registra({ pop: "sol", idCat: -1, dia: d, ra: wrap360(s.ra + gauss() * jitter / Math.cos(rad(s.dec))), dec: s.dec + gauss() * jitter });
+  }
+});
+$("clearMeas").addEventListener("click", () => { medidas = []; atualiza(); });
+
+// ---------------------------------------------------------- ajuste do circulo maximo
+// modelo: tan(dec) = tan(i) * sin(alpha - alpha0)
+function ajusta(pts) {
+  if (pts.length < 4) return null;
+  let best = { i: 0, a0: 0, rms: 1e9 };
+  const custo = (i, a0) => {
+    let s = 0;
+    for (const p of pts) {
+      // circulo maximo em coordenadas equatoriais: tan(dec) = tan(i) sin(alpha - alpha0)
+      const dm = deg(Math.atan(Math.tan(rad(i)) * Math.sin(rad(p.ra - a0))));
+      s += (dm - p.dec) ** 2;
+    }
+    return Math.sqrt(s / pts.length);
+  };
+  for (let i = 1; i <= 89; i += 0.5)
+    for (let a0 = 0; a0 < 360; a0 += 1) {
+      const r = custo(i, a0);
+      if (r < best.rms) best = { i, a0, rms: r };
+    }
+  // o refinamento precisa de limites FIXOS: usar best aqui faria o laco
+  // caminhar, porque best muda dentro dele
+  const c0 = { i: best.i, a0: best.a0 };
+  for (let i = c0.i - 0.6; i <= c0.i + 0.6; i += 0.02)
+    for (let a0 = c0.a0 - 1.5; a0 <= c0.a0 + 1.5; a0 += 0.05) {
+      const r = custo(i, wrap360(a0));
+      if (r < best.rms) best = { i, a0: wrap360(a0), rms: r };
+    }
+  // incerteza da amplitude de uma senoide de frequencia conhecida: s*sqrt(2/N)
+  best.sigma = best.rms * Math.sqrt(2 / pts.length);
+  best.n = pts.length;
+  best.poloRa = wrap360(best.a0 + 270);
+  best.poloDec = 90 - best.i;
+  return best;
+}
+const maxDec = pts => pts.length ? Math.max(...pts.map(p => p.dec)) : null;
+
+function resultados() {
+  const gal = medidas.filter(m => m.pop === "galactico");
+  const sol = medidas.filter(m => m.pop === "sol");
+  return { gal: ajusta(gal), galMax: maxDec(gal), nGal: gal.length,
+           sol: ajusta(sol), solMax: maxDec(sol), nSol: sol.length };
+}
+
+// ---------------------------------------------------------- graficos
+function desenhaChart(cv, pts, fit, titulo, corPt) {
+  const c = cv.getContext("2d"), W = cv.width, H = cv.height;
+  const M = { l: 78, r: 20, t: 20, b: 56 };
+  c.clearRect(0, 0, W, H); c.fillStyle = "#080808"; c.fillRect(0, 0, W, H);
+  const X = a => M.l + (a / 360) * (W - M.l - M.r);
+  const Y = d => M.t + ((90 - d) / 180) * (H - M.t - M.b);
+  c.strokeStyle = "#242424"; c.fillStyle = "#8a8a8a"; c.font = "15px ui-sans-serif, system-ui";
+  for (let a = 0; a <= 360; a += 60) { c.beginPath(); c.moveTo(X(a), Y(90)); c.lineTo(X(a), Y(-90)); c.stroke(); c.textAlign = "center"; c.fillText(a + "°", X(a), H - M.b + 24); }
+  for (let d = -90; d <= 90; d += 30) { c.beginPath(); c.moveTo(X(0), Y(d)); c.lineTo(X(360), Y(d)); c.stroke(); c.textAlign = "right"; c.fillText((d > 0 ? "+" : "") + d + "°", M.l - 10, Y(d) + 5); }
+  if (fit) {
+    c.strokeStyle = "#d7b46a"; c.lineWidth = 2.2; c.beginPath();
+    for (let a = 0; a <= 360; a += 1) {
+      const dm = deg(Math.atan(Math.tan(rad(fit.i)) * Math.sin(rad(a - fit.a0))));
+      a === 0 ? c.moveTo(X(a), Y(dm)) : c.lineTo(X(a), Y(dm));
+    }
+    c.stroke();
+  }
+  c.fillStyle = corPt;
+  for (const p of pts) { c.beginPath(); c.arc(X(p.ra), Y(p.dec), 4.5, 0, 2 * Math.PI); c.fill(); }
+  c.fillStyle = "#aaa69c"; c.textAlign = "left"; c.font = "17px ui-sans-serif, system-ui";
+  c.fillText(titulo, M.l, 16);
+}
+
+// ---------------------------------------------------------- atualizacao
+function fmt(v, n = 2) { return v === null || v === undefined || !isFinite(v) ? "--" : v.toFixed(n).replace(".", ","); }
+
+function atualiza() {
+  desenhaCarta();
+  $("mRa").textContent = selecionado ? fmt(selecionado.ra, 2) + "°" : "--";
+  $("mDec").textContent = selecionado ? fmt(selecionado.dec, 2) + "°" : "--";
+  $("mPop").textContent = selecionado ? selecionado.pop : "--";
+  $("mCount").textContent = medidas.length;
+  $("skyReadout").textContent = selecionado
+    ? `α = ${fmt(selecionado.ra, 2)}°   δ = ${fmt(selecionado.dec, 2)}°   (${selecionado.pop})`
+    : "Clique em um objeto para medir";
+  $("datasetInfo").textContent = `${catalogo.length} objetos no catálogo`;
+
+  const tb = $("measTable").querySelector("tbody");
+  tb.innerHTML = medidas.map(m =>
+    `<tr><td>${m.n}</td><td>${m.pop}</td><td>${fmt(m.ra, 2)}</td><td>${fmt(m.dec, 2)}</td><td>${m.dia ?? "--"}</td></tr>`).join("");
+
+  const R = resultados();
+  desenhaChart($("chartGal"), medidas.filter(m => m.pop === "galactico"), R.gal, "faixa da Via Láctea", "#6fd3d8");
+  desenhaChart($("chartSun"), medidas.filter(m => m.pop === "sol"), R.sol, "Sol ao longo do ano", "#ffd27f");
+
+  const linhas = [];
+  if (R.gal) {
+    linhas.push(["inclinação do plano galáctico", `${fmt(R.gal.i)}° ± ${fmt(R.gal.sigma)}°`, `${fmt(R.galMax)}°`, `${fmt(REF.iGal)}°`]);
+    linhas.push(["polo galáctico: α", `${fmt(R.gal.poloRa)}°`, "--", `${fmt(NGP.ra)}°`]);
+    linhas.push(["polo galáctico: δ", `${fmt(R.gal.poloDec)}°`, "--", `${fmt(NGP.dec)}°`]);
+  }
+  if (R.sol) {
+    linhas.push(["obliquidade ε", `${fmt(R.sol.i)}° ± ${fmt(R.sol.sigma)}°`, `${fmt(R.solMax)}°`, `${fmt(REF.eps)}°`]);
+    linhas.push(["nó ascendente da eclíptica: α", `${fmt(R.sol.a0)}°`, "--", "0,00°"]);
+  }
+  $("resTable").querySelector("tbody").innerHTML = linhas.length
+    ? linhas.map(l => `<tr><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td><td>${l[3]}</td></tr>`).join("")
+    : `<tr><td colspan="4">Registre pelo menos 4 objetos de uma população para o ajuste aparecer.</td></tr>`;
+}
+
+// ---------------------------------------------------------- controles
+$("jitter").addEventListener("input", e => { jitter = +e.target.value; $("jitterOut").textContent = fmt(jitter, 2) + "°"; });
+$("dayOfYear").addEventListener("input", e => { diaAno = +e.target.value; $("dayOut").textContent = diaAno; atualiza(); });
+for (const [id, key] of [["showField", "campo"], ["showGal", "galactico"], ["showPla", "planeta"], ["showSun", "sol"]])
+  $(id).addEventListener("change", e => { mostra[key] = e.target.checked; atualiza(); });
+for (const b of document.querySelectorAll(".view-tab"))
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".view-tab").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+    document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === b.dataset.view));
+  });
+
+// ---------------------------------------------------------- exportacao
+function csvValue(v) { return typeof v === "number" ? (isFinite(v) ? v.toPrecision(8) : "") : `"${String(v ?? "").replaceAll('"', '""')}"`; }
+const rowsToCsv = rows => rows.map(r => r.map(csvValue).join(",")).join("\n");
+function baixa(nome, blob) {
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function medidasCsvRows() {
+  return [["n", "populacao", "ra_deg", "dec_deg", "dia_do_ano"],
+    ...medidas.map(m => [m.n, m.pop, m.ra, m.dec, m.dia ?? ""])];
+}
+function catalogoCsvRows() {
+  return [["id", "populacao", "ra_deg", "dec_deg"], ...catalogo.map(o => [o.id, o.pop, o.ra, o.dec])];
+}
+$("exportCsv").addEventListener("click", () => {
+  baixa("laboratorio_1a_medidas.csv", new Blob([rowsToCsv(medidasCsvRows())], { type: "text/csv;charset=utf-8" }));
+});
+
+// ---------------------------------------------------------- tabelas em LaTeX
+function texEscape(s) { return String(s ?? "").replace(/([&%$#_{}])/g, "\\$1"); }
+function tabelaMedidas() {
+  const linhas = medidas.map(m =>
+    `${m.n} & ${texEscape(m.pop)} & ${m.ra.toFixed(2).replace(".", ",")} & ${m.dec.toFixed(2).replace(".", ",")} & ${m.dia ?? "--"} \\\\`).join("\n");
+  return `\\begin{table*}[t]
+\\centering
+\\footnotesize
+\\caption{Medidas registradas no laboratório. Cada linha é uma leitura de coordenadas equatoriais feita pelo aluno, com a precisão do instrumento aplicada.}
+\\label{tab:medidas}
+\\begin{tabular}{rlrrr}
+\\toprule
+\\# & população & $\\alpha$ (°) & $\\delta$ (°) & dia \\\\
+\\midrule
+${linhas}
+\\bottomrule
+\\end{tabular}
+\\end{table*}
+`;
+}
+function tabelaResultados() {
+  const R = resultados();
+  const L = [];
+  const fm = (v, n = 2) => v.toFixed(n).replace(".", "{,}");   // vírgula sem espaço em modo matemático
+  if (R.gal) {
+    L.push(`inclinação do plano galáctico & $${fm(R.gal.i)} \\pm ${fm(R.gal.sigma)}$ & ${R.galMax.toFixed(2).replace(".", ",")} & ${REF.iGal.toFixed(2).replace(".", ",")} \\\\`);
+    L.push(`polo galáctico $\\alpha_p$ & ${R.gal.poloRa.toFixed(2).replace(".", ",")} & -- & ${NGP.ra.toFixed(2).replace(".", ",")} \\\\`);
+    L.push(`polo galáctico $\\delta_p$ & ${R.gal.poloDec.toFixed(2).replace(".", ",")} & -- & ${NGP.dec.toFixed(2).replace(".", ",")} \\\\`);
+  }
+  if (R.sol) {
+    L.push(`obliquidade $\\varepsilon$ & $${fm(R.sol.i)} \\pm ${fm(R.sol.sigma)}$ & ${R.solMax.toFixed(2).replace(".", ",")} & ${REF.eps.toFixed(2).replace(".", ",")} \\\\`);
+  }
+  return `\\begin{table}[t]
+\\centering
+\\footnotesize
+\\caption{Resultados. A coluna do ajuste usa todos os pontos; a do máximo usa apenas a maior declinação registrada, e erra dos dois lados.}
+\\label{tab:resultados}
+\\begin{tabular}{lrrr}
+\\toprule
+grandeza & ajuste (°) & máximo (°) & referência (°) \\\\
+\\midrule
+${L.join("\n")}
+\\bottomrule
+\\end{tabular}
+\\end{table}
+`;
+}
+
+// ---------------------------------------------------------- gerador do artigo
+function reportMainTex(nome) {
+  const R = resultados();
+  const gi = R.gal ? R.gal.i.toFixed(2).replace(".", "{,}") : "--";
+  const gs = R.gal ? R.gal.sigma.toFixed(2).replace(".", "{,}") : "--";
+  const ei = R.sol ? R.sol.i.toFixed(2).replace(".", "{,}") : "--";
+  const es = R.sol ? R.sol.sigma.toFixed(2).replace(".", "{,}") : "--";
+  return `% =====================================================================
+%  ARTIGO -- Laboratório 1A: os planos do céu
+%  Astronomia (AST0001) -- Curso de Física -- UDESC Joinville
+%
+%  Gerado pelo laboratório, no modelo de artigo da disciplina.
+%  A tabela das SUAS medidas e a de resultados já vieram junto e já
+%  estão citadas no texto. O que falta é escrever.
+%
+%   1. Preencha os campos marcados "PREENCHA AQUI".
+%   2. Escreva nas seções indicadas, apagando as instruções.
+%   3. Compile com pdfLaTeX DUAS vezes.
+% =====================================================================
+
+\\documentclass[10pt,a4paper,twocolumn]{article}
+
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[brazil]{babel}
+\\usepackage{amsmath,amssymb}
+\\let\\Bbbk\\relax
+\\usepackage{newtxtext,newtxmath}
+\\usepackage{microtype}
+\\usepackage[a4paper,top=2.4cm,bottom=2.2cm,left=1.9cm,right=1.9cm,
+            columnsep=0.7cm]{geometry}
+\\usepackage{graphicx}
+\\usepackage{booktabs}
+\\usepackage{siunitx}
+\\usepackage{caption}
+\\usepackage{titlesec}
+\\usepackage{fancyhdr}
+\\usepackage{xcolor}
+\\usepackage[colorlinks=true,linkcolor=udescverde,citecolor=udescverde,
+            urlcolor=udescverde]{hyperref}
+
+\\definecolor{udescverde}{HTML}{1B6B3A}
+\\definecolor{cinza}{HTML}{5A5A5A}
+\\sisetup{output-decimal-marker={,}, per-mode=symbol}
+
+\\captionsetup{font=small,labelfont={bf,color=udescverde},labelsep=period}
+\\titleformat{\\section}{\\normalfont\\bfseries\\color{udescverde}}
+            {\\thesection.}{0.5em}{\\MakeUppercase}
+\\titleformat{\\subsection}{\\normalfont\\bfseries\\itshape}{\\thesubsection.}{0.5em}{}
+\\titlespacing*{\\section}{0pt}{1.6ex}{0.8ex}
+\\setlength{\\parindent}{1.2em}
+
+% ---------------------------------------------------- PREENCHA AQUI
+\\newcommand{\\titulo}{Os planos fundamentais do céu medidos em coordenadas equatoriais}
+\\newcommand{\\aluno}{${texEscape(nome)}}
+\\newcommand{\\email}{seu.email@edu.udesc.br}
+\\newcommand{\\tituloCurto}{Planos fundamentais}
+\\newcommand{\\semestre}{2026/2}
+% -------------------------------------------------------------------
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\fancyhead[L]{\\footnotesize\\textcolor{cinza}{\\aluno}}
+\\fancyhead[R]{\\footnotesize\\textcolor{cinza}{\\tituloCurto}}
+\\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}
+\\renewcommand{\\headrulewidth}{0.3pt}
+\\fancypagestyle{primeira}{%
+  \\fancyhf{}\\renewcommand{\\headrulewidth}{0pt}
+  \\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}}
+
+\\begin{document}
+
+\\twocolumn[
+\\begin{@twocolumnfalse}
+
+\\noindent
+\\begin{minipage}{0.78\\textwidth}
+  {\\footnotesize\\textcolor{udescverde}{\\textbf{ASTRONOMIA (AST0001)}}\\\\[2pt]
+   \\textcolor{cinza}{Universidade do Estado de Santa Catarina\\, \$\\cdot\$\\,
+   Centro de Ciências Tecnológicas\\, \$\\cdot\$\\, Curso de Física}\\\\[2pt]
+   \\textcolor{cinza}{Joinville, \\semestre}}
+\\end{minipage}
+\\hfill
+\\begin{minipage}{0.20\\textwidth}
+  \\raggedleft{\\includegraphics[height=1.5cm]{udesc.png}}
+\\end{minipage}
+
+\\vspace{2pt}
+{\\color{udescverde}\\rule{\\textwidth}{1pt}}
+
+\\vspace{1.1em}
+\\begin{center}
+  {\\LARGE\\bfseries \\titulo\\par}
+  \\vspace{0.9em}
+  {\\large \\aluno\\par}
+  \\vspace{0.3em}
+  {\\footnotesize\\itshape\\textcolor{cinza}{\\email}\\par}
+  \\vspace{0.3em}
+  {\\footnotesize\\textcolor{cinza}{Recebido em \\today}\\par}
+\\end{center}
+
+\\vspace{0.9em}
+\\noindent\\rule{\\textwidth}{0.3pt}
+\\vspace{0.5em}
+
+{\\small
+\\noindent\\textbf{Resumo.}
+Escreva aqui, por último. Diga que mediu coordenadas equatoriais de
+duas populações de objetos e que, ajustando um círculo máximo a cada
+uma, determinou a orientação de dois planos fundamentais. Apresente os
+dois resultados com incerteza: a inclinação do plano galáctico,
+$${gi} \\pm ${gs}$ graus, e a obliquidade da eclíptica, $${ei} \\pm ${es}$
+graus. Compare com os valores de referência e diga o que a diferença
+revela sobre o método.
+
+\\vspace{0.6em}
+\\noindent\\textbf{Palavras-chave:} astronomia de posição --- sistemas de
+coordenadas --- plano galáctico --- obliquidade
+}
+
+\\vspace{0.5em}
+\\noindent\\rule{\\textwidth}{0.3pt}
+\\vspace{1.4em}
+
+\\end{@twocolumnfalse}
+]
+\\thispagestyle{primeira}
+
+% =====================================================================
+\\section{Introdução}
+% =====================================================================
+% Por que existem vários sistemas de coordenadas, e o que decide qual
+% usar. A ideia central: cada sistema tem um plano fundamental, e esse
+% plano é escolhido porque alguma população de objetos se concentra
+% nele -- o Sistema Solar na eclíptica, a Galáxia no plano galáctico.
+
+Escreva aqui.
+
+% =====================================================================
+\\section{Revisão Teórica}
+% =====================================================================
+
+Um círculo máximo inclinado de $i$ em relação ao equador celeste tem,
+em coordenadas equatoriais,
+\\begin{equation}
+\\tan\\delta(\\alpha) = \\tan i \\, \\sin(\\alpha-\\alpha_0),
+\\label{eq:circulo}
+\\end{equation}
+em que $\\alpha_0$ é a ascensão reta do nó ascendente. A declinação
+máxima vale exatamente $i$, e ocorre em $\\alpha=\\alpha_0+90^\\circ$.
+O polo desse círculo fica em
+\\begin{equation}
+\\alpha_p=\\alpha_0+270^\\circ, \\qquad \\delta_p=90^\\circ-i .
+\\label{eq:polo}
+\\end{equation}
+
+Medir a orientação de um plano fundamental é, portanto, medir a
+amplitude de uma senoide. Há dois caminhos: tomar a maior declinação
+observada, ou ajustar a Eq.~\\eqref{eq:circulo} a todos os pontos.
+Os dois não são equivalentes, e a Seção~3 mostra por quê.
+
+% =====================================================================
+\\section{Dados e Discussão}
+% =====================================================================
+% Origem dos dados, o que foi medido, quantas medidas, e a comparação
+% com a referência. Cite a Tabela 1, a Tabela 2 e as três figuras.
+
+Os dados vêm do laboratório interativo da Parte A do Capítulo~1, que
+sorteia um catálogo diferente a cada acesso. Cada linha da
+Tabela~\\ref{tab:medidas} é uma leitura de coordenadas equatoriais
+feita na carta, com a precisão do instrumento já aplicada.
+
+\\input{tabelas/tabela_medidas.tex}
+
+\\input{tabelas/tabela_resultados.tex}
+
+\\begin{figure*}[t]
+\\centering
+\\includegraphics[width=0.98\\textwidth]{figuras/carta_equatorial.png}
+\\caption{Carta em coordenadas equatoriais. As estrelas de campo se
+espalham por toda a esfera; os objetos da Via Láctea desenham uma
+faixa; os planetas se alinham perto da eclíptica. Os círculos brancos
+marcam as medidas registradas.}
+\\label{fig:carta}
+\\end{figure*}
+
+\\begin{figure}[t]
+\\centering
+\\includegraphics[width=\\columnwidth]{figuras/ajuste_galactico.png}
+\\caption{Declinação contra ascensão reta para os objetos da faixa
+galáctica, com o ajuste da Eq.~\\eqref{eq:circulo}. A amplitude da
+senoide é a inclinação do plano.}
+\\label{fig:gal}
+\\end{figure}
+
+\\begin{figure}[t]
+\\centering
+\\includegraphics[width=\\columnwidth]{figuras/ajuste_solar.png}
+\\caption{Declinação do Sol ao longo do ano. A amplitude é a
+obliquidade da eclíptica; o cruzamento ascendente por $\\delta=0$
+define a origem da ascensão reta.}
+\\label{fig:sol}
+\\end{figure}
+
+Discuta, com números: quanto os seus dois valores diferem da
+referência, e se a diferença é compatível com a incerteza do ajuste;
+por que o método do máximo erra em direções opostas nos dois casos ---
+para cima na faixa galáctica, que tem espessura própria, e para baixo
+no Sol, cujas datas medidas dificilmente acertam o solstício; e o que
+a espessura da faixa galáctica representa fisicamente
+--- ela não é ruído de medida.
+
+% =====================================================================
+\\section{Conclusão}
+% =====================================================================
+% O que os números significam e o que limita a medida.
+
+Escreva aqui.
+
+% =====================================================================
+\\begin{thebibliography}{9}
+\\small
+
+\\bibitem{apostila}
+LIMA, R. C. R. de.
+\\textit{Astrofísica Moderna: capítulos de estudo}.
+UDESC, 2026. Capítulo 1, Parte A. Disponível em:
+\\url{https://rafaelcrdelima.github.io/Astronomia/}.
+
+\\bibitem{iau}
+IAU. \\textit{Transactions of the IAU}, v. 9, 1960. Definição do
+sistema de coordenadas galácticas.
+
+\\end{thebibliography}
+
+\\end{document}
+`;
+}
+
+// ---------------------------------------------------------- empacotamento
+async function fetchBlob(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error("Não foi possível carregar " + path);
+  return r.blob();
+}
+function canvasBlob(cv) {
+  return new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error("figura")), "image/png"));
+}
+async function buildReportFiles(nome) {
+  const [logo] = await Promise.all([fetchBlob("../modelo-artigo/udesc.png")]);
+  const tex = s => new Blob([s], { type: "text/x-tex;charset=utf-8" });
+  const csv = s => new Blob([s], { type: "text/csv;charset=utf-8" });
+  return [
+    { name: "main.tex", blob: tex(reportMainTex(nome)) },
+    { name: "udesc.png", blob: logo },
+    { name: "tabelas/tabela_medidas.tex", blob: tex(tabelaMedidas()) },
+    { name: "tabelas/tabela_resultados.tex", blob: tex(tabelaResultados()) },
+    { name: "dados/medidas.csv", blob: csv(rowsToCsv(medidasCsvRows())) },
+    { name: "dados/catalogo.csv", blob: csv(rowsToCsv(catalogoCsvRows())) },
+    { name: "figuras/carta_equatorial.png", blob: await canvasBlob(sky) },
+    { name: "figuras/ajuste_galactico.png", blob: await canvasBlob($("chartGal")) },
+    { name: "figuras/ajuste_solar.png", blob: await canvasBlob($("chartSun")) },
+  ];
+}
+async function salvaArquivos(files) {
+  if (window.showDirectoryPicker) {
+    const dir = await window.showDirectoryPicker({ mode: "readwrite" });
+    for (const f of files) {
+      const partes = f.name.split("/"), nome = partes.pop();
+      let alvo = dir;
+      for (const p of partes) alvo = await alvo.getDirectoryHandle(p, { create: true });
+      const h = await alvo.getFileHandle(nome, { create: true });
+      const w = await h.createWritable(); await w.write(f.blob); await w.close();
+    }
+    return `${files.length} arquivos salvos na pasta escolhida.`;
+  }
+  files.forEach((f, i) => setTimeout(() => baixa(f.name.replaceAll("/", "_"), f.blob), i * 150));
+  return `${files.length} arquivos baixados. Recrie as pastas figuras/, tabelas/ e dados/ ao enviar para o Overleaf.`;
+}
+$("genReport").addEventListener("click", async () => {
+  const nome = $("studentName").value.trim();
+  const st = $("reportStatus");
+  if (!nome) { st.textContent = "Escreva o nome do aluno antes de gerar."; return; }
+  if (!medidas.length) { st.textContent = "Registre medidas antes de gerar o relatório."; return; }
+  st.textContent = "Gerando…";
+  try {
+    const files = await buildReportFiles(nome);
+    st.textContent = await salvaArquivos(files);
+  } catch (e) { st.textContent = "Erro ao gerar: " + e.message; }
+});
+
+// ---------------------------------------------------------- inicio
+$("jitterOut").textContent = fmt(jitter, 2) + "°";
+atualiza();
+
+  </script>
+</body>
+</html>
+
