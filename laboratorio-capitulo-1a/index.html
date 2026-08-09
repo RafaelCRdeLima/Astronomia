@@ -250,6 +250,13 @@
       pointer-events: none;
     }
 
+    .nota-painel {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 12px 0 0;
+    }
+
     .metrics {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -572,7 +579,7 @@
             <button class="button" id="tresHoras" type="button">Medir a selecionada em 3 horários</button>
             <button class="button" id="sunSweep" type="button">Medir o Sol ao meio-dia, em 12 datas</button>
           </div>
-          <p class="sky-tip">Sítio: Joinville, &phi; = &minus;26,30°, &lambda; = &minus;48,85°. O catálogo é sorteado a cada acesso. Registre pelo menos 15 objetos da faixa galáctica, 8 posições do Sol, e uma estrela em três horários.</p>
+          <p class="nota-painel">Sítio: Joinville, &phi; = &minus;26,30°, &lambda; = &minus;48,85°. O catálogo é sorteado a cada acesso. Registre pelo menos 15 objetos da faixa galáctica, 8 posições do Sol, e uma estrela em três horários.</p>
         </div>
       </section>
 
@@ -594,7 +601,7 @@
         <h2>Faixa galáctica: &delta; contra &alpha;</h2>
         <div class="body">
           <canvas id="chartGal" class="chart" width="1200" height="620"></canvas>
-          <p class="sky-tip">Um círculo máximo inclinado de <i>i</i> em relação ao equador desenha uma senoide de amplitude <i>i</i>. O ajuste usa todos os pontos; o método do máximo usa um só.</p>
+          <p class="nota-painel">Um círculo máximo inclinado de <i>i</i> em relação ao equador desenha uma senoide de amplitude <i>i</i>. O ajuste usa todos os pontos; o método do máximo usa um só.</p>
         </div>
       </section>
       <section class="panel">
@@ -612,7 +619,7 @@
               <tbody></tbody>
             </table>
           </div>
-          <p class="sky-tip">Azimute e altura mudam dezenas de graus em duas horas. Ascensão reta e declinação não mudam além do erro de leitura. É essa a diferença entre um sistema <b>local e instantâneo</b> e um sistema de <b>catálogo</b>.</p>
+          <p class="nota-painel">Azimute e altura mudam dezenas de graus em duas horas. Ascensão reta e declinação não mudam além do erro de leitura. É essa a diferença entre um sistema <b>local e instantâneo</b> e um sistema de <b>catálogo</b>.</p>
         </div>
       </section>
       <section class="panel">
@@ -624,7 +631,7 @@
               <tbody></tbody>
             </table>
           </div>
-          <p class="sky-tip">O método do máximo usa <b>um único ponto</b> e erra dos dois lados: <b>superestima</b> quando a população tem espessura própria, como a faixa galáctica, porque o ruído e a espessura só empurram o maior valor para cima; e <b>subestima</b> quando a amostragem não acerta o extremo, como o Sol medido em poucas datas. O ajuste usa todos os pontos e escapa dos dois.</p>
+          <p class="nota-painel">O método do máximo usa <b>um único ponto</b> e erra dos dois lados: <b>superestima</b> quando a população tem espessura própria, como a faixa galáctica, porque o ruído e a espessura só empurram o maior valor para cima; e <b>subestima</b> quando a amostragem não acerta o extremo, como o Sol medido em poucas datas. O ajuste usa todos os pontos e escapa dos dois.</p>
         </div>
       </section>
     </section>
