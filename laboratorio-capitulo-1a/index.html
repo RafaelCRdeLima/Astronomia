@@ -775,9 +775,9 @@ const PLANETAS = [
 let catalogo = [];
 function gerarCatalogo() {
   catalogo = []; let id = 0;
-  for (let i = 0; i < 500; i++)
+  for (let i = 0; i < 150; i++)                          // fundo, so para dar contexto
     catalogo.push({ id: id++, pop: "campo", ...{ ra: rnd() * 360, dec: deg(Math.asin(2 * rnd() - 1)) } });
-  for (let i = 0; i < 320; i++) {
+  for (let i = 0; i < 130; i++) {                        // faixa da Via Lactea
     const b = Math.max(-22, Math.min(22, 3.2 * Math.tan(Math.PI * (rnd() - 0.5) * 0.72)));
     catalogo.push({ id: id++, pop: "galactico", ...galToEq(rnd() * 360, b) });
   }
@@ -855,8 +855,8 @@ function desenhaDomo() {
       continue;
     }
     sctx.fillStyle = o.cor || COR[o.pop];
-    sctx.globalAlpha = o.pop === "campo" ? 0.6 : 0.95;
-    const r = o.raio || (o.pop === "galactico" ? 3.2 : 2.2);
+    sctx.globalAlpha = o.pop === "campo" ? 0.42 : 0.95;
+    const r = o.raio || (o.pop === "galactico" ? 3.4 : 1.8);
     sctx.beginPath(); sctx.arc(p.x, p.y, r, 0, 2 * Math.PI); sctx.fill();
     if (o.nome) {                                           // nome do planeta ao lado
       sctx.globalAlpha = 0.9; sctx.fillStyle = o.cor;
