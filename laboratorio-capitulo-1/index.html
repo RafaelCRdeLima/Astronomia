@@ -664,12 +664,20 @@
           <div class="tasks">
             <div class="task">
               <strong>Gerar o artigo em LaTeX, no modelo da disciplina</strong>
-              Preencha o nome do aluno e clique em Gerar template. O laboratório salvará main.tex já no modelo de artigo da disciplina, o logo, as figuras do mapa e dos gráficos, as tabelas em LaTeX e os CSVs do catálogo simulado. Só falta escrever.
+              Preencha os nomes do grupo (at&eacute; tr&ecirc;s) e clique em Gerar template. O laboratório salvará main.tex já no modelo de artigo da disciplina, o logo, as figuras do mapa e dos gráficos, as tabelas em LaTeX e os CSVs do catálogo simulado. Só falta escrever.
             </div>
           </div>
           <div class="control">
-            <label for="studentNameInput">Nome do aluno</label>
-            <input id="studentNameInput" type="text" placeholder="Digite o nome completo">
+            <label for="studentNameInput">Aluno 1</label>
+            <input id="studentNameInput" type="text" placeholder="Nome completo">
+          </div>
+          <div class="control">
+            <label for="studentNameInput2">Aluno 2</label>
+            <input id="studentNameInput2" type="text" placeholder="Nome completo">
+          </div>
+          <div class="control">
+            <label for="studentNameInput3">Aluno 3</label>
+            <input id="studentNameInput3" type="text" placeholder="Nome completo">
           </div>
           <div class="toolbar">
             <button class="button" id="generateTemplate" type="button">Gerar template</button>
@@ -744,6 +752,8 @@
     const extinctionSlider = document.getElementById("extinctionSlider");
     const noiseSlider = document.getElementById("noiseSlider");
     const studentNameInput = document.getElementById("studentNameInput");
+    const studentNameInput2 = document.getElementById("studentNameInput2");
+    const studentNameInput3 = document.getElementById("studentNameInput3");
     const reportStatus = document.getElementById("reportStatus");
     const tableBody = document.getElementById("tableBody");
     const parallaxMeasureBody = document.getElementById("parallaxMeasureBody");
@@ -1391,7 +1401,11 @@
       return rows.map(row => `${row.map(cell => latexCell(cell)).join(" & ")} \\\\`).join("\n");
     }
 
-    function reportMainTex(studentName) {
+    function reportMainTex(nomes) {
+      const autoresTex = nomes.map(latexEscape).join(", ");
+      const emailsTex  = nomes.map((_, i) => `aluno${i + 1}@edu.udesc.br`).join(", ");
+      const sobrenome  = nomes[0].trim().split(/\s+/).pop();
+      const curtoTex   = latexEscape(nomes.length > 1 ? sobrenome + " et al." : nomes[0]);
       return `% =====================================================================
 %  ARTIGO -- Laboratório do Capítulo 1
 %  Astronomia (AST0001) -- Curso de Física -- UDESC Joinville
@@ -1444,15 +1458,18 @@
 
 % ---------------------------------------------------- PREENCHA AQUI
 \\newcommand{\\titulo}{Distâncias e luminosidades de um campo estelar medidas por paralaxe anual}
-\\newcommand{\\aluno}{${latexEscape(studentName)}}
-\\newcommand{\\email}{seu.email@edu.udesc.br}
+\\newcommand{\\autores}{${autoresTex}}
+% um endereço por autor, na mesma ordem dos nomes
+\\newcommand{\\emails}{${emailsTex}}
+% aparece no cabeçalho das páginas; troquem se preferirem outra forma
+\\newcommand{\\autoresCurto}{${curtoTex}}
 \\newcommand{\\tituloCurto}{Paralaxe e luminosidade}
 \\newcommand{\\semestre}{2026/2}
 % -------------------------------------------------------------------
 
 \\pagestyle{fancy}
 \\fancyhf{}
-\\fancyhead[L]{\\footnotesize\\textcolor{cinza}{\\aluno}}
+\\fancyhead[L]{\\footnotesize\\textcolor{cinza}{\\autoresCurto}}
 \\fancyhead[R]{\\footnotesize\\textcolor{cinza}{\\tituloCurto}}
 \\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}
 \\renewcommand{\\headrulewidth}{0.3pt}
@@ -1484,9 +1501,9 @@
 \\begin{center}
   {\\LARGE\\bfseries \\titulo\\par}
   \\vspace{0.9em}
-  {\\large \\aluno\\par}
+  {\\large \\autores\\par}
   \\vspace{0.3em}
-  {\\footnotesize\\itshape\\textcolor{cinza}{\\email}\\par}
+  {\\footnotesize\\itshape\\textcolor{cinza}{\\emails}\\par}
   \\vspace{0.3em}
   {\\footnotesize\\textcolor{cinza}{Recebido em \\today}\\par}
 \\end{center}
@@ -1792,12 +1809,12 @@ ${latexRows(rows)}
       });
     }
 
-    async function buildReportFiles(studentName) {
+    async function buildReportFiles(nomes) {
       const [udescLogo] = await Promise.all([
         fetchBlob("../modelo-artigo/udesc.png"),
       ]);
       return [
-        { name: "main.tex", blob: new Blob([reportMainTex(studentName)], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "main.tex", blob: new Blob([reportMainTex(nomes)], { type: "text/x-tex;charset=utf-8" }) },
         { name: "udesc.png", blob: udescLogo },
         { name: "tabelas/tabela_catalogo_resumo.tex", blob: new Blob([summaryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "tabelas/tabela_medidas_paralaxe.tex", blob: new Blob([parallaxMeasurementsLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
@@ -1835,15 +1852,16 @@ ${latexRows(rows)}
     }
 
     async function generateReportTemplate() {
-      const studentName = studentNameInput.value.trim();
-      if (!studentName) {
-        reportStatus.textContent = "Digite o nome do aluno antes de gerar.";
+      const nomes = [studentNameInput, studentNameInput2, studentNameInput3]
+        .map(el => el.value.trim()).filter(Boolean);
+      if (!nomes.length) {
+        reportStatus.textContent = "Digite ao menos o nome do primeiro aluno antes de gerar.";
         studentNameInput.focus();
         return;
       }
       try {
         reportStatus.textContent = "Gerando arquivos do relatório...";
-        const files = await buildReportFiles(studentName);
+        const files = await buildReportFiles(nomes);
         reportStatus.textContent = await saveReportFiles(files);
       } catch (error) {
         reportStatus.textContent = error.name === "AbortError"

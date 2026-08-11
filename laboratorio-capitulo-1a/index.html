@@ -674,10 +674,18 @@
       <section class="panel">
         <h2>Template de Relatório</h2>
         <div class="body">
-          <p>Preencha o nome e clique em <b>Gerar template</b>. O laboratório salva <b>main.tex</b> já no modelo de artigo da disciplina, com o seu nome, <b>a tabela das medidas que você registrou</b>, a tabela de resultados, a tabela de invariância, as figuras e os CSVs.</p>
+          <p>Preencha os nomes do grupo (at&eacute; tr&ecirc;s) e clique em <b>Gerar template</b>. O laboratório salva <b>main.tex</b> já no modelo de artigo da disciplina, com os nomes do grupo, <b>a tabela das medidas que vocês registraram</b>, a tabela de resultados, a tabela de invariância, as figuras e os CSVs.</p>
           <div class="control">
-            <label for="studentName">Nome do aluno</label>
-            <input id="studentName" type="text" placeholder="Nome Completo">
+            <label for="studentName">Aluno 1</label>
+            <input id="studentName" type="text" placeholder="Nome completo">
+          </div>
+          <div class="control">
+            <label for="studentName2">Aluno 2</label>
+            <input id="studentName2" type="text" placeholder="Nome completo">
+          </div>
+          <div class="control">
+            <label for="studentName3">Aluno 3</label>
+            <input id="studentName3" type="text" placeholder="Nome completo">
           </div>
           <div class="control">
             <button class="button" id="genReport" type="button">Gerar template</button>
@@ -1174,7 +1182,11 @@ ${L || "-- & -- & -- & -- & -- & -- \\\\\\\\"}
 }
 
 // ---------------------------------------------------------- gerador do artigo
-function reportMainTex(nome) {
+function reportMainTex(nomes) {
+      const autoresTex = nomes.map(texEscape).join(", ");
+      const emailsTex  = nomes.map((_, i) => `aluno${i + 1}@edu.udesc.br`).join(", ");
+      const sobrenome  = nomes[0].trim().split(/\s+/).pop();
+      const curtoTex   = texEscape(nomes.length > 1 ? sobrenome + " et al." : nomes[0]);
   const R = resultados();
   const gi = R.gal ? R.gal.i.toFixed(2).replace(".", "{,}") : "--";
   const gs = R.gal ? R.gal.sigma.toFixed(2).replace(".", "{,}") : "--";
@@ -1227,15 +1239,18 @@ function reportMainTex(nome) {
 
 % ---------------------------------------------------- PREENCHA AQUI
 \\newcommand{\\titulo}{Do azimute ao catálogo: medindo os planos fundamentais do céu}
-\\newcommand{\\aluno}{${texEscape(nome)}}
-\\newcommand{\\email}{seu.email@edu.udesc.br}
+\\newcommand{\\autores}{${autoresTex}}
+% um endereço por autor, na mesma ordem dos nomes
+\\newcommand{\\emails}{${emailsTex}}
+% aparece no cabeçalho das páginas; troquem se preferirem outra forma
+\\newcommand{\\autoresCurto}{${curtoTex}}
 \\newcommand{\\tituloCurto}{Planos fundamentais}
 \\newcommand{\\semestre}{2026/2}
 % -------------------------------------------------------------------
 
 \\pagestyle{fancy}
 \\fancyhf{}
-\\fancyhead[L]{\\footnotesize\\textcolor{cinza}{\\aluno}}
+\\fancyhead[L]{\\footnotesize\\textcolor{cinza}{\\autoresCurto}}
 \\fancyhead[R]{\\footnotesize\\textcolor{cinza}{\\tituloCurto}}
 \\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}
 \\renewcommand{\\headrulewidth}{0.3pt}
@@ -1267,9 +1282,9 @@ function reportMainTex(nome) {
 \\begin{center}
   {\\LARGE\\bfseries \\titulo\\par}
   \\vspace{0.9em}
-  {\\large \\aluno\\par}
+  {\\large \\autores\\par}
   \\vspace{0.3em}
-  {\\footnotesize\\itshape\\textcolor{cinza}{\\email}\\par}
+  {\\footnotesize\\itshape\\textcolor{cinza}{\\emails}\\par}
   \\vspace{0.3em}
   {\\footnotesize\\textcolor{cinza}{Recebido em \\today}\\par}
 \\end{center}
@@ -1457,12 +1472,12 @@ async function fetchBlob(path) {
 function canvasBlob(cv) {
   return new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error("figura")), "image/png"));
 }
-async function buildReportFiles(nome) {
+async function buildReportFiles(nomes) {
   const [logo] = await Promise.all([fetchBlob("../modelo-artigo/udesc.png")]);
   const tex = s => new Blob([s], { type: "text/x-tex;charset=utf-8" });
   const csv = s => new Blob([s], { type: "text/csv;charset=utf-8" });
   return [
-    { name: "main.tex", blob: tex(reportMainTex(nome)) },
+    { name: "main.tex", blob: tex(reportMainTex(nomes)) },
     { name: "udesc.png", blob: logo },
     { name: "tabelas/tabela_medidas.tex", blob: tex(tabelaMedidas()) },
     { name: "tabelas/tabela_resultados.tex", blob: tex(tabelaResultados()) },
@@ -1491,13 +1506,14 @@ async function salvaArquivos(files) {
   return `${files.length} arquivos baixados. Recrie as pastas figuras/, tabelas/ e dados/ ao enviar para o Overleaf.`;
 }
 $("genReport").addEventListener("click", async () => {
-  const nome = $("studentName").value.trim();
+  const nomes = ["studentName", "studentName2", "studentName3"]
+    .map(id => $(id).value.trim()).filter(Boolean);
   const st = $("reportStatus");
-  if (!nome) { st.textContent = "Escreva o nome do aluno antes de gerar."; return; }
+  if (!nomes.length) { st.textContent = "Escreva ao menos o nome do primeiro aluno antes de gerar."; return; }
   if (!medidas.length) { st.textContent = "Registre medidas antes de gerar o relatório."; return; }
   st.textContent = "Gerando…";
   try {
-    const files = await buildReportFiles(nome);
+    const files = await buildReportFiles(nomes);
     st.textContent = await salvaArquivos(files);
   } catch (e) { st.textContent = "Erro ao gerar: " + e.message; }
 });
