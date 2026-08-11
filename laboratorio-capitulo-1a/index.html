@@ -1185,8 +1185,12 @@ ${L || "-- & -- & -- & -- & -- & -- \\\\\\\\"}
 function reportMainTex(nomes) {
       const autoresTex = nomes.map(texEscape).join(", ");
       const emailsTex  = nomes.map((_, i) => `aluno${i + 1}@edu.udesc.br`).join(", ");
-      const sobrenome  = nomes[0].trim().split(/\s+/).pop();
-      const curtoTex   = texEscape(nomes.length > 1 ? sobrenome + " et al." : nomes[0]);
+      const sobrenome  = n => n.trim().split(/\s+/).pop();
+      // 'et al.' significa 'e outros': so cabe a partir de tres autores
+      const curtoTex   = texEscape(
+        nomes.length === 1 ? nomes[0]
+        : nomes.length === 2 ? sobrenome(nomes[0]) + " e " + sobrenome(nomes[1])
+        : sobrenome(nomes[0]) + " et al.");
   const R = resultados();
   const gi = R.gal ? R.gal.i.toFixed(2).replace(".", "{,}") : "--";
   const gs = R.gal ? R.gal.sigma.toFixed(2).replace(".", "{,}") : "--";
