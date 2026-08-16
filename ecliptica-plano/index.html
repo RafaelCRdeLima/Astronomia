@@ -836,21 +836,11 @@ function desenhaPlano(c, S, B, W, H, f, metade) {
 
   // a folha preenchida so entra de perto: ela tinge a Terra e revela o corte,
   // mas de longe a sua borda vira uma aresta reta no fundo da cena
-  const aFolha = clamp((0.9 - cam.dist) / 0.6, 0, 1);
-  if (aFolha > 0.02) {
-    const P = (a, b) => [T[0] + dn[0]*a + dt[0]*b, T[1] + dn[1]*a + dt[1]*b, 0];
-    // gradiente da Terra para a borda: sem ele a folha termina numa aresta reta
-    const q0 = proj(P(0,0), B, W, H, f), q1 = proj(P(sinal*L,0), B, W, H, f);
-    if (q0.vis && q1.vis) {
-      const g = c.createLinearGradient(q0.x, q0.y, q1.x, q1.y);
-      g.addColorStop(0, `rgba(215,180,106,${(0.13*aFolha).toFixed(3)})`);
-      g.addColorStop(0.55, `rgba(215,180,106,${(0.05*aFolha).toFixed(3)})`);
-      g.addColorStop(1, "rgba(215,180,106,0)");
-      c.fillStyle = g;
-      poli(c, [P(0,-L), P(sinal*L,-L), P(sinal*L,L), P(0,L)], B, W, H, f, true);
-      c.fill();
-    }
-  }
+  // Sem folha preenchida. Ela era desenhada com um gradiente em coordenadas
+  // de TELA: a metade de tras comprime-se contra o horizonte e saia forte, a
+  // da frente estica-se para fora da tela e saia nula -- clara em cima, escura
+  // embaixo, o que se lia como iluminacao vinda do observador. A grade sozinha
+  // ja mostra o plano, e ela desvanece em coordenadas de MUNDO, que e o certo.
 
   c.lineWidth = 1;
   const PED = 26;                                     // pedacos por linha, p/ desvanecer
