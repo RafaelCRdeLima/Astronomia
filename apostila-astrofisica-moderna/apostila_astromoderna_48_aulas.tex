@@ -939,13 +939,23 @@ As duas hipóteses são reais e podem falhar: emissão isotrópica falha em obje
 
 \subsection*{A escala de magnitudes, deduzida}
 
-Hiparco classificou estrelas em seis graus de brilho. No século XIX, Pogson percebeu que a resposta do olho é aproximadamente logarítmica e que as seis classes correspondiam a um fator de cerca de $100$ em fluxo. Ele então \emph{definiu} a escala de modo que cinco magnitudes correspondam exatamente a um fator $100$:
+A escala de magnitudes é a mais antiga grandeza quantitativa da astronomia ainda em uso --- e a mais confusa, porque nasceu como uma \emph{classificação} e só depois virou medida.
+
+\textbf{A origem, por volta de 135 a.C.} Hiparco de Niceia (c.\ 190--120 a.C.), trabalhando em Rodes, compilou um catálogo de cerca de 850 estrelas. Nele as estrelas aparecem repartidas em seis classes: as de \textbf{primeira grandeza} são as mais brilhantes, e as de \textbf{sexta} as mais fracas ainda visíveis a olho nu. A palavra é literal --- \emph{magnitude} quer dizer tamanho, e os antigos supunham que as estrelas mais brilhantes fossem maiores. Daí vem, também, a inversão que atrapalha todo mundo até hoje: os números eram \emph{postos}, não medidas, e o primeiro posto é o do mais notável.
+
+Vale uma ressalva que o hábito costuma apagar. \textbf{O catálogo de Hiparco não sobreviveu}, e a atribuição da escala a ele é tradicional, não demonstrada: o que temos é o \textit{Almagesto} de Ptolomeu, de cerca de 150 d.C., que usa o sistema extensivamente e o difundiu. Em 2022 anunciou-se a identificação de um trecho do catálogo em um palimpsesto do Mosteiro de Santa Catarina, no Sinai; a leitura foi contestada em 2024 e defendida pelos autores em 2025. O caso continua aberto.
+
+\textbf{O que Pogson fez, em 1856.} Norman Pogson (1829--1891) não inventou uma escala: ele \emph{calibrou} a que já existia havia dois mil anos. Medidas fotométricas do século XIX tinham mostrado que uma estrela de primeira grandeza é cerca de cem vezes mais brilhante que uma de sexta --- e, o que é mais notável, que os seis postos de Hiparco correspondiam a degraus aproximadamente iguais em \emph{razão} de fluxo, e não em diferença. Isso não é acaso: a resposta do olho a estímulos luminosos é aproximadamente logarítmica, de modo que uma classificação feita por inspeção visual sai naturalmente geométrica.
+
+Pogson então tomou o valor medido, arredondou-o para exatamente $100$, e \emph{definiu} a escala por ele. Repare no detalhe que decide o expoente: da primeira à sexta grandeza há \textbf{cinco intervalos}, e não seis. Por isso o fator por magnitude é $\sqrt[5]{100}=2{,}512$, e a definição fica:
 \[
 \frac{F_1}{F_2}=100^{(m_2-m_1)/5}
 \qquad\Longrightarrow\qquad
 m_2-m_1=-2{,}5\log_{10}\frac{F_2}{F_1}.
 \]
-O coeficiente $2{,}5$ não é escolha estética: ele é $5/\log_{10}100=5/2$, forçado pela definição. O sinal negativo preserva a convenção histórica de que objetos mais brilhantes têm magnitude menor --- fonte inesgotável de confusão, e que não vai mudar.
+O coeficiente $2{,}5$ não é escolha estética: ele é $5/\log_{10}100=5/2$, forçado pela definição. O sinal negativo preserva a convenção de postos herdada de Hiparco, em que o mais brilhante recebe o número menor --- fonte inesgotável de confusão, e que não vai mudar.
+
+O que restou da classificação antiga são os \emph{valores aproximados}: uma estrela que Hiparco chamaria de primeira grandeza tem hoje magnitude perto de $1$. Mas a escala precisou romper os dois extremos da faixa original. Pogson fixou o zero pelo limite do olho nu, colocando a sexta grandeza em $6{,}0$; os objetos mais brilhantes que a primeira classe exigiram números \emph{negativos} --- Sirius tem $-1{,}46$ ---, e a fotometria moderna estendeu a escala muito além do olho: o Gaia mede até magnitude $21$, cerca de um milhão de vezes mais fraco que o limiar visual. A escala de seis postos virou uma reta contínua e ilimitada, e só o nome e a direção sobreviveram.
 
 \subsection*{Magnitude absoluta e módulo de distância}
 
