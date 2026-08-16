@@ -855,7 +855,11 @@ Durante um trânsito, dois observadores muito afastados na Terra veem Vênus cru
 \caption{\textbf{O trânsito de Vênus e a escala do Sistema Solar.} Dois observatórios separados pela base $b$ veem Vênus projetado sobre cordas diferentes do disco solar. Os raios se cruzam em Vênus, e por isso quem observa ao norte vê a corda mais ao sul. A separação $\Delta$ das duas cordas, medida em ângulo a partir da Terra, é o que se compara com a previsão geométrica. As proporções $0{,}277$ e $0{,}723$ vêm de Kepler; o que falta é o fator de conversão para quilômetros.}
 \end{figure}
 
-\textbf{A geometria, simplificada.} Tome os dois observadores separados por uma base $b$, medida perpendicularmente à linha de visada. Cada um vê Vênus deslocado em relação ao fundo por um ângulo $b/(a_\oplus-a_V)$, porque essa é a distância Terra--Vênus no momento do trânsito. Mas o fundo aqui é o próprio Sol, que também se desloca, por $b/a_\oplus$. O que se mede é a \emph{diferença}:
+\textbf{A geometria, simplificada.} Tome os dois observadores separados por uma base $b$, medida perpendicularmente à linha de visada. Vale para eles a mesma regra de sempre: um objeto a distância $d$, visto de dois pontos separados por $b$, aparece em direções que diferem por $b/d$. Aplicada a Vênus, que no momento do trânsito está a $a_\oplus-a_V$, ela dá um deslocamento aparente de $b/(a_\oplus-a_V)$.
+
+O ponto que exige atenção é o passo seguinte. Na paralaxe estelar o pano de fundo são estrelas tão distantes que não se movem, e o deslocamento medido é o do objeto e mais nada. Aqui o pano de fundo \emph{é o Sol} --- e o Sol é um objeto a distância finita, $a_\oplus$. A mesma regra vale para ele: visto dos dois observatórios, ele também aparece em direções diferentes, separadas por $b/a_\oplus$.
+
+Os dois deslocamentos apontam para o mesmo lado --- ambos contrários ao movimento do observador --- e Vênus se desloca mais, por estar mais perto. Contra o disco solar, portanto, o que sobra é o quanto Vênus ganhou do Sol, e é essa \emph{diferença} que se mede:
 \[
 \Delta\theta=\frac{b}{a_\oplus-a_V}-\frac{b}{a_\oplus}
 =\frac{b}{a_\oplus}\cdot\frac{a_V}{a_\oplus-a_V}.
@@ -871,10 +875,19 @@ um número adimensional que independe da escala. Invertendo,
 e aí está a alavanca: $b$ se mede em quilômetros com geodésia, $\Delta\theta$ se mede em segundos de arco com um telescópio, e o quociente entrega a unidade astronômica em quilômetros. \textbf{Nenhuma distância astronômica precisou ser conhecida de antemão.}
 
 \begin{lessonblock}{Exemplo numérico}
-Dois observatórios com base projetada $b=10\,000$ km. A previsão para a separação angular das cordas é
+Dois observatórios com base projetada $b=10\,000$ km. Vale a pena ver as duas parcelas separadas antes de somá-las. Vênus está a $41{,}4$ milhões de quilômetros, o Sol a $149{,}6$:
+\[
+\frac{b}{a_\oplus-a_V}=49{,}84'' ,
+\qquad
+\frac{b}{a_\oplus}=13{,}79'' ,
+\qquad
+\Delta\theta=49{,}84''-13{,}79''=36{,}05'' ,
+\]
+que é o mesmo que a fórmula compacta entrega:
 \[
 \Delta\theta=2{,}61\times\frac{10\,000}{1{,}496\times10^{8}}=1{,}75\times10^{-4}\ \mathrm{rad}=36'' .
 \]
+Esquecer que o Sol também se desloca não é um detalhe: daria $49{,}8''$ em vez de $36{,}0''$, e uma unidade astronômica errada por um fator $1{,}38$.
 Trinta e seis segundos de arco, sobre um disco solar de $1918''$: as duas cordas ficam separadas por cerca de $1/53$ do diâmetro do Sol. É pouco, mas é mensurável --- e a conta ao contrário, partindo de $\Delta\theta=36''$ medidos, devolve $a_\oplus=1{,}496\times10^{8}$ km.
 
 Na prática ninguém media a separação das cordas diretamente. Halley propôs, em 1716, cronometrar a \emph{duração} do trânsito: cordas a alturas diferentes têm comprimentos diferentes, e medir um intervalo de tempo com relógio é muito mais preciso do que medir uma separação angular pequena com retículo.
