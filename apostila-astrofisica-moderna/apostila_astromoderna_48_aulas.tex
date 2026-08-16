@@ -820,6 +820,66 @@ Esta parte fecha essa lacuna com uma única medida geométrica --- a paralaxe --
 
 Cada seta é uma equação de uma linha, e cada uma carrega uma hipótese que precisa ser dita em voz alta. É esta parte, e não a anterior, que o laboratório deste capítulo cobra.
 
+\subsection*{Antes de tudo: quanto vale uma unidade astronômica?}
+\addcontentsline{toc}{subsection}{Antes de tudo: quanto vale uma unidade astronômica?}
+
+Toda a cadeia acima parte de uma distância suposta conhecida: o raio da órbita da Terra, $a_\oplus=1\,\mathrm{UA}$. Em quilômetros ela vale $149\,597\,870{,}7$ km, e esse número vai aparecer daqui a pouco, quando o parsec for convertido em metros. Convém não engoli-lo.
+
+\textbf{Mas como alguém mediu isso sem ir até o Sol?}
+
+Essa é a parte interessante: historicamente, não se mediu diretamente a distância Terra--Sol. Primeiro se descobriu a \emph{geometria relativa} do Sistema Solar, e só depois se mediu uma distância mais acessível para fixar a escala. Um dos métodos clássicos foi o trânsito de Vênus.
+
+\textbf{O que já se sabia.} A terceira lei de Kepler dá o semieixo de qualquer planeta a partir do seu período, em unidades da órbita da Terra. Para Vênus o período nem precisa ser medido diretamente: observa-se o \emph{período sinódico}, o intervalo entre duas conjunções inferiores consecutivas, que vale $583{,}92$ dias. Como
+\[
+\frac{1}{P_{\rm sin}}=\frac{1}{P_V}-\frac{1}{P_\oplus},
+\]
+segue $P_V=224{,}70$ dias $=0{,}6152$ ano, e a terceira lei fecha a conta:
+\[
+a_V=P_V^{2/3}=0{,}723\,a_\oplus .
+\]
+Repare no que isso significa. Sabia-se, desde o século XVII, que Vênus orbita a $0{,}723$ do raio da órbita terrestre --- com quatro algarismos. Sabia-se a \emph{forma} do Sistema Solar inteiro, e não se sabia o seu \emph{tamanho}. Faltava um único número em quilômetros para converter a planta inteira em uma escala.
+
+\textbf{O trânsito.} Vênus passa entre a Terra e o Sol a cada $583{,}92$ dias, mas quase sempre por cima ou por baixo do disco, porque a sua órbita é inclinada de $3{,}4^\circ$. Só quando a conjunção inferior cai perto de um dos nodos é que ele cruza o disco solar --- e isso acontece em pares separados por oito anos, com intervalos de $105{,}5$ e $121{,}5$ anos entre os pares. Os últimos foram em 2004 e 2012; o próximo será em 2117. É por isso que cada trânsito virou uma expedição internacional: quem perdesse não teria segunda chance na vida.
+
+Durante um trânsito, dois observadores muito afastados na Terra veem Vênus cruzar o disco solar por cordas diferentes. Isso é paralaxe --- a mesma da estrela, com dois ajustes: a base agora é a separação entre os dois observatórios, e não a órbita da Terra; e o pano de fundo não está no infinito, mas a $a_\oplus$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{transito_venus.pdf}
+\caption{\textbf{O trânsito de Vênus e a escala do Sistema Solar.} Dois observatórios separados pela base $b$ veem Vênus projetado sobre cordas diferentes do disco solar. Os raios se cruzam em Vênus, e por isso quem observa ao norte vê a corda mais ao sul. A separação $\Delta$ das duas cordas, medida em ângulo a partir da Terra, é o que se compara com a previsão geométrica. As proporções $0{,}277$ e $0{,}723$ vêm de Kepler; o que falta é o fator de conversão para quilômetros.}
+\end{figure}
+
+\textbf{A geometria, simplificada.} Tome os dois observadores separados por uma base $b$, medida perpendicularmente à linha de visada. Cada um vê Vênus deslocado em relação ao fundo por um ângulo $b/(a_\oplus-a_V)$, porque essa é a distância Terra--Vênus no momento do trânsito. Mas o fundo aqui é o próprio Sol, que também se desloca, por $b/a_\oplus$. O que se mede é a \emph{diferença}:
+\[
+\Delta\theta=\frac{b}{a_\oplus-a_V}-\frac{b}{a_\oplus}
+=\frac{b}{a_\oplus}\cdot\frac{a_V}{a_\oplus-a_V}.
+\]
+O segundo fator é puro Kepler: com $a_V=0{,}723\,a_\oplus$,
+\[
+k=\frac{a_V}{a_\oplus-a_V}=\frac{0{,}723}{0{,}277}=2{,}61 ,
+\]
+um número adimensional que independe da escala. Invertendo,
+\[
+\boxed{\ a_\oplus=k\,\frac{b}{\Delta\theta}=2{,}61\,\frac{b}{\Delta\theta}\ }
+\]
+e aí está a alavanca: $b$ se mede em quilômetros com geodésia, $\Delta\theta$ se mede em segundos de arco com um telescópio, e o quociente entrega a unidade astronômica em quilômetros. \textbf{Nenhuma distância astronômica precisou ser conhecida de antemão.}
+
+\begin{lessonblock}{Exemplo numérico}
+Dois observatórios com base projetada $b=10\,000$ km. A previsão para a separação angular das cordas é
+\[
+\Delta\theta=2{,}61\times\frac{10\,000}{1{,}496\times10^{8}}=1{,}75\times10^{-4}\ \mathrm{rad}=36'' .
+\]
+Trinta e seis segundos de arco, sobre um disco solar de $1918''$: as duas cordas ficam separadas por cerca de $1/53$ do diâmetro do Sol. É pouco, mas é mensurável --- e a conta ao contrário, partindo de $\Delta\theta=36''$ medidos, devolve $a_\oplus=1{,}496\times10^{8}$ km.
+
+Na prática ninguém media a separação das cordas diretamente. Halley propôs, em 1716, cronometrar a \emph{duração} do trânsito: cordas a alturas diferentes têm comprimentos diferentes, e medir um intervalo de tempo com relógio é muito mais preciso do que medir uma separação angular pequena com retículo.
+\end{lessonblock}
+
+\textbf{As expedições.} Os trânsitos de 1761 e 1769 mobilizaram mais de cem observadores em dezenas de países --- foi, com alguma justiça, o primeiro projeto científico verdadeiramente internacional. James Cook foi enviado ao Taiti em 1769, e o lugar de onde observou chama-se Point Venus até hoje. Guillaume Le Gentil partiu para a Índia em 1760, perdeu o trânsito de 1761 por estar embarcado, esperou oito anos no local, foi impedido por nuvens em 1769, e voltou à França onde havia sido declarado morto e tinha os bens repartidos. O céu não coopera por decreto, e nenhuma quantidade de planejamento resolve nuvem.
+
+O resultado foi convergindo devagar. Encke, reduzindo em 1824 os dados dos dois trânsitos, obteve $153{,}4$ milhões de quilômetros --- $2{,}5\%$ acima do valor real. Após os trânsitos de 1874 e 1882, já com fotografia, Newcomb chegou em 1895 a $149{,}6$ milhões, dentro de $0{,}03\%$. O erro caiu quase cem vezes em setenta anos, e continuou caindo por outros caminhos: em 1961 o eco de radar em Vênus mediu a distância Terra--Vênus diretamente, com precisão de partes em um milhão, e tornou o método do trânsito obsoleto de uma vez.
+
+Hoje a questão está encerrada por definição: desde 2012 a União Astronômica Internacional \emph{define} a unidade astronômica como exatamente $149\,597\,870\,700$ metros. Ela deixou de ser uma quantidade a medir e virou uma régua fixa --- mas a régua só existe porque alguém, antes, foi ao Taiti.
+
 \subsection*{A paralaxe: a única distância medida por geometria}
 
 Ao longo de um ano a Terra percorre uma órbita de raio $a_\oplus=1\,\mathrm{UA}$. Vista de uma estrela próxima, essa órbita tem um tamanho angular; visto da Terra, o efeito é o inverso: a estrela parece descrever uma pequena elipse contra o fundo de objetos muito mais distantes. Metade do deslocamento total ao longo do ano é a \textbf{paralaxe} $p$.
