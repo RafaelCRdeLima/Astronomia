@@ -1436,6 +1436,183 @@ ao halo, e a cinemática já separa populações antes de qualquer espectro.
 \addcontentsline{toc}{section}{Capítulo 2 -- Mecânica celeste e gravitação}
 \aberturabloco{Fundamentos quantitativos}{Este capítulo reforça a passagem da geometria observacional para a dinâmica gravitacional. A pergunta central é simples: como movimentos observados revelam massa?}{Trabalhe sempre com desenho, unidades e ordem de grandeza antes de substituir números. Em gravitação, uma conta dimensional bem feita costuma revelar metade da física.}
 
+\subsection*{A elipse, antes da física}
+\addcontentsline{toc}{subsection}{A elipse, antes da física}
+
+Kepler descreveu a forma das órbitas meio século antes de Newton explicar por que elas têm essa forma, e vale percorrer o caminho na mesma ordem. Esta seção é geometria pura: não há nenhuma força nela. As três propriedades que ela estabelece --- a equação polar da elipse, a relação $b^{2}=a^{2}(1-e^{2})$ e a área $\pi ab$ --- reaparecem mais adiante neste capítulo, quando a órbita for deduzida da gravitação. Lá elas são \textit{usadas}; aqui elas são \textit{provadas}.
+
+\textbf{A definição focal.} Uma elipse é o conjunto dos pontos cuja soma das distâncias a dois pontos fixos, os focos $F$ e $F'$, é a mesma para todos eles:
+\[
+FP+F'P=2a\qquad\text{para todo ponto }P\text{ da curva.}
+\]
+A constante $2a$ é o eixo maior, e $a$ é o semieixo maior. Chamando de $2c$ a separação entre os focos, define-se a \textbf{excentricidade}
+\[
+e=\frac{c}{a},
+\]
+de modo que $c=ae$. Quanto maior a distância entre os focos, maior a excentricidade: em $e=0$ os dois focos coincidem e a curva é uma circunferência; quando $e\to1$ a elipse se alonga indefinidamente.
+
+\textbf{Periélio e afélio.} Na órbita de um planeta o Sol ocupa \textit{um} dos focos --- o outro fica vazio, sem nada de físico nele. Os dois extremos do eixo maior são então as distâncias mínima e máxima ao Sol:
+\[
+R_p=a-c=a-ae=a(1-e),
+\qquad
+R_a=a+c=a+ae=a(1+e).
+\]
+Somando as duas, $R_p+R_a=2a$: o semieixo maior é a \textit{média aritmética} das distâncias extremas, e não a distância média ao longo do tempo. A distinção volta a importar quando se interpreta o $a$ da terceira lei.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{elipse.pdf}
+\caption{\textbf{A geometria da elipse.} \textbf{(a)} A definição focal: a soma $FP+F'P$ vale $2a$ para qualquer ponto $P$ da curva. O semieixo maior $a$, o semieixo menor $b$ e a semidistância focal $c=ae$ formam o triângulo retângulo que dá $b^{2}=a^{2}(1-e^{2})$. \textbf{(b)} Com o Sol em um dos focos, o periélio fica no extremo mais próximo, a $a(1-e)$, e o afélio no oposto, a $a(1+e)$. O ângulo $\theta$ é medido \textit{a partir do foco ocupado} e a partir da direção do periélio: é a anomalia verdadeira, e é ela que aparece na equação polar.}
+\end{figure}
+
+\subsection*{A elipse em coordenadas polares}
+\addcontentsline{toc}{subsection}{A elipse em coordenadas polares}
+
+Ponha a origem no foco ocupado pelo Sol e chame de $r$ a distância do planeta a ele, e de $\theta$ o ângulo medido a partir da direção do periélio. Seja $r_1$ a distância ao foco vazio. No triângulo formado pelos dois focos e pelo planeta, o lado entre os focos vale $2c$ e o ângulo em $F'$ vale $180^{\circ}-\theta$. A lei dos cossenos dá
+\[
+r_1^{2}=r^{2}+(2c)^{2}-2\,r\,(2c)\cos(180^{\circ}-\theta).
+\]
+Como $\cos(180^{\circ}-\theta)=-\cos\theta$, o sinal do último termo se inverte, e com $c=ae$:
+\[
+r_1^{2}=r^{2}+4a^{2}e^{2}+4rae\cos\theta.
+\]
+A definição da elipse fornece a segunda equação: $r+r_1=2a$, ou seja $r_1=2a-r$. Substituindo,
+\[
+4a^{2}-4ar+r^{2}=r^{2}+4a^{2}e^{2}+4rae\cos\theta.
+\]
+O termo $r^{2}$ cancela dos dois lados. Dividindo o que sobra por $4a$,
+\[
+a-r=ae^{2}+re\cos\theta
+\quad\Longrightarrow\quad
+a(1-e^{2})=r\,(1+e\cos\theta),
+\]
+e portanto
+\[
+\boxed{\ r(\theta)=\frac{a(1-e^{2})}{1+e\cos\theta}\ }
+\]
+Confira nos extremos: em $\theta=0$ o denominador vale $1+e$ e $r=a(1-e^{2})/(1+e)=a(1-e)=R_p$; em $\theta=180^{\circ}$ vale $1-e$ e $r=a(1+e)=R_a$. O numerador $a(1-e^{2})$ é o \textit{semi-latus rectum}, a distância ao foco quando $\theta=90^{\circ}$; ele reaparecerá adiante como $p=\ell^{2}/GM$, e é aí que a geometria encontra a dinâmica.
+
+\subsection*{A elipse em coordenadas cartesianas}
+\addcontentsline{toc}{subsection}{A elipse em coordenadas cartesianas}
+
+Agora ponha a origem no \textit{centro} da elipse, com os focos em $(\pm ae,0)$. As duas distâncias focais de um ponto $(x,y)$ da curva são
+\[
+r_1^{2}=(x+ae)^{2}+y^{2},
+\qquad
+r^{2}=(x-ae)^{2}+y^{2}.
+\]
+Subtraindo a segunda da primeira, os quadrados de $x$, de $y$ e de $ae$ se cancelam e sobra apenas o termo cruzado:
+\[
+r_1^{2}-r^{2}=(x+ae)^{2}-(x-ae)^{2}=4aex.
+\]
+Usando outra vez $r=2a-r_1$ no lado esquerdo,
+\[
+r_1^{2}-(2a-r_1)^{2}=4ar_1-4a^{2}=4aex
+\quad\Longrightarrow\quad
+r_1=a+ex.
+\]
+Essa relação linear entre a distância focal e a abscissa é a chave de todo o resto. Substituindo-a na expressão de $r_1^{2}$,
+\[
+(a+ex)^{2}=(x+ae)^{2}+y^{2},
+\]
+e expandindo, o termo $2aex$ aparece dos dois lados e some:
+\[
+y^{2}=a^{2}+e^{2}x^{2}-x^{2}-a^{2}e^{2}=(1-e^{2})(a^{2}-x^{2}).
+\]
+Dividindo por $a^{2}(1-e^{2})$ e reagrupando:
+\[
+\frac{x^{2}}{a^{2}}+\frac{y^{2}}{a^{2}(1-e^{2})}=1 .
+\]
+
+\textbf{O semieixo menor.} Falta identificar o denominador do segundo termo. Tome o ponto no extremo do eixo menor, em $(0,b)$. Por simetria as duas distâncias focais ali são iguais, e como somam $2a$, cada uma vale $a$. O triângulo retângulo de catetos $b$ e $ae$ e hipotenusa $a$ dá então
+\[
+a^{2}=b^{2}+(ae)^{2}
+\quad\Longrightarrow\quad
+\boxed{\ b^{2}=a^{2}(1-e^{2})\ }
+\]
+que é a relação anunciada na definição da excentricidade, agora demonstrada; dela seguem $e=\sqrt{1-b^{2}/a^{2}}$ e $c=\sqrt{a^{2}-b^{2}}$. Com ela a equação toma a forma familiar
+\[
+\boxed{\ \frac{x^{2}}{a^{2}}+\frac{y^{2}}{b^{2}}=1\ }
+\]
+
+\subsection*{A área da elipse}
+\addcontentsline{toc}{subsection}{A área da elipse}
+
+A área sai por integração direta, e o resultado será necessário duas vezes adiante: na lei das áreas e na dedução da terceira lei. Convém medir o ângulo \textit{a partir do centro}, onde a figura é simétrica --- chame-o de $\varphi$, para não confundir com a anomalia verdadeira $\theta$, que é medida a partir do foco. Pondo $x=r\cos\varphi$ e $y=r\sin\varphi$ na equação cartesiana,
+\[
+\frac{r^{2}\cos^{2}\varphi}{a^{2}}+\frac{r^{2}\,\sin^{2}\varphi}{b^{2}}=1
+\quad\Longrightarrow\quad
+r^{2}=\frac{a^{2}b^{2}}{b^{2}\cos^{2}\varphi+a^{2}\,\sin^{2}\varphi},
+\]
+ou seja
+\[
+r(\varphi)=\frac{ab}{\left(b^{2}\cos^{2}\varphi+a^{2}\,\sin^{2}\varphi\right)^{1/2}}.
+\]
+O elemento de área em coordenadas polares é $\mathrm{d}A=r\,\mathrm{d}r\,\mathrm{d}\varphi$, com $0\le\varphi\le2\pi$ e $0\le r\le r(\varphi)$. A integral radial é imediata e produz o fator $1/2$:
+\[
+A=\int_{0}^{2\pi}\!\!\int_{0}^{r(\varphi)} r\,\mathrm{d}r\,\mathrm{d}\varphi
+ =\frac{1}{2}\int_{0}^{2\pi}\left[r(\varphi)\right]^{2}\mathrm{d}\varphi
+ =\frac{a^{2}b^{2}}{2}\int_{0}^{2\pi}\frac{\mathrm{d}\varphi}{b^{2}\cos^{2}\varphi+a^{2}\,\sin^{2}\varphi}.
+\]
+Dividindo numerador e denominador por $\cos^{2}\varphi$,
+\[
+A=\frac{a^{2}b^{2}}{2}\int_{0}^{2\pi}\frac{\sec^{2}\varphi\,\mathrm{d}\varphi}{b^{2}+a^{2}\tan^{2}\varphi},
+\]
+e a substituição que resolve a integral é
+\[
+a\tan\varphi=b\tan u
+\quad\Longrightarrow\quad
+a\sec^{2}\varphi\,\mathrm{d}\varphi=b\sec^{2}u\,\mathrm{d}u .
+\]
+Com ela o denominador vira $b^{2}+b^{2}\tan^{2}u=b^{2}\sec^{2}u$, e a secante ao quadrado cancela:
+\[
+A=\frac{a^{2}b^{2}}{2}\cdot\frac{b}{a}\cdot\frac{1}{b^{2}}\int_{0}^{2\pi}\mathrm{d}u
+ =\frac{ab}{2}\Big[u\Big]_{0}^{2\pi},
+\]
+\[
+\boxed{\ A=\pi ab\ }
+\]
+Um cuidado com os limites, que é onde esse tipo de substituição costuma falhar: de $a\tan\varphi=b\tan u$ vem $\cos u=b/\sqrt{a^{2}\tan^{2}\varphi+b^{2}}$, de modo que $\varphi=0$ leva a $u=0$ e $\varphi=2\pi$ leva a $u=2\pi$. A correspondência é um para um no intervalo inteiro, e os limites podem ser mantidos. Note ainda o caso particular $a=b$: a área vira $\pi a^{2}$, como deve ser.
+
+\subsection*{As três leis de Kepler}
+\addcontentsline{toc}{subsection}{As três leis de Kepler}
+
+Com a geometria estabelecida, as três leis podem ser enunciadas na forma em que Kepler as deixou --- descritivas, extraídas dos dados de Tycho Brahe, sem nenhuma explicação de causa.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{As três leis, como Kepler as enunciou}
+\textbf{I --- Lei das órbitas.} A órbita de um planeta é uma elipse com o Sol em um dos focos.
+
+\textbf{II --- Lei das áreas.} A reta que une o planeta ao Sol varre áreas iguais em tempos iguais. Perto do periélio o planeta corre mais e cobre um ângulo grande com raio curto; perto do afélio faz o oposto.
+
+\textbf{III --- Lei harmônica.} O quadrado do período orbital é proporcional ao cubo do semieixo maior:
+\[
+P^{2}=K\,a^{3}.
+\]
+Medindo $P$ em anos --- o período sideral da Terra --- e $a$ em unidades astronômicas --- a distância média Terra--Sol ---, a constante vale $K=1$, e a lei fica simplesmente $P^{2}=a^{3}$.
+\end{lessonblock}
+
+A escolha de unidades que faz $K=1$ não é mágica: ela apenas calibra a lei pela própria Terra. O teste é a tabela.
+
+\begin{lessonblock}{A terceira lei nos oito planetas}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedleft\arraybackslash}p{0.16\textwidth}>{\raggedleft\arraybackslash}p{0.16\textwidth}>{\raggedleft\arraybackslash}p{0.18\textwidth}>{\raggedleft\arraybackslash}p{0.18\textwidth}}
+\toprule
+Planeta & $a$ (UA) & $P$ (anos) & $a^{3}$ & $P^{2}$ \\
+\midrule
+Mercúrio & 0{,}387 & 0{,}241 & 0{,}058 & 0{,}058 \\
+Vênus & 0{,}723 & 0{,}615 & 0{,}378 & 0{,}378 \\
+Terra & 1{,}000 & 1{,}000 & 1{,}000 & 1{,}000 \\
+Marte & 1{,}524 & 1{,}881 & 3{,}537 & 3{,}538 \\
+Júpiter & 5{,}203 & 11{,}863 & 140{,}8 & 140{,}7 \\
+Saturno & 9{,}537 & 29{,}447 & 867{,}4 & 867{,}2 \\
+Urano & 19{,}189 & 84{,}017 & 7065{,}8 & 7058{,}8 \\
+Netuno & 30{,}070 & 164{,}791 & 27187{,}1 & 27156{,}2 \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\noindent\footnotesize Elementos orbitais médios (J2000). As duas últimas colunas coincidem em três algarismos para os planetas internos. O pequeno déficit de $P^{2}$ nos gigantes não é erro de arredondamento: a lei exata traz a \textit{soma} das massas no denominador, $P^{2}=4\pi^{2}a^{3}/G(M_\odot+m)$, e para Júpiter a razão $P^{2}/a^{3}$ cai justamente na proporção $1/(1+m/M_\odot)$, com $m/M_\odot=1/1047$. Kepler não podia ver esse efeito nos dados de que dispunha; ele aparece na dedução newtoniana, adiante neste capítulo.
+\end{lessonblock}
+
 Órbitas são uma das ferramentas mais poderosas da astrofísica porque a gravidade transforma movimento em medida de massa. No caso circular simples, igualamos força gravitacional e aceleração centrípeta:
 \[
 \frac{GMm}{r^2}=\frac{mv^2}{r}.
