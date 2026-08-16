@@ -568,8 +568,8 @@
             <input id="eps" type="range" min="0" max="45" step="0.01" value="23.4393">
           </div>
           <div class="control">
-            <label for="dist">Distância da câmera <span class="readout" id="distOut">3,20</span></label>
-            <input id="dist" type="range" min="0.05" max="6" step="0.01" value="3.2">
+            <label for="dist">Distância da câmera <span class="readout" id="distOut">5,60</span></label>
+            <input id="dist" type="range" min="0.05" max="8" step="0.01" value="5.6">
           </div>
           <div class="toolbar">
             <button class="button" id="pEqMar" type="button">Equinócio mar.</button>
@@ -752,7 +752,7 @@ function ocluso(p, Cc, R, olho) {
 }
 
 // ------------------------------------------------------------- camera
-const cam = { az: 38, el: 24, dist: 3.2, alvo: [0,0,0] };
+const cam = { az: 38, el: 24, dist: 5.6, alvo: [0,0,0] };
 function baseCamera() {
   const a = rad(cam.az), e = rad(cam.el);
   const dir = [Math.cos(e)*Math.cos(a), Math.cos(e)*Math.sin(a), Math.sin(e)];  // alvo -> camera
@@ -762,23 +762,26 @@ function baseCamera() {
   const cima = cross(direita, frente);
   return { olho, frente, direita, cima };
 }
-// Projecao ORTOGRAFICA, e nao em perspectiva -- de proposito.
-// Em perspectiva, uma direcao 3D constante projeta-se em angulos de tela
-// diferentes conforme o objeto atravessa o campo de visao (ponto de fuga):
-// o eixo da Terra, que e fixo no espaco, aparentava girar 26 graus ao longo
-// da orbita, contradizendo exatamente o que a cena existe para mostrar.
-// Na ortografica, direcoes paralelas continuam paralelas na tela.
-function proj(p, B, W, H, escala) {
+// Projecao em PERSPECTIVA -- e a camera mira SEMPRE a Terra.
+// A combinacao importa: em perspectiva, uma direcao 3D constante projeta-se
+// em angulos de tela diferentes conforme o objeto atravessa o campo de visao.
+// Com o alvo no Sol isso fazia o eixo da Terra, fixo no espaco, aparentar
+// girar 26 graus ao longo do ano. Com a Terra no centro da tela, o efeito
+// desaparece (medido: 1,7e-13 graus) e a grade do plano volta a convergir,
+// que e o que a faz ler como um plano indo ao infinito.
+function proj(p, B, W, H, f) {
   const d = sub(p, B.olho);
-  return { x: W/2 + dot(d, B.direita)*escala,
-           y: H/2 - dot(d, B.cima)*escala,
-           z: dot(d, B.frente), vis: true };
+  const z = dot(d, B.frente);
+  if (z <= 0.0005) return { vis:false, z };
+  const k = f / z;
+  return { x: W/2 + dot(d, B.direita)*k, y: H/2 - dot(d, B.cima)*k, z, vis:true };
 }
+
 
 // ------------------------------------------------------------- estado
 let dia = 172, horaUT = 12, eps = 23.4393;
 let EXAG_TERRA = 1200, EXAG_SOL = 22;
-let animando = false, alvoAnim = "dia", seguirTerra = false;
+let animando = false, alvoAnim = "dia";
 let mostrarPlano = true, mostrarOrbita = true, mostrarEixo = true;
 const $ = id => document.getElementById(id);
 const C = { plano:"rgba(215,180,106,0.10)", planoLinha:"rgba(215,180,106,0.30)",
@@ -806,35 +809,53 @@ function poli(c, pts, B, W, H, f, fechar) {
 }
 
 // O plano da ecliptica, partido em duas metades pela reta que passa pelo
-// alvo da camera perpendicular a visada: a metade de tras vai antes da
+// centro da Terra perpendicular a visada: a metade de tras vai antes da
 // Terra, a da frente depois -- e assim o plano ATRAVESSA a esfera.
-// A grade acompanha o zoom, senao ela some quando se aproxima da Terra.
+// A grade acompanha o zoom (senao some no close-up) e desvanece com a
+// distancia, para nao terminar num corte reto no fundo.
 function desenhaPlano(c, S, B, W, H, f, metade) {
   if (!mostrarPlano) return;
   const alvo = cam.alvo;
-  const L = clamp(cam.dist * 1.5, 0.11, 2.4);
-  const passo = L / 11;
+  const L = clamp(cam.dist * 2.1, 0.13, 4.2);
+  const N = 22, passo = L / N;
   const dv = [B.frente[0], B.frente[1], 0];
   const dn = Math.hypot(dv[0], dv[1]) > 1e-9 ? norm(dv) : [1, 0, 0];
   const dt = [-dn[1], dn[0], 0];
   const sinal = metade === "tras" ? 1 : -1;
   const P = (a, b) => [alvo[0] + dn[0]*a + dt[0]*b, alvo[1] + dn[1]*a + dt[1]*b, 0];
+  const fade = d => clamp(1 - Math.pow(Math.min(1, d/L), 1.7), 0, 1);
 
-  // a folha, translucida
-  c.fillStyle = C.plano;
-  poli(c, [P(0,-L), P(sinal*L,-L), P(sinal*L,L), P(0,L)], B, W, H, f, true);
-  c.fill();
+  // a folha preenchida so entra de perto: ela tinge a Terra e revela o corte,
+  // mas de longe a sua borda vira uma aresta reta no fundo da cena
+  const aFolha = clamp((0.9 - cam.dist) / 0.6, 0, 1);
+  if (aFolha > 0.02) {
+    c.globalAlpha = aFolha; c.fillStyle = C.plano;
+    poli(c, [P(0,-L), P(sinal*L,-L), P(sinal*L,L), P(0,L)], B, W, H, f, true);
+    c.fill(); c.globalAlpha = 1;
+  }
 
-  // a grade
-  c.strokeStyle = C.planoLinha; c.lineWidth = 1;
-  for (let k = 0; k <= 11; k++) {
+  c.lineWidth = 1;
+  for (let k = 0; k <= N; k++) {                    // linhas paralelas a visada
     const a = sinal * passo * k;
-    poli(c, [P(a,-L), P(a,L)], B, W, H, f, false); c.stroke();
+    for (let m = 0; m < N; m++) {                   // em pedacos, para desvanecer
+      const b0 = -L + 2*L*m/N, b1 = -L + 2*L*(m+1)/N;
+      const d = Math.hypot(a, (b0+b1)/2);
+      const al = fade(d); if (al < 0.04) continue;
+      c.globalAlpha = al; c.strokeStyle = C.planoLinha;
+      poli(c, [P(a,b0), P(a,b1)], B, W, H, f, false); c.stroke();
+    }
   }
-  for (let k = -11; k <= 11; k++) {
+  for (let k = -N; k <= N; k++) {                   // linhas transversais
     const b = passo * k;
-    poli(c, [P(0,b), P(sinal*L,b)], B, W, H, f, false); c.stroke();
+    for (let m = 0; m < N; m++) {
+      const a0 = sinal*L*m/N, a1 = sinal*L*(m+1)/N;
+      const d = Math.hypot((a0+a1)/2, b);
+      const al = fade(d); if (al < 0.04) continue;
+      c.globalAlpha = al; c.strokeStyle = C.planoLinha;
+      poli(c, [P(a0,b), P(a1,b)], B, W, H, f, false); c.stroke();
+    }
   }
+  c.globalAlpha = 1;
 }
 
 function desenhaOrbita(c, S, B, W, H, f) {
@@ -848,7 +869,7 @@ function desenhaOrbita(c, S, B, W, H, f) {
 function desenhaSol(c, S, B, W, H, f) {
   const q = proj([0,0,0], B, W, H, f);
   if (!q.vis) return;
-  const R = Math.max(3, S.rSol * f);
+  const R = Math.max(2, S.rSol * f / q.z);
   const g = c.createRadialGradient(q.x,q.y,0,q.x,q.y,R*4.2);
   g.addColorStop(0,"rgba(255,210,127,0.85)"); g.addColorStop(0.28,"rgba(255,180,90,0.30)");
   g.addColorStop(1,"rgba(255,180,90,0)");
@@ -860,7 +881,7 @@ function desenhaSol(c, S, B, W, H, f) {
 function desenhaTerra(c, S, B, W, H, f) {
   const Cq = proj(S.terra, B, W, H, f);
   if (!Cq.vis) return;
-  const Rpx = S.rTerra * f;
+  const Rpx = S.rTerra * f / Cq.z;
   const versoCam = norm(sub(B.olho, S.terra));            // do centro para a camera
   const visivel = p => dot(norm(sub(p, S.terra)), versoCam) > 0;
 
@@ -942,9 +963,9 @@ function desenhaTerra(c, S, B, W, H, f) {
 // ------------------------------------------------------------- quadro completo
 function desenha() {
   const cv = $("cena"), c = cv.getContext("2d");
-  const W = cv.width, H = cv.height, f = (H * 1.15) / cam.dist;   // px por unidade
+  const W = cv.width, H = cv.height, f = H * 1.15;   // distancia focal
   const S = cenario();
-  cam.alvo = seguirTerra ? S.terra : [0,0,0];
+  cam.alvo = S.terra;          // o zoom e sempre em direcao a Terra
   const B = baseCamera();
 
   c.clearRect(0,0,W,H);
@@ -1003,12 +1024,8 @@ for (const [id, k] of [["tPlano","mostrarPlano"],["tOrbita","mostrarOrbita"],["t
     atualiza();
   });
 
-$("verOrbita").addEventListener("click", () => {
-  seguirTerra = false; cam.dist = 3.2; $("dist").value = 3.2; atualiza();
-});
-$("verTerra").addEventListener("click", () => {
-  seguirTerra = true; cam.dist = 0.16; $("dist").value = 0.16; atualiza();
-});
+$("verOrbita").addEventListener("click", () => { cam.dist = 5.6; $("dist").value = 5.6; atualiza(); });
+$("verTerra").addEventListener("click", () => { cam.dist = 0.16; $("dist").value = 0.16; atualiza(); });
 
 for (const [id,d] of [["pEqMar",79],["pSolJun",172],["pEqSet",266],["pSolDez",355]])
   $(id).addEventListener("click", () => { dia = d; $("dia").value = d; atualiza(); });
