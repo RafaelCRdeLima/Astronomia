@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aula 3 — Coordenadas, distâncias e brilhos</title><style>
+:root{--bg:#050505;--panel:#101010;--line:#343434;--text:#f4f4f1;--muted:#aaa69c;--accent:#d7b46a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+#palco{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.slide{position:absolute;width:1280px;height:720px;padding:64px 78px;display:none;
+ flex-direction:column;transform-origin:center center}
+.slide.on{display:flex}
+h1{font-size:60px;line-height:1.08;font-weight:700;letter-spacing:-.5px}
+h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(--text)}
+.sub{margin-top:22px;font-size:24px;color:var(--muted)}
+.conteudo{flex:1;display:flex;flex-direction:column;min-height:0;gap:16px}
+.conteudo.centro{justify-content:center}
+.corpo{font-size:27px;line-height:1.55;color:#e8e6e0}
+.corpo ul{list-style:none}
+.corpo li{margin:14px 0;padding-left:34px;position:relative}
+.corpo li::before{content:"";position:absolute;left:6px;top:16px;width:10px;height:10px;
+ border-radius:50%;background:var(--accent)}
+.corpo ol.cadeia-num{counter-reset:c;list-style:none;column-count:2;column-gap:48px}
+.corpo ol.cadeia-num li{counter-increment:c;margin:10px 0;padding-left:44px;position:relative;font-size:25px}
+.corpo ol.cadeia-num li::before{content:counter(c);position:absolute;left:0;top:0;width:30px;height:30px;
+ border-radius:8px;background:none;border:1px solid var(--line);color:var(--accent);
+ font-size:17px;display:flex;align-items:center;justify-content:center}
+.d{color:var(--accent);font-weight:600}
+.cadeia{font-size:32px;color:var(--accent);text-align:center;margin:26px 0;letter-spacing:.5px}
+.eqs{display:flex;flex-direction:column;align-items:center;gap:30px}
+.eqs img{max-width:92%;max-height:150px}
+.figura{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.figura img{height:100%;width:100%;object-fit:contain}
+.figura.claro img{background:#fff;border-radius:14px;padding:16px}
+.nota{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);
+ font-size:20px;color:var(--muted);line-height:1.5}
+.tb{width:100%;border-collapse:collapse;font-size:24px;margin-top:8px}
+.tb th{text-align:left;padding:12px 10px;color:var(--accent);font-weight:600;
+ border-bottom:1px solid var(--line);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+.tb td{padding:12px 10px;border-bottom:1px solid #1e1e1e}
+.capa{justify-content:center;text-align:center}
+.capa h1{font-size:76px}
+.capa .marca{margin-bottom:36px;font-size:20px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
+.capa .rodape{margin-top:52px;font-size:21px;color:var(--muted)}
+.roteiro h2,.fecho h2{color:var(--accent)}
+.barra{position:fixed;left:0;bottom:0;height:3px;background:var(--accent);transition:width .18s}
+.hud{position:fixed;right:20px;bottom:14px;font-size:15px;color:var(--muted);
+ display:flex;gap:16px;align-items:center;user-select:none}
+.hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;
+ padding:5px 11px;font-size:15px;cursor:pointer;font-family:inherit}
+.hud button:hover{border-color:var(--accent);color:var(--accent)}
+.tit{position:fixed;left:20px;bottom:14px;font-size:15px;color:#4f4f4f}
+@media print{.hud,.barra,.tit{display:none}}
+</style></head>
+<body>
+<div id="palco">
+<section class="slide capa"><div class="marca">Astronomia (AST0001) &middot; Curso de Física &middot; UDESC</div><h1>Movimentos, unidades e fotometria</h1><div class="sub">Aula 3 &middot; Capítulo 1, Parte C &middot; o aprofundamento do que a Parte B usou</div><div class="rodape">Prof. Dr. Rafael Camargo Rodrigues de Lima &middot; 2026/2</div></section>
+<section class="slide roteiro"><h2>O que esta aula responde</h2><div class="conteudo"><div class="corpo"><ul><li>O que virou <span class="d">exato por definição</span> nas unidades astronômicas, e por quê</li><li>Aberração e movimento próprio: os dois efeitos que se confundem com paralaxe</li><li>Como movimento próprio vira velocidade em km/s, e de onde vem o fator 4,74</li><li>Por que inverter a paralaxe enviesa: o viés de Lutz-Kelker</li><li>Correção bolométrica e o zero da escala</li></ul></div></div><div class="nota">Nada disto é pré-requisito para o artigo do Capítulo 1. O que o artigo exige está na Parte B.</div></section>
+<section class="slide "><h2>A UA virou exata em 2012</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/ua.svg" alt=""></div></div><div class="nota">Antes era uma medida sujeita a revisão; e o Sol perde massa, o que a fazia variar. Fixar o número elimina a ambiguidade.</div></section>
+<section class="slide "><h2>E o parsec, por consequência</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/pcexato.svg" alt=""></div></div><div class="nota">648 000″ = 180°. A definição é puramente geométrica.</div></section>
+<section class="slide "><h2>Valores nominais da IAU 2015</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/nominal.svg" alt=""></div></div><div class="nota">Adota-se GM☉, não M☉: o produto é medido com dez algarismos pelas órbitas; G, com quatro. Dividir degradaria a precisão.</div></section>
+<section class="slide "><h2>Aberração da luz</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/aberr.svg" alt=""></div></div><div class="nota">A constante vale 20,50&Prime; &mdash; quase <b>27 vezes</b> a maior paralaxe do céu, a de Proxima Centauri (0,77&Prime;). E, ao contrário da paralaxe, não depende da distância.</div></section>
+<section class="slide "><h2>Aberração × paralaxe</h2><div class="conteudo"><div class="corpo"><ul><li>Aberração: máxima quando a velocidade é perpendicular à visada</li><li>Paralaxe: máxima quando o deslocamento de posição é</li><li>Defasagem de um quarto de período</li></ul></div></div><div class="nota">Foi essa defasagem que permitiu a Bradley identificar a aberração em 1728 — e provar que a Terra orbita.</div></section>
+<section class="slide "><h2>Aberração e paralaxe, lado a lado</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a2_aberracao.png" alt=""></div></div><div class="nota">Mesma periodicidade anual, defasadas de um quarto de período. A aberração é quase trinta vezes maior que a maior paralaxe — aqui a paralaxe está ampliada 30× para caber no mesmo eixo.</div></section>
+<section class="slide "><h2>Movimento próprio</h2><div class="conteudo centro"><div class="corpo"><ul><li>Deslocamento angular real da estrela no céu</li><li>Medido em segundos de arco por ano</li><li>Duas componentes, e uma convenção que gera erros</li></ul></div><div class="eqs"><img src="assets/eq/mualpha.svg" alt=""></div></div><div class="nota">Publica-se μ_α* = μ_α cos δ: sem o cos δ, um objeto polar teria movimento próprio enorme sem se deslocar.</div></section>
+<section class="slide "><h2>Velocidade tangencial</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/vt.svg" alt=""></div></div></section>
+<section class="slide "><h2>De onde vem o 4,74</h2><div class="conteudo centro"><div class="corpo"><p>Uma estrela a 1 pc com μ = 1″/ano percorre 1 UA por ano:</p></div><div class="eqs"><img src="assets/eq/fator474.svg" alt=""></div></div><div class="nota">Não é constante física: é razão entre unidades escolhidas por seres humanos.</div></section>
+<section class="slide "><h2>Velocidade espacial completa</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/vespacial.svg" alt=""></div></div><div class="nota">v_r vem do Doppler e independe da distância. v_t exige astrometria E distância — e herda as duas incertezas.</div></section>
+<section class="slide "><h2>O catálogo do projeto extra</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/vt.png" alt=""></div></div><div class="nota">As 2000 estrelas mais próximas, completas até 18,4 pc. A de maior movimento próprio, 10,4″/ano a 1,83 pc, é a estrela de Barnard: v_t = 90 km/s.</div></section>
+<section class="slide "><h2>As velocidades da vizinhança solar</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a2_velocidades.png" alt=""></div></div><div class="nota">1439 estrelas do catálogo com velocidade radial medida. A mediana fica em algumas dezenas de km/s; a cauda acima de 100 km/s são estrelas de disco espesso e de halo, apenas de passagem pela vizinhança.</div></section>
+<section class="slide "><h2>O viés de Lutz-Kelker</h2><div class="conteudo centro"><div class="corpo"><ul><li>O volume acessível cresce com d³</li><li>Há muito mais estrelas com paralaxe pequena</li><li>O erro promove mais distantes do que rebaixa próximas</li><li>Resultado: a paralaxe medida tende a <span class="d">superestimar</span> a verdadeira</li></ul></div><div class="eqs"><img src="assets/eq/posterior.svg" alt=""></div></div></section>
+<section class="slide "><h2>O viés, simulado</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a2_lutzkelker.png" alt=""></div></div><div class="nota">Populações sintéticas com densidade espacial uniforme. Com 5% de erro a distribuição é estreita e centrada em 1; com 40%, ela se alarga e o pico desloca para baixo de 1 — a distância obtida por 1/p sai sistematicamente curta.</div></section>
+<section class="slide "><h2>A qualidade das paralaxes do catálogo</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a2_qualidade.png" alt=""></div></div><div class="nota">O arquivo do projeto extra já vem filtrado em σ_p/p &lt; 5%, e é por isso que todas as estrelas caem à esquerda do limite. Em amostras não filtradas do Gaia, boa parte das estrelas fica do outro lado.</div></section>
+<section class="slide "><h2>Correção bolométrica</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/bc.svg" alt=""></div></div><div class="nota">A magnitude em uma banda mede só a fração do fluxo que passa pelo filtro. BC depende quase inteiramente da temperatura efetiva.</div></section>
+<section class="slide "><h2>Por que a correção bolométrica existe</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a2_bolometrica.png" alt=""></div></div><div class="nota">Fração da emissão de corpo negro que cai dentro da banda V. Mesmo no máximo, perto da temperatura solar, o filtro captura só 13% do total — e nas estrelas muito quentes ou muito frias, quase nada. Medir em uma banda nunca é medir a luminosidade.</div></section>
+<section class="slide "><h2>O zero da escala, fixado em 2015</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/mbol.svg" alt=""><img src="assets/eq/llsol.svg" alt=""></div></div><div class="nota">M_bol,☉ = 4,74 deixou de ser medida do Sol e passou a ser consequência de duas convenções.</div></section>
+<section class="slide fecho"><h2>O que fica da Parte C</h2><div class="conteudo"><div class="corpo"><ul><li>Três efeitos anuais se somam na posição: paralaxe, aberração e movimento próprio &mdash; e só o primeiro mede distância</li><li>As unidades modernas são convenções fixadas, não medidas em revisão</li><li>Inverter a paralaxe é uma escolha estatística, não uma conta</li><li>Medir em uma banda nunca é medir a luminosidade</li></ul></div></div><div class="nota">No Capítulo 2: a gravitação entra, e as distâncias viram massas.</div></section>
+</div>
+<div class="barra"></div>
+<div class="tit">Aula 3 &middot; Astronomia (AST0001)</div>
+<div class="hud">
+  <button onclick="ant()">&larr;</button>
+  <span id="cnt"></span>
+  <button onclick="prox()">&rarr;</button>
+  <button onclick="telaCheia()">tela cheia (F)</button>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+const palco=document.getElementById('palco');
+function escala(){
+  const k=Math.min(window.innerWidth/1280,window.innerHeight/720);
+  slides.forEach(s=>s.style.transform='scale('+k+')');
+}
+function mostra(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.getElementById('cnt').textContent=(i+1)+' / '+slides.length;
+  document.querySelector('.barra').style.width=((i+1)/slides.length*100)+'%';
+  location.hash=i+1;
+}
+function prox(){mostra(i+1)} function ant(){mostra(i-1)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','n','N','Enter'].includes(e.key)){prox();e.preventDefault()}
+  else if(['ArrowLeft','ArrowUp','PageUp','p','P','Backspace'].includes(e.key)){ant();e.preventDefault()}
+  else if(e.key==='Home'){mostra(0)} else if(e.key==='End'){mostra(slides.length-1)}
+  else if(e.key==='f'||e.key==='F'){telaCheia()}
+});
+addEventListener('click',e=>{
+  if(e.target.closest('.hud'))return;
+  (e.clientX < window.innerWidth*0.28) ? ant() : prox();
+});
+function telaCheia(){
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen()}
+  else{document.exitFullscreen()}
+}
+addEventListener('resize',escala);
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+addEventListener('touchend',e=>{if(x0===null)return;
+  const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>50){dx<0?prox():ant()} x0=null});
+escala();
+mostra(parseInt(location.hash.replace('#',''))-1||0);
+</script>
+</body></html>
