@@ -619,6 +619,10 @@
             A excentricidade é 0,0167 e está desenhada aqui, de verdade — e mesmo assim você
             não consegue vê-la. Veja a leitura da distância: ela varia só 3%. O periélio cai em
             <b>janeiro</b>, quando é verão no hemisfério sul. Distância não explica estação.</div>
+            <div class="task"><strong>A malha está presa no Sol</strong>
+            As linhas da grade ficam em posições fixas no espaço, ancoradas no Sol — as duas que
+            passam por ele vão mais fortes. Como a câmera acompanha a Terra, é o <i>plano inteiro</i>
+            que desliza pela tela conforme o ano avança. O que você vê passar é a distância percorrida.</div>
             <div class="task"><strong>Olhe de dentro do plano</strong>
             Arraste até a elevação zero: o plano vira uma linha, a órbita vira um segmento, e
             fica evidente que o Sol, a Terra e a órbita inteira estão todos na mesma folha.</div>
@@ -808,53 +812,66 @@ function poli(c, pts, B, W, H, f, fechar) {
   if (fechar) c.closePath();
 }
 
-// O plano da ecliptica, partido em duas metades pela reta que passa pelo
-// centro da Terra perpendicular a visada: a metade de tras vai antes da
-// Terra, a da frente depois -- e assim o plano ATRAVESSA a esfera.
-// A grade acompanha o zoom (senao some no close-up) e desvanece com a
-// distancia, para nao terminar num corte reto no fundo.
+// O plano da ecliptica. A malha e ANCORADA NO SOL: as linhas ficam em
+// multiplos fixos de um passo a partir da origem, e nao acompanham a
+// camera. Como a camera segue a Terra, a malha desliza pela tela conforme
+// o ano avanca -- e e esse deslizar que da a sensacao de percurso.
+// O passo e quantizado (1, 2, 5 x 10^k) para que as linhas nao escorreguem
+// ao dar zoom: elas mudam de nivel, mas cada uma continua onde estava.
 function desenhaPlano(c, S, B, W, H, f, metade) {
   if (!mostrarPlano) return;
-  const alvo = cam.alvo;
+  const T = S.terra;                                  // janela centrada na Terra
   const L = clamp(cam.dist * 2.1, 0.13, 4.2);
-  const N = 22, passo = L / N;
+  const bruto = L / 11;
+  const dec = Math.pow(10, Math.floor(Math.log10(bruto)));
+  const m = bruto / dec;
+  const passo = dec * (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10);
+
   const dv = [B.frente[0], B.frente[1], 0];
   const dn = Math.hypot(dv[0], dv[1]) > 1e-9 ? norm(dv) : [1, 0, 0];
   const dt = [-dn[1], dn[0], 0];
   const sinal = metade === "tras" ? 1 : -1;
-  const P = (a, b) => [alvo[0] + dn[0]*a + dt[0]*b, alvo[1] + dn[1]*a + dt[1]*b, 0];
-  const fade = d => clamp(1 - Math.pow(Math.min(1, d/L), 1.7), 0, 1);
+  const doLado = p => (dot(sub(p, T), dn) >= 0) === (metade === "tras");
+  const fade = p => clamp(1 - Math.pow(Math.min(1, Math.hypot(p[0]-T[0], p[1]-T[1])/L), 1.7), 0, 1);
 
   // a folha preenchida so entra de perto: ela tinge a Terra e revela o corte,
   // mas de longe a sua borda vira uma aresta reta no fundo da cena
   const aFolha = clamp((0.9 - cam.dist) / 0.6, 0, 1);
   if (aFolha > 0.02) {
-    c.globalAlpha = aFolha; c.fillStyle = C.plano;
-    poli(c, [P(0,-L), P(sinal*L,-L), P(sinal*L,L), P(0,L)], B, W, H, f, true);
-    c.fill(); c.globalAlpha = 1;
+    const P = (a, b) => [T[0] + dn[0]*a + dt[0]*b, T[1] + dn[1]*a + dt[1]*b, 0];
+    // gradiente da Terra para a borda: sem ele a folha termina numa aresta reta
+    const q0 = proj(P(0,0), B, W, H, f), q1 = proj(P(sinal*L,0), B, W, H, f);
+    if (q0.vis && q1.vis) {
+      const g = c.createLinearGradient(q0.x, q0.y, q1.x, q1.y);
+      g.addColorStop(0, `rgba(215,180,106,${(0.13*aFolha).toFixed(3)})`);
+      g.addColorStop(0.55, `rgba(215,180,106,${(0.05*aFolha).toFixed(3)})`);
+      g.addColorStop(1, "rgba(215,180,106,0)");
+      c.fillStyle = g;
+      poli(c, [P(0,-L), P(sinal*L,-L), P(sinal*L,L), P(0,L)], B, W, H, f, true);
+      c.fill();
+    }
   }
 
   c.lineWidth = 1;
-  for (let k = 0; k <= N; k++) {                    // linhas paralelas a visada
-    const a = sinal * passo * k;
-    for (let m = 0; m < N; m++) {                   // em pedacos, para desvanecer
-      const b0 = -L + 2*L*m/N, b1 = -L + 2*L*(m+1)/N;
-      const d = Math.hypot(a, (b0+b1)/2);
-      const al = fade(d); if (al < 0.04) continue;
-      c.globalAlpha = al; c.strokeStyle = C.planoLinha;
-      poli(c, [P(a,b0), P(a,b1)], B, W, H, f, false); c.stroke();
+  const PED = 26;                                     // pedacos por linha, p/ desvanecer
+  const linha = (fixo, eixo) => {
+    const ini = eixo === 0 ? T[1] - L : T[0] - L;
+    for (let k = 0; k < PED; k++) {
+      const t0 = ini + 2*L*k/PED, t1 = ini + 2*L*(k+1)/PED;
+      const p0 = eixo === 0 ? [fixo, t0, 0] : [t0, fixo, 0];
+      const p1 = eixo === 0 ? [fixo, t1, 0] : [t1, fixo, 0];
+      const meio = mul(add(p0, p1), 0.5);
+      if (!doLado(meio)) continue;
+      const al = fade(meio); if (al < 0.04) continue;
+      // as duas linhas que passam pelo Sol vao mais fortes: e nelas que a malha esta presa
+      const ancora = Math.abs(fixo) < 1e-9;
+      c.globalAlpha = al * (ancora ? 2.1 : 1);
+      c.strokeStyle = C.planoLinha;
+      poli(c, [p0, p1], B, W, H, f, false); c.stroke();
     }
-  }
-  for (let k = -N; k <= N; k++) {                   // linhas transversais
-    const b = passo * k;
-    for (let m = 0; m < N; m++) {
-      const a0 = sinal*L*m/N, a1 = sinal*L*(m+1)/N;
-      const d = Math.hypot((a0+a1)/2, b);
-      const al = fade(d); if (al < 0.04) continue;
-      c.globalAlpha = al; c.strokeStyle = C.planoLinha;
-      poli(c, [P(a0,b), P(a1,b)], B, W, H, f, false); c.stroke();
-    }
-  }
+  };
+  for (let i = Math.ceil((T[0]-L)/passo); i <= Math.floor((T[0]+L)/passo); i++) linha(i*passo, 0);
+  for (let i = Math.ceil((T[1]-L)/passo); i <= Math.floor((T[1]+L)/passo); i++) linha(i*passo, 1);
   c.globalAlpha = 1;
 }
 
