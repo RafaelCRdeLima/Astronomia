@@ -731,7 +731,22 @@ function pontoSuperficie(lat, lon, theta, eps, raio) {
   const a = rad(theta + lon), d = rad(lat);
   const eq = [Math.cos(d)*Math.cos(a), Math.cos(d)*Math.sin(a), Math.sin(d)];  // quadro equatorial
   const e = rad(eps);
-  return mul([eq[0], eq[1]*Math.cos(e)-eq[2]*Math.sin(e), eq[1]*Math.sin(e)+eq[2]*Math.cos(e)], raio);
+  // equatorial -> ECLIPTICO (a inversa: eu tinha aplicado a rotacao ao contrario,
+  // e a superficie girava em torno de um eixo a 2*eps do eixo desenhado)
+  return mul([eq[0], eq[1]*Math.cos(e)+eq[2]*Math.sin(e), -eq[1]*Math.sin(e)+eq[2]*Math.cos(e)], raio);
+}
+
+// o ponto p esta escondido pela esfera (centro Cc, raio R) visto de olho?
+function ocluso(p, Cc, R, olho) {
+  const d = sub(p, olho), L = Math.hypot(...d);
+  if (L < 1e-12) return false;
+  const dir = mul(d, 1/L), m = sub(Cc, olho);
+  const tca = dot(m, dir);
+  if (tca < 0) return false;
+  const d2 = dot(m, m) - tca*tca;
+  if (d2 > R*R) return false;
+  const t0 = tca - Math.sqrt(R*R - d2);
+  return t0 > 1e-9 && t0 < L - 1e-9;
 }
 
 // ------------------------------------------------------------- camera
@@ -894,12 +909,27 @@ function desenhaTerra(c, S, B, W, H, f) {
   arco(t => add(mul(u, S.rTerra*Math.cos(rad(t))), mul(v, S.rTerra*Math.sin(rad(t)))), C.equador, 2.4);
   arco(t => [S.rTerra*Math.cos(rad(t)), S.rTerra*Math.sin(rad(t)), 0], C.corte, 3.0);
 
-  // eixo de rotacao, prolongado
+  // eixo de rotacao, prolongado -- com o trecho que passa ATRAS da esfera
+  // apagado, senao ele parece flutuar na frente da Terra
   if (mostrarEixo) {
     const n = eixoTerra(eps);
-    const a = add(S.terra, mul(n,  S.rTerra*1.7)), b = add(S.terra, mul(n, -S.rTerra*1.7));
-    c.strokeStyle = C.eixo; c.lineWidth = 2; c.setLineDash([5,4]);
-    poli(c, [a,b], B, W, H, f, false); c.stroke(); c.setLineDash([]);
+    const N = 160;
+    for (const atras of [true, false]) {
+      c.strokeStyle = C.eixo; c.lineWidth = 2;
+      c.globalAlpha = atras ? 0.16 : 1;
+      c.setLineDash(atras ? [3,6] : [5,4]);
+      let ativo = false; c.beginPath();
+      for (let i = 0; i <= N; i++) {
+        const t = -1.7 + 3.4*i/N;
+        const p = add(S.terra, mul(n, S.rTerra*t));
+        if (ocluso(p, S.terra, S.rTerra, B.olho) !== atras) { ativo = false; continue; }
+        const q = proj(p, B, W, H, f);
+        if (!q.vis) { ativo = false; continue; }
+        ativo ? c.lineTo(q.x, q.y) : (c.moveTo(q.x, q.y), ativo = true);
+      }
+      c.stroke();
+    }
+    c.globalAlpha = 1; c.setLineDash([]);
   }
 }
 
