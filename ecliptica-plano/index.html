@@ -920,15 +920,33 @@ function desenhaTerra(c, S, B, W, H, f) {
     }
     c.closePath(); c.fill(); c.stroke();
   }
-  // noite: hemisferio oposto ao Sol
+  // Iluminacao difusa (Lambert), e nao um recorte dia/noite binario.
+  // Com brilho chapado ate o terminador a esfera parece iluminada DE FRENTE,
+  // isto e, pelo observador. O que denuncia a direcao da luz e o gradiente:
+  // maximo no ponto subsolar, caindo com o cosseno ate a fronteira.
   const versoSol = norm(sub([0,0,0], S.terra));
-  c.fillStyle = "rgba(0,0,0,0.46)";
-  for (let y = -Rpx; y <= Rpx; y += 2) for (let x = -Rpx; x <= Rpx; x += 2) {
-    if (x*x + y*y > Rpx*Rpx) continue;
-    const cz = Math.sqrt(Rpx*Rpx - x*x - y*y)/Rpx;
-    const dirp = add(add(mul(B.direita, x/Rpx), mul(B.cima, -y/Rpx)), mul(versoCam, cz));
-    if (dot(dirp, versoSol) < 0) c.fillRect(Cq.x+x, Cq.y+y, 2, 2);
+  const sr = dot(B.direita, versoSol), su = dot(B.cima, versoSol), sc = dot(versoCam, versoSol);
+  // a mascara e calculada em no maximo 480x480 e esticada no desenho: um
+  // gradiente suave nao perde nada com isso, e o laco nao explode no close-up
+  const D = Math.min(480, Math.max(2, Math.ceil(2*Rpx)));
+  if (!desenhaTerra._off) desenhaTerra._off = document.createElement("canvas");
+  const off = desenhaTerra._off;
+  if (off.width !== D) { off.width = D; off.height = D; }
+  const octx = off.getContext("2d");
+  const img = octx.createImageData(D, D), dat = img.data;
+  const meio = D/2;
+  for (let j = 0; j < D; j++) {
+    const yn = (j - meio) / meio;
+    for (let i = 0; i < D; i++) {
+      const xn = (i - meio) / meio, r2 = xn*xn + yn*yn, k = 4*(j*D + i);
+      if (r2 > 1) { dat[k+3] = 0; continue; }
+      const mu = xn*sr - yn*su + Math.sqrt(1 - r2)*sc;   // cosseno do angulo com o Sol
+      const brilho = 0.20 + 0.80*Math.pow(Math.max(0, mu), 0.8);
+      dat[k+3] = (255*(1 - brilho)) | 0;                  // preto, com alfa variavel
+    }
   }
+  octx.putImageData(img, 0, 0);
+  c.drawImage(off, Cq.x - Rpx, Cq.y - Rpx, 2*Rpx, 2*Rpx);
   c.restore();
 
   // equador (perpendicular ao eixo) e CORTE do plano da ecliptica (z = 0)
