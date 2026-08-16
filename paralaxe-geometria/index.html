@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Do filme ao triângulo | Astronomia (AST0001)</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #101010;
+      --panel-2: #151515;
+      --line: #343434;
+      --text: #f4f4f1;
+      --muted: #aaa69c;
+      --accent: #d7b46a;
+      --blue: #72a7ff;
+      --cyan: #6fd3d8;
+      --warn: #e6a15b;
+      --bad: #d96d6d;
+      --good: #8fd18f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 10px;
+    }
+
+    .shell {
+      width: min(1760px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 22px 0 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 3.7vw, 52px);
+      line-height: 1.02;
+      overflow-wrap: anywhere;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .badge,
+    .chip {
+      color: var(--accent);
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .view-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      padding: 9px 11px;
+      cursor: pointer;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .view-tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(860px, 1fr) minmax(340px, 0.28fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .table-wrap.rolavel {
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .layout.uma-coluna {
+      grid-template-columns: 1fr;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .layout.view.active {
+      display: grid;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #0b0b0b);
+      border: 1px solid var(--line);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel h2 {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--accent);
+      font-size: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel .body {
+      padding: 12px 14px 14px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      background: radial-gradient(circle at 50% 30%, #11172a, #050505 70%);
+      border: 1px solid var(--line);
+    }
+
+    .sky-wrap {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .sky-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .sky-action {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(5, 5, 5, 0.8);
+      padding: 7px 9px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .sky-action:hover,
+    .sky-action:focus-visible {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    .sky-wrap.map-fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: #050505;
+      padding: 12px;
+      display: grid;
+      align-items: stretch;
+    }
+
+    .sky-wrap.map-fullscreen canvas {
+      width: 100%;
+      height: calc(100vh - 24px);
+      object-fit: contain;
+    }
+
+    .sky-wrap.map-fullscreen .sky-tip {
+      right: auto;
+      width: min(560px, calc(100vw - 24px));
+    }
+
+    .sky-measure {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      color: var(--accent);
+      background: rgba(5, 5, 5, 0.78);
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      font-size: 12px;
+      line-height: 1.35;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .sky-tip {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      background: rgba(5, 5, 5, 0.76);
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      pointer-events: none;
+    }
+
+    .nota-painel {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 12px 0 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 10px;
+      min-height: 70px;
+    }
+
+    .metric small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      color: var(--text);
+      background: #0d0d0d;
+      border: 1px solid var(--line);
+      padding: 9px;
+    }
+
+    .control {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.72);
+    }
+
+    .control:last-child {
+      border-bottom: 0;
+    }
+
+    .readout {
+      color: var(--text);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 5px;
+    }
+
+    .formula {
+      color: var(--muted);
+      background: #080808;
+      border: 1px solid var(--line);
+      padding: 9px;
+      line-height: 1.45;
+      font-family: "Latin Modern Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      overflow-x: auto;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 14px 0;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: #0b0b0b;
+      color: var(--muted);
+      padding: 8px 9px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .tab[aria-selected="true"] {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .chart {
+      width: 100%;
+      height: 420px;
+      border: 1px solid var(--line);
+      background: #080808;
+    }
+
+    .table-wrap {
+      max-height: 68vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid rgba(52, 52, 52, 0.7);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      color: var(--accent);
+      background: #090909;
+      z-index: 1;
+    }
+
+    tr.selected td {
+      background: rgba(215, 180, 106, 0.12);
+    }
+
+    .tasks {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .task {
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: #0b0b0b;
+      color: var(--muted);
+      line-height: 1.35;
+      font-size: 13px;
+    }
+
+    .task strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 1220px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .shell {
+        width: calc(100vw - 16px);
+      }
+
+      header,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .view-tabs {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .view-tabs .button {
+        width: 100%;
+        text-align: left;
+      }
+
+      .panel {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 12px;
+      }
+
+      #sky,
+      .chart {
+        width: calc(100vw - 48px);
+        max-width: calc(100vw - 48px);
+      }
+
+      .sky-actions {
+        top: 48px;
+        left: 12px;
+        right: auto;
+      }
+
+      h1 {
+        font-size: 25px;
+        line-height: 1.08;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      .badge {
+        justify-self: start;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  
+    .chart { width: 100%; height: auto; display: block; background: #070707;
+             border: 1px solid var(--line); border-radius: 10px; }
+    .layout.uma-coluna { grid-template-columns: 1fr; }
+    h1 { font-size: 34px; margin: 6px 0 4px; }
+    .sub { color: var(--muted); max-width: 82ch; line-height: 1.55; margin: 0; }
+    #aviso { border-left: 2px solid var(--warn); padding-left: 12px; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <div class="badge">Astronomia (AST0001) &middot; Capítulo 1, Parte B</div>
+        <h1>Do filme ao triângulo</h1>
+        <p class="sub">Como um deslocamento medido em <b>pixels</b> vira o ângulo do vértice de um
+        triângulo cuja base é a órbita da Terra. O detector mede <i>direções</i>: dois raios que
+        entram separados por um ângulo θ pousam separados por <b>x = f·θ</b> no plano focal — e a
+        escala da imagem é só 1/f em unidades cômodas.</p>
+      </div>
+    </header>
+
+    <section class="layout">
+      <section class="panel">
+        <h2>No espaço</h2>
+        <div class="body">
+          <canvas id="espaco" class="chart" width="900" height="660"></canvas>
+          <p class="nota-painel">As estrelas de fundo estão tão longe que 2 UA não subtendem nada
+          nelas: os seus raios chegam <b>paralelos</b> nas duas épocas, e por isso elas servem de
+          zero da régua. Contra esse zero, a mudança de direção da estrela-alvo <b>é</b> o ângulo
+          no vértice do triângulo.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Controles</h2>
+        <div class="body">
+          <div class="control">
+            <label for="d">Distância da estrela <span class="readout" id="dOut">40 pc</span></label>
+            <input id="d" type="range" min="5" max="200" step="1" value="40">
+          </div>
+          <div class="control">
+            <label for="beta">Latitude eclíptica β <span class="readout" id="bOut">30°</span></label>
+            <input id="beta" type="range" min="0" max="90" step="1" value="30">
+          </div>
+          <div class="control">
+            <label for="fase">Fase do ano <span class="readout" id="fOut">90°</span></label>
+            <input id="fase" type="range" min="0" max="359" step="1" value="90">
+          </div>
+          <div class="control">
+            <label for="escala">Escala da imagem <span class="readout" id="sOut">4,0 mas/px</span></label>
+            <input id="escala" type="range" min="0.5" max="12" step="0.1" value="4">
+          </div>
+          <div class="toolbar">
+            <button class="button" id="play" type="button">Percorrer o ano</button>
+          </div>
+          <div class="toolbar">
+            <button class="button" id="pLab" type="button">O exemplo do laboratório</button>
+            <button class="button" id="pPolo" type="button">Polo eclíptico</button>
+          </div>
+          <div class="toolbar">
+            <button class="button" id="pEclip" type="button">Sobre a eclíptica</button>
+            <button class="button" id="pRuim" type="button">A fase que falha</button>
+          </div>
+
+          <h2>A cadeia</h2>
+          <div class="metrics">
+            <div class="metric"><small>1. medido no detector</small><strong id="mDpx">--</strong></div>
+            <div class="metric"><small>2. &times; escala = ângulo</small><strong id="mSep">--</strong></div>
+            <div class="metric"><small>3. &divide; 2 = paralaxe</small><strong id="mP">--</strong></div>
+            <div class="metric"><small>4. d = 1000/p</small><strong id="mD">--</strong></div>
+            <div class="metric"><small>paralaxe verdadeira</small><strong id="mPreal">--</strong></div>
+            <div class="metric"><small>separação obtida, em % de 2p</small><strong id="mFrac">--</strong></div>
+          </div>
+          <p class="nota-painel" id="aviso" style="display:none"></p>
+        </div>
+      </section>
+    </section>
+
+    <section class="layout uma-coluna">
+      <section class="panel">
+        <h2>No detector</h2>
+        <div class="body">
+          <canvas id="detector" class="chart" width="1400" height="760"></canvas>
+          <p class="nota-painel">O que a câmera registra. As estrelas de fundo não se movem; a
+          estrela-alvo percorre a <b>elipse paraláctica</b> ao longo do ano, com semieixo maior
+          <i>p</i> e semieixo menor <i>p</i>&thinsp;sen&thinsp;β. Duas épocas separadas por seis
+          meses caem sempre em pontos <i>diametralmente opostos</i> dessa elipse — mas só o
+          diâmetro maior mede 2<i>p</i>.</p>
+        </div>
+      </section>
+    </section>
+
+    <section class="layout uma-coluna">
+      <section class="panel">
+        <h2>Quatro coisas para experimentar</h2>
+        <div class="body">
+          <div class="tasks">
+            <div class="task"><strong>Mexa na escala da imagem</strong>
+            O número de pixels muda; o ângulo, não. A escala é uma propriedade do telescópio, não
+            da estrela: ela é 1/f. Trocar de câmera muda o quanto você mede em pixels e não muda
+            nada da astronomia.</div>
+            <div class="task"><strong>Você mede o tamanho angular da órbita da Terra</strong>
+            Essa é a frase que costuma destravar. O vaivém aparente é o reflexo do movimento da
+            Terra, e o ângulo que ele varre é o ângulo que a órbita subtende <i>lá</i>. De 40 pc,
+            a órbita tem 50 mas de largura — e é isso que os 12,5 px viram.</div>
+            <div class="task"><strong>Por que o fator 2</strong>
+            O deslocamento de janeiro a julho atravessa a elipse inteira: vale 2<i>p</i>. A
+            paralaxe é definida com base de 1 UA, o <i>raio</i> da órbita. Daí a divisão.</div>
+            <div class="task"><strong>Clique em “a fase que falha”</strong>
+            Estrela sobre a eclíptica e as duas épocas no eixo <i>menor</i>: a elipse degenera em
+            um segmento, as duas posições coincidem, e o deslocamento é <b>zero</b>. O método não
+            falhou — a escolha das épocas falhou. É por isso que na prática se ajusta a elipse
+            inteira, com muitas épocas, em vez de subtrair duas imagens.</div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <script>
+// =====================================================================
+//  A geometria da paralaxe: do filme ao triangulo
+//  O detector mede DIRECOES. Um deslocamento linear x no plano focal e um
+//  angulo x/f -- e a "escala da imagem" s nada mais e que 1/f em unidades
+//  comodas. As estrelas de fundo estao tao longe que 2 UA nao subtendem
+//  nada nelas: os seus raios chegam paralelos, e elas servem de zero da
+//  regua. Contra esse zero, a mudanca de direcao da estrela-alvo entre as
+//  duas epocas E o angulo no vertice do triangulo Terra-estrela-Terra.
+// =====================================================================
+const D2R = Math.PI/180, R2D = 180/Math.PI;
+const rad = d => d*D2R, deg = r => r*R2D;
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const wrap360 = a => ((a%360)+360)%360;
+
+const UA = 1.495978707e11;
+const PC = UA/(D2R/3600);              // 1 pc em metros
+const MAS = D2R/3600/1000;             // 1 mas em radianos
+
+let dPc = 40;        // distancia da estrela, em parsecs
+let beta = 30;       // latitude ecliptica da estrela, em graus
+let fase = 90;       // lambda_Terra - lambda_estrela, em graus
+let escala = 4;      // mas por pixel
+let animando = false;
+
+// deslocamento angular em relacao a posicao heliocentrica, em mas,
+// decomposto em (longitude, latitude) ecliptica.
+// Semieixos da elipse paralactica: p ao longo da longitude, p.sen(beta)
+// ao longo da latitude -- reta se beta=0, circulo se beta=90.
+function desloc(dlam) {
+  const p = 1000/dPc;
+  return { x: -p*Math.sin(rad(dlam)),
+           y:  p*Math.sin(rad(beta))*Math.cos(rad(dlam)), p };
+}
+
+function cena() {
+  const p = 1000/dPc;                       // paralaxe verdadeira, mas
+  const A = desloc(fase);                   // epoca 1
+  const B = desloc(fase + 180);             // seis meses depois: ponto oposto
+  const sep = Math.hypot(A.x-B.x, A.y-B.y); // separacao medida, mas
+  const dpx = sep/escala;                   // o que se mede no detector, px
+  const pMed = sep/2;                       // paralaxe inferida (o fator 2)
+  const dMed = pMed > 0 ? 1000/pMed : Infinity;
+  return { p, A, B, sep, dpx, pMed, dMed,
+           semiMaior: p, semiMenor: p*Math.sin(rad(beta)),
+           fracao: sep/(2*p) };
+}
+const $ = id => document.getElementById(id);
+const C = { fundo:"#070707", sol:"#ffd27f", terra:"#6fd3d8", estrela:"#d7b46a",
+            visada:"#d7b46a", paralelo:"#5c6c7e", orbita:"#6f7f92", texto:"#aaa69c",
+            campo:"#9aa6b4", epocaA:"#6fd3d8", epocaB:"#e28f6b", grade:"#1c262e" };
+
+const pol = (cx,cy,r,g) => [cx + r*Math.cos(rad(g)), cy - r*Math.sin(rad(g))];
+
+// ------------------------------------------------------- (A) no espaço
+function desenhaEspaco(S) {
+  const cv = $("espaco"), c = cv.getContext("2d");
+  const W = cv.width, H = cv.height;
+  c.clearRect(0,0,W,H); c.fillStyle = C.fundo; c.fillRect(0,0,W,H);
+
+  const solX = W*0.17, solY = H*0.52, Ro = Math.min(H*0.16, 78);
+  const estX = W*0.80, estY = solY;
+
+  // estrelas de fundo, com raios PARALELOS chegando as duas posicoes da Terra
+  c.strokeStyle = "rgba(92,108,126,0.45)"; c.lineWidth = 1; c.setLineDash([7,6]);
+  for (let k=-2; k<=2; k++) {
+    const y = solY + k*30;
+    c.beginPath(); c.moveTo(W-14, y); c.lineTo(solX - Ro - 26, y); c.stroke();
+  }
+  c.setLineDash([]);
+  c.fillStyle = C.campo; c.font = "13px ui-sans-serif, system-ui"; c.textAlign = "right";
+  c.fillText("estrelas de fundo: raios paralelos,", W-14, solY - 108);
+  c.fillText("a mesma direção nas duas épocas", W-14, solY - 92);
+
+  // orbita da Terra
+  c.strokeStyle = C.orbita; c.lineWidth = 1.4; c.setLineDash([5,5]);
+  c.beginPath(); c.arc(solX, solY, Ro, 0, 2*Math.PI); c.stroke(); c.setLineDash([]);
+  c.fillStyle = C.sol;
+  const g = c.createRadialGradient(solX,solY,0,solX,solY,26);
+  g.addColorStop(0,"rgba(255,210,127,0.85)"); g.addColorStop(1,"rgba(255,180,90,0)");
+  c.fillStyle=g; c.beginPath(); c.arc(solX,solY,26,0,2*Math.PI); c.fill();
+  c.fillStyle=C.sol; c.beginPath(); c.arc(solX,solY,9,0,2*Math.PI); c.fill();
+  // sem rotulo de texto no Sol: o disco dourado no centro da orbita ja e
+  // inequivoco, e o rotulo colidia com o da base quando ela ficava horizontal
+
+  // as duas posicoes da Terra, separadas por seis meses
+  const [e1x,e1y] = pol(solX,solY,Ro,fase);
+  const [e2x,e2y] = pol(solX,solY,Ro,fase+180);
+  // a base: o segmento entre elas
+  c.strokeStyle = C.terra; c.lineWidth = 2.2; c.setLineDash([4,4]);
+  c.beginPath(); c.moveTo(e1x,e1y); c.lineTo(e2x,e2y); c.stroke(); c.setLineDash([]);
+  const bmx = (e1x+e2x)/2, bmy = (e1y+e2y)/2;
+  const bl = Math.hypot(e2x-e1x, e2y-e1y) || 1;
+  const nx = -(e2y-e1y)/bl, ny = (e2x-e1x)/bl;      // perpendicular a base
+  c.fillStyle = C.terra; c.font = "600 13px ui-sans-serif, system-ui"; c.textAlign="center";
+  c.fillText("base = 2 UA", bmx + (e2x-e1x)*0.30 + nx*16, bmy + (e2y-e1y)*0.30 + ny*16 + 4);
+
+  for (const [ex,ey,cor,rot] of [[e1x,e1y,C.epocaA,"época 1"],[e2x,e2y,C.epocaB,"+6 meses"]]) {
+    c.strokeStyle = C.visada; c.lineWidth = 1.5; c.globalAlpha = 0.75;
+    c.beginPath(); c.moveTo(ex,ey); c.lineTo(estX,estY); c.stroke(); c.globalAlpha = 1;
+    c.fillStyle = cor; c.beginPath(); c.arc(ex,ey,6,0,2*Math.PI); c.fill();
+    c.font = "600 12px ui-sans-serif, system-ui"; c.textAlign="center";
+    const [lx,ly] = pol(solX, solY, Ro+26, Math.atan2(solY-ey, ex-solX)*R2D);
+    c.fillText(rot, lx, ly + 4);
+  }
+
+  // a estrela e o angulo no vertice
+  const gg = c.createRadialGradient(estX,estY,0,estX,estY,20);
+  gg.addColorStop(0,"rgba(215,180,106,0.85)"); gg.addColorStop(1,"rgba(215,180,106,0)");
+  c.fillStyle=gg; c.beginPath(); c.arc(estX,estY,20,0,2*Math.PI); c.fill();
+  c.fillStyle=C.estrela; c.beginPath(); c.arc(estX,estY,6.5,0,2*Math.PI); c.fill();
+  c.textAlign="center"; c.font="600 13px ui-sans-serif, system-ui";
+  c.fillText("estrela", estX, estY+30);
+
+  const a1 = Math.atan2(estY-e1y, e1x-estX), a2 = Math.atan2(estY-e2y, e2x-estX);
+  // pelo caminho CURTO: atan2 devolve +160 e -160 graus, e a diferenca crua
+  // daria 320 -- o arco fecharia quase um circulo em vez de marcar o angulo
+  let dA = a1 - a2;
+  while (dA >  Math.PI) dA -= 2*Math.PI;
+  while (dA < -Math.PI) dA += 2*Math.PI;
+  c.strokeStyle = C.estrela; c.lineWidth = 2.4;
+  c.beginPath();
+  const n=48; for (let k=0;k<=n;k++){ const A=a2+dA*k/n; const [x,y]=pol(estX,estY,58,deg(A)); k?c.lineTo(x,y):c.moveTo(x,y); }
+  c.stroke();
+  c.fillStyle = C.estrela; c.font = "700 15px ui-sans-serif, system-ui"; c.textAlign="left";
+  c.fillText(`Δθ = ${S.sep.toFixed(2)} mas`, estX - 132, estY - 62);
+
+  c.fillStyle = C.texto; c.font = "12.5px ui-sans-serif, system-ui"; c.textAlign="left";
+  const exag = deg(Math.abs(dA))*3600*1000 / Math.max(S.sep, 1e-9);
+  c.fillText(`vista de cima da eclíptica · ângulo do vértice exagerado ${exag.toExponential(1)}×`, 14, H-34);
+  c.fillText("a latitude β inclina a estrela para fora deste plano: é isso que vira elipse no detector", 14, H-16);
+}
+
+// ------------------------------------------------------- (B) no detector
+// gerador deterministico, para o campo nao "piscar" a cada quadro
+let semente = 20260816;
+function rnd() { semente = (semente*1664525 + 1013904223) >>> 0; return semente/4294967296; }
+let CAMPO = null;
+function campo() {
+  if (CAMPO) return CAMPO;
+  semente = 20260816; CAMPO = [];
+  for (let i=0;i<70;i++) CAMPO.push({ x: rnd()*2-1, y: rnd()*2-1, m: 1.2+rnd()*2.6 });
+  return CAMPO;
+}
+
+function desenhaDetector(S) {
+  const cv = $("detector"), c = cv.getContext("2d");
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2;
+  c.clearRect(0,0,W,H); c.fillStyle = C.fundo; c.fillRect(0,0,W,H);
+
+  // o campo mostrado acompanha o tamanho da elipse, para ela sempre caber
+  const semiPx = S.semiMaior/escala;                       // semieixo em pixels do detector
+  const meioCampo = Math.max(semiPx*1.9, 3);               // meia-largura, em pixels
+  const zoom = (Math.min(W,H)*0.46)/meioCampo;             // pixels de tela por pixel do detector
+  const px2tela = v => v*zoom;
+  const mas2tela = v => px2tela(v/escala);
+
+  // grade de pixels do detector
+  c.strokeStyle = C.grade; c.lineWidth = 1;
+  const passo = Math.max(1, Math.round(meioCampo/7));
+  for (let k=-14; k<=14; k++) {
+    const o = px2tela(k*passo);
+    if (Math.abs(o) > W/2) continue;
+    c.beginPath(); c.moveTo(cx+o, 0); c.lineTo(cx+o, H); c.stroke();
+    c.beginPath(); c.moveTo(0, cy+o); c.lineTo(W, cy+o); c.stroke();
+  }
+
+  // estrelas de fundo: fixas, porque estao longe demais para se mexer
+  for (const e of campo()) {
+    const x = cx + e.x*W*0.46, y = cy + e.y*H*0.46;
+    c.fillStyle = "#9aa6b4"; c.globalAlpha = 0.75;
+    c.beginPath(); c.arc(x, y, e.m, 0, 2*Math.PI); c.fill();
+  }
+  c.globalAlpha = 1;
+
+  // a elipse paralactica percorrida ao longo do ano
+  c.strokeStyle = "rgba(215,180,106,0.42)"; c.lineWidth = 1.4; c.setLineDash([4,4]);
+  c.beginPath();
+  for (let l=0; l<=360; l+=3) {
+    const q = desloc(l);
+    const x = cx + mas2tela(q.x), y = cy - mas2tela(q.y);
+    l ? c.lineTo(x,y) : c.moveTo(x,y);
+  }
+  c.closePath(); c.stroke(); c.setLineDash([]);
+
+  // as duas epocas
+  const Ax = cx + mas2tela(S.A.x), Ay = cy - mas2tela(S.A.y);
+  const Bx = cx + mas2tela(S.B.x), By = cy - mas2tela(S.B.y);
+  c.strokeStyle = "#f0e4c0"; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(Ax,Ay); c.lineTo(Bx,By); c.stroke();
+  for (const [x,y,cor,rot] of [[Ax,Ay,C.epocaA,"época 1"],[Bx,By,C.epocaB,"+6 meses"]]) {
+    const g = c.createRadialGradient(x,y,0,x,y,14);
+    g.addColorStop(0,cor); g.addColorStop(1,"rgba(0,0,0,0)");
+    c.fillStyle=g; c.globalAlpha=0.5; c.beginPath(); c.arc(x,y,14,0,2*Math.PI); c.fill(); c.globalAlpha=1;
+    c.fillStyle=cor; c.beginPath(); c.arc(x,y,5,0,2*Math.PI); c.fill();
+    c.font="600 12px ui-sans-serif, system-ui"; c.textAlign="center"; c.fillStyle=cor;
+    c.fillText(rot, x, y-14);
+  }
+  // a medida
+  c.fillStyle="#f0e4c0"; c.font="700 15px ui-sans-serif, system-ui"; c.textAlign="center";
+  c.fillText(`Δ = ${S.dpx.toFixed(2)} px`, (Ax+Bx)/2, (Ay+By)/2 - 16);
+
+  c.fillStyle = C.texto; c.font = "12.5px ui-sans-serif, system-ui"; c.textAlign="left";
+  c.fillText(`campo: ${(2*meioCampo).toFixed(1)} px do detector = ${(2*meioCampo*escala).toFixed(0)} mas`, 14, 22);
+  c.fillText(`grade: 1 quadrado = ${passo} px = ${(passo*escala).toFixed(0)} mas`, 14, 40);
+  c.textAlign="right";
+  c.fillText("o fundo não se move: é o zero da régua", W-14, 22);
+}
+const fmt = (v,n=2) => (!isFinite(v) ? "—" : v.toFixed(n).replace(".",","));
+function atualiza() {
+  const S = cena();
+  desenhaEspaco(S); desenhaDetector(S);
+  $("mDpx").textContent   = `${fmt(S.dpx)} px`;
+  $("mSep").textContent   = `${fmt(S.sep)} mas`;
+  $("mP").textContent     = `${fmt(S.pMed)} mas`;
+  $("mD").textContent     = isFinite(S.dMed) && S.dMed < 1e6 ? `${fmt(S.dMed,1)} pc` : "indefinida";
+  $("mPreal").textContent = `${fmt(S.p)} mas`;
+  $("mFrac").textContent  = `${fmt(S.fracao*100,0)} %`;
+  $("dOut").textContent   = `${fmt(dPc,0)} pc`;
+  $("bOut").textContent   = `${fmt(beta,0)}°`;
+  $("fOut").textContent   = `${fmt(fase,0)}°`;
+  $("sOut").textContent   = `${fmt(escala,1)} mas/px`;
+  const aviso = $("aviso");
+  if (S.fracao < 0.005) {
+    aviso.style.display = "block";
+    aviso.innerHTML = "<b>Deslocamento nulo.</b> A elipse degenerou em um segmento (β = 0) e as duas "
+      + "épocas caíram sobre o mesmo ponto dele. Não há o que medir, e a distância não pode ser obtida. "
+      + "O método não falhou — a escolha das épocas falhou.";
+  } else if (S.fracao < 0.98) {
+    aviso.style.display = "block";
+    aviso.innerHTML = "As duas épocas caem em pontos opostos da elipse, mas <b>não no eixo maior</b>: "
+      + "a separação vale " + fmt(S.fracao*100,0) + "% de 2p, e a distância inferida sai <b>"
+      + fmt(S.dMed/dPc,2) + "&times;</b> a verdadeira. Só a fase que cruza o eixo maior mede 2p.";
+  } else aviso.style.display = "none";
+}
+
+// ---------------------------------------------------------- controles
+$("d").addEventListener("input",     e => { dPc    = +e.target.value; atualiza(); });
+$("beta").addEventListener("input",  e => { beta   = +e.target.value; atualiza(); });
+$("fase").addEventListener("input",  e => { fase   = +e.target.value; atualiza(); });
+$("escala").addEventListener("input",e => { escala = +e.target.value; atualiza(); });
+
+const preset = (b,f,d) => () => {
+  beta=b; fase=f; if(d) dPc=d;
+  $("beta").value=b; $("fase").value=f; if(d) $("d").value=d;
+  atualiza();
+};
+$("pPolo").addEventListener("click",   preset(90, 45));
+$("pEclip").addEventListener("click",  preset(0, 90));
+$("pRuim").addEventListener("click",   preset(0, 0));
+$("pLab").addEventListener("click",    preset(30, 90, 40));
+
+$("play").addEventListener("click", () => {
+  animando = !animando;
+  $("play").textContent = animando ? "Pausar" : "Percorrer o ano";
+  if (animando) { ultimo = 0; requestAnimationFrame(passo); }
+});
+let ultimo = 0;
+function passo(t) {
+  if (!animando) return;
+  if (ultimo) { fase = wrap360(fase + Math.min(50, t-ultimo)*0.045); $("fase").value = fase; atualiza(); }
+  ultimo = t; requestAnimationFrame(passo);
+}
+atualiza();
+
+  </script>
+</body>
+</html>
