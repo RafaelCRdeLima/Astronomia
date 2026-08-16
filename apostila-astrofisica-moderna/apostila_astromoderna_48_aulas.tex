@@ -904,13 +904,29 @@ deduzida no Capítulo 17. Aqui há uma variável só. Como $d=1/p$, a derivada �
 
 O erro \emph{relativo} passa intacto de uma grandeza para a outra. Uma paralaxe com $5\%$ de incerteza dá distância com $5\%$ de incerteza; uma com $30\%$ dá distância com $30\%$ --- e é aí que começa o problema.
 
-O ponto delicado é que $d=1/p$ é exata para os valores \emph{verdadeiros}, mas não para os medidos. Quando $\sigma_p/p$ é grande, a distribuição de $1/p_{\rm obs}$ deixa de ser simétrica e a inversão passa a enviesar o resultado. A regra prática, hoje padrão em trabalhos com dados do Gaia, é:
+O ponto delicado é que $d=1/p$ é exata para os valores \emph{verdadeiros}, mas não para os medidos. A razão é geométrica, e vale ver de perto: \textbf{$1/x$ não é uma reta}. Ela fica cada vez mais íngreme à medida que $x$ se aproxima de zero, e por isso um erro para baixo na paralaxe custa muito mais em distância do que o mesmo erro para cima.
+
+Tome uma estrela com $p=10$ mas, isto é, $d=100$ pc, medida com $\sigma_p=2$ mas:
+\[
+p_{\rm obs}=12\,\mathrm{mas}\ \longrightarrow\ 83{,}3\,\mathrm{pc}\ (-16{,}7),
+\qquad
+p_{\rm obs}=8\,\mathrm{mas}\ \longrightarrow\ 125{,}0\,\mathrm{pc}\ (+25{,}0).
+\]
+O mesmo erro de um desvio-padrão, para cada lado, produz uma excursão $1{,}5$ vez maior na direção das distâncias grandes. Com $\sigma_p/p=30\%$ a razão vai a $1{,}9$. Erros simétricos em $p$ chegam tortos em $d$, e a distribuição de $1/p_{\rm obs}$ ganha uma cauda longa para o lado de longe.
+
+Quanto maior $\sigma_p/p$, mais perto de $p=0$ chega a cauda inferior --- e ali $d$ diverge. Em $\sigma_p/p=50\%$, cerca de $2\%$ das medidas saem com \emph{paralaxe negativa}, para a qual $1/p$ devolve uma distância negativa, isto é, nada. Não é curiosidade: os catálogos do Gaia trazem paralaxes negativas, e é por isso que existe um limiar em vez de uma degradação suave.
+
+Uma consequência prática merece registro. Como $1/x$ é monótona, ela preserva \emph{medianas}: a mediana de $1/p_{\rm obs}$ continua sendo a distância verdadeira, mesmo com $30\%$ de erro. O que se estraga é a \emph{média}, que foge para cima e, no limite gaussiano, sequer converge. Se você precisa de um número único, use a mediana e um intervalo de percentis --- nunca a média.
+
+A regra prática, hoje padrão em trabalhos com dados do Gaia, é:
 \begin{itemize}
 \item $\sigma_p/p\lesssim0{,}1$: inverter é perfeitamente aceitável;
 \item $\sigma_p/p\gtrsim0{,}2$: não inverta --- infira, com o tratamento estatístico discutido no Capítulo 3.
 \end{itemize}
 
 Em qualquer relatório, portanto, a distância se escreve $d\pm\sigma_d$, e a razão $\sigma_p/p$ se calcula \emph{antes} de decidir se a inversão vale.
+
+\textbf{Dois vieses distintos, e em sentidos opostos.} O que acabou de ser descrito --- a assimetria de $1/p_{\rm obs}$ para uma estrela de paralaxe fixa --- empurra a \emph{média} para distâncias maiores. Há um segundo efeito, de natureza diferente: como há mais estrelas longe do que perto, uma estrela \emph{observada} com certa paralaxe tem probabilidade maior de ser uma distante promovida pelo erro do que uma próxima rebaixada. Esse é o viés de Lutz-Kelker, e ele puxa a distância inferida para \emph{menos}. Os dois convivem, o segundo costuma dominar, e é ele que o Capítulo 3 trata.
 
 \subsection*{Fluxo, luminosidade e a lei do inverso do quadrado}
 
