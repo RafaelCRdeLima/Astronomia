@@ -725,7 +725,7 @@ A necessidade de corrigir precessão desaparece se o sistema de coordenadas for 
 
 Os eixos do ICRS foram escolhidos para coincidir, dentro da incerteza, com o equador e o equinócio médios de J2000.0. Mas a coincidência é histórica, não definitória: o ICRS \emph{não} é definido pelo equador terrestre, e é justamente por isso que ele não precisa de correção de precessão.
 
-No óptico, a realização é o \textbf{Gaia-CRF}, construído a partir de centenas de milhares de quasares medidos pela própria missão e alinhado ao ICRF por rotação global. Todo o catálogo do Gaia --- e, por extensão, quase toda a astrometria moderna --- está expresso nesse referencial. Quando o projeto extra deste capítulo pede paralaxes e movimentos próprios do Gaia, o que está sendo usado é essa infraestrutura.
+No óptico, a realização é o \textbf{Gaia-CRF}\footnote{O \textbf{Gaia} é o satélite de astrometria da Agência Espacial Europeia, lançado em dezembro de 2013 e operado a partir do ponto de Lagrange L2, a $1{,}5$ milhão de quilômetros da Terra. Mediu posição, paralaxe e movimento próprio de cerca de dois bilhões de objetos, com incerteza de poucos microssegundos de arco para as estrelas brilhantes e de algumas centenas para as mais fracas, até magnitude $21$. As observações terminaram em janeiro de 2025 e o satélite foi desativado em março; os catálogos seguem sendo publicados, e o usado neste texto é o DR3, de 2022. É a infraestrutura sobre a qual quase toda a astrometria moderna está construída, e ele reaparece em vários capítulos.}, construído a partir de centenas de milhares de quasares medidos pela própria missão e alinhado ao ICRF por rotação global. Todo o catálogo do Gaia --- e, por extensão, quase toda a astrometria moderna --- está expresso nesse referencial. Quando o projeto extra deste capítulo pede paralaxes e movimentos próprios do Gaia, o que está sendo usado é essa infraestrutura.
 
 \subsection*{Da posição de catálogo à posição no telescópio}
 
@@ -743,6 +743,7 @@ Apontar um telescópio exige uma cadeia de correções, e é instrutivo enumerá
 
 A soma dessas correções pode ultrapassar um minuto de arco. Nenhuma delas é opcional em trabalho de precisão, e a ordem importa --- é por isso que existem bibliotecas padronizadas de redução astrométrica, e por que reimplementá-las manualmente é um caminho conhecido para erros silenciosos.
 
+\newpage
 \section*{Capítulo 2 -- Paralaxe, brilho e luminosidade}
 \addcontentsline{toc}{section}{Capítulo 2 -- Paralaxe, brilho e luminosidade}
 Uma direção não distingue uma anã fraca e próxima de uma supergigante distante. O Capítulo 1 ensinou a dizer \emph{onde} um objeto está; este fecha a lacuna com uma única medida geométrica --- a paralaxe --- e com a cadeia que sai dela. O percurso é sempre o mesmo, e vale tê-lo na cabeça antes de começar:
@@ -1154,6 +1155,7 @@ Calcule pelo menos três razões de fluxo previstas e compare com o CSV. Interpr
 Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' não contam sozinhas: precisam vir acompanhadas do valor calculado.
 \end{lessonblock}
 
+\newpage
 \section*{Capítulo 3 -- Movimentos, unidades e fotometria}
 \addcontentsline{toc}{section}{Capítulo 3 -- Movimentos, unidades e fotometria}
 Este capítulo aprofunda o que o Capítulo 2 introduziu para uso imediato. Aberração e movimento próprio --- os dois efeitos anuais que se confundem com paralaxe; as unidades astronômicas e suas definições modernas; velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; correção bolométrica e o zero da escala; sistemas fotométricos. Fecham o capítulo as seções de instrumentação e as escalas de tempo, que são leitura complementar: não são pré-requisito para o artigo, mas você vai precisar delas nos laboratórios seguintes.
