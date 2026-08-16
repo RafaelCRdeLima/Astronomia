@@ -606,8 +606,10 @@
         <div class="body">
           <div class="tasks">
             <div class="task"><strong>O eixo não acompanha a órbita</strong>
-            Anime o ano e olhe a linha laranja: ela aponta sempre para o <i>mesmo lugar do espaço</i>,
-            não para o Sol. É essa teimosia que produz as estações — em junho o polo norte se inclina
+            Anime o ano <i>sem tocar na câmera</i> e olhe a linha laranja: ela aponta sempre para o
+            <i>mesmo lugar do espaço</i>, e mantém rigorosamente o mesmo ângulo na tela — a projeção
+            aqui é ortográfica, justamente para que direções paralelas continuem paralelas. (Ao
+            arrastar a vista, é claro, tudo gira junto: quem mudou foi você.) Ela não aponta para o Sol. É essa teimosia que produz as estações — em junho o polo norte se inclina
             para o Sol; seis meses depois, o mesmo eixo, sem ter mudado, aponta para longe dele.</div>
             <div class="task"><strong>A linha dourada é o mesmo círculo do outro dashboard</strong>
             O corte do plano na Terra tem declinação máxima igual a &epsilon; e cruza o equador
@@ -760,13 +762,17 @@ function baseCamera() {
   const cima = cross(direita, frente);
   return { olho, frente, direita, cima };
 }
-// projecao em perspectiva
-function proj(p, B, W, H, f) {
+// Projecao ORTOGRAFICA, e nao em perspectiva -- de proposito.
+// Em perspectiva, uma direcao 3D constante projeta-se em angulos de tela
+// diferentes conforme o objeto atravessa o campo de visao (ponto de fuga):
+// o eixo da Terra, que e fixo no espaco, aparentava girar 26 graus ao longo
+// da orbita, contradizendo exatamente o que a cena existe para mostrar.
+// Na ortografica, direcoes paralelas continuam paralelas na tela.
+function proj(p, B, W, H, escala) {
   const d = sub(p, B.olho);
-  const z = dot(d, B.frente);
-  if (z <= 0.001) return { vis:false, z };
-  const k = f / z;
-  return { x: W/2 + dot(d, B.direita)*k, y: H/2 - dot(d, B.cima)*k, z, vis:true };
+  return { x: W/2 + dot(d, B.direita)*escala,
+           y: H/2 - dot(d, B.cima)*escala,
+           z: dot(d, B.frente), vis: true };
 }
 
 // ------------------------------------------------------------- estado
@@ -842,7 +848,7 @@ function desenhaOrbita(c, S, B, W, H, f) {
 function desenhaSol(c, S, B, W, H, f) {
   const q = proj([0,0,0], B, W, H, f);
   if (!q.vis) return;
-  const R = Math.max(3, S.rSol * f / q.z);
+  const R = Math.max(3, S.rSol * f);
   const g = c.createRadialGradient(q.x,q.y,0,q.x,q.y,R*4.2);
   g.addColorStop(0,"rgba(255,210,127,0.85)"); g.addColorStop(0.28,"rgba(255,180,90,0.30)");
   g.addColorStop(1,"rgba(255,180,90,0)");
@@ -854,7 +860,7 @@ function desenhaSol(c, S, B, W, H, f) {
 function desenhaTerra(c, S, B, W, H, f) {
   const Cq = proj(S.terra, B, W, H, f);
   if (!Cq.vis) return;
-  const Rpx = S.rTerra * f / Cq.z;
+  const Rpx = S.rTerra * f;
   const versoCam = norm(sub(B.olho, S.terra));            // do centro para a camera
   const visivel = p => dot(norm(sub(p, S.terra)), versoCam) > 0;
 
@@ -936,7 +942,7 @@ function desenhaTerra(c, S, B, W, H, f) {
 // ------------------------------------------------------------- quadro completo
 function desenha() {
   const cv = $("cena"), c = cv.getContext("2d");
-  const W = cv.width, H = cv.height, f = H * 1.15;
+  const W = cv.width, H = cv.height, f = (H * 1.15) / cam.dist;   // px por unidade
   const S = cenario();
   cam.alvo = seguirTerra ? S.terra : [0,0,0];
   const B = baseCamera();
