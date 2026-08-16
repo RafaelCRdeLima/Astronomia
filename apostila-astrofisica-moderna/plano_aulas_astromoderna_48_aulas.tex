@@ -235,7 +235,7 @@
   \end{lessonblock}
 }
 
-\title{\textbf{Astrofísica Moderna}\\Plano de aulas e fichas de estudo\\48 aulas}
+\title{\textbf{Astrofísica Moderna}\\Plano de aulas e fichas de estudo\\49 aulas}
 \author{Material didático em português baseado na organização conceitual de\\Bradley W. Carroll e Dale A. Ostlie, \textit{An Introduction to Modern Astrophysics}, 2ª ed.}
 \date{2026}
 
@@ -249,7 +249,7 @@
 {\fontsize{32}{36}\selectfont\bfseries\color{astroNavy} Astrofísica Moderna\par}
 \vspace{0.35cm}
 {\Large\color{astroBlue} Plano de aulas e fichas de estudo\par}
-{\large\color{astroMuted} 48 aulas\par}
+{\large\color{astroMuted} 49 aulas\par}
 \vfill
 \begin{noticebox}
 Este documento reúne as fichas de estudo aula a aula. A apostila principal fica reservada aos capítulos de conteúdo; este arquivo serve como roteiro de acompanhamento, preparação e revisão de cada encontro.
@@ -271,18 +271,18 @@ Este documento é o roteiro de estudo do semestre. Cada ficha apresenta uma perg
 
 A leitura conceitual completa está na apostila principal, \texttt{apostila\_astromoderna\_48\_aulas.tex}. Aqui, a função das fichas é organizar o ritmo do curso e indicar o que preparar, revisar e praticar em cada encontro.
 
-\section*{Distribuição das 48 aulas}
-\addcontentsline{toc}{section}{Distribuição das 48 aulas}
+\section*{Distribuição das 49 aulas}
+\addcontentsline{toc}{section}{Distribuição das 49 aulas}
 \begin{longtable}{>{\raggedright\arraybackslash}p{1.2cm}>{\raggedright\arraybackslash}p{9.2cm}>{\raggedright\arraybackslash}p{3.2cm}}
 \toprule
 Aulas & Tema & Bloco \\
 \midrule
-1--6 & Ferramentas observacionais: céu, órbitas, luz e telescópios & Fundamentos \\
-7--21 & Estrelas: parâmetros, espectros, interiores, Sol, formação e evolução & Astrofísica estelar \\
-22--25 & Compactos, relatividade e binárias interagentes & Altas energias \\
-26--34 & Sistema Solar, corpos menores e exoplanetas & Astrofísica planetária \\
-35--42 & Via Láctea, galáxias, evolução galáctica e estrutura cósmica & Galáxias \\
-43--48 & Galáxias ativas, cosmologia, CMB, energia escura e universo primordial & Cosmologia \\
+1--7 & Ferramentas observacionais: céu, órbitas, luz e telescópios & Fundamentos \\
+8--22 & Estrelas: parâmetros, espectros, interiores, Sol, formação e evolução & Astrofísica estelar \\
+23--26 & Compactos, relatividade e binárias interagentes & Altas energias \\
+27--35 & Sistema Solar, corpos menores e exoplanetas & Astrofísica planetária \\
+36--43 & Via Láctea, galáxias, evolução galáctica e estrutura cósmica & Galáxias \\
+44--49 & Galáxias ativas, cosmologia, CMB, energia escura e universo primordial & Cosmologia \\
 \bottomrule
 \end{longtable}
 
@@ -312,7 +312,7 @@ Tempo & Atividade \\
 \bottomrule
 \end{tabular}
 
-\textbf{Leitura de apoio:} Capítulo 1 da apostila, seções 1 a 9 (de ``Medir uma direção'' até ``Da posição de catálogo à posição no telescópio'').
+\textbf{Leitura de apoio:} Capítulo 1 da apostila, completo.
 \end{lessonblock}
 \atividade{Desenhe a esfera celeste local: horizonte, zênite, polos celestes e equador celeste para a latitude de sua cidade.}
 \exercicios{
@@ -320,16 +320,16 @@ Tempo & Atividade \\
 \item Qual é a altura aproximada do polo celeste sul para um observador em Joinville, SC, latitude cerca de $26^\circ$ S?
 }
 
-\aula{2}{Coordenadas celestes e tempo astronômico}{cap. 1}
-\objetivos{Usar ascensão reta, declinação, altitude e azimute; entender a ligação entre tempo sideral e observação.}
+\aula{2}{Paralaxe, brilho e luminosidade}{cap. 1}
+\objetivos{Medir distância por geometria pura e converter brilho aparente em luminosidade, declarando as hipóteses de cada passo.}
 \ideias{
-\item O dia solar excede o sideral em $3^{\rm m}56^{\rm s}$ porque a Terra avança $0{,}986^\circ$ em sua órbita a cada dia: o tempo sideral é o relógio que aponta o céu.
-\item A paralaxe é geometria pura, $d\,[\mathrm{pc}]=1/p\,['']$, e o parsec é definido exatamente para que essa inversão valha. Desde 2012 a UA é exata por convenção, e o parsec é consequência dela.
-\item Aberração ($20{,}5''$) e paralaxe (menos de $1''$) são efeitos distintos, defasados de um quarto de período, e só o segundo depende da distância.
-\item Movimento próprio mais distância dão velocidade tangencial, $v_t=4{,}74\,\mu\,d$; com velocidade radial fecha-se o vetor velocidade completo.
-\item Inverter a paralaxe é enviesado quando $\sigma_p/p\gtrsim0{,}2$, por efeito de volume --- o viés de Lutz-Kelker.
+\item A paralaxe é geometria pura, $d\,[\mathrm{pc}]=1/p\,['']$, e o parsec é definido exatamente para que essa inversão valha. O trânsito de Vênus foi o método clássico para fixar a UA em quilômetros.
+\item Medir uma paralaxe em uma imagem é medir um deslocamento em pixels e convertê-lo pela escala da imagem --- e dividir por dois, porque janeiro a julho cobre a elipse inteira.
+\item O erro relativo passa intacto da paralaxe para a distância: $\sigma_d/d=\sigma_p/p$. Acima de $20\%$ a inversão deixa de ser legítima.
+\item Fluxo e luminosidade se ligam pela lei do inverso do quadrado, $F=L/4\pi d^{2}$, sob duas hipóteses que podem falhar: emissão isotrópica e meio transparente.
 \item A escala de magnitudes é logarítmica por construção: $m_2-m_1=-2{,}5\log_{10}(F_2/F_1)$, com o $2{,}5$ forçado pela escolha de que cinco magnitudes valem um fator 100.
 \item O módulo de distância, $m-M=5\log_{10}d-5+A$, é a ponte entre brilho observado e distância --- e o termo $A$ de extinção não é opcional no plano galáctico.
+\item A cor é independente da distância, e por isso mede temperatura sem exigir que se saiba onde o objeto está --- mas só na ausência de poeira.
 }
 
 \begin{lessonblock}{Roteiro de 50 minutos}
@@ -337,23 +337,55 @@ Tempo & Atividade \\
 \toprule
 Tempo & Atividade \\
 \midrule
-0--8 min & Tempo sideral contra tempo solar, deduzindo os $3^{\rm m}56^{\rm s}$; para que serve o tempo sideral na prática observacional. \\
-8--20 min & Paralaxe: geometria, definição do parsec, ordem de grandeza dos ângulos envolvidos. Unidades modernas e por que a UA virou exata. \\
-20--30 min & Movimento próprio, velocidade tangencial e velocidade espacial; dedução do fator $4{,}74$; viés estatístico ao inverter paralaxes. \\
+0--10 min & De onde vem 1 UA em quilômetros: o trânsito de Vênus e a geometria que o converte em escala. \\
+10--22 min & Paralaxe: geometria, definição do parsec, ordem de grandeza dos ângulos. Medir uma paralaxe em uma imagem, e o fator 2. \\
+22--30 min & Propagação da incerteza, $\sigma_d/d=\sigma_p/p$, e quando inverter a paralaxe deixa de valer. \\
 30--42 min & Fluxo, luminosidade e lei do inverso do quadrado; dedução da escala de Pogson e do módulo de distância. \\
-42--50 min & Cores, extinção e avermelhamento: $A_\lambda=1{,}086\,\tau_\lambda$, excesso de cor e $R_V$. Fechamento com a cadeia completa observável $\rightarrow$ grandeza física. \\
+42--50 min & Cores, extinção e avermelhamento: $A_\lambda=1{,}086\,\tau_\lambda$, excesso de cor e $R_V$. Fechamento com a cadeia observável $\rightarrow$ grandeza física. \\
 \bottomrule
 \end{tabular}
 
-\textbf{Leitura de apoio:} Capítulo 1 da apostila, seções 5 e 10 a 16, mais o Laboratório de dados 1.
+\textbf{Leitura de apoio:} Capítulo 2 da apostila, completo, mais o Laboratório de dados 1. \textbf{É este capítulo que o primeiro artigo do semestre cobra.}
 \end{lessonblock}
-\atividade{Escolher uma estrela brilhante e interpretar sua posição em um mapa celeste ou aplicativo planetário.}
+\atividade{Abrir o laboratório do Capítulo 2 e medir a paralaxe de uma estrela na régua, conferindo o resultado com a coluna do catálogo.}
 \exercicios{
-\item Por que a ascensão reta é medida em horas?
-\item Uma estrela no equador celeste fica quanto tempo acima do horizonte, aproximadamente, para um observador fora dos polos?
+\item Por que o deslocamento entre janeiro e julho vale duas paralaxes, e não uma?
+\item Duas estrelas têm a mesma magnitude aparente e distâncias na razão 1:10. Qual a razão entre as luminosidades?
 }
 
-\aula{3}{Órbitas elípticas e leis de Kepler}{cap. 2}
+\aula{3}{Movimentos, unidades e fotometria}{cap. 1}
+\objetivos{Separar paralaxe dos outros dois efeitos anuais de posição e entender o que virou exato por definição nas unidades astronômicas.}
+\ideias{
+\item Aberração ($20{,}5''$) e paralaxe (menos de $1''$) são efeitos distintos, defasados de um quarto de período, e só o segundo depende da distância. A constante de aberração é quase trinta vezes a maior paralaxe do céu.
+\item Movimento próprio mais distância dão velocidade tangencial, $v_t=4{,}74\,\mu\,d$; com velocidade radial fecha-se o vetor velocidade completo.
+\item O fator $4{,}74$ não é constante física: é a razão entre unidades escolhidas por seres humanos --- 1 UA por ano, em km/s.
+\item Desde 2012 a UA é exata por convenção, e o parsec é consequência dela. Adota-se $GM_\odot$, e não $M_\odot$, porque o produto é medido com muito mais algarismos que $G$.
+\item Inverter a paralaxe é enviesado quando $\sigma_p/p\gtrsim0{,}2$, por efeito de volume --- o viés de Lutz-Kelker.
+\item Medir em uma banda nunca é medir a luminosidade: a correção bolométrica corrige a fração do fluxo que o filtro deixa passar, e depende quase inteiramente da temperatura efetiva.
+}
+
+\begin{lessonblock}{Roteiro de 50 minutos}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.79\textwidth}}
+\toprule
+Tempo & Atividade \\
+\midrule
+0--12 min & Aberração e movimento próprio: os dois efeitos que se confundem com paralaxe, e como a defasagem os separa. \\
+12--24 min & Velocidade tangencial e espacial; dedução do fator $4{,}74$; a estrela de Barnard como caso extremo. \\
+24--34 min & As unidades modernas: o que virou exato por definição, e por que se adota $GM_\odot$. \\
+34--44 min & O viés de Lutz-Kelker, com populações sintéticas; a regra prática de $\sigma_p/p$. \\
+44--50 min & Correção bolométrica e o zero da escala fixado em 2015; sistemas fotométricos, Vega contra AB. \\
+\bottomrule
+\end{tabular}
+
+\textbf{Leitura de apoio:} Capítulo 3 da apostila. Nada aqui é pré-requisito para o artigo --- o que o artigo exige está no Capítulo 2.
+\end{lessonblock}
+\atividade{Abrir o arquivo de 2000 estrelas do Gaia e localizar a de maior movimento próprio; conferir a velocidade tangencial obtida.}
+\exercicios{
+\item Por que a aberração não depende da distância da estrela?
+\item Uma estrela tem $\mu=2''$/ano e $p=100$ mas. Qual a sua velocidade tangencial?
+}
+
+\aula{4}{Órbitas elípticas e leis de Kepler}{cap. 2}
 \objetivos{Interpretar as leis de Kepler e aplicá-las a planetas, satélites e estrelas binárias.}
 \ideias{
 \item A elipse possui semieixo maior $a$, excentricidade $e$ e foco ocupado pelo corpo central em órbitas keplerianas.
@@ -366,7 +398,7 @@ Tempo & Atividade \\
 \item O que aconteceria com a velocidade de um planeta ao passar pelo periélio?
 }
 
-\aula{4}{Gravitação newtoniana e teorema do virial}{cap. 2}
+\aula{5}{Gravitação newtoniana e teorema do virial}{cap. 2}
 \objetivos{Relacionar força gravitacional, energia orbital e sistemas autogravitantes.}
 \ideias{
 \item A gravitação universal explica queda, órbitas planetárias e dinâmica de aglomerados.
@@ -379,7 +411,7 @@ Tempo & Atividade \\
 \item Por que aquecer um sistema autogravitante pode fazê-lo expandir?
 }
 
-\aula{5}{Luz, magnitudes e corpo negro}{cap. 3}
+\aula{6}{Luz, magnitudes e corpo negro}{cap. 3}
 \objetivos{Usar brilho aparente, fluxo, magnitude e radiação de corpo negro para extrair informação física.}
 \ideias{
 \item Fluxo diminui com a distância como $F=L/(4\pi d^2)$.
@@ -392,7 +424,7 @@ Tempo & Atividade \\
 \item Estime o comprimento de onda de máximo de emissão do Sol usando $T\approx5800$ K.
 }
 
-\aula{6}{Fótons, espectros e telescópios}{caps. 5 e 6}
+\aula{7}{Fótons, espectros e telescópios}{caps. 5 e 6}
 \objetivos{Compreender como linhas espectrais e instrumentos transformam luz em diagnóstico astrofísico.}
 \ideias{
 \item Energia de fóton: $E=h\nu=hc/\lambda$.
@@ -405,7 +437,7 @@ Tempo & Atividade \\
 \item Por que rádio telescópios costumam ter antenas grandes?
 }
 
-\aula{7}{Sistemas binários e massas estelares}{cap. 7}
+\aula{8}{Sistemas binários e massas estelares}{cap. 7}
 \objetivos{Mostrar por que estrelas binárias são fundamentais para medir massas.}
 \ideias{
 \item Binárias visuais, espectroscópicas e eclipsantes oferecem informações complementares.
@@ -418,7 +450,7 @@ Tempo & Atividade \\
 \item Que informação adicional uma binária eclipsante fornece em relação a uma binária apenas espectroscópica?
 }
 
-\aula{8}{Classificação espectral e diagrama HR}{cap. 8}
+\aula{9}{Classificação espectral e diagrama HR}{cap. 8}
 \objetivos{Ler o diagrama Hertzsprung-Russell e relacionar classe espectral, temperatura, luminosidade e raio.}
 \ideias{
 \item A sequência OBAFGKM organiza estrelas por temperatura decrescente.
@@ -431,7 +463,7 @@ Tempo & Atividade \\
 \item Por que a cor de uma estrela é um indicador imperfeito, mas útil, de temperatura?
 }
 
-\aula{9}{Atmosferas estelares e opacidade}{cap. 9}
+\aula{10}{Atmosferas estelares e opacidade}{cap. 9}
 \objetivos{Entender por que a radiação que observamos vem de camadas externas e como a opacidade molda espectros.}
 \ideias{
 \item A fotosfera é aproximadamente a região de profundidade óptica $\tau\sim1$.
@@ -444,7 +476,7 @@ Tempo & Atividade \\
 \item Cite dois mecanismos que podem alargar uma linha espectral.
 }
 
-\aula{10}{Equilíbrio hidrostático}{cap. 10}
+\aula{11}{Equilíbrio hidrostático}{cap. 10}
 \objetivos{Derivar a ideia física de equilíbrio entre gravidade e gradiente de pressão no interior estelar.}
 \ideias{
 \item Estrelas são esferas de plasma sustentadas por pressão interna.
@@ -457,7 +489,7 @@ Tempo & Atividade \\
 \item Por que o centro de uma estrela tem temperatura maior que a superfície?
 }
 
-\aula{11}{Fontes de energia das estrelas}{cap. 10}
+\aula{12}{Fontes de energia das estrelas}{cap. 10}
 \objetivos{Comparar contração gravitacional, reações nucleares e escalas de tempo estelares.}
 \ideias{
 \item A fusão de hidrogênio em hélio é a fonte dominante na sequência principal.
@@ -470,7 +502,7 @@ Tempo & Atividade \\
 \item Explique por que estrelas mais massivas vivem menos, apesar de terem mais combustível.
 }
 
-\aula{12}{Transporte de energia no interior estelar}{cap. 10}
+\aula{13}{Transporte de energia no interior estelar}{cap. 10}
 \objetivos{Distinguir transporte radiativo, convectivo e condutivo em estrelas.}
 \ideias{
 \item Transporte radiativo ocorre por absorções e reemissões sucessivas.
@@ -483,7 +515,7 @@ Tempo & Atividade \\
 \item Que condição qualitativa favorece convecção?
 }
 
-\aula{13}{Modelos estelares e sequência principal}{cap. 10}
+\aula{14}{Modelos estelares e sequência principal}{cap. 10}
 \objetivos{Entender o conjunto mínimo de equações de estrutura estelar e a relação massa-luminosidade.}
 \ideias{
 \item Modelos estelares combinam massa, pressão, luminosidade e temperatura como funções do raio.
@@ -496,7 +528,7 @@ Tempo & Atividade \\
 \item Por que a sequência principal não é uma linha de idade única?
 }
 
-\aula{14}{O Sol como estrela padrão}{cap. 11}
+\aula{15}{O Sol como estrela padrão}{cap. 11}
 \objetivos{Usar o Sol como laboratório para estrutura, atmosfera e atividade magnética estelar.}
 \ideias{
 \item A fotosfera produz o contínuo visível; cromosfera e coroa mostram plasma magnetizado.
@@ -509,7 +541,7 @@ Tempo & Atividade \\
 \item O que a detecção de neutrinos solares confirma sobre o núcleo?
 }
 
-\aula{15}{Meio interestelar: gás e poeira}{cap. 12}
+\aula{16}{Meio interestelar: gás e poeira}{cap. 12}
 \objetivos{Descrever fases do meio interestelar e seus efeitos sobre observações.}
 \ideias{
 \item O meio interestelar contém gás ionizado, atômico, molecular e poeira.
@@ -522,7 +554,7 @@ Tempo & Atividade \\
 \item Por que nuvens moleculares são locais naturais de formação estelar?
 }
 
-\aula{16}{Formação estelar e protoestrelas}{cap. 12}
+\aula{17}{Formação estelar e protoestrelas}{cap. 12}
 \objetivos{Explicar colapso gravitacional, critério de Jeans e evolução pré-sequência principal.}
 \ideias{
 \item Uma nuvem colapsa quando a gravidade vence pressão, turbulência e campos magnéticos.
@@ -535,7 +567,7 @@ Tempo & Atividade \\
 \item Por que estrelas jovens costumam estar associadas a nebulosas?
 }
 
-\aula{17}{Evolução na sequência principal}{cap. 13}
+\aula{18}{Evolução na sequência principal}{cap. 13}
 \objetivos{Relacionar massa inicial, composição e tempo de vida durante a queima de hidrogênio.}
 \ideias{
 \item A sequência principal é uma fase longa de equilíbrio térmico e hidrostático.
@@ -548,7 +580,7 @@ Tempo & Atividade \\
 \item O que significa ponto de saída da sequência principal em um aglomerado?
 }
 
-\aula{18}{Gigantes, queima de hélio e estágios tardios}{cap. 13}
+\aula{19}{Gigantes, queima de hélio e estágios tardios}{cap. 13}
 \objetivos{Descrever a evolução pós-sequência principal de estrelas de baixa e massa intermediária.}
 \ideias{
 \item Ao esgotar hidrogênio central, a estrela reajusta sua estrutura e pode virar gigante vermelha.
@@ -561,7 +593,7 @@ Tempo & Atividade \\
 \item Uma nebulosa planetária tem relação direta com planetas? Explique.
 }
 
-\aula{19}{Pulsação estelar e sismologia}{cap. 14}
+\aula{20}{Pulsação estelar e sismologia}{cap. 14}
 \objetivos{Entender pulsação como ferramenta de distância e de estrutura interna.}
 \ideias{
 \item Cefeidas obedecem uma relação período-luminosidade essencial para a escala de distâncias.
@@ -574,7 +606,7 @@ Tempo & Atividade \\
 \item Qual é a vantagem de medir frequências de oscilação em uma estrela?
 }
 
-\aula{20}{Estrelas massivas e supernovas}{cap. 15}
+\aula{21}{Estrelas massivas e supernovas}{cap. 15}
 \objetivos{Explicar evolução de estrelas massivas, colapso de núcleo e produção de elementos.}
 \ideias{
 \item Estrelas massivas podem queimar sucessivamente elementos até formar núcleos ricos em ferro.
@@ -587,7 +619,7 @@ Tempo & Atividade \\
 \item Cite dois efeitos astrofísicos de uma supernova na galáxia.
 }
 
-\aula{21}{Anãs brancas e matéria degenerada}{cap. 16}
+\aula{22}{Anãs brancas e matéria degenerada}{cap. 16}
 \objetivos{Introduzir pressão de degenerescência e limite de Chandrasekhar.}
 \ideias{
 \item Anãs brancas são remanescentes sustentados por pressão de degenerescência dos elétrons.
@@ -600,7 +632,7 @@ Tempo & Atividade \\
 \item O que pode ocorrer se uma anã branca em binária ganhar massa demais?
 }
 
-\aula{22}{Estrelas de nêutrons e pulsares}{cap. 16}
+\aula{23}{Estrelas de nêutrons e pulsares}{cap. 16}
 \objetivos{Descrever remanescentes compactos, conservação de momento angular e emissão pulsada.}
 \ideias{
 \item Estrelas de nêutrons têm massas solares comprimidas em raios de ordem dezenas de quilômetros.
@@ -613,7 +645,7 @@ Tempo & Atividade \\
 \item Qual propriedade torna estrelas de nêutrons muito mais densas que anãs brancas?
 }
 
-\aula{23}{Relatividade geral e buracos negros}{cap. 17}
+\aula{24}{Relatividade geral e buracos negros}{cap. 17}
 \objetivos{Apresentar gravidade como geometria e definir horizonte de eventos e raio de Schwarzschild.}
 \ideias{
 \item Relatividade geral descreve gravidade como curvatura do espaço-tempo.
@@ -626,7 +658,7 @@ Tempo & Atividade \\
 \item Por que um buraco negro em binária pode ser brilhante em raios X?
 }
 
-\aula{24}{Sistemas binários próximos e acreção}{cap. 18}
+\aula{25}{Sistemas binários próximos e acreção}{cap. 18}
 \objetivos{Entender lóbulos de Roche, transferência de massa e discos de acreção.}
 \ideias{
 \item Em binárias próximas, uma estrela pode preencher seu lóbulo de Roche.
@@ -639,7 +671,7 @@ Tempo & Atividade \\
 \item Qual é a diferença geral entre nova e supernova Ia?
 }
 
-\aula{25}{Síntese da astrofísica estelar}{caps. 7--18}
+\aula{26}{Síntese da astrofísica estelar}{caps. 7--18}
 \objetivos{Integrar nascimento, vida e morte das estrelas em uma narrativa física coerente.}
 \ideias{
 \item Massa inicial é a variável que mais organiza a evolução estelar.
@@ -652,7 +684,7 @@ Tempo & Atividade \\
 \item Que observações permitiriam estimar idade de um aglomerado?
 }
 
-\aula{26}{Processos físicos no Sistema Solar}{cap. 19}
+\aula{27}{Processos físicos no Sistema Solar}{cap. 19}
 \objetivos{Aplicar gravitação, equilíbrio térmico, atmosferas e marés ao Sistema Solar.}
 \ideias{
 \item Planetas refletem e emitem radiação; equilíbrio térmico depende de distância, albedo e atmosfera.
@@ -665,7 +697,7 @@ Tempo & Atividade \\
 \item Como o albedo altera a temperatura de equilíbrio?
 }
 
-\aula{27}{Planetas terrestres}{cap. 20}
+\aula{28}{Planetas terrestres}{cap. 20}
 \objetivos{Comparar Mercúrio, Vênus, Terra, Lua e Marte como corpos rochosos.}
 \ideias{
 \item Planetas terrestres têm superfícies sólidas e histórias geológicas diversas.
@@ -678,7 +710,7 @@ Tempo & Atividade \\
 \item Cite uma evidência de água líquida antiga em Marte.
 }
 
-\aula{28}{Gigantes gasosos, luas e anéis}{cap. 21}
+\aula{29}{Gigantes gasosos, luas e anéis}{cap. 21}
 \objetivos{Descrever estrutura de planetas gigantes e diversidade de satélites.}
 \ideias{
 \item Júpiter e Saturno são ricos em hidrogênio e hélio; Urano e Netuno têm mais compostos voláteis pesados.
@@ -691,7 +723,7 @@ Tempo & Atividade \\
 \item O que mantém anéis planetários finos e estruturados?
 }
 
-\aula{29}{Corpos menores: asteroides, cometas e cinturão de Kuiper}{cap. 22}
+\aula{30}{Corpos menores: asteroides, cometas e cinturão de Kuiper}{cap. 22}
 \objetivos{Entender corpos menores como registros da formação do Sistema Solar.}
 \ideias{
 \item Asteroides concentram-se principalmente entre Marte e Júpiter, mas há muitas populações dinâmicas.
@@ -704,7 +736,7 @@ Tempo & Atividade \\
 \item Qual é a diferença entre meteoroide, meteoro e meteorito?
 }
 
-\aula{30}{Formação do Sistema Solar}{cap. 23}
+\aula{31}{Formação do Sistema Solar}{cap. 23}
 \objetivos{Apresentar a hipótese nebular, acreção planetesimal e diferenciação planetária.}
 \ideias{
 \item O Sistema Solar nasceu de um disco protoplanetário ao redor do jovem Sol.
@@ -717,7 +749,7 @@ Tempo & Atividade \\
 \item Como a conservação de momento angular explica a formação de um disco?
 }
 
-\aula{31}{Exoplanetas: métodos de detecção}{caps. 7 e 23}
+\aula{32}{Exoplanetas: métodos de detecção}{caps. 7 e 23}
 \objetivos{Explicar velocidade radial, trânsito, imageamento direto, microlente e astrometria.}
 \ideias{
 \item Velocidade radial mede o balanço gravitacional estrela-planeta.
@@ -730,7 +762,7 @@ Tempo & Atividade \\
 \item Que combinação de medidas permite obter densidade média de um exoplaneta?
 }
 
-\aula{32}{Arquiteturas planetárias e habitabilidade}{cap. 23}
+\aula{33}{Arquiteturas planetárias e habitabilidade}{cap. 23}
 \objetivos{Comparar sistemas exoplanetários observados com o Sistema Solar e discutir habitabilidade com cautela.}
 \ideias{
 \item Sistemas exoplanetários mostram grande diversidade: Júpiteres quentes, super-Terras e cadeias ressonantes.
@@ -743,7 +775,7 @@ Tempo & Atividade \\
 \item Cite duas razões pelas quais ``habitável'' não significa ``habitado''.
 }
 
-\aula{33}{Escalas, populações e inventário planetário}{caps. 19--23}
+\aula{34}{Escalas, populações e inventário planetário}{caps. 19--23}
 \objetivos{Consolidar o Sistema Solar e exoplanetas por escalas de massa, distância e composição.}
 \ideias{
 \item A classificação de objetos planetários envolve composição, dinâmica e história de formação.
@@ -756,7 +788,7 @@ Tempo & Atividade \\
 \item Escolha um corpo menor e explique que informação ele traz sobre formação planetária.
 }
 
-\aula{34}{Revisão aplicada: do céu local aos sistemas planetários}{caps. 1--23}
+\aula{35}{Revisão aplicada: do céu local aos sistemas planetários}{caps. 1--23}
 \objetivos{Preparar avaliação integrando observação, luz, estrelas e planetas.}
 \ideias{
 \item A astrofísica combina medidas indiretas: posição, fluxo, espectro, tempo e polarização.
@@ -769,7 +801,7 @@ Tempo & Atividade \\
 \item Explique por que uma mesma observação pode admitir mais de uma interpretação.
 }
 
-\aula{35}{A Via Láctea: estrutura geral}{cap. 24}
+\aula{36}{A Via Láctea: estrutura geral}{cap. 24}
 \objetivos{Descrever componentes da Galáxia: disco, bojo, halo, braços espirais e matéria escura.}
 \ideias{
 \item A Via Láctea é uma galáxia espiral barrada.
@@ -782,7 +814,7 @@ Tempo & Atividade \\
 \item Diferencie disco fino, bojo e halo.
 }
 
-\aula{36}{Cinemática galáctica e matéria escura}{cap. 24}
+\aula{37}{Cinemática galáctica e matéria escura}{cap. 24}
 \objetivos{Usar curvas de rotação para inferir distribuição de massa.}
 \ideias{
 \item Velocidades orbitais no disco revelam a massa interna à órbita.
@@ -795,7 +827,7 @@ Tempo & Atividade \\
 \item Cite outra evidência de matéria escura além de curvas de rotação.
 }
 
-\aula{37}{O centro galáctico}{cap. 24}
+\aula{38}{O centro galáctico}{cap. 24}
 \objetivos{Apresentar evidências para o buraco negro supermassivo central da Via Láctea.}
 \ideias{
 \item Órbitas de estrelas próximas ao centro permitem medir uma massa compacta.
@@ -808,7 +840,7 @@ Tempo & Atividade \\
 \item Por que observar o centro galáctico no infravermelho é vantajoso?
 }
 
-\aula{38}{Tipos de galáxias e sequência de Hubble}{cap. 25}
+\aula{39}{Tipos de galáxias e sequência de Hubble}{cap. 25}
 \objetivos{Classificar galáxias e reconhecer limitações de classificações morfológicas.}
 \ideias{
 \item Galáxias elípticas, espirais e irregulares diferem em forma, gás e formação estelar.
@@ -821,7 +853,7 @@ Tempo & Atividade \\
 \item O que uma galáxia avermelhada e pobre em gás sugere sobre formação estelar atual?
 }
 
-\aula{39}{Estrutura espiral e formação estelar em galáxias}{cap. 25}
+\aula{40}{Estrutura espiral e formação estelar em galáxias}{cap. 25}
 \objetivos{Explicar braços espirais como padrões dinâmicos e locais de formação estelar.}
 \ideias{
 \item Braços espirais podem ser ondas de densidade ou estruturas transientes.
@@ -834,7 +866,7 @@ Tempo & Atividade \\
 \item Qual observação ajudaria a mapear gás molecular em uma galáxia?
 }
 
-\aula{40}{Galáxias elípticas, interações e fusões}{caps. 25 e 26}
+\aula{41}{Galáxias elípticas, interações e fusões}{caps. 25 e 26}
 \objetivos{Relacionar morfologia, dinâmica e evolução galáctica por interações.}
 \ideias{
 \item Galáxias elípticas costumam ter pouco gás frio e populações estelares antigas.
@@ -847,7 +879,7 @@ Tempo & Atividade \\
 \item Como uma fusão pode intensificar formação estelar?
 }
 
-\aula{41}{Escada de distâncias extragalácticas}{cap. 27}
+\aula{42}{Escada de distâncias extragalácticas}{cap. 27}
 \objetivos{Compreender paralaxe, Cefeidas, supernovas Ia e redshift como etapas de distância.}
 \ideias{
 \item Cada indicador de distância calibra o próximo em uma cadeia.
@@ -860,7 +892,7 @@ Tempo & Atividade \\
 \item O que torna supernovas Ia úteis como indicadores de distância?
 }
 
-\aula{42}{Expansão do universo e grandes estruturas}{cap. 27}
+\aula{43}{Expansão do universo e grandes estruturas}{cap. 27}
 \objetivos{Introduzir redshift cosmológico, lei de Hubble-Lemaître e aglomerados de galáxias.}
 \ideias{
 \item Redshift cosmológico expressa expansão do espaço em grandes escalas.
@@ -873,7 +905,7 @@ Tempo & Atividade \\
 \item Se $H_0=70\,\mathrm{km\,s^{-1}\,Mpc^{-1}}$, estime a velocidade recessional de uma galáxia a 100 Mpc.
 }
 
-\aula{43}{Galáxias ativas e quasares}{cap. 28}
+\aula{44}{Galáxias ativas e quasares}{cap. 28}
 \objetivos{Explicar núcleos ativos como acreção em buracos negros supermassivos.}
 \ideias{
 \item AGNs podem emitir enorme luminosidade a partir de regiões compactas.
@@ -886,7 +918,7 @@ Tempo & Atividade \\
 \item Como acreção pode converter energia gravitacional em radiação?
 }
 
-\aula{44}{Cosmologia newtoniana e parâmetros cósmicos}{cap. 29}
+\aula{45}{Cosmologia newtoniana e parâmetros cósmicos}{cap. 29}
 \objetivos{Apresentar densidade crítica, curvatura efetiva e componentes do universo.}
 \ideias{
 \item A densidade crítica separa comportamentos dinâmicos em modelos simples.
@@ -899,7 +931,7 @@ Tempo & Atividade \\
 \item O que significa dizer que o universo é aproximadamente plano?
 }
 
-\aula{45}{Radiação cósmica de fundo}{cap. 29}
+\aula{46}{Radiação cósmica de fundo}{cap. 29}
 \objetivos{Entender a CMB como relíquia térmica do universo jovem.}
 \ideias{
 \item A CMB tem espectro quase perfeito de corpo negro com temperatura próxima de 2,7 K.
@@ -912,7 +944,7 @@ Tempo & Atividade \\
 \item Que informação física está codificada nas anisotropias da CMB?
 }
 
-\aula{46}{Cosmologia relativística e energia escura}{cap. 29}
+\aula{47}{Cosmologia relativística e energia escura}{cap. 29}
 \objetivos{Discutir expansão acelerada, supernovas Ia e interpretação de energia escura.}
 \ideias{
 \item Em cosmologia moderna, o fator de escala descreve a expansão do universo.
@@ -925,7 +957,7 @@ Tempo & Atividade \\
 \item Qual é a diferença entre matéria escura e energia escura?
 }
 
-\aula{47}{Universo primordial e inflação}{cap. 30}
+\aula{48}{Universo primordial e inflação}{cap. 30}
 \objetivos{Apresentar nucleossíntese primordial, inflação e origem das estruturas.}
 \ideias{
 \item No universo quente e denso, partículas, radiação e núcleos leves estiveram em interação intensa.
@@ -938,7 +970,7 @@ Tempo & Atividade \\
 \item Que problema a inflação ajuda a resolver?
 }
 
-\aula{48}{Síntese final: uma narrativa física do universo}{todo o livro}
+\aula{49}{Síntese final: uma narrativa física do universo}{todo o livro}
 \objetivos{Integrar escalas e métodos da astrofísica moderna em uma visão de conjunto.}
 \ideias{
 \item A mesma física aparece em escalas muito diferentes: gravidade, radiação, termodinâmica, plasma e partículas.
