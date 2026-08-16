@@ -540,9 +540,9 @@
         <h2>Visto de cima do polo norte celeste</h2>
         <div class="body">
           <canvas id="polar" class="chart" width="880" height="880"></canvas>
-          <p class="nota-painel">O ponto vernal ♈ é desenhado como <b>raios paralelos</b> porque
+          <p class="nota-painel">O equinócio vernal <b>γ</b> é desenhado como <b>raios paralelos</b> porque
           ele é uma direção, não um lugar: está infinitamente longe e nunca se move. O arco dourado
-          maior é Θ, do ♈ até o seu meridiano. O menor é H, do Sol até o seu meridiano. A diferença
+          maior é Θ, do γ até o seu meridiano. O menor é H, do Sol até o seu meridiano. A diferença
           entre eles é a ascensão reta do Sol.</p>
         </div>
       </section>
@@ -801,11 +801,17 @@ function desenhaPolar(S) {
   }
   c.setLineDash([]);
   c.strokeStyle = C.vernal; c.lineWidth = 2.4;
-  c.beginPath(); c.moveTo(W-20, cy); c.lineTo(cx + R*1.15, cy); c.stroke();
-  c.fillStyle = C.vernal; c.font = "700 17px ui-sans-serif, system-ui"; c.textAlign = "right";
-  c.fillText("♈ ponto vernal", W-20, cy - 196);
-  c.font = "14px ui-sans-serif, system-ui"; c.fillStyle = "rgba(215,180,106,0.75)";
-  c.fillText("direção fixa no espaço, infinitamente longe", W-20, cy - 174);
+  c.beginPath(); c.moveTo(W-52, cy); c.lineTo(cx + R*1.15, cy); c.stroke();
+  // o simbolo fica SOBRE o raio, na direcao que ele nomeia. Antes eu o havia
+  // subido para fugir do arco de Theta, e com isso o desliguei do que nomeia.
+  // gamma, e nao o glifo de Aries: aquele o sistema desenha como emoji colorido.
+  c.fillStyle = C.vernal; c.textAlign = "right";
+  c.font = "700 34px ui-serif, Georgia, serif";
+  c.fillText("γ", W-16, cy + 12);
+  c.font = "700 16px ui-sans-serif, system-ui";
+  c.fillText("equinócio vernal", W-16, cy - 24);
+  c.font = "13px ui-sans-serif, system-ui"; c.fillStyle = "rgba(215,180,106,0.72)";
+  c.fillText("direção fixa no espaço", W-16, cy + 38);
 
   // a Terra
   c.fillStyle = C.oceano; c.beginPath(); c.arc(cx,cy,rLat(-40),0,2*Math.PI); c.fill();
