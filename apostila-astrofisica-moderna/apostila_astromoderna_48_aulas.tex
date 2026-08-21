@@ -181,6 +181,7 @@
   \centering
   \includegraphics[width=#1\textwidth]{#2}
   \caption{\textbf{#3.} #4}
+  \label{fig:#2}
   \end{figure}
 }
 \title{\textbf{Astrofísica Moderna}\\Apostila de capítulos de estudo}
@@ -513,6 +514,7 @@ Tomando o produto vetorial em vez do escalar, e usando que a área do paralelogr
 \centering
 \includegraphics[width=\textwidth]{esfera_celeste.pdf}
 \caption{\textbf{A esfera celeste e o triângulo que resolve tudo.} \textbf{(a)} O céu visto de Joinville ($\varphi=-26{,}30^\circ$): o horizonte, o equador celeste, o polo sul celeste elevado de $|\varphi|$ sobre o ponto Sul e um astro $X$ com seu azimute $A_z$ (em dourado, contado do Norte para Leste) e sua altura $h$ (em ciano, sobre o círculo vertical). \textbf{(b)} Os mesmos três pontos formam o triângulo esférico $PZX$: os lados são $90^\circ-\varphi$, $90^\circ-\delta$ e $90^\circ-h$, e o ângulo no polo é o ângulo horário $H$. Aplicar a lei dos cossenos a esse triângulo produz a equação da altura, e ela responde sozinha a quase toda pergunta prática de observação.}
+\label{fig:esferaceleste}
 \end{figure}
 
 A aplicação mais frequente dessas fórmulas é converter coordenadas equatoriais --- ascensão reta $\alpha$ e declinação $\delta$, fixas na esfera celeste --- em coordenadas horizontais --- altura $h$ e azimute $A_z$, que dependem do observador e do instante.
@@ -649,6 +651,7 @@ com $F_0$ o fluxo perpendicular ao feixe. Combinando com a altura máxima do Sol
 \centering
 \includegraphics[width=\textwidth]{sol_joinville.pdf}
 \caption{\textbf{Por que existem estações, em números, para Joinville.} \textbf{(a)} A declinação do Sol varia entre $\pm\varepsilon$ ao longo do ano, e com ela a altura máxima $h_{\max}=90^\circ-|\varphi-\delta_\odot|$. Como $|\varphi|=26{,}3^\circ$ excede a obliquidade, o Sol nunca alcança o zênite aqui: no solstício de dezembro ele para a $87{,}1^\circ$. \textbf{(b)} Os dois efeitos caminham juntos e no mesmo sentido: no verão o dia dura mais ($13{,}6\,\mathrm{h}$ contra $10{,}4\,\mathrm{h}$ no inverno) \emph{e} cada metro quadrado recebe mais fluxo ao meio-dia, porque $\sin h_{\max}$ é maior. É a soma dos dois, e não a distância ao Sol, que produz as estações.}
+\label{fig:soljoinville}
 \end{figure}
 
 Para comparação, a excentricidade orbital terrestre, $e=0{,}0167$, produz variação de fluxo de
@@ -691,6 +694,7 @@ A soma das duas, com fases diferentes, produz a curva assimétrica de dois máxi
 \centering
 \includegraphics[width=\textwidth]{equacao_tempo.pdf}
 \caption{\textbf{A equação do tempo e suas duas causas.} A curva dourada é a diferença entre o Sol verdadeiro e o Sol médio, calculada a partir das duas expressões deduzidas acima. A componente da excentricidade (tracejada longa) tem período anual e amplitude $7{,}7$ minutos; a da obliquidade (tracejada curta) tem período semestral e amplitude $9{,}9$ minutos. A soma, com as fases reais, vai de $-14{,}4$ minutos em meados de fevereiro a $+16{,}5$ minutos no início de novembro. Duas propriedades geométricas independentes deixam sua assinatura em um único gráfico observável --- e é por isso que um relógio de sol precisa de tabela de correção.}
+\label{fig:equacaotempo}
 \end{figure}
 
 \subsection*{Precessão, nutação e a necessidade de uma época}
@@ -713,6 +717,7 @@ As consequências observacionais são grandes. O ponto vernal --- origem da asce
 \centering
 \includegraphics[width=0.62\textwidth]{precessao.pdf}
 \caption{\textbf{O polo celeste não fica parado.} Trajetória do polo celeste norte entre as estrelas, calculada com $50{,}3''$ por ano: um círculo de raio $\varepsilon=23{,}44^\circ$ em torno do polo da eclíptica, percorrido em cerca de $25\,800$ anos. Polaris ocupa o posto hoje quase por acaso; Thuban o ocupava quando as pirâmides foram erguidas, e Vega o ocupará por volta do ano $13\,700$. As posições das estrelas foram convertidas de coordenadas equatoriais J2000 para eclípticas. É essa deriva que obriga todo catálogo a declarar sua época.}
+\label{fig:precessao}
 \end{figure}
 
 Sobreposta à precessão há a \textbf{nutação}, uma oscilação de pequena amplitude cujo termo principal tem período de $18{,}6$ anos --- o período de regressão dos nodos da órbita lunar --- e amplitude de $9{,}2''$ em obliquidade. Precessão é o movimento secular suave; nutação é o tremor periódico superposto.
@@ -789,6 +794,7 @@ Durante um trânsito, dois observadores muito afastados na Terra veem Vênus cru
 \centering
 \includegraphics[width=\textwidth]{transito_venus.pdf}
 \caption{\textbf{O trânsito de Vênus e a escala do Sistema Solar.} Dois observatórios separados pela base $b$ veem Vênus projetado sobre cordas diferentes do disco solar. Os raios se cruzam em Vênus, e por isso quem observa ao norte vê a corda mais ao sul. A separação $\Delta$ das duas cordas, medida em ângulo a partir da Terra, é o que se compara com a previsão geométrica. As proporções $0{,}277$ e $0{,}723$ vêm de Kepler; o que falta é o fator de conversão para quilômetros.}
+\label{fig:transitovenus}
 \end{figure}
 
 \textbf{A geometria, simplificada.} Tome os dois observadores separados por uma base $b$, medida perpendicularmente à linha de visada. Vale para eles a mesma regra de sempre: um objeto a distância $d$, visto de dois pontos separados por $b$, aparece em direções que diferem por $b/d$. Aplicada a Vênus, que no momento do trânsito está a $a_\oplus-a_V$, ela dá um deslocamento aparente de $b/(a_\oplus-a_V)$.
@@ -865,6 +871,7 @@ Vale insistir em por que essa medida é especial. Ela não supõe nada sobre a e
 \centering
 \includegraphics[width=\textwidth]{paralaxe.pdf}
 \caption{\textbf{A única distância medida por geometria pura.} \textbf{(a)} A base do triângulo é o raio da órbita terrestre; o ângulo $p$ é metade do deslocamento aparente entre duas observações separadas por seis meses. O ângulo está muito exagerado: para a estrela mais próxima ele vale $0{,}77''$, dez mil vezes menor que o desenho sugere. \textbf{(b)} A relação $d=1/p$ em escala logarítmica, com marcos reais. O Gaia mede paralaxes com incerteza de dezenas de microssegundos de arco, o que mantém a régua utilizável até alguns quiloparsecs; além disso, a geometria cede lugar a métodos indiretos.}
+\label{fig:paralaxe}
 \end{figure}
 
 \subsection*{Medir uma paralaxe em uma imagem}
@@ -984,6 +991,7 @@ Uma consequência quantitativa que vale internalizar: um erro de $0{,}1$ magnitu
 \centering
 \includegraphics[width=\textwidth]{extincao.pdf}
 \caption{\textbf{A poeira empobrece e avermelha.} \textbf{(a)} A extinção relativa $A_\lambda/A_V$ para a lei padrão do meio difuso ($R_V=3{,}1$): cresce monotonicamente para o azul, e no infravermelho próximo cai a um décimo do valor no visível --- razão pela qual regiões de formação estelar só se abrem em $K$ ou no infravermelho médio. \textbf{(b)} O efeito no diagrama cor--magnitude construído com as 2000 estrelas do Gaia do projeto extra deste capítulo: a poeira desloca a estrela ao longo da seta, para baixo e para a direita. Sem corrigir, ela seria classificada como mais fria e mais distante do que é.}
+\label{fig:extincao}
 \end{figure}
 
 \subsection*{Cor: o que $B-V$ mede}
@@ -1488,7 +1496,7 @@ ao halo, e a cinemática já separa populações antes de qualquer espectro.
 \subsection*{A elipse, antes da física}
 \addcontentsline{toc}{subsection}{A elipse, antes da física}
 
-Kepler descreveu a forma das órbitas meio século antes de Newton explicar por que elas têm essa forma, e vale percorrer o caminho na mesma ordem. Esta seção é geometria pura: não há nenhuma força nela. As três propriedades que ela estabelece --- a equação polar da elipse, a relação $b^{2}=a^{2}(1-e^{2})$ e a área $\pi ab$ --- reaparecem mais adiante neste capítulo, quando a órbita for deduzida da gravitação. Lá elas são \textit{usadas}; aqui elas são \textit{provadas}.
+Esta seção é geometria pura: não há nenhuma força nela. Ela prova as três propriedades da elipse que o resto do capítulo usa sem demonstrar de novo --- a equação polar, a relação $b^{2}=a^{2}(1-e^{2})$ e a área $\pi ab$. Lá elas são \textit{usadas}; aqui elas são \textit{provadas}, e é por isso que vêm primeiro. Vale saber desde já onde cada uma reaparece: a equação polar volta em \textit{A equação da órbita}, quando a mesma curva sair da gravitação newtoniana em vez da definição focal; $b^{2}=a^{2}(1-e^{2})$ e a área $\pi ab$ voltam juntas, e no mesmo parágrafo, na dedução da terceira lei.
 
 \textbf{A definição focal.} Uma elipse é o conjunto dos pontos cuja soma das distâncias a dois pontos fixos, os focos $F$ e $F'$, é a mesma para todos eles:
 \[
@@ -1512,6 +1520,7 @@ Somando as duas, $R_p+R_a=2a$: o semieixo maior é a \textit{média aritmética}
 \centering
 \includegraphics[width=\textwidth]{elipse.pdf}
 \caption{\textbf{A geometria da elipse.} \textbf{(a)} A definição focal: a soma $FP+F'P$ vale $2a$ para qualquer ponto $P$ da curva. O semieixo maior $a$, o semieixo menor $b$ e a semidistância focal $c=ae$ formam o triângulo retângulo que dá $b^{2}=a^{2}(1-e^{2})$. \textbf{(b)} Com o Sol em um dos focos, o periélio fica no extremo mais próximo, a $a(1-e)$, e o afélio no oposto, a $a(1+e)$. O ângulo $\theta$ é medido \textit{a partir do foco ocupado} e a partir da direção do periélio: é a anomalia verdadeira, e é ela que aparece na equação polar.}
+\label{fig:elipse}
 \end{figure}
 
 \subsection*{A elipse em coordenadas polares}
@@ -1680,27 +1689,13 @@ mostra que período e tamanho orbital medem a soma das massas. Em sistemas plane
 \centering
 \includegraphics[width=\textwidth]{kepler.pdf}
 \caption{\textbf{As leis de Kepler.} \textbf{(a)} Órbita de excentricidade $0{,}55$ obtida resolvendo a equação de Kepler $M=E-e\,\mathrm{sen}\,E$. O corpo central ocupa um foco, o outro fica vazio, e os dois setores sombreados --- percorridos no mesmo intervalo de tempo --- têm a mesma área: perto do periélio o planeta corre mais e cobre um ângulo grande com raio curto; perto do afélio faz o oposto. \textbf{(b)} A terceira lei com dados tabelados: os oito planetas em torno do Sol e os quatro satélites galileanos em torno de Júpiter. As duas famílias caem sobre retas de mesma inclinação $3/2$ mas coeficientes diferentes, e é o coeficiente que carrega a física: aplicando $M=4\pi^2a^3/GP^2$ aos planetas obtém-se $1{,}00\,M_\odot$; aplicando às luas, $1{,}90\times10^{27}\,\mathrm{kg}$, a massa de Júpiter, cerca de $M_\odot/1047$. A mesma lei, medindo dois corpos centrais diferentes.}
+\label{fig:kepler}
 \end{figure}
 
 \textbf{Exemplo resolvido.} Um planeta orbita uma estrela em $P=1$ ano com $a=1\,\mathrm{UA}$. Como esse é o caso da Terra, a massa inferida é $1M_\odot$. Se outro planeta orbita a mesma estrela em $a=4\,\mathrm{UA}$, então $P^2\propto a^3=64$, logo $P=8$ anos. A conta não exigiu conhecer $G$ porque usamos uma calibração solar. Essa é uma lição prática: relações proporcionais são atalhos poderosos quando a referência é bem escolhida.
 
 \textbf{Erros comuns.} Não confunda raio orbital instantâneo com semieixo maior; não use a forma circular quando a excentricidade é essencial; não esqueça a inclinação em velocidades radiais; não trate velocidade projetada como velocidade total sem justificativa.
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução curta: terceira lei de Kepler}
-Para uma órbita circular, $v=2\pi r/P$. Igualando gravidade e aceleração centrípeta,
-\[
-\frac{G(M_1+M_2)}{r^2}=\frac{v^2}{r}=\frac{4\pi^2r}{P^2}.
-\]
-Reorganizando,
-\[
-P^2=\frac{4\pi^2r^3}{G(M_1+M_2)}.
-\]
-Para órbitas elípticas, o raio circular $r$ é substituído pelo semieixo maior $a$. A forma final é a mesma já apresentada:
-\[
-P^2=\frac{4\pi^2a^3}{G(M_1+M_2)}.
-\]
-O detalhe conceitual importante é que a lei mede a massa total do sistema, não apenas a massa do corpo central, embora em planetas comuns a massa da estrela domine.
-\end{lessonblock}
 
 \begin{lessonblock}{Exemplo de aplicação: velocidade de escape}
 A velocidade de escape vem de igualar energia cinética inicial e energia gravitacional necessária para escapar:
@@ -1712,8 +1707,15 @@ v_{\rm esc}=\sqrt{\frac{2GM}{R}}.
 Para a Terra, $v_{\rm esc}\simeq11{,}2\,\mathrm{km\,s^{-1}}$. Para uma anã branca com massa solar e raio terrestre, a mesma fórmula daria milhares de quilômetros por segundo. A equação é newtoniana, mas já aponta para o regime em que relatividade e compactação se tornam inevitáveis.
 \end{lessonblock}
 
+\subsection*{Astronomia de posição para o laboratório}
+\addcontentsline{toc}{subsection}{Astronomia de posição para o laboratório}
+
+Medidas angulares são tudo o que um observador tem, e é exatamente isso que o laboratório entrega. Esta seção
+reúne o que as converte em grandezas orbitais --- elongação, oposição, período sinódico, retrogradação, maior
+elongação --- retomando em uso, e não em teoria, o que o Capítulo 1 estabeleceu sobre coordenadas.
+
 \begin{lessonblock}{Do céu observado à órbita}
-O laboratório deste capítulo não mostra a órbita vista de cima. Ele mostra o que um observador mede no céu: direções. Por isso é essencial separar três tipos de grandezas:
+Antes de qualquer conta, é essencial separar três tipos de grandezas:
 \begin{itemize}
 \item \textbf{coordenadas eclípticas} $(\lambda,\beta)$: longitude e latitude medidas em relação ao plano da órbita da Terra;
 \item \textbf{coordenadas equatoriais} $(\alpha,\delta)$: ascensão reta e declinação, úteis para localizar objetos em catálogos e telescópios;
@@ -1721,18 +1723,16 @@ O laboratório deste capítulo não mostra a órbita vista de cima. Ele mostra o
 \end{itemize}
 O mesmo planeta tem praticamente a mesma longitude eclíptica geocêntrica em uma data dada, mas sua altura no horizonte muda quando mudamos a hora ou a latitude. Assim, $\lambda(t)$ é boa para estudar a dinâmica orbital, enquanto $h(t)$ e $A(t)$ respondem à pergunta observacional: \textit{dá para ver esse objeto agora?}
 
-No céu local, a altura $h$ de um objeto com ascensão reta $\alpha$ e declinação $\delta$ é dada por
+A altura de um objeto no céu local já foi obtida no Capítulo 1, pela lei dos cossenos esférica aplicada ao triângulo $PZX$; aqui ela é apenas usada:
 \[
-\sin h=\sin\phi\,\sin\delta+\cos\phi\,\cos\delta\,\cos H,
+\sin h=\sin\varphi\,\sin\delta+\cos\varphi\,\cos\delta\,\cos H,
+\qquad
+H=\theta_{\rm LST}-\alpha,
 \]
-onde $\phi$ é a latitude do observador e $H$ é o ângulo horário:
-\[
-H=\theta_{\rm LST}-\alpha.
-\]
-Aqui $\theta_{\rm LST}$ é a hora sideral local. Um objeto está acima do horizonte quando $h>0^\circ$. Essa equação explica por que um planeta pode estar em posição orbital interessante e, ainda assim, não ser observável para um dado observador.
+com $\varphi$ a latitude do observador, $H$ o ângulo horário e $\theta_{\rm LST}$ a hora sideral local. Um objeto está acima do horizonte quando $h>0^\circ$. É essa equação que explica por que um planeta pode estar em posição orbital interessante e, ainda assim, não ser observável de um dado lugar em um dado horário.
 \end{lessonblock}
 
-\textbf{Exemplo: janela de observação.} Suponha um planeta com $\delta=10^\circ$, observado de Joinville, aproximadamente $\phi=-26^\circ$. Se no instante considerado $H=0^\circ$, então
+\textbf{Exemplo: janela de observação.} Suponha um planeta com $\delta=10^\circ$, observado de Joinville, aproximadamente $\varphi=-26^\circ$. Se no instante considerado $H=0^\circ$, então
 \[
 \sin h=\sin(-26^\circ)\sin(10^\circ)+\cos(-26^\circ)\cos(10^\circ)\cos(0^\circ).
 \]
@@ -1966,6 +1966,12 @@ M_\odot=\frac{4\pi^2a^3}{GP^2}.
 Use $a=1\,\mathrm{UA}$ e $P=1\,\mathrm{ano}$ para recuperar a escala de massa do Sol. Essa etapa mostra a ponte entre astronomia de posição e dinâmica gravitacional.
 \end{lessonblock}
 \subsection*{O problema de dois corpos, resolvido do início}
+\addcontentsline{toc}{subsection}{O problema de dois corpos, resolvido do início}
+
+O laboratório mediu ângulos e chegou a $P$ e a $a$; a tabela dos oito planetas mostrou que $P^{2}/a^{3}$ é a
+mesma constante para todos. Nenhum dos dois disse \emph{por quê}. A resposta está inteira no problema resolvido
+a seguir, e é dele que saem, uma a uma, as três leis que até aqui foram apenas descrição --- inclusive a
+correção de massa que a tabela deixa entrever em Júpiter e em Saturno.
 
 Praticamente toda a mecânica celeste sai de um único problema, e vale resolvê-lo por completo uma vez. Duas massas $m_1$ e $m_2$ interagem apenas gravitacionalmente. As equações de movimento são
 \[
@@ -2040,6 +2046,20 @@ O parâmetro $p=\ell^{2}/GM$ é o \textit{semi-latus rectum}. Para a elipse, rel
 \]
 As distâncias extremas são o periastro $r_{\rm min}=a(1-e)$, em $\theta=0$, e o apoastro $r_{\rm max}=a(1+e)$, em $\theta=\pi$.
 
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Aquecimento: a terceira lei no caso circular}
+Com a redução de dois corpos já feita, o caso circular sai em três linhas e serve de aferição para a dedução
+completa logo abaixo. A aceleração relativa é $G(M_1+M_2)/r^{2}$, e em uma circunferência ela é a aceleração
+centrípeta $v^{2}/r$, com $v=2\pi r/P$:
+\[
+\frac{G(M_1+M_2)}{r^2}=\frac{v^2}{r}=\frac{4\pi^2r}{P^2}
+\quad\Longrightarrow\quad
+P^2=\frac{4\pi^2r^3}{G(M_1+M_2)}.
+\]
+A soma das massas não foi imposta: ela vem da equação do movimento relativo obtida acima. Falta apenas mostrar
+que, para uma elipse, o raio $r$ é substituído pelo semieixo maior $a$ --- e é isso que a dedução seguinte faz,
+sem supor órbita circular em nenhum momento.
+\end{lessonblock}
+
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: a terceira lei de Kepler}
 Integrando a taxa areal ao longo de um período completo, a área total varrida é a da elipse, $\pi ab$, com $b=a\sqrt{1-e^{2}}$:
 \[
@@ -2094,7 +2114,7 @@ onde $M_{\rm an}$ é a anomalia média, que cresce linearmente com o tempo. A eq
 \[
 E_{n+1}=E_{n}-\frac{E_{n}-e\sin E_{n}-M_{\rm an}}{1-e\cos E_{n}},
 \]
-que converge em poucas iterações para $e$ moderado. Esse é literalmente o cálculo feito para produzir o painel (a) da Figura~2 e é o mesmo que qualquer efeméride executa milhões de vezes por dia.
+que converge em poucas iterações para $e$ moderado. Esse é literalmente o cálculo feito para produzir o painel (a) da Figura~\ref{fig:kepler} e é o mesmo que qualquer efeméride executa milhões de vezes por dia.
 
 \subsection*{Binárias: como a órbita vira massa}
 
@@ -2110,7 +2130,7 @@ com $i$ a inclinação do plano orbital. O fator $\sin i$ aparece porque só se 
 \]
 Tudo do lado direito é observável. O lado esquerdo mistura as duas massas com a inclinação desconhecida. Se apenas uma componente é vista, $f(m)$ fornece um \emph{limite inferior} para $m_2$, atingido quando $i=90^\circ$ e $m_1\to0$. É exatamente esse raciocínio que estabelece candidatos a buraco negro em binárias de raios X: quando $f(m)$ excede a massa máxima possível de uma estrela de nêutrons, a companheira invisível não pode ser outra coisa.
 
-Se as duas componentes são vistas espectroscopicamente \emph{e} o sistema eclipsa --- caso em que $i\simeq90^\circ$ ---, então todas as ambiguidades desaparecem e obtêm-se massas absolutas com precisão de poucos por cento. Esse é o motivo pelo qual binárias eclipsantes destacadas são a fonte dos dados usados na Figura~5: elas são o único caminho para massas estelares verdadeiramente medidas.
+Se as duas componentes são vistas espectroscopicamente \emph{e} o sistema eclipsa --- caso em que $i\simeq90^\circ$ ---, então todas as ambiguidades desaparecem e obtêm-se massas absolutas com precisão de poucos por cento. Esse é o motivo pelo qual binárias eclipsantes destacadas são a fonte dos dados usados na Figura~\ref{fig:relacaomassaluminosidade}: elas são o único caminho para massas estelares verdadeiramente medidas.
 
 \subsection*{O teorema do virial, deduzido}
 
@@ -2128,6 +2148,12 @@ Para um sistema em equilíbrio estatístico, $I$ não varia sistematicamente e a
 \boxed{\ 2K+U=0\ }
 \]
 As consequências merecem ser explicitadas, porque são contraintuitivas. Como $E=K+U=-K$, um sistema ligado tem energia total negativa e igual a menos sua energia cinética. Se ele perde energia --- por radiação, por exemplo --- então $E$ diminui, o que significa que $K$ \emph{aumenta}: o sistema esquenta ao perder energia. Uma estrela que irradia contrai e aquece. Um aglomerado que evapora estrelas torna-se mais compacto e mais ``quente''. Sistemas autogravitantes têm capacidade térmica negativa, e essa é uma das ideias mais profundas de toda a astrofísica --- ela explica por que estrelas não atingem equilíbrio térmico com o meio e por que a evolução estelar tem a direção que tem.
+
+\begin{noticebox}
+As três seções seguintes --- marés, o problema restrito de três corpos e os pontos de Lagrange --- são leitura
+complementar. Elas aplicam a mecânica já deduzida a situações específicas e não são pré-requisito para o
+laboratório nem para o artigo; o núcleo do capítulo se fecha no teorema do virial.
+\end{noticebox}
 
 \subsection*{Forças de maré}
 
@@ -2183,55 +2209,6 @@ Os pontos $L_1$, $L_2$ e $L_3$ são instáveis --- daí missões ali precisarem 
 \]
 condição satisfeita com folga por Sol-Júpiter. A estabilidade é garantida pela força de Coriolis, que curva as trajetórias de volta. É por isso que existem os asteroides troianos de Júpiter, hoje contados aos milhares, e troianos de Netuno, de Marte e até da Terra.
 
-\subsection*{A frequência epicíclica}
-
-Perturbe levemente uma órbita circular de raio $R_0$ em um potencial axissimétrico. Escrevendo $R=R_0+\delta R$ e linearizando a equação radial com momento angular conservado, obtém-se um oscilador harmônico:
-\[
-\ddot{\delta R}+\kappa^{2}\delta R=0,
-\qquad
-\kappa^{2}=\left(\frac{d^{2}\Phi_{\rm ef}}{dR^{2}}\right)_{R_0}
-=R\frac{d\Omega^{2}}{dR}+4\Omega^{2}.
-\]
-A grandeza $\kappa$ é a \textbf{frequência epicíclica}: a taxa com que a partícula oscila radialmente enquanto orbita. Dois casos limite iluminam o significado. Para potencial kepleriano, $\Omega\propto R^{-3/2}$ e $\kappa=\Omega$ exatamente --- a oscilação radial se completa em uma volta, e a órbita fecha em uma elipse. Para rotação de corpo rígido, $\kappa=2\Omega$. Para curva de rotação plana, $\kappa=\sqrt{2}\,\Omega$.
-
-Como $\kappa\ne\Omega$ em geral, órbitas em galáxias não fecham: elas precessam, descrevendo rosáceas. E a diferença $\Omega-\kappa/2$ define o padrão de precessão que sustenta ondas de densidade espirais --- se essa combinação for aproximadamente constante com o raio, um padrão espiral pode girar rigidamente sem se enrolar, resolvendo o antigo problema do enrolamento dos braços.
-
-Em termos das constantes de Oort, $\kappa^{2}=-4B(A-B)$, o que permite medir a frequência epicíclica local diretamente das velocidades estelares na vizinhança solar.
-
-\subsection*{Estabilidade de discos: o critério de Toomre}
-
-Um disco fino e rotante é instável a perturbações axissimétricas quando a autogravidade vence simultaneamente a pressão (ou dispersão de velocidades) e a rotação. A análise de estabilidade linear fornece o \textbf{critério de Toomre}:
-\[
-Q=\frac{\sigma_R\kappa}{3{,}36\,G\Sigma}<1
-\quad\text{(estrelas)},
-\qquad
-Q=\frac{c_s\kappa}{\pi G\Sigma}<1
-\quad\text{(gás)}.
-\]
-A leitura física é limpa: perturbações de pequena escala são estabilizadas pela dispersão de velocidades $\sigma_R$, e as de grande escala pela rotação, através de $\kappa$. Existe uma escala intermediária mais vulnerável, e $Q$ mede se ela é ou não instável.
-
-Discos de galáxias espirais têm $Q\simeq1$--$2$: marginalmente estáveis. Isso não é coincidência --- é autorregulação. Se o disco esfria, $Q$ cai abaixo de 1, formam-se estruturas e estrelas, e o \textit{feedback} resultante reaquece o disco elevando $Q$. O mesmo critério aplicado a discos protoplanetários indica quando a fragmentação gravitacional direta pode formar planetas gigantes, mecanismo alternativo à acreção de núcleo discutida no Capítulo 11.
-
-\subsection*{Tempo de relaxação de dois corpos}
-
-Estrelas em uma galáxia interagem gravitacionalmente aos pares, mas o efeito acumulado é minúsculo. Um encontro a parâmetro de impacto $b$ produz variação de velocidade
-\[
-\delta v\simeq\frac{2Gm}{bv}.
-\]
-Como as deflexões têm direções aleatórias, elas se somam em quadratura. Integrando sobre todos os parâmetros de impacto de $b_{\min}$ a $b_{\max}$ e sobre uma travessia do sistema, obtém-se
-\[
-\frac{\Delta v^{2}}{v^{2}}\simeq\frac{8\ln\Lambda}{N},
-\qquad
-\Lambda=\frac{b_{\max}}{b_{\min}}\simeq N.
-\]
-O tempo para que a velocidade mude significativamente é, portanto,
-\[
-\boxed{\ t_{\rm relax}\simeq\frac{N}{8\ln N}\,t_{\rm cruz}\ }
-\]
-com $t_{\rm cruz}=R/v$ o tempo de travessia. Aplicando: para um aglomerado globular com $N=10^{5}$ e $t_{\rm cruz}\simeq10^{6}$ anos, $t_{\rm relax}\simeq10^{9}$ anos --- menor que a idade do aglomerado, de modo que ele \emph{está} relaxado, e fenômenos como segregação de massa e evaporação são esperados e observados. Para uma galáxia com $N=10^{11}$ e $t_{\rm cruz}\simeq10^{8}$ anos, $t_{\rm relax}\simeq10^{17}$ anos, sete ordens de grandeza acima da idade do universo.
-
-A conclusão é estrutural: \textbf{galáxias são sistemas não colisionais}. Suas estrelas nunca ``se chocam'' estatisticamente, e a dinâmica é governada pelo potencial suave coletivo --- justamente a hipótese que sustenta a equação de Jeans usada no Capítulo 13. Quando duas galáxias se fundem, as estrelas atravessam umas às outras sem colidir; o que muda é o potencial, por meio da fricção dinâmica e da relaxação violenta.
-
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Laboratório de dados 2 -- pesar o Sol, Júpiter e Saturno}
 \textbf{Arquivo:} \texttt{02\_terceira\_lei\_kepler.csv} --- semieixo maior e período de 21 corpos reais, orbitando quatro centros diferentes.
 
@@ -2269,6 +2246,7 @@ Por isso estrelas frias têm aparência avermelhada e estrelas quentes emitem ma
 \centering
 \includegraphics[width=\textwidth]{corpo_negro.pdf}
 \caption{\textbf{Corpo negro: o ideal e o real.} \textbf{(a)} Curvas calculadas diretamente da lei de Planck para quatro temperaturas. Em escala log-log o efeito é duplo: o pico se desloca para comprimentos de onda menores (lei de Wien, tracejado ligando os máximos) e toda a curva sobe, porque o fluxo integrado cresce com $T^4$ (lei de Stefan-Boltzmann). Note que nenhuma curva cruza outra: uma estrela mais quente emite mais em \emph{todo} comprimento de onda, e não apenas no azul. \textbf{(b)} O espectro solar realmente medido acima da atmosfera terrestre, comparado ao corpo negro de $5772\,\mathrm{K}$ com o mesmo raio e distância. O envelope é bem reproduzido, mas os desvios são grandes e informativos: entre $200$ e $400\,\mathrm{nm}$ o Sol emite apenas $65\%$ do previsto, porque a opacidade cresce no ultravioleta e a radiação escapa de camadas mais altas e frias; no visível o espectro é recortado pelas linhas de absorção de Fraunhofer; entre $1400$ e $2400\,\mathrm{nm}$ a emissão real supera a ideal em cerca de $19\%$. Corpo negro é um ponto de partida, não uma descrição completa. Dados do painel (b): \textit{Whole Heliosphere Interval reference spectrum} (SORCE/TIMED), LASP/LISIRD, Universidade do Colorado.}
+\label{fig:corponegro}
 \end{figure}
 
 As linhas espectrais são assinaturas de quantização. Átomos e moléculas só absorvem ou emitem fótons associados a diferenças específicas de energia entre níveis. Uma linha de hidrogênio, cálcio, sódio ou ferro é como uma pista de presença química, mas sua intensidade depende de temperatura, ionização, densidade e opacidade. A ausência de uma linha forte não significa necessariamente ausência do elemento; pode significar que o elemento está em estado de ionização inadequado ou que as condições físicas não favorecem aquela transição.
@@ -2962,6 +2940,7 @@ O diagrama Hertzsprung-Russell organiza estrelas por luminosidade e temperatura 
 \centering
 \includegraphics[width=0.82\textwidth]{diagrama_hr_eso.png}
 \caption{\textbf{Diagrama Hertzsprung-Russell.} Luminosidade (em unidades solares) contra temperatura efetiva, com o eixo de temperatura crescendo para a esquerda. A faixa diagonal é a sequência principal (\textit{main sequence}); acima e à direita estão gigantes (\textit{giants}) e supergigantes (\textit{supergiants}), frias mas luminosas por terem raios enormes; abaixo e à esquerda estão as anãs brancas (\textit{white dwarfs}), quentes mas pouco luminosas por terem raios pequenos. O tamanho dos círculos indica o raio relativo das estrelas. A posição de uma estrela combina temperatura, luminosidade, raio e estágio evolutivo. Crédito: ESO, licença CC BY 4.0 (eso0728c).}
+\label{fig:diagramahreso}
 \end{figure}
 
 \aberturabloco{Estrelas}{Este capítulo conecta espectros, luminosidades, massas e modelos internos em uma leitura física do diagrama HR.}{Ao estudar estrelas, mantenha sempre quatro grandezas em diálogo: $M$, $R$, $L$ e $T_{\rm eff}$. Quase toda interpretação estelar move uma delas e observa a resposta das outras.}
@@ -2984,6 +2963,7 @@ Mesmo sem resolver numericamente essas equações, elas ensinam como pensar. Se 
 \centering
 \includegraphics[width=0.88\textwidth]{relacao_massa_luminosidade.pdf}
 \caption{\textbf{Relação massa-luminosidade da sequência principal.} Cada ponto é uma componente de binária eclipsante destacada com massa e raio medidos diretamente; a luminosidade vem de $L=4\pi R^2\sigma T_{\rm eff}^4$. Em escala log-log a relação é quase uma reta, o que significa uma lei de potência $L\propto M^\alpha$: pequenas mudanças de massa produzem grandes mudanças de luminosidade e, portanto, de tempo de vida. O expoente único $\alpha=3{,}5$ (tracejado) é uma boa aproximação de trabalho, mas o ajuste por faixas mostra que $\alpha$ varia de $\sim\!1{,}7$ nas anãs vermelhas a $\sim\!4{,}5$ perto da massa solar e volta a cair nas estrelas mais massivas, onde a pressão de radiação domina. Dados: Eker et al. (2018), MNRAS 479, 5491 (via VizieR).}
+\label{fig:relacaomassaluminosidade}
 \end{figure}
 
 \observaveis{classe espectral, magnitude, cor, paralaxe}{temperatura efetiva, luminosidade, raio, estágio evolutivo}{calibração fotométrica, correção de extinção, modelo atmosférico, distância confiável}{A posição no HR foi medida diretamente ou construída a partir de várias inferências?}
@@ -3022,7 +3002,7 @@ O combustível disponível é proporcional à massa, $E\propto M$, e a taxa de c
 \[
 t\propto\frac{M}{L}.
 \]
-Usando a relação massa-luminosidade da Figura~5, $L\propto M^{3{,}5}$ na faixa em torno da massa solar,
+Usando a relação massa-luminosidade da Figura~\ref{fig:relacaomassaluminosidade}, $L\propto M^{3{,}5}$ na faixa em torno da massa solar,
 \[
 t\propto M^{-2{,}5}.
 \]
@@ -3250,7 +3230,7 @@ Agrupando as potências, com $\kappa$ constante (opacidade de espalhamento por e
 \]
 Este é um resultado forte: a luminosidade de uma estrela na sequência principal é fixada pela massa e pela opacidade, e \emph{não} pela taxa de reações nucleares. As reações se ajustam para fornecer exatamente o que o transporte permite escoar. É a estrela que decide quanto queimar a partir de quanto consegue irradiar --- não o contrário.
 
-O expoente 3 é o valor assintótico para estrelas massivas, com opacidade dominada por espalhamento. Para estrelas de massa intermediária, em que a opacidade segue aproximadamente a lei de Kramers $\kappa\propto\rho T^{-3{,}5}$, refazer a mesma álgebra fornece $L\propto M^{5{,}5}R^{-0{,}5}$, e combinando com a relação massa-raio observada chega-se a expoentes próximos de $4$ a $5$ --- que é o que os dados da Figura~5 mostram na faixa em torno da massa solar. A dependência do expoente com a faixa de massa, medida no laboratório do capítulo, é portanto uma assinatura direta de qual mecanismo de opacidade domina.
+O expoente 3 é o valor assintótico para estrelas massivas, com opacidade dominada por espalhamento. Para estrelas de massa intermediária, em que a opacidade segue aproximadamente a lei de Kramers $\kappa\propto\rho T^{-3{,}5}$, refazer a mesma álgebra fornece $L\propto M^{5{,}5}R^{-0{,}5}$, e combinando com a relação massa-raio observada chega-se a expoentes próximos de $4$ a $5$ --- que é o que os dados da Figura~\ref{fig:relacaomassaluminosidade} mostram na faixa em torno da massa solar. A dependência do expoente com a faixa de massa, medida no laboratório do capítulo, é portanto uma assinatura direta de qual mecanismo de opacidade domina.
 
 \subsection*{As três escalas de tempo estelares}
 
@@ -3468,7 +3448,7 @@ L\propto M^{\alpha}.
 
 \textbf{Entrega.} O diagrama massa-luminosidade com o ajuste, o valor de $\alpha$ em cada faixa e o tempo de vida estimado para uma estrela de $10\,M_\odot$ e para uma de $0{,}5\,M_\odot$.
 
-\textbf{Confira.} Você deve encontrar $\alpha\simeq4{,}5$ perto da massa solar e $\alpha\simeq3{,}8$ acima de $2\,M_\odot$ --- compare com a Figura~5, que foi feita com este mesmo arquivo.
+\textbf{Confira.} Você deve encontrar $\alpha\simeq4{,}5$ perto da massa solar e $\alpha\simeq3{,}8$ acima de $2\,M_\odot$ --- compare com a Figura~\ref{fig:relacaomassaluminosidade}, que foi feita com este mesmo arquivo.
 \end{lessonblock}
 
 \newpage
@@ -3799,6 +3779,7 @@ Para uma massa solar, $R_s\simeq3\,\mathrm{km}$. Essa aproximação é uma ânco
 \centering
 \includegraphics[width=\textwidth]{fusao_estrelas_neutrons.jpg}
 \caption{\textbf{O regime compacto em ação: fusão de duas estrelas de nêutrons.} Concepção artística do evento GW170817, detectado em 17 de agosto de 2017 simultaneamente em ondas gravitacionais (LIGO--Virgo) e em raios gama (Fermi/INTEGRAL), e depois acompanhado em todo o espectro eletromagnético. Cada uma das duas estrelas concentra mais de uma massa solar em um raio de cerca de $10\,\mathrm{km}$: a mesma massa do Sol comprimida do tamanho de uma cidade. É essa compactação extrema --- de $R\sim R_\oplus$ nas anãs brancas, a $R\sim10\,\mathrm{km}$ nas estrelas de nêutrons, até $R_s=2GM/c^2\simeq3\,\mathrm{km}$ por massa solar no horizonte de um buraco negro --- que torna acessíveis densidades nucleares, campos gravitacionais relativísticos e a nucleossíntese de elementos pesados observada na quilonova. Crédito: University of Warwick/Mark Garlick, via ESO, licença CC BY 4.0 (eso1733s).}
+\label{fig:fusaoestrelasneutrons}
 \end{figure}
 
 \observaveis{raios X, pulsos periódicos, variabilidade rápida, órbitas de companheiras}{massa compacta, raio máximo da região emissora, campo magnético, taxa de acreção}{modelo de emissão, inclinação orbital, distância, identificação do objeto companheiro}{A luminosidade vem da superfície, de um disco de acreção ou de uma região relativística?}
@@ -4194,7 +4175,7 @@ ou seja, três massas solares foram convertidas em energia gravitacional em fra�
 
 \subsection*{GW170817: quando os canais se juntam}
 
-Em 17 de agosto de 2017, a rede LIGO--Virgo registrou um sinal com massa de chirp compatível com duas estrelas de nêutrons ($\sim1{,}2$ e $\sim1{,}6\,M_\odot$), a $40\,\mathrm{Mpc}$. Cerca de $1{,}7\,\mathrm{s}$ depois, os satélites Fermi e INTEGRAL detectaram um surto curto de raios gama. Nas horas seguintes, telescópios ópticos localizaram a contraparte na galáxia NGC\,4993, e o objeto foi acompanhado por semanas em todo o espectro. É o evento da Figura~7.
+Em 17 de agosto de 2017, a rede LIGO--Virgo registrou um sinal com massa de chirp compatível com duas estrelas de nêutrons ($\sim1{,}2$ e $\sim1{,}6\,M_\odot$), a $40\,\mathrm{Mpc}$. Cerca de $1{,}7\,\mathrm{s}$ depois, os satélites Fermi e INTEGRAL detectaram um surto curto de raios gama. Nas horas seguintes, telescópios ópticos localizaram a contraparte na galáxia NGC\,4993, e o objeto foi acompanhado por semanas em todo o espectro. É o evento da Figura~\ref{fig:fusaoestrelasneutrons}.
 
 Esse único evento fechou vários problemas de uma vez:
 
@@ -4723,6 +4704,7 @@ A descoberta de exoplanetas mostrou que o Sistema Solar não é um modelo univer
 \centering
 \includegraphics[width=\textwidth]{transito.pdf}
 \caption{\textbf{Curvas de luz de trânsito reais, medidas pelo Kepler.} Fotometria de cadência curta (um ponto por minuto), dobrada no período orbital; os pontos cinza são cadências individuais e os círculos azuis são médias em intervalos de tempo. A linha tracejada não é ajuste algum: é a profundidade prevista por $(R_p/R_\star)^2$ com o raio do planeta e o raio da estrela medidos independentemente. \textbf{(a)} HAT-P-7\,b, um Júpiter quente diante de uma estrela de $2\,R_\odot$: a queda é de $0{,}57\%$ e o fundo achatado mostra o planeta inteiramente projetado sobre o disco estelar. \textbf{(b)} Kepler-10\,b, um planeta rochoso de $1{,}5\,R_\oplus$: a queda é de apenas $161$ partes por milhão, ou seja, $35$ vezes menor, exatamente como a razão dos raios ao quadrado prevê. É a mesma física nas duas escalas, e é por isso que a estatística de exoplanetas nasceu dominada por planetas grandes. Dados: arquivo público do Kepler (MAST); efemérides do NASA Exoplanet Archive.}
+\label{fig:transito}
 \end{figure}
 
 Quando combinamos trânsito e velocidade radial, podemos obter raio e massa, logo densidade média. A densidade ajuda a distinguir mundos rochosos, ricos em água, gasosos ou com envelopes leves. Ainda assim, degenerescências permanecem: composições diferentes podem produzir massas e raios parecidos. Atmosferas exoplanetárias são investigadas por espectroscopia de trânsito, emissão secundária e curvas de fase, mas os sinais são pequenos. A interpretação exige modelos cuidadosos de nuvens, composição, temperatura, atividade estelar e ruído instrumental.
@@ -4756,6 +4738,7 @@ Exoplanetas ampliam o laboratório. Trânsitos medem raios relativos; velocidade
 \centering
 \includegraphics[width=0.94\textwidth]{massa_raio.pdf}
 \caption{\textbf{Diagrama massa-raio: o que a densidade média entrega e o que ela esconde.} Todos os exoplanetas com massa verdadeira (não $M\sin i$) e raio medidos com precisão melhor que $25\%$ e $10\%$, respectivamente, junto com os planetas do Sistema Solar. As linhas pontilhadas são apenas geometria, $R=(3M/4\pi\rho)^{1/3}$, sem nenhum modelo de interior. Duas leituras importam. Primeira: massa e raio dão a densidade média, e a densidade já separa mundos rochosos (próximos da linha de $5{,}5$ g/cm$^3$, a da Terra) de mundos com envelope volumoso. Segunda: a dispersão vertical em cada massa mostra que a densidade \emph{não} determina composição --- planetas de mesma massa ocupam raios muito diferentes conforme tenham ou não envelope de hidrogênio, e acima de $\sim\!100\,M_\oplus$ o raio praticamente satura, porque a matéria degenerada resiste à compressão. Dados: NASA Exoplanet Archive, tabela \texttt{pscomppars}, consultada em julho de 2026.}
+\label{fig:massaraio}
 \end{figure}
 
 \observaveis{profundidade de trânsito, período, velocidade radial, espectro de trânsito}{raio, distância orbital, massa mínima, composição atmosférica}{raio estelar, inclinação, atividade estelar, modelo atmosférico}{O método seleciona quais planetas são fáceis de encontrar e quais ficam escondidos?}
@@ -4865,7 +4848,7 @@ Eliminando $a$ pela terceira lei, $a^{3}=GP^{2}(m_\star+m_p)/4\pi^{2}$:
 \]
 Vale calibrar a intuição com dois casos. Júpiter faz o Sol oscilar com $K=12{,}5\,\mathrm{m\,s^{-1}}$ em 11,9 anos. A Terra produz $K=0{,}09\,\mathrm{m\,s^{-1}}$ --- nove centímetros por segundo, a velocidade de uma caminhada lenta, a ser medida em uma estrela a dezenas de anos-luz. Essa comparação explica sozinha por que a primeira detecção foi um Júpiter quente e por que análogos da Terra ainda não são acessíveis por esse método.
 
-Note também as dependências: $K\propto P^{-1/3}$ favorece planetas próximos, e $K\propto m_p\sin i$ deixa a massa indeterminada até um fator $\sin i$. Combinando velocidade radial com trânsito --- que garante $i\simeq90^\circ$ --- obtém-se massa \emph{verdadeira} e raio, e portanto densidade. É essa combinação que produz o diagrama da Figura~10.
+Note também as dependências: $K\propto P^{-1/3}$ favorece planetas próximos, e $K\propto m_p\sin i$ deixa a massa indeterminada até um fator $\sin i$. Combinando velocidade radial com trânsito --- que garante $i\simeq90^\circ$ --- obtém-se massa \emph{verdadeira} e raio, e portanto densidade. É essa combinação que produz o diagrama da Figura~\ref{fig:massaraio}.
 
 \subsection*{A escala de altura e o sinal atmosférico}
 
@@ -4988,6 +4971,7 @@ Curvas de rotação galácticas são uma das evidências clássicas de matéria 
 \includegraphics[width=0.49\textwidth]{rotacao_via_lactea.pdf}\hfill
 \includegraphics[width=0.49\textwidth]{rotacao_m33.pdf}
 \caption{\textbf{Curvas de rotação e a massa que não se vê.} Os pontos são velocidades circulares medidas; as linhas tracejadas mostram quanto cada componente de massa contribuiria sozinha, e a linha cheia é a soma. \textbf{(a)} Na Via Láctea, bojo e disco explicam bem a curva perto do centro, mas caem rápido depois; para manter a velocidade praticamente constante até $R\simeq25\,\mathrm{kpc}$ é preciso uma componente adicional que \emph{cresce} com o raio --- o halo. O Sol está a cerca de $8\,\mathrm{kpc}$, ou seja, já na região onde o halo importa. \textbf{(b)} Em M 33 a decomposição é ainda mais clara: a contribuição das estrelas atinge um máximo em torno de $3\,\mathrm{kpc}$ e decresce, a do gás é pequena, e a curva observada continua subindo. O ponto não é que a curva seja ``plana'', e sim que ela não cai como cairia se a massa terminasse onde termina a luz. Figuras de Vallastro, via Wikimedia Commons, licença CC BY-SA 4.0; rótulos traduzidos para o português.}
+\label{fig:rotacaovialactea}
 \end{figure}
 \subsection*{A anatomia da Galáxia}
 
@@ -5017,7 +5001,7 @@ A imagem do EHT em 2022 completou o quadro, mostrando o anel de emissão com o t
 
 \subsection*{A curva de rotação e o halo escuro}
 
-A Figura~11 mostra o argumento central. Medindo velocidades de rotação em função do raio --- com gás neutro em $21\,\mathrm{cm}$, masers, gigantes e, hoje, com o próprio Gaia --- verifica-se que a velocidade circular permanece próxima de $220$--$240\,\mathrm{km\,s^{-1}}$ muito além da região onde há estrelas suficientes para explicá-la.
+A Figura~\ref{fig:rotacaovialactea} mostra o argumento central. Medindo velocidades de rotação em função do raio --- com gás neutro em $21\,\mathrm{cm}$, masers, gigantes e, hoje, com o próprio Gaia --- verifica-se que a velocidade circular permanece próxima de $220$--$240\,\mathrm{km\,s^{-1}}$ muito além da região onde há estrelas suficientes para explicá-la.
 
 Vale ser preciso sobre o que isso implica. Em uma distribuição esférica, $v^{2}=GM(<r)/r$, então velocidade constante exige $M(<r)\propto r$: a massa continua crescendo linearmente com o raio, mesmo onde a luz já acabou. A densidade correspondente cai como $r^{-2}$. Não é que exista ``muita massa''; é que a massa está distribuída de um jeito completamente diferente da luz.
 
@@ -5040,7 +5024,7 @@ Contando estrelas, gás e poeira, chega-se a algo da ordem de $6\times10^{10}\,M
 \item Por que correntes estelares são sondas úteis da subestrutura escura?
 \end{itemize}
 
-\textbf{Para praticar.} O arquivo público do Gaia permite consultas diretas. Selecione estrelas em um raio de $100\,\mathrm{pc}$ do Sol com paralaxe bem medida, construa o diagrama cor-magnitude absoluto e identifique a sequência principal, a sequência de anãs brancas e o ramo das gigantes. Depois compare com a Figura~4 e explique por que o diagrama de uma amostra limitada por volume tem aparência diferente do diagrama de uma amostra limitada por brilho.
+\textbf{Para praticar.} O arquivo público do Gaia permite consultas diretas. Selecione estrelas em um raio de $100\,\mathrm{pc}$ do Sol com paralaxe bem medida, construa o diagrama cor-magnitude absoluto e identifique a sequência principal, a sequência de anãs brancas e o ramo das gigantes. Depois compare com a Figura~\ref{fig:diagramahreso} e explique por que o diagrama de uma amostra limitada por volume tem aparência diferente do diagrama de uma amostra limitada por brilho.
 
 \subsection*{Rotação diferencial e as constantes de Oort}
 
@@ -5081,6 +5065,21 @@ A+B=-\left.\frac{dv_c}{dR}\right|_0.
 A primeira dá a velocidade angular local; a segunda, a inclinação local da curva de rotação. Os valores medidos, $A\simeq15$ e $B\simeq-12\,\mathrm{km\,s^{-1}\,kpc^{-1}}$, implicam $\Omega_0\simeq27\,\mathrm{km\,s^{-1}\,kpc^{-1}}$ e $dv_c/dR\simeq-3\,\mathrm{km\,s^{-1}\,kpc^{-1}}$: a curva de rotação é quase plana na vizinhança solar. Note o que se conseguiu --- medir a estrutura dinâmica da Galáxia inteira usando apenas estrelas a poucas centenas de parsecs, sem sair do lugar.
 
 A assinatura $\sin2\ell$ é um teste em si: rotação diferencial produz um padrão de dupla periodicidade em longitude, distinto do padrão $\sin\ell$ que um movimento de translação puro produziria.
+
+\subsection*{A frequência epicíclica}
+
+Perturbe levemente uma órbita circular de raio $R_0$ em um potencial axissimétrico. Escrevendo $R=R_0+\delta R$ e linearizando a equação radial com momento angular conservado, obtém-se um oscilador harmônico:
+\[
+\ddot{\delta R}+\kappa^{2}\delta R=0,
+\qquad
+\kappa^{2}=\left(\frac{d^{2}\Phi_{\rm ef}}{dR^{2}}\right)_{R_0}
+=R\frac{d\Omega^{2}}{dR}+4\Omega^{2}.
+\]
+A grandeza $\kappa$ é a \textbf{frequência epicíclica}: a taxa com que a partícula oscila radialmente enquanto orbita. Dois casos limite iluminam o significado. Para potencial kepleriano, $\Omega\propto R^{-3/2}$ e $\kappa=\Omega$ exatamente --- a oscilação radial se completa em uma volta, e a órbita fecha em uma elipse. Para rotação de corpo rígido, $\kappa=2\Omega$. Para curva de rotação plana, $\kappa=\sqrt{2}\,\Omega$.
+
+Como $\kappa\ne\Omega$ em geral, órbitas em galáxias não fecham: elas precessam, descrevendo rosáceas. E a diferença $\Omega-\kappa/2$ define o padrão de precessão que sustenta ondas de densidade espirais --- se essa combinação for aproximadamente constante com o raio, um padrão espiral pode girar rigidamente sem se enrolar, e é o que a seção sobre ondas de densidade retoma adiante.
+
+Nas constantes de Oort recém-definidas, $\kappa^{2}=-4B(A-B)$, o que permite medir a frequência epicíclica local diretamente das velocidades estelares na vizinhança solar.
 
 \subsection*{Potenciais gravitacionais e curvas de rotação}
 
@@ -5189,6 +5188,20 @@ Existem raios especiais nesse quadro. No \textbf{raio de corrotação}, $\Omega(
 \Omega_p=\Omega\pm\frac{\kappa}{m},
 \]
 com $m$ o número de braços, o padrão troca momento angular com as órbitas de forma ressonante. Entre a ressonância interna e a externa a onda se propaga; fora delas, é absorvida. É essa estrutura, escrita em termos da frequência epicíclica $\kappa$ deduzida antes, que determina a extensão radial dos braços espirais observados.
+
+\subsection*{Estabilidade de discos: o critério de Toomre}
+
+Um disco fino e rotante é instável a perturbações axissimétricas quando a autogravidade vence simultaneamente a pressão (ou dispersão de velocidades) e a rotação. A análise de estabilidade linear fornece o \textbf{critério de Toomre}:
+\[
+Q=\frac{\sigma_R\kappa}{3{,}36\,G\Sigma}<1
+\quad\text{(estrelas)},
+\qquad
+Q=\frac{c_s\kappa}{\pi G\Sigma}<1
+\quad\text{(gás)}.
+\]
+A leitura física é limpa: perturbações de pequena escala são estabilizadas pela dispersão de velocidades $\sigma_R$, e as de grande escala pela rotação, através de $\kappa$. Existe uma escala intermediária mais vulnerável, e $Q$ mede se ela é ou não instável.
+
+Discos de galáxias espirais têm $Q\simeq1$--$2$: marginalmente estáveis. Isso não é coincidência --- é autorregulação. Se o disco esfria, $Q$ cai abaixo de 1, formam-se estruturas e estrelas, e o \textit{feedback} resultante reaquece o disco elevando $Q$. O mesmo critério aplicado a discos protoplanetários indica quando a fragmentação gravitacional direta pode formar planetas gigantes, mecanismo alternativo à acreção de núcleo discutida no Capítulo 11.
 
 \subsection*{Populações estelares e a arqueologia galáctica}
 
@@ -5415,6 +5428,26 @@ M_{\rm BH}\propto\frac{f_g\sigma^{4}}{\epsilon_f\eta}\quad\text{a}\quad\sigma^{5
 \]
 A relação observada é $M_{\rm BH}\propto\sigma^{4{,}4}$, dentro do intervalo previsto. O valor do expoente, portanto, não é acidental: ele decorre de o feedback ser autolimitado e de a estrutura do bojo ser virial. O que o argumento não fixa é a normalização, que depende de $\epsilon_f$ --- e é justamente esse parâmetro que simulações de formação de galáxias precisam calibrar.
 
+\subsection*{Tempo de relaxação de dois corpos}
+
+Estrelas em uma galáxia interagem gravitacionalmente aos pares, mas o efeito acumulado é minúsculo. Um encontro a parâmetro de impacto $b$ produz variação de velocidade
+\[
+\delta v\simeq\frac{2Gm}{bv}.
+\]
+Como as deflexões têm direções aleatórias, elas se somam em quadratura. Integrando sobre todos os parâmetros de impacto de $b_{\min}$ a $b_{\max}$ e sobre uma travessia do sistema, obtém-se
+\[
+\frac{\Delta v^{2}}{v^{2}}\simeq\frac{8\ln\Lambda}{N},
+\qquad
+\Lambda=\frac{b_{\max}}{b_{\min}}\simeq N.
+\]
+O tempo para que a velocidade mude significativamente é, portanto,
+\[
+\boxed{\ t_{\rm relax}\simeq\frac{N}{8\ln N}\,t_{\rm cruz}\ }
+\]
+com $t_{\rm cruz}=R/v$ o tempo de travessia. Aplicando: para um aglomerado globular com $N=10^{5}$ e $t_{\rm cruz}\simeq10^{6}$ anos, $t_{\rm relax}\simeq10^{9}$ anos --- menor que a idade do aglomerado, de modo que ele \emph{está} relaxado, e fenômenos como segregação de massa e evaporação são esperados e observados. Para uma galáxia com $N=10^{11}$ e $t_{\rm cruz}\simeq10^{8}$ anos, $t_{\rm relax}\simeq10^{17}$ anos, sete ordens de grandeza acima da idade do universo.
+
+A conclusão é estrutural: \textbf{galáxias são sistemas não colisionais}. Suas estrelas nunca ``se chocam'' estatisticamente, e a dinâmica é governada pelo potencial suave coletivo --- justamente a hipótese que sustenta a equação de Jeans usada no Capítulo 13. Quando duas galáxias se fundem, as estrelas atravessam umas às outras sem colidir; o que muda é o potencial, por meio da fricção dinâmica e da relaxação violenta --- os assuntos das duas seções seguintes.
+
 \subsection*{Fricção dinâmica}
 
 Um objeto massivo movendo-se através de um mar de partículas menores sofre desaceleração, mesmo sem colisões. A razão é geométrica: o objeto deflete as partículas atrás de si, criando uma sobredensidade --- uma esteira --- cuja atração puxa o objeto para trás. A fórmula de Chandrasekhar quantifica o efeito:
@@ -5498,6 +5531,7 @@ A radiação cósmica de fundo é uma das evidências mais fortes do universo qu
 \centering
 \includegraphics[width=\textwidth]{cosmologia.pdf}
 \caption{\textbf{A linha do tempo cósmica, em escala logarítmica.} Fator de escala $a=1/(1+z)$ em função do tempo, obtido integrando a equação de Friedmann $H(a)=H_0\sqrt{\Omega_r a^{-4}+\Omega_m a^{-3}+\Omega_\Lambda}$ com os parâmetros do Planck 2018 ($H_0=67{,}4$ km/s/Mpc, $\Omega_m=0{,}315$). O eixo do tempo cobre dezessete ordens de grandeza porque não há alternativa: a nucleossíntese primordial dura minutos e a formação do Sistema Solar leva bilhões de anos. As faixas ao fundo marcam qual componente domina a densidade de energia --- radiação até $50$ mil anos, matéria até $10$ bilhões de anos, energia escura depois disso --- e a inclinação da curva muda em cada transição, de $a\propto t^{1/2}$ para $a\propto t^{2/3}$ e finalmente para crescimento exponencial. A posição de cada evento numerado não foi escolhida: entra o desvio para o vermelho e o tempo sai da integração. A idade do Universo também é resultado, não hipótese: $13{,}79$ bilhões de anos, contra os $13{,}80$ do Planck. Note ainda o que \emph{não} cabe na figura: a inflação acontece por volta de $10^{-36}$ s, cerca de trinta e sete ordens de grandeza à esquerda da borda do gráfico.}
+\label{fig:cosmologia}
 \end{figure}
 
 \imagemastro{0.84}{hudf_2014.jpg}{Campo ultraprofundo do Hubble}{Uma pequena região do céu contém milhares de galáxias em diferentes distâncias e épocas cósmicas, tornando a imagem uma janela para evolução galáctica. Crédito: NASA, ESA e Hubble, via ESA/Hubble.}
@@ -5547,7 +5581,7 @@ O desvio para o vermelho cosmológico não é efeito Doppler de galáxias movend
 \]
 tomando $a=1$ hoje. Ou seja, $z$ mede diretamente \emph{quanto o universo se expandiu} desde a emissão, e não velocidade. Um objeto em $z=1$ emitiu sua luz quando todas as distâncias eram metade das atuais.
 
-A conversão de $z$ em distância ou em tempo exige integrar a equação de Friedmann e, portanto, depende do modelo cosmológico --- foi exatamente esse o cálculo da Figura~13. Apenas para $z\ll1$ vale a aproximação linear $v\simeq cz$ e a lei $d\simeq cz/H_0$. Usar essa aproximação em $z=2$ é um erro comum e grosseiro.
+A conversão de $z$ em distância ou em tempo exige integrar a equação de Friedmann e, portanto, depende do modelo cosmológico --- foi exatamente esse o cálculo da Figura~\ref{fig:cosmologia}. Apenas para $z\ll1$ vale a aproximação linear $v\simeq cz$ e a lei $d\simeq cz/H_0$. Usar essa aproximação em $z=2$ é um erro comum e grosseiro.
 \end{lessonblock}
 
 \textbf{Perguntas para discussão.}
@@ -5601,7 +5635,7 @@ Três casos:
 \item \textbf{Radiação} ($w=1/3$, deduzido no Capítulo 5): $\rho\propto a^{-4}$. Um fator extra de $a^{-1}$ porque cada fóton também perde energia por desvio para o vermelho.
 \item \textbf{Constante cosmológica} ($w=-1$): $\rho=$ constante. A densidade de energia do vácuo não dilui.
 \end{itemize}
-Como as três diluem com taxas diferentes, a componente dominante muda ao longo da história --- exatamente as três faixas mostradas na Figura~13. Radiação domina cedo, matéria em época intermediária, e a constante cosmológica domina no final, necessariamente, porque é a única que não decai.
+Como as três diluem com taxas diferentes, a componente dominante muda ao longo da história --- exatamente as três faixas mostradas na Figura~\ref{fig:cosmologia}. Radiação domina cedo, matéria em época intermediária, e a constante cosmológica domina no final, necessariamente, porque é a única que não decai.
 
 Substituindo na equação de Friedmann para um universo plano dominado por uma componente:
 \[
@@ -5624,7 +5658,7 @@ e $\Omega_i=\rho_i/\rho_c$, a equação de Friedmann assume a forma que se usa n
 \[
 \boxed{\ H^{2}(a)=H_0^{2}\left[\Omega_{r,0}a^{-4}+\Omega_{m,0}a^{-3}+\Omega_{k,0}a^{-2}+\Omega_{\Lambda,0}\right]\ }
 \]
-com $\Omega_{k,0}=1-\Omega_{r,0}-\Omega_{m,0}-\Omega_{\Lambda,0}$. Foi exatamente esta expressão que a Figura~13 integrou. A soma dos $\Omega$ determina a geometria: se vale 1, o espaço é plano.
+com $\Omega_{k,0}=1-\Omega_{r,0}-\Omega_{m,0}-\Omega_{\Lambda,0}$. Foi exatamente esta expressão que a Figura~\ref{fig:cosmologia} integrou. A soma dos $\Omega$ determina a geometria: se vale 1, o espaço é plano.
 
 A densidade crítica atual é da ordem de cinco átomos de hidrogênio por metro cúbico --- e o universo, com toda a sua estrutura, é plano com essa precisão. É o problema da planura mencionado no Capítulo 16.
 
@@ -5670,7 +5704,7 @@ A idade sai integrando $dt=da/(aH)$:
 t_0=\frac{1}{H_0}\int_0^{1}\frac{da}{a\,E(a)}
 =\frac{1}{H_0}\int_0^{\infty}\frac{dz}{(1+z)E(z)}.
 \]
-Para $\Lambda$CDM com $\Omega_m=0{,}315$, a integral vale $0{,}951$, de modo que $t_0=0{,}951/H_0$. Com $H_0=67{,}4$, $1/H_0=14{,}5$ bilhões de anos e $t_0=13{,}8$ --- resultado que a Figura~13 obteve numericamente. Para um universo apenas com matéria, o fator seria $2/3$, dando $9{,}7$ bilhões de anos, \emph{menos} que a idade dos aglomerados globulares mais velhos. Essa incompatibilidade foi um dos argumentos anteriores às supernovas em favor de $\Lambda>0$.
+Para $\Lambda$CDM com $\Omega_m=0{,}315$, a integral vale $0{,}951$, de modo que $t_0=0{,}951/H_0$. Com $H_0=67{,}4$, $1/H_0=14{,}5$ bilhões de anos e $t_0=13{,}8$ --- resultado que a Figura~\ref{fig:cosmologia} obteve numericamente. Para um universo apenas com matéria, o fator seria $2/3$, dando $9{,}7$ bilhões de anos, \emph{menos} que a idade dos aglomerados globulares mais velhos. Essa incompatibilidade foi um dos argumentos anteriores às supernovas em favor de $\Lambda>0$.
 
 O \textbf{horizonte de partículas} é a maior distância comóvel de onde luz pode ter chegado desde o Big Bang:
 \[
@@ -5790,7 +5824,7 @@ v=H_0d.
 \item Calcule $d$ para todas as supernovas. No Excel: \texttt{=10\^{}((C2-25)/5)}.
 \item Selecione apenas $z<0{,}1$, onde a aproximação $v\simeq cz$ vale, e faça o gráfico de $v$ contra $d$.
 \item Ajuste uma reta passando pela origem. A inclinação é $H_0$, em $\mathrm{km\,s^{-1}\,Mpc^{-1}}$.
-\item Calcule a idade aproximada do universo como $1/H_0$, convertendo unidades. Compare com os $13{,}8$ bilhões de anos da Figura~13.
+\item Calcule a idade aproximada do universo como $1/H_0$, convertendo unidades. Compare com os $13{,}8$ bilhões de anos da Figura~\ref{fig:cosmologia}.
 \item Agora inclua todas as supernovas até $z=1{,}6$ e faça o gráfico de $\mu$ contra $\log z$. Estenda a reta ajustada em baixo $z$: os pontos de alto $z$ ficam acima ou abaixo dela? O que isso significa fisicamente?
 \end{enumerate}
 
@@ -6281,6 +6315,7 @@ Incerteza não é detalhe burocrático; é parte da conclusão. Uma distância c
   \node[astroMuted,fill=white,inner sep=1.5pt] at (2.8,-2.35) {\scriptsize interpretação depende do modelo};
 \end{tikzpicture}
 \caption{\textbf{Da detecção à física.} O dado bruto passa por calibração e modelo antes de virar massa, temperatura, distância ou composição.}
+\label{fig:deteccaofisica}
 \end{figure}
 
 \textbf{Roteiro de leitura de gráficos.} Primeiro descreva eixos e unidades. Depois identifique tendência, dispersão e pontos fora do padrão. Só então escreva a interpretação física. Se a interpretação vier antes da descrição, você provavelmente está vendo no gráfico o que esperava ver.
@@ -6636,7 +6671,7 @@ Vale acompanhar esse caso de perto, porque ele mostra como significância estat�
 
 \subsection*{Do que é feita a matéria escura}
 
-A evidência de que \emph{existe} massa não luminosa é robusta e vem de fontes independentes: curvas de rotação (Figura~11), lentes gravitacionais, dispersão de velocidades em aglomerados, o espectro de potência da CMB e a própria formação de estruturas. O Aglomerado da Bala, em que a massa medida por lentes está deslocada em relação ao gás quente visível em raios X, é o exemplo mais citado.
+A evidência de que \emph{existe} massa não luminosa é robusta e vem de fontes independentes: curvas de rotação (Figura~\ref{fig:rotacaovialactea}), lentes gravitacionais, dispersão de velocidades em aglomerados, o espectro de potência da CMB e a própria formação de estruturas. O Aglomerado da Bala, em que a massa medida por lentes está deslocada em relação ao gás quente visível em raios X, é o exemplo mais citado.
 
 O que não se sabe é a natureza da partícula. Décadas de experimentos de detecção direta --- hoje com detectores de xenônio líquido de várias toneladas --- não encontraram sinal, e os limites já se aproximam do chamado ``piso de neutrinos'', em que neutrinos solares e atmosféricos produzem um fundo irredutível. Buscas em aceleradores e por aniquilação em raios gama também vieram vazias. Isso não refuta a hipótese, mas empurrou a comunidade a considerar seriamente candidatos muito mais leves, como áxions, ou muito mais pesados e fracamente acoplados.
 
