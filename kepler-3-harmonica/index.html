@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terceira lei de Kepler: a corrida | Astronomia (AST0001)</title>
+<style>
+:root{--bg:#050505;--panel:#101010;--panel2:#151515;--line:#343434;--text:#f4f4f1;
+      --muted:#aaa69c;--accent:#d7b46a;--blue:#72a7ff;--cyan:#6fd3d8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+.shell{width:min(1300px,calc(100vw - 20px));margin:0 auto;padding:14px 0 20px}
+h1{margin:0;font-size:23px;font-weight:650;letter-spacing:-.2px}
+.sub{margin-top:4px;font-size:13.5px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 330px;gap:14px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+canvas{display:block;width:100%;border-radius:8px;background:#080808}
+.control{margin-bottom:13px}
+.control label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.control label b{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);background:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{border-color:var(--accent);color:var(--bg);background:var(--accent);font-weight:600}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;margin-right:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.tit{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+.tit:first-child{margin-top:0}
+table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+th{text-align:right;color:var(--muted);font-weight:500;padding:5px 4px;border-bottom:1px solid var(--line);font-size:11px}
+th:first-child,td:first-child{text-align:left}
+td{padding:5px 4px;border-bottom:1px solid #1a1a1a;text-align:right}
+.nota{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.5}
+.tog{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin:7px 0;cursor:pointer}
+.tog input{accent-color:var(--accent)}
+
+body.embed{overflow:hidden}
+body.embed .shell{padding:6px 0 6px;width:calc(100vw - 8px)}
+body.embed h1,body.embed .sub{display:none}
+body.embed .panel{padding:9px;border-radius:9px}
+body.embed .tit{margin:9px 0 5px}
+body.embed .tit:first-child{margin-top:0}
+body.embed .control{margin-bottom:9px}
+
+body.embed .metric{padding:2px 0;font-size:11.5px}
+body.embed .nota{display:none}
+body.embed .chip{padding:3px 8px;font-size:11px}
+body.embed .chips{gap:4px;margin-bottom:8px}
+body.embed .tog{margin:4px 0;font-size:11.5px}
+body.embed .control label{font-size:11.5px;margin-bottom:3px}
+body.embed .btn{padding:5px 10px;font-size:12px}
+body.embed table{font-size:11.5px}
+body.embed td,body.embed th{padding:3px 4px}
+body.embed .leg{font-size:11px;margin-top:5px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="shell">
+<h1>Terceira lei &middot; a corrida</h1>
+<div class="sub">Todos largam da mesma direção, ao mesmo tempo. Quanto maior a órbita, mais devagar — e a relação
+entre tamanho e período não é qualquer uma: é <i>P</i>² = <i>a</i>³. O gráfico abaixo se preenche conforme cada corpo fecha a primeira volta.</div>
+<div class="grid">
+  <div>
+    <div class="panel"><canvas id="cv" width="1560" height="760"></canvas></div>
+    <div class="panel" style="margin-top:12px"><canvas id="lg" width="1560" height="460"></canvas></div>
+  </div>
+  <div>
+    <div class="panel">
+      <div class="tit">Sistema</div>
+      <div class="chips" id="chips"></div>
+      <div class="tit">Controles</div>
+      <div class="control"><label>velocidade <b id="vs">1,0&times;</b></label>
+        <input id="s" type="range" min="0.1" max="8" step="0.1" value="1"></div>
+      <div class="control"><label>corpo hipotético em <i>a</i> = <b id="vh">–</b></label>
+        <input id="h" type="range" min="0" max="100" step="1" value="0"></div>
+      <label class="tog"><input type="checkbox" id="raiz" checked> escala radial em &radic;<i>a</i> (aproxima as órbitas externas)</label>
+      <label class="tog"><input type="checkbox" id="rastro" checked> deixar rastro</label>
+      <button class="btn" id="play">pausar</button><button class="btn" id="reset">reiniciar</button>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="tit">Tempo decorrido: <span id="trel" style="color:var(--accent)">0,00</span> <span id="uni">anos</span></div>
+      <table><thead><tr><th>corpo</th><th>a</th><th>voltas</th><th>P medido</th><th>P²/a³</th></tr></thead>
+      <tbody id="tb"></tbody></table>
+      <div class="nota" id="nota"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const $=i=>document.getElementById(i);
+const cv=$("cv"), ctx=cv.getContext("2d"), lg=$("lg"), lx=lg.getContext("2d");
+const SIST={
+ "internos":{uni:"anos",cor:"#d7b46a",corpos:[["Mercúrio",0.387],["Vênus",0.723],["Terra",1.0],["Marte",1.524]]},
+ "até Saturno":{uni:"anos",cor:"#d7b46a",corpos:[["Mercúrio",0.387],["Vênus",0.723],["Terra",1.0],["Marte",1.524],["Júpiter",5.203],["Saturno",9.537]]},
+ "luas de Júpiter":{uni:"dias",cor:"#6fd3d8",fator:1/1047.35,corpos:[["Io",0.002819],["Europa",0.004486],["Ganimedes",0.007155],["Calisto",0.012585]]}
+};
+const CORES=["#d7b46a","#72a7ff","#6fd3d8","#e6a15b","#8fd18f","#d98fd1","#f4f4f1"];
+let atual="internos", t=0, last=performance.now(), rodando=true, corpos=[], rastros=[];
+function fmt(x,d=2){return x.toFixed(d).replace(".",",");}
+function periodo(a,s){return Math.sqrt(a*a*a/(SIST[s].fator||1));}   // em anos; luas: P^2=a^3/(M/Msol)
+function monta(){
+  const S=SIST[atual];
+  corpos=S.corpos.map(([n,a],i)=>({nome:n,a:a,P:periodo(a,atual),cor:CORES[i%CORES.length],voltas:0,marcado:false}));
+  const hv=+$("h").value;
+  if(hv>0){
+    const amin=Math.min(...S.corpos.map(c=>c[1])), amax=Math.max(...S.corpos.map(c=>c[1]));
+    const a=amin*Math.pow(amax/amin, hv/100);
+    corpos.push({nome:"hipotético",a:a,P:periodo(a,atual),cor:"#ffffff",voltas:0,marcado:false,hip:true});
+    $("vh").textContent=fmt(a,3);
+  } else $("vh").textContent="—";
+  rastros=corpos.map(()=>[]);
+  t=0; $("uni").textContent=S.uni;
+}
+function chips(){
+  const c=$("chips"); c.innerHTML="";
+  Object.keys(SIST).forEach(k=>{const b=document.createElement("button");b.className="chip";b.textContent=k;
+    b.onclick=()=>{atual=k;monta();marca();};c.appendChild(b);});
+  marca();
+}
+function marca(){[...$("chips").children].forEach(b=>b.classList.toggle("on",b.textContent===atual));}
+function draw(){
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const raiz=$("raiz").checked, R=a=>raiz?Math.sqrt(a):a;
+  const amax=Math.max(...corpos.map(c=>R(c.a)));
+  const k=Math.min(W,H)*0.43/amax, cx=W/2, cy=H/2;
+  const g=ctx.createRadialGradient(cx,cy,2,cx,cy,34);
+  g.addColorStop(0,"#ffe6a8"); g.addColorStop(1,"rgba(215,180,106,0)");
+  corpos.forEach((c,i)=>{
+    ctx.strokeStyle="#242424"; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(cx,cy,R(c.a)*k,0,Math.PI*2); ctx.stroke();
+    const th=2*Math.PI*(t/c.P);
+    const x=cx+R(c.a)*k*Math.cos(th), y=cy-R(c.a)*k*Math.sin(th);
+    if($("rastro").checked){
+      const r=rastros[i]; if(r.length===0||Math.hypot(x-r[r.length-1][0],y-r[r.length-1][1])>2) r.push([x,y]);
+      if(r.length>1600) r.shift();
+      ctx.strokeStyle=c.cor+"55"; ctx.lineWidth=2.5; ctx.beginPath();
+      r.forEach((p,j)=>j?ctx.lineTo(...p):ctx.moveTo(...p)); ctx.stroke();
+    }
+    ctx.fillStyle=c.cor; ctx.beginPath(); ctx.arc(x,y,c.hip?7:9,0,7); ctx.fill();
+    ctx.font="600 18px Inter,sans-serif"; ctx.fillStyle=c.cor;
+    ctx.textAlign = x>cx ? "left" : "right";
+    ctx.fillText(c.nome, x + (x>cx?14:-14), y-12); ctx.textAlign="left";
+  });
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,34,0,7); ctx.fill();
+  ctx.fillStyle="#f2c14e"; ctx.beginPath(); ctx.arc(cx,cy,13,0,7); ctx.fill();
+  // linha de largada
+  ctx.strokeStyle="#333"; ctx.setLineDash([4,6]); ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+amax*k*1.05,cy); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="#4a4a4a"; ctx.font="18px Inter,sans-serif"; ctx.fillText("largada",cx+amax*k*0.55,cy-12);
+  if(raiz){ctx.fillStyle="#3f3f3f";ctx.font="17px Inter,sans-serif";
+    ctx.fillText("raios desenhados em \u221aa — os períodos não são afetados",16,H-16);}
+}
+function drawLog(){
+  const W=lg.width,H=lg.height, PL=76,PB=52,PT=22,PR=18;
+  lx.clearRect(0,0,W,H);
+  const as=corpos.map(c=>c.a), ps=corpos.map(c=>c.P);
+  const x0=Math.log10(Math.min(...as))-0.25, x1=Math.log10(Math.max(...as))+0.25;
+  const y0=Math.log10(Math.min(...ps))-0.3, y1=Math.log10(Math.max(...ps))+0.3;
+  const X=v=>PL+(Math.log10(v)-x0)/(x1-x0)*(W-PL-PR);
+  const Y=v=>H-PB-(Math.log10(v)-y0)/(y1-y0)*(H-PB-PT);
+  lx.strokeStyle="#232323"; lx.lineWidth=1;
+  for(let e=Math.ceil(x0);e<=x1;e++){const x=X(Math.pow(10,e));
+    lx.beginPath();lx.moveTo(x,PT);lx.lineTo(x,H-PB);lx.stroke();
+    lx.fillStyle="#6a6a6a";lx.font="17px Inter,sans-serif";lx.textAlign="center";lx.fillText("10"+sup(e),x,H-PB+24);}
+  for(let e=Math.ceil(y0);e<=y1;e++){const y=Y(Math.pow(10,e));
+    lx.beginPath();lx.moveTo(PL,y);lx.lineTo(W-PR,y);lx.stroke();
+    lx.fillStyle="#6a6a6a";lx.textAlign="right";lx.fillText("10"+sup(e),PL-9,y+6);}
+  lx.textAlign="left";
+  // reta de inclinacao 3/2 passando pelo primeiro corpo
+  const c0=corpos[0];
+  lx.strokeStyle="#d7b46a"; lx.lineWidth=2.5; lx.setLineDash([8,6]); lx.beginPath();
+  const aA=Math.pow(10,x0), aB=Math.pow(10,x1);
+  lx.moveTo(X(aA), Y(c0.P*Math.pow(aA/c0.a,1.5))); lx.lineTo(X(aB), Y(c0.P*Math.pow(aB/c0.a,1.5)));
+  lx.stroke(); lx.setLineDash([]);
+  lx.fillStyle="#d7b46a"; lx.font="19px Inter,sans-serif"; lx.fillText("inclinação 3/2",W-190,PT+30);
+  corpos.forEach(c=>{
+    if(!c.marcado) return;
+    lx.fillStyle=c.cor; lx.beginPath(); lx.arc(X(c.a),Y(c.P),8,0,7); lx.fill();
+    lx.font="17px Inter,sans-serif"; lx.fillText(c.nome, X(c.a)+12, Y(c.P)-10);
+  });
+  lx.fillStyle="#8a8a8a"; lx.font="18px Inter,sans-serif"; lx.textAlign="center";
+  lx.fillText("semieixo maior a (UA)",(PL+W)/2,H-12);
+  lx.save(); lx.translate(24,(PT+H-PB)/2); lx.rotate(-Math.PI/2);
+  lx.fillText("período P ("+SIST[atual].uni+")",0,0); lx.restore(); lx.textAlign="left";
+}
+function sup(e){return String(e).replace(/-/g,"⁻").replace(/0/g,"⁰").replace(/1/g,"¹").replace(/2/g,"²")
+  .replace(/3/g,"³").replace(/4/g,"⁴").replace(/5/g,"⁵");}
+function tabela(){
+  const f=SIST[atual].uni==="dias"?365.25:1;
+  $("tb").innerHTML=corpos.map(c=>{
+    const Pm=c.voltas>0? t/c.voltas : null;
+    const rr=Pm? (Pm*Pm)/(c.a*c.a*c.a)*(SIST[atual].fator||1) : null;
+    return `<tr><td style="color:${c.cor}">${c.nome}</td><td>${fmt(c.a,3)}</td><td>${c.voltas}</td>`+
+     `<td>${Pm?fmt(Pm*f,2):"–"}</td><td style="color:${rr?'#d7b46a':'#444'}">${rr?fmt(rr,3):"–"}</td></tr>`;
+  }).join("");
+  $("trel").textContent=fmt(t*f,2);
+  const prontos=corpos.filter(c=>c.voltas>0).length;
+  $("nota").textContent = prontos<corpos.length
+   ? "Espere cada corpo fechar a primeira volta: só então o período pode ser medido, e o ponto entra no gráfico."
+   : "Todos mediram. A coluna P²/a³ é a terceira lei: o mesmo número para todos os corpos que orbitam o mesmo centro.";
+}
+function laco(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now;
+  if(rodando){
+    t+=dt*0.25*(+$("s").value)*Math.max(...corpos.map(c=>c.P))/9.5;
+    corpos.forEach(c=>{const v=Math.floor(t/c.P); if(v>c.voltas){c.voltas=v;c.marcado=true;}});
+  }
+  draw(); drawLog(); tabela(); requestAnimationFrame(laco);
+}
+$("s").addEventListener("input",()=>$("vs").textContent=fmt(+$("s").value,1)+"×");
+$("h").addEventListener("input",monta);
+$("raiz").addEventListener("change",draw);
+$("play").onclick=()=>{rodando=!rodando;$("play").textContent=rodando?"pausar":"continuar";};
+$("reset").onclick=monta;
+
+if(new URLSearchParams(location.search).has("embed")){document.body.classList.add("embed");$("cv").height=560;$("lg").height=342;}
+chips(); monta(); requestAnimationFrame(laco);
+</script>
+</body></html>

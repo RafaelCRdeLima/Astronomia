@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Aula 4 — Órbitas elípticas e as leis de Kepler</title><style>
+<title>Aula 3 — Movimentos, unidades e fotometria</title><style>
 :root{--bg:#050505;--panel:#101010;--line:#343434;--text:#f4f4f1;--muted:#aaa69c;--accent:#d7b46a}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
@@ -39,6 +39,11 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
  border-bottom:1px solid var(--line);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
 .tb td{padding:12px 10px;border-bottom:1px solid #1e1e1e}
 .tb.sym th{text-transform:none;letter-spacing:.02em;font-size:22px}
+.slide.dash{padding:30px 40px 42px}
+.slide.dash h2{font-size:33px;margin-bottom:10px}
+.dashbox{flex:1;min-height:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#080808}
+.dashbox iframe{display:block;width:100%;height:100%;border:0}
+.slide.dash .nota{margin-top:12px;padding-top:12px;font-size:19px}
 .capa{justify-content:center;text-align:center}
 .capa h1{font-size:76px}
 .capa .marca{margin-bottom:36px;font-size:20px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
@@ -63,6 +68,7 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <section class="slide "><h2>Excentricidade</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_exc.svg" alt=""></div></div><div class="nota">Em e = 0 os focos coincidem e a curva é uma circunferência. Quanto mais separados os focos, mais alongada a elipse.</div></section>
 <section class="slide "><h2>Periélio e afélio</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_rpra.svg" alt=""></div></div><div class="nota">O semieixo maior é a média <b>aritmética</b> das distâncias extremas — não a distância média ao longo do tempo. A distinção volta na terceira lei.</div></section>
 <section class="slide "><h2>A geometria da elipse</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_elipse.png" alt=""></div></div><div class="nota">(a) A soma FP + F′P vale 2a em qualquer ponto. (b) Com o Sol em um foco, θ é medido a partir do foco ocupado e da direção do periélio: é a anomalia verdadeira.</div></section>
+<section class="slide dash"><h2>Explorar: a soma que não muda</h2><div class="dashbox"><iframe data-src="../kepler-1-elipse/?embed=1" title="Explorar: a soma que não muda" loading="lazy"></iframe></div><div class="nota">Mude <b>e</b>: as parcelas da barra deslizam, o total não. E o que denuncia a excentricidade é o Sol fora do centro.</div></section>
 <section class="slide "><h2>A equação polar, em três passos</h2><div class="conteudo centro"><div class="corpo"><ul><li>Lei dos cossenos no triângulo dos dois focos e o planeta</li><li>O ângulo em <span class='d'>F</span>, o foco ocupado, vale 180° − θ</li><li>A definição focal fornece a segunda equação: r₁ = 2a − r</li><li>O termo r² cancela; divide-se por 4a</li></ul></div></div><div class="nota">É a única dedução da aula em que o desenho decide tudo. Errar o vértice do ângulo é o modo clássico de não fechar a conta.</div></section>
 <section class="slide "><h2>A equação polar da elipse</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_polar.svg" alt=""></div></div><div class="nota">Confira nos extremos: θ = 0 dá a(1−e) = R_p; θ = 180° dá a(1+e) = R_a. O numerador a(1−e²) é o <i>semi-latus rectum</i>.</div></section>
 <section class="slide "><h2>O semieixo menor</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_bsq.svg" alt=""></div></div><div class="nota">No extremo do eixo menor as duas distâncias focais são iguais e somam 2a — logo valem a cada uma. O triângulo retângulo faz o resto.</div></section>
@@ -70,9 +76,11 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <section class="slide "><h2>A área</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_area.svg" alt=""></div></div><div class="nota">Necessária duas vezes adiante: na lei das áreas e, na Aula 5, na dedução da terceira lei. Em a = b devolve πa², como deve.</div></section>
 <section class="slide "><h2>As três leis, como Kepler as enunciou</h2><div class="conteudo"><div class="corpo"><p><span class="d">I &mdash; órbitas.</span> A órbita de um planeta é uma elipse com o Sol em um dos focos.</p><p style="margin-top:18px"><span class="d">II &mdash; áreas.</span> A reta que une o planeta ao Sol varre áreas iguais em tempos iguais.</p><p style="margin-top:18px"><span class="d">III &mdash; harmônica.</span> O quadrado do período é proporcional ao cubo do semieixo maior.</p></div></div><div class="nota">Descritivas, extraídas dos dados de Tycho Brahe, sem nenhuma explicação de causa.</div></section>
 <section class="slide "><h2>A lei das áreas, em símbolos</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_areal.svg" alt=""></div></div><div class="nota">Perto do periélio o planeta corre mais e cobre um ângulo grande com raio curto; perto do afélio faz o oposto.</div></section>
+<section class="slide dash"><h2>Explorar: áreas iguais, ângulos diferentes</h2><div class="dashbox"><iframe data-src="../kepler-2-areas/?embed=1" title="Explorar: áreas iguais, ângulos diferentes" loading="lazy"></iframe></div><div class="nota">Douradas: área por intervalo, todas iguais. Azuis e cianas: ângulo e arco nos <b>mesmos</b> intervalos — e variam muito.</div></section>
 <section class="slide "><h2>A lei harmônica</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_k3.svg" alt=""></div></div><div class="nota">Medindo P em anos e a em UA, a constante vale 1. Não é mágica: é calibrar a lei pela própria Terra.</div></section>
 <section class="slide "><h2>As leis de Kepler</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_kepler.png" alt=""></div></div><div class="nota">(a) Órbita de e = 0,55: os dois setores sombreados, percorridos no mesmo intervalo, têm a mesma área. (b) Os oito planetas e os quatro satélites galileanos — mesma inclinação 3/2, coeficientes diferentes.</div></section>
 <section class="slide "><h2>A terceira lei nos oito planetas</h2><div class="conteudo centro"><table class="tb sym"><tr><th>Planeta</th><th><i>a</i> (UA)</th><th><i>P</i> (anos)</th><th><i>a</i>³</th><th><i>P</i>²</th></tr><tr><td>Mercúrio</td><td>0,387</td><td>0,241</td><td>0,058</td><td>0,058</td></tr><tr><td>Vênus</td><td>0,723</td><td>0,615</td><td>0,378</td><td>0,378</td></tr><tr><td>Terra</td><td>1,000</td><td>1,000</td><td>1,000</td><td>1,000</td></tr><tr><td>Marte</td><td>1,524</td><td>1,881</td><td>3,537</td><td>3,538</td></tr><tr><td>Júpiter</td><td>5,203</td><td>11,863</td><td>140,8</td><td>140,7</td></tr><tr><td>Saturno</td><td>9,537</td><td>29,447</td><td>867,4</td><td>867,2</td></tr></table></div><div class="nota">O pequeno déficit de P² em Júpiter e Saturno não é arredondamento: a lei exata traz a <b>soma</b> das massas no denominador. Kepler não podia ver isso. A Aula 5 mostra de onde vem.</div></section>
+<section class="slide dash"><h2>Explorar: a corrida</h2><div class="dashbox"><iframe data-src="../kepler-3-harmonica/?embed=1" title="Explorar: a corrida" loading="lazy"></iframe></div><div class="nota">Cada corpo entra no gráfico ao fechar a primeira volta. Troque para as luas de Júpiter: mesma inclinação 3/2, outro coeficiente.</div></section>
 <section class="slide "><h2>Júpiter e suas luas: a mesma lei, outro centro</h2><div class="conteudo centro"><div class="figura"><img src="assets/img/jupiter.jpg" alt=""></div></div><div class="nota">Os quatro satélites galileanos obedecem a P² ∝ a³ com um coeficiente diferente — e é o coeficiente que carrega a massa do corpo central. Imagem: NASA/JPL-Caltech/SwRI/MSSS, Juno.</div></section>
 <section class="slide roteiro"><h2>Do céu observado à órbita</h2><div class="conteudo"><div class="corpo"><p>O laboratório não entrega a órbita vista de cima. Entrega <span class="d">direções</span> — que é o que um observador de fato tem.</p><p style="margin-top:20px">A partir daqui: como converter ângulos em período, em distância e em arquitetura orbital.</p></div></div><div class="nota">Retomando, em uso, o que o Capítulo 1 estabeleceu sobre coordenadas.</div></section>
 <section class="slide "><h2>Três tipos de grandeza, e não se misturam</h2><div class="conteudo centro"><div class="corpo"><ul><li><span class='d'>Eclípticas</span> (λ, β): boas para a dinâmica orbital</li><li><span class='d'>Equatoriais</span> (α, δ): boas para catálogos e telescópios</li><li><span class='d'>Horizontais</span> (A, h): dependem do lugar, da hora e da latitude</li></ul></div></div><div class="nota">λ(t) responde “onde o planeta está na órbita”. h(t) responde “dá para ver agora”. São perguntas diferentes.</div></section>
@@ -114,6 +122,12 @@ function mostra(n){
   document.getElementById('cnt').textContent=(i+1)+' / '+slides.length;
   document.querySelector('.barra').style.width=((i+1)/slides.length*100)+'%';
   location.hash=i+1;
+  slides.forEach((s,k)=>{
+    const f=s.querySelector('iframe[data-src]');
+    if(!f) return;
+    if(k===i){ if(!f.getAttribute('src')) f.setAttribute('src', f.dataset.src); }
+    else if(f.getAttribute('src')){ f.removeAttribute('src'); }
+  });
 }
 function prox(){mostra(i+1)} function ant(){mostra(i-1)}
 addEventListener('keydown',e=>{
