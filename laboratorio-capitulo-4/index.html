@@ -564,7 +564,7 @@
 
           <div class="control">
             <label for="daySlider">Data da observação</label>
-            <input id="daySlider" type="range" min="0" max="2200" step="1">
+            <input id="daySlider" type="range" min="0" max="22000" step="1">
             <div class="readout"><span id="dateReadout">--</span><span>dias desde início</span></div>
           </div>
 
@@ -618,15 +618,15 @@
             </div>
             <div class="task">
               <strong>Experimento 2: período sinódico</strong>
-              Use duas oposições sucessivas de Marte, Júpiter ou Saturno. Meça S e calcule P por 1/P = 1 - 1/S.
+              Meça várias oposições sucessivas (elongação perto de 180°) e tire a média dos intervalos: esse é S. Para um planeta externo, P = 1/(1 - 1/S). Use a média, não um intervalo só: para Saturno, um dia de erro em S vale 7% em P.
             </div>
             <div class="task">
               <strong>Experimento 3: terceira lei</strong>
-              Para planetas externos, calcule a = P^(2/3). Faça P² contra a³ e verifique se a razão fica próxima de 1 em unidades solares.
+              Para Mercúrio e Vênus, meça a e P de forma independente: a pela média das elongações máximas, P pelos intervalos entre conjunções inferiores. Só então calcule P²/a³. Não obtenha a de P: isso daria 1 por construção e não testaria nada.
             </div>
             <div class="task">
               <strong>Experimento 4: planetas internos</strong>
-              Para Mercúrio ou Vênus, registre várias datas e encontre a maior elongação solar Emax. Estime a ≃ sin(Emax).
+              Registre a elongação de Mercúrio ou Vênus em muitas datas e colecione TODAS as elongações máximas. Use a MÉDIA delas: a ≃ sin(média). Em Mercúrio a excentricidade espalha as máximas entre 18° e 28°, e pegar só a maior erra a por 20%.
             </div>
           </div>
         </div>
@@ -650,6 +650,7 @@
                   <th>azimute</th>
                   <th>altura</th>
                   <th>elong.</th>
+                  <th>λ&#8857;</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -662,16 +663,20 @@
 
   <script>
     const TAU = Math.PI * 2;
+    const DAY_MAX = 22000;
     const DEG = Math.PI / 180;
     const RAD = 180 / Math.PI;
     const OBLIQUITY = 23.44 * DEG;
+    // Elementos orbitais medios na epoca J2000: a (UA), e, i / node / peri / L em graus, P em anos.
+    // peri = longitude do perielio; L = longitude media na epoca. O dia 0 do laboratorio e J2000.
     const planets = [
-      { id: "mercury", name: "Mercúrio", a: 0.387, e: 0.206, P: 0.241, color: "#c8c0ad", size: 4, L0: 70 },
-      { id: "venus", name: "Vênus", a: 0.723, e: 0.007, P: 0.615, color: "#f1d08a", size: 6, L0: 145 },
-      { id: "mars", name: "Marte", a: 1.524, e: 0.093, P: 1.881, color: "#e2795b", size: 6, L0: 35 },
-      { id: "jupiter", name: "Júpiter", a: 5.203, e: 0.049, P: 11.86, color: "#d8b482", size: 8, L0: 250 },
-      { id: "saturn", name: "Saturno", a: 9.537, e: 0.057, P: 29.46, color: "#d8c799", size: 7, L0: 310 },
+      { id: "mercury", name: "Mercúrio", a: 0.38709927, e: 0.20563593, i: 7.00497902, node: 48.33076593, peri: 77.45779628, L: 252.25032350, P: 0.2408467, color: "#c8c0ad", size: 4 },
+      { id: "venus", name: "Vênus", a: 0.72333566, e: 0.00677672, i: 3.39467605, node: 76.67984255, peri: 131.60246718, L: 181.97909950, P: 0.6151973, color: "#f1d08a", size: 6 },
+      { id: "mars", name: "Marte", a: 1.52371034, e: 0.09339410, i: 1.84969142, node: 49.55953891, peri: -23.94362959, L: -4.55343205, P: 1.8808476, color: "#e2795b", size: 6 },
+      { id: "jupiter", name: "Júpiter", a: 5.20288700, e: 0.04838624, i: 1.30439695, node: 100.47390909, peri: 14.72847983, L: 34.39644051, P: 11.862615, color: "#d8b482", size: 8 },
+      { id: "saturn", name: "Saturno", a: 9.53667594, e: 0.05386179, i: 2.48599187, node: 113.66242448, peri: 92.59887831, L: 49.95424423, P: 29.447498, color: "#d8c799", size: 7 },
     ];
+    const EARTH = { name: "Terra", a: 1.00000261, e: 0.01671123, i: -0.00001531, node: 0, peri: 102.93768193, L: 100.46457166, P: 1.0000174 };
     const fixedStars = [];
     const observations = [];
     const measurePoints = [];
@@ -733,8 +738,8 @@
 
     function dayLabel(day) {
       const d = Math.round(day);
-      const year = Math.floor(d / 365) + 1;
-      const dayOfYear = d % 365;
+      const year = Math.floor(d / 365.25) + 1;
+      const dayOfYear = Math.round(d % 365.25);
       return `ano ${year}, dia ${dayOfYear + 1}`;
     }
 
@@ -744,17 +749,24 @@
       return E;
     }
 
+    // Posicao heliocentrica ecliptica, em 3D, a partir dos elementos orbitais.
     function heliocentricBody(body, day) {
-      const M = ((body.L0 * DEG) + TAU * (day / 365.25) / body.P) % TAU;
+      const meanLong = body.L + (360 / (body.P * 365.25)) * day;
+      const M = normDeg(meanLong - body.peri) * DEG;
       const E = solveKepler(M, body.e);
-      const x = body.a * (Math.cos(E) - body.e);
-      const y = body.a * Math.sqrt(1 - body.e ** 2) * Math.sin(E);
-      return { x, y, r: Math.hypot(x, y), trueLongitude: normDeg(Math.atan2(y, x) * RAD) };
+      const xo = body.a * (Math.cos(E) - body.e);
+      const yo = body.a * Math.sqrt(1 - body.e ** 2) * Math.sin(E);
+      const w = (body.peri - body.node) * DEG, O = body.node * DEG, I = body.i * DEG;
+      const cw = Math.cos(w), sw = Math.sin(w), cO = Math.cos(O), sO = Math.sin(O);
+      const ci = Math.cos(I), si = Math.sin(I);
+      const x = (cw * cO - sw * sO * ci) * xo + (-sw * cO - cw * sO * ci) * yo;
+      const y = (cw * sO + sw * cO * ci) * xo + (-sw * sO + cw * cO * ci) * yo;
+      const z = (sw * si) * xo + (cw * si) * yo;
+      return { x, y, z, r: Math.hypot(x, y, z), trueLongitude: normDeg(Math.atan2(y, x) * RAD) };
     }
 
     function earthPosition(day) {
-      const earth = { a: 1, e: 0.017, P: 1, L0: 100 };
-      return heliocentricBody(earth, day);
+      return heliocentricBody(EARTH, day);
     }
 
     function geoVector(body, day) {
@@ -762,10 +774,11 @@
       const obj = heliocentricBody(body, day);
       const x = obj.x - earth.x;
       const y = obj.y - earth.y;
-      const dist = Math.hypot(x, y);
+      const z = obj.z - earth.z;
+      const dist = Math.hypot(x, y, z);
       const lambda = normDeg(Math.atan2(y, x) * RAD);
-      const beta = 1.4 * Math.sin((day / 365.25 / body.P) * TAU + body.L0 * DEG) / Math.sqrt(body.a);
-      return { x, y, dist, lambda, beta, heliocentric: obj };
+      const beta = Math.asin(clamp(z / dist, -1, 1)) * RAD;
+      return { x, y, z, dist, lambda, beta, heliocentric: obj };
     }
 
     function sunVector(day) {
@@ -820,7 +833,7 @@
       const sun = sunVector(day);
       const elongation = Math.abs(wrap180(geo.lambda - sun.lambda));
       const horizontal = equatorialToHorizontal(eq.ra, eq.dec);
-      return { ...geo, ...eq, ...horizontal, elongation };
+      return { ...geo, ...eq, ...horizontal, elongation, sunLambda: sun.lambda };
     }
 
     function eclipticDisplayGeometry() {
@@ -1093,6 +1106,7 @@
           <td>${fmt(row.az, 1)}</td>
           <td>${fmt(row.alt, 1)}</td>
           <td>${fmt(row.elongation, 1)}</td>
+          <td>${fmt(row.sunLambda, 1)}</td>
         `;
         tableBody.appendChild(tr);
       });
@@ -1120,23 +1134,24 @@
         az: app.az,
         alt: app.alt,
         elongation: app.elongation,
+        sunLambda: app.sunLambda,
       });
       render();
     }
 
     function exportCsv() {
       if (observations.length === 0) recordObservation();
-      const header = ["dia", "data", "planeta", "lambda_deg", "beta_deg", "ra_h", "dec_deg", "azimute_deg", "altura_deg", "elongacao_deg"];
+      const header = ["dia", "data", "planeta", "lambda_deg", "beta_deg", "ra_h", "dec_deg", "azimute_deg", "altura_deg", "elongacao_deg", "lambda_sol_deg"];
       const lines = [header.join(",")];
       observations.forEach(row => {
-        lines.push([row.day, row.date, row.planet, row.lambda, row.beta, row.ra, row.dec, row.az, row.alt, row.elongation]
+        lines.push([row.day, row.date, row.planet, row.lambda, row.beta, row.ra, row.dec, row.az, row.alt, row.elongation, row.sunLambda]
           .map(value => typeof value === "number" ? value.toFixed(8) : value).join(","));
       });
       const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "laboratorio_capitulo_2_observacoes.csv";
+      a.download = "laboratorio_capitulo_4_observacoes.csv";
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1175,10 +1190,10 @@
       let labels = { x: "tempo (dias)", y: "longitude" };
       const body = selectedBody();
       if (chartMode === "longitude") {
-        for (let d = 0; d <= 2200; d += 12) points.push({ x: d, y: apparent(body, d).lambda });
+        for (let d = 0; d <= DAY_MAX; d += DAY_MAX / 900) points.push({ x: d, y: apparent(body, d).lambda });
         labels = { x: "tempo (dias)", y: `λ ${body.name}` };
       } else if (chartMode === "elongation") {
-        for (let d = 0; d <= 2200; d += 12) points.push({ x: d, y: apparent(body, d).elongation });
+        for (let d = 0; d <= DAY_MAX; d += DAY_MAX / 900) points.push({ x: d, y: apparent(body, d).elongation });
         labels = { x: "tempo (dias)", y: "elongação" };
       } else {
         points = planets.filter(p => p.a > 1).map(p => ({ x: p.a ** 3, y: p.P ** 2, name: p.name }));

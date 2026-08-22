@@ -1854,17 +1854,26 @@ Logo,
 \[
 a\simeq \sin E_{\max}\ \mathrm{UA}.
 \]
-Essa dedução é aproximada: órbitas reais são elípticas e inclinadas, mas a relação captura a geometria básica.
+Essa dedução é aproximada, e vale saber exatamente onde ela falha. Em uma órbita elíptica a distância ao Sol
+varia entre $a(1-e)$ e $a(1+e)$, e a maior elongação varia junto: ela não é um número, é uma faixa entre
+$\arcsin[a(1-e)]$ e $\arcsin[a(1+e)]$. Em Vênus, com $e=0{,}007$, a faixa tem menos de $2^\circ$ de largura e a
+distinção não importa. Em Mercúrio, com $e=0{,}206$, ela vai de $18^\circ$ a $28^\circ$, e escolher a maior
+elongação de todas superestima $a$ em cerca de $20\%$. O que estima $a$ é a \emph{média} das elongações
+máximas, não a maior delas.
 \end{lessonblock}
 
-\textbf{Exemplo: órbita de Vênus por maior elongação.} Se o laboratório mostra $E_{\max}\simeq46^\circ$, então
+\textbf{Exemplo: órbita de Vênus por maior elongação.} As elongações máximas de Vênus ficam todas entre
+$45^\circ$ e $47^\circ$; a média é $E_{\max}\simeq46^\circ$, e
 \[
 a\simeq\sin 46^\circ\simeq0{,}72\ \mathrm{UA}.
 \]
-Para Mercúrio, uma maior elongação típica de $23^\circ$ dá
+Em Mercúrio a excentricidade espalha as máximas entre $18^\circ$ e $28^\circ$. A média fica em
+$22{,}4^\circ$, e
 \[
-a\simeq\sin 23^\circ\simeq0{,}39\ \mathrm{UA}.
+a\simeq\sin 22{,}4^\circ\simeq0{,}38\ \mathrm{UA},
 \]
+próximo dos $0{,}387\,\mathrm{UA}$ tabelados --- ao passo que a maior de todas, $28^\circ$, daria
+$0{,}47\,\mathrm{UA}$.
 Assim, mesmo sem ver a órbita de cima, a geometria angular já indica que Vênus orbita mais longe do Sol do que Mercúrio.
 
 \begin{lessonblock}{Como apresentar contas com dados do laboratório}
@@ -1898,38 +1907,87 @@ O laboratório interativo deste capítulo está disponível em:
 Neste laboratório você trabalhará como um observador pré-telescópico ou do início da astronomia moderna. O painel não entrega a órbita vista de cima: ele mostra posições aparentes de planetas no céu, como longitude e latitude eclípticas, ascensão reta, declinação, altura e elongação solar. A tarefa é construir, a partir dessas medidas angulares, a evidência que levou às leis de Kepler.
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
-\textbf{Preparação dos dados.} Abra o laboratório, escolha um planeta, varie a data da observação e use \textit{Registrar observação}. Repita o procedimento por muitas datas. O CSV exportado contém data, planeta, longitude e latitude eclípticas, ascensão reta, declinação, azimute, altura e elongação solar. Use a régua angular do mapa para medir separações no céu sempre que precisar comparar duas posições.
+\textbf{Preparação dos dados.} Abra o laboratório, escolha um planeta, varie a data da observação e use
+\textit{Registrar observação}. Repita o procedimento por muitas datas. A janela do simulador cobre
+$22\,000$ dias --- cerca de sessenta anos ---, o suficiente para duas órbitas completas de Saturno. O CSV
+exportado contém data, planeta, longitude e latitude eclípticas, ascensão reta, declinação, azimute, altura,
+elongação solar e a longitude eclíptica do Sol. Use a régua angular do mapa para medir separações no céu
+sempre que precisar comparar duas posições.
 
 \textbf{Experimento 1: caderno de observações de Marte.}
-Registre a longitude eclíptica de Marte a cada 20 ou 30 dias durante pelo menos três anos simulados. Faça um gráfico $\lambda(t)$. Identifique intervalos de movimento direto e movimento retrógrado. Explique por que uma descrição geocêntrica simples exigiria um movimento aparente complicado.
+Registre a longitude eclíptica de Marte a cada 20 ou 30 dias durante pelo menos três anos simulados. Faça um
+gráfico $\lambda(t)$. Identifique intervalos de movimento direto e movimento retrógrado. Explique por que uma
+descrição geocêntrica simples exigiria um movimento aparente complicado.
 
 \textbf{Experimento 2: período sinódico e período sideral.}
-Para Marte, Júpiter ou Saturno, encontre duas oposições sucessivas, isto é, datas em que a elongação solar fica próxima de $180^\circ$. A diferença entre essas datas é o período sinódico $S$. Para um planeta externo, calcule o período sideral:
+Para Marte, Júpiter ou Saturno, localize \emph{várias} oposições sucessivas --- datas em que a elongação solar
+passa perto de $180^\circ$ --- e tome a \textbf{média} dos intervalos. Essa média é o período sinódico $S$.
+Para um planeta externo,
 \[
 \frac{1}{P}=1-\frac{1}{S},
+\qquad P\text{ e }S\text{ em anos.}
 \]
-com $P$ e $S$ em anos. Compare seu $P$ com o valor inferido visualmente pela repetição do padrão no gráfico $\lambda(t)$.
+\textbf{Use a média, e não um intervalo só.} Essa inversão é mal condicionada quando $S$ se aproxima de um ano:
+para Saturno, $S\simeq378$ dias, e um único dia de erro em $S$ desloca $P$ em $7\%$; para Júpiter, em $2{,}6\%$;
+para Marte, em $0{,}1\%$. Com a média de dezenas de oposições, os três fecham dentro de $0{,}1\%$. Compare seu
+$P$ com o valor inferido visualmente pela repetição do padrão no gráfico $\lambda(t)$.
 
-\textbf{Experimento 3: terceira lei de Kepler.}
-Use o período sideral obtido para planetas externos e estime o semieixo maior relativo:
+\textbf{Experimento 3: o teste da terceira lei, com Mercúrio e Vênus.}
+Este é o experimento central, e ele só vale se $a$ e $P$ vierem de medidas \emph{independentes}. Para Mercúrio
+e para Vênus:
+\begin{enumerate}
+\item \textbf{O período.} A elongação de um planeta interno passa por zero duas vezes em cada período
+sinódico --- na conjunção inferior, quando o planeta está entre nós e o Sol, e na superior, quando está atrás
+dele. As duas se distinguem pela distância geocêntrica, e portanto pelo tamanho aparente do planeta no mapa.
+Meça o intervalo entre conjunções \emph{inferiores} sucessivas, tire a média, e obtenha $S$; então
+$1/P=1+1/S$.
+\item \textbf{O semieixo maior.} Colecione todas as elongações máximas e use a \emph{média} delas:
+$a\simeq\sin\langle E_{\max}\rangle$ (ver o Experimento 4).
+\item \textbf{O teste.} Só agora calcule $P^2/a^3$ para os dois planetas.
+\end{enumerate}
+Nenhuma das duas medidas usa a terceira lei, de modo que o teste \emph{pode} falhar --- e é isso que o torna um
+teste. Feito com cuidado, ele fecha em torno de $1$ com poucos por cento.
+
+\begin{center}
+\textbf{Não obtenha $a$ de $P$ por $a=P^{2/3}$ e depois calcule $P^2/a^3$:}\\
+isso devolve exatamente $1$ para qualquer $P$, inclusive para um planeta inventado, e não testa nada.
+\end{center}
+
+\textbf{Experimento 4: maior elongação e o efeito da excentricidade.}
+Para Mercúrio e para Vênus, registre a elongação solar em muitas datas e colecione \textbf{todas} as elongações
+máximas, não apenas a maior. Para uma órbita interna aproximadamente circular,
 \[
-a=P^{2/3},
+a\simeq\sin\left\langle E_{\max}\right\rangle .
 \]
-em unidades de UA quando $P$ está em anos. Monte uma tabela com $P$, $P^2$, $a$ e $a^3$ para pelo menos Marte, Júpiter e Saturno. Verifique numericamente se $P^2/a^3$ é aproximadamente constante.
+A média importa. Em Vênus, com $e=0{,}007$, as máximas ficam todas entre $45^\circ$ e $47^\circ$ e tanto faz.
+Em Mercúrio, com $e=0{,}206$, elas se espalham entre $18^\circ$ e $28^\circ$ --- os dois extremos são
+$\arcsin[a(1-e)]$ e $\arcsin[a(1+e)]$ ---, e usar só a maior devolve $a\simeq0{,}47$, um erro de $20\%$. Com a
+média, $a\simeq0{,}38$. Compare Mercúrio e Vênus: qual fica mais distante angularmente do Sol no céu, e o que
+isso diz sobre o raio orbital?
 
-\textbf{Experimento 4: planetas internos e maior elongação.}
-Para Mercúrio ou Vênus, registre a elongação solar em muitas datas. Encontre a maior elongação $E_{\max}$. Para uma órbita aproximadamente circular interna, estime:
-\[
-a\simeq\sin(E_{\max}).
-\]
-Compare Mercúrio e Vênus. Qual deles fica mais distante angularmente do Sol no céu? O que isso indica sobre seu raio orbital?
+\textbf{Experimento 5: aplicar a lei aos planetas externos.}
+Com a terceira lei já testada nos internos, use-a agora como \emph{instrumento}: a partir do $P$ medido no
+Experimento 2, preveja $a=P^{2/3}$ para Marte, Júpiter e Saturno e compare com os valores tabelados
+($1{,}524$, $5{,}203$ e $9{,}537\,\mathrm{UA}$). Note a diferença de estatuto: nos internos a lei foi
+\textbf{testada}, porque $a$ e $P$ eram independentes; aqui ela é \textbf{usada}, e a comparação afere a
+medida de $P$, não a lei.
 
-\textbf{Experimento 5: altura, ascensão reta e janela observacional.}
-Escolha um planeta e varie a hora sideral local e a latitude do observador. Registre ascensão reta, declinação e altura. Determine em que horários o planeta está acima do horizonte. Interprete por que uma posição orbital favorável não garante observação se o objeto estiver baixo ou abaixo do horizonte.
+\textbf{Experimento 6 (opcional): triangular Marte como Kepler.}
+Duas observações separadas por exatamente um período sideral de Marte pegam o planeta no mesmo ponto da órbita,
+com a Terra em dois lugares diferentes. A coluna \texttt{lambda\_sol\_deg} dá a longitude do Sol, e portanto a
+posição da Terra: ela está a $1\,\mathrm{UA}$ na direção $\lambda_\odot+180^\circ$. Trace as duas linhas de
+visada a partir dessas duas posições e ache a interseção: a distância dela ao Sol é $a$. Repita para vários
+pares de datas e use a mediana --- pares isolados espalham bastante, mas a mediana de meia dúzia cai em torno de
+$1{,}54\,\mathrm{UA}$, a $1\%$ do valor tabelado. É esta a medida que faltava para testar a terceira lei também nos externos.
+
+\textbf{Experimento 7: altura, ascensão reta e janela observacional.}
+Escolha um planeta e varie a hora sideral local e a latitude do observador. Registre ascensão reta, declinação
+e altura. Determine em que horários o planeta está acima do horizonte. Interprete por que uma posição orbital
+favorável não garante observação se o objeto estiver baixo ou abaixo do horizonte.
 \end{lessonblock}
 
 \begin{lessonblock}{Formato da entrega}
-A entrega deve conter o caderno de dados exportado, um gráfico $\lambda(t)$ para Marte, uma estimativa de período sinódico e sideral para pelo menos um planeta externo, uma tabela testando $P^2/a^3$, uma estimativa de $a$ por maior elongação para Mercúrio ou Vênus, e uma interpretação curta respondendo: como medidas puramente angulares podem revelar a arquitetura orbital do Sistema Solar?
+A entrega deve conter o caderno de dados exportado; um gráfico $\lambda(t)$ para Marte, com os intervalos retrógrados marcados; o período sinódico e o sideral de pelo menos um planeta externo, obtidos da média de várias oposições, com o número de oposições usadas declarado; a tabela do teste da terceira lei para Mercúrio e Vênus, com as colunas $S$, $P$, $\langle E_{\max}\rangle$, $a$ e $P^2/a^3$, deixando claro que $a$ e $P$ saíram de medidas independentes; a previsão de $a$ para os três externos e a comparação com os valores tabelados; e uma interpretação curta respondendo: como medidas puramente angulares podem revelar a arquitetura orbital do Sistema Solar?
 \end{lessonblock}
 
 \newpage
