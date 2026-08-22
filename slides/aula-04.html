@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aula 4 — Órbitas elípticas e as leis de Kepler</title><style>
+:root{--bg:#050505;--panel:#101010;--line:#343434;--text:#f4f4f1;--muted:#aaa69c;--accent:#d7b46a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+#palco{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.slide{position:absolute;width:1280px;height:720px;padding:64px 78px;display:none;
+ flex-direction:column;transform-origin:center center}
+.slide.on{display:flex}
+h1{font-size:60px;line-height:1.08;font-weight:700;letter-spacing:-.5px}
+h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(--text)}
+.sub{margin-top:22px;font-size:24px;color:var(--muted)}
+.conteudo{flex:1;display:flex;flex-direction:column;min-height:0;gap:16px}
+.conteudo.centro{justify-content:center}
+.corpo{font-size:27px;line-height:1.55;color:#e8e6e0}
+.corpo ul{list-style:none}
+.corpo li{margin:14px 0;padding-left:34px;position:relative}
+.corpo li::before{content:"";position:absolute;left:6px;top:16px;width:10px;height:10px;
+ border-radius:50%;background:var(--accent)}
+.corpo ol.cadeia-num{counter-reset:c;list-style:none;column-count:2;column-gap:48px}
+.corpo ol.cadeia-num li{counter-increment:c;margin:10px 0;padding-left:44px;position:relative;font-size:25px}
+.corpo ol.cadeia-num li::before{content:counter(c);position:absolute;left:0;top:0;width:30px;height:30px;
+ border-radius:8px;background:none;border:1px solid var(--line);color:var(--accent);
+ font-size:17px;display:flex;align-items:center;justify-content:center}
+.d{color:var(--accent);font-weight:600}
+.cadeia{font-size:32px;color:var(--accent);text-align:center;margin:26px 0;letter-spacing:.5px}
+.eqs{display:flex;flex-direction:column;align-items:center;gap:30px}
+.eqs img{max-width:92%;max-height:150px}
+.figura{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.figura img{height:100%;width:100%;object-fit:contain}
+.figura.claro img{background:#fff;border-radius:14px;padding:16px}
+.nota{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);
+ font-size:20px;color:var(--muted);line-height:1.5}
+.tb{width:100%;border-collapse:collapse;font-size:24px;margin-top:8px}
+.tb th{text-align:left;padding:12px 10px;color:var(--accent);font-weight:600;
+ border-bottom:1px solid var(--line);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+.tb td{padding:12px 10px;border-bottom:1px solid #1e1e1e}
+.tb.sym th{text-transform:none;letter-spacing:.02em;font-size:22px}
+.capa{justify-content:center;text-align:center}
+.capa h1{font-size:76px}
+.capa .marca{margin-bottom:36px;font-size:20px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
+.capa .rodape{margin-top:52px;font-size:21px;color:var(--muted)}
+.roteiro h2,.fecho h2{color:var(--accent)}
+.barra{position:fixed;left:0;bottom:0;height:3px;background:var(--accent);transition:width .18s}
+.hud{position:fixed;right:20px;bottom:14px;font-size:15px;color:var(--muted);
+ display:flex;gap:16px;align-items:center;user-select:none}
+.hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;
+ padding:5px 11px;font-size:15px;cursor:pointer;font-family:inherit}
+.hud button:hover{border-color:var(--accent);color:var(--accent)}
+.tit{position:fixed;left:20px;bottom:14px;font-size:15px;color:#4f4f4f}
+@media print{.hud,.barra,.tit{display:none}}
+</style></head>
+<body>
+<div id="palco">
+<section class="slide capa"><div class="marca">Astronomia (AST0001) &middot; Curso de Física &middot; UDESC</div><h1>Órbitas elípticas e as leis de Kepler</h1><div class="sub">Aula 4 &middot; Capítulo 4 &middot; quanta arquitetura cabe deduzir só de ângulos</div><div class="rodape">Prof. Dr. Rafael Camargo Rodrigues de Lima &middot; 2026/2</div></section>
+<section class="slide roteiro"><h2>O que esta aula responde</h2><div class="conteudo"><div class="corpo"><ul><li>Que curva é uma elipse, <span class="d">antes</span> de haver qualquer força</li><li>As três leis como Kepler as deixou: descritivas, tiradas dos dados de Tycho</li><li>Como medidas de <span class="d">direção</span> viram período, distância e órbita</li><li>Por que o planeta às vezes anda para trás no céu</li><li>O que o laboratório pede — e a armadilha que ele evita</li></ul></div></div><div class="nota">Nenhuma força aparece nesta aula. A explicação é a Aula 5.</div></section>
+<section class="slide "><h2>Kepler antes de Newton, de propósito</h2><div class="conteudo centro"><div class="corpo"><ul><li>Kepler publica a primeira e a segunda lei em <span class='d'>1609</span>, a terceira em 1619</li><li>Newton explica todas em <span class='d'>1687</span> — 78 anos depois</li><li>Nesta aula ficamos do lado de cá: descrição, sem causa</li><li>É o que um observador com um sextante e paciência consegue</li></ul></div></div><div class="nota">A ordem importa: a elipse é um fato observacional muito antes de ser consequência de uma lei de força.</div></section>
+<section class="slide "><h2>Primeiro a curva, depois o céu</h2><div class="conteudo centro"><div class="cadeia">elipse &rarr; leis de Kepler &rarr; medidas angulares &rarr; laboratório</div><div class="corpo"><p style="text-align:center;color:#aaa69c">Três propriedades da elipse voltam na Aula 5, quando a órbita sair da gravitação: a equação polar, a relação entre os semieixos e a área.</p></div></div><div class="nota">Lá elas são <b>usadas</b>; aqui são <b>provadas</b>. É por isso que vêm primeiro.</div></section>
+<section class="slide "><h2>A definição focal</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_focal.svg" alt=""></div></div><div class="nota">Dois pontos fixos, uma soma constante. Nada mais. O Sol ocupará <b>um</b> dos focos — o outro fica vazio, sem nada de físico nele.</div></section>
+<section class="slide "><h2>Excentricidade</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_exc.svg" alt=""></div></div><div class="nota">Em e = 0 os focos coincidem e a curva é uma circunferência. Quanto mais separados os focos, mais alongada a elipse.</div></section>
+<section class="slide "><h2>Periélio e afélio</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_rpra.svg" alt=""></div></div><div class="nota">O semieixo maior é a média <b>aritmética</b> das distâncias extremas — não a distância média ao longo do tempo. A distinção volta na terceira lei.</div></section>
+<section class="slide "><h2>A geometria da elipse</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_elipse.png" alt=""></div></div><div class="nota">(a) A soma FP + F′P vale 2a em qualquer ponto. (b) Com o Sol em um foco, θ é medido a partir do foco ocupado e da direção do periélio: é a anomalia verdadeira.</div></section>
+<section class="slide "><h2>A equação polar, em três passos</h2><div class="conteudo centro"><div class="corpo"><ul><li>Lei dos cossenos no triângulo dos dois focos e o planeta</li><li>O ângulo em <span class='d'>F</span>, o foco ocupado, vale 180° − θ</li><li>A definição focal fornece a segunda equação: r₁ = 2a − r</li><li>O termo r² cancela; divide-se por 4a</li></ul></div></div><div class="nota">É a única dedução da aula em que o desenho decide tudo. Errar o vértice do ângulo é o modo clássico de não fechar a conta.</div></section>
+<section class="slide "><h2>A equação polar da elipse</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_polar.svg" alt=""></div></div><div class="nota">Confira nos extremos: θ = 0 dá a(1−e) = R_p; θ = 180° dá a(1+e) = R_a. O numerador a(1−e²) é o <i>semi-latus rectum</i>.</div></section>
+<section class="slide "><h2>O semieixo menor</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_bsq.svg" alt=""></div></div><div class="nota">No extremo do eixo menor as duas distâncias focais são iguais e somam 2a — logo valem a cada uma. O triângulo retângulo faz o resto.</div></section>
+<section class="slide "><h2>E a forma familiar</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_cart.svg" alt=""></div></div><div class="nota">Mesma curva, origem no centro em vez do foco.</div></section>
+<section class="slide "><h2>A área</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_area.svg" alt=""></div></div><div class="nota">Necessária duas vezes adiante: na lei das áreas e, na Aula 5, na dedução da terceira lei. Em a = b devolve πa², como deve.</div></section>
+<section class="slide "><h2>As três leis, como Kepler as enunciou</h2><div class="conteudo"><div class="corpo"><p><span class="d">I &mdash; órbitas.</span> A órbita de um planeta é uma elipse com o Sol em um dos focos.</p><p style="margin-top:18px"><span class="d">II &mdash; áreas.</span> A reta que une o planeta ao Sol varre áreas iguais em tempos iguais.</p><p style="margin-top:18px"><span class="d">III &mdash; harmônica.</span> O quadrado do período é proporcional ao cubo do semieixo maior.</p></div></div><div class="nota">Descritivas, extraídas dos dados de Tycho Brahe, sem nenhuma explicação de causa.</div></section>
+<section class="slide "><h2>A lei das áreas, em símbolos</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_areal.svg" alt=""></div></div><div class="nota">Perto do periélio o planeta corre mais e cobre um ângulo grande com raio curto; perto do afélio faz o oposto.</div></section>
+<section class="slide "><h2>A lei harmônica</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_k3.svg" alt=""></div></div><div class="nota">Medindo P em anos e a em UA, a constante vale 1. Não é mágica: é calibrar a lei pela própria Terra.</div></section>
+<section class="slide "><h2>As leis de Kepler</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_kepler.png" alt=""></div></div><div class="nota">(a) Órbita de e = 0,55: os dois setores sombreados, percorridos no mesmo intervalo, têm a mesma área. (b) Os oito planetas e os quatro satélites galileanos — mesma inclinação 3/2, coeficientes diferentes.</div></section>
+<section class="slide "><h2>A terceira lei nos oito planetas</h2><div class="conteudo centro"><table class="tb sym"><tr><th>Planeta</th><th><i>a</i> (UA)</th><th><i>P</i> (anos)</th><th><i>a</i>³</th><th><i>P</i>²</th></tr><tr><td>Mercúrio</td><td>0,387</td><td>0,241</td><td>0,058</td><td>0,058</td></tr><tr><td>Vênus</td><td>0,723</td><td>0,615</td><td>0,378</td><td>0,378</td></tr><tr><td>Terra</td><td>1,000</td><td>1,000</td><td>1,000</td><td>1,000</td></tr><tr><td>Marte</td><td>1,524</td><td>1,881</td><td>3,537</td><td>3,538</td></tr><tr><td>Júpiter</td><td>5,203</td><td>11,863</td><td>140,8</td><td>140,7</td></tr><tr><td>Saturno</td><td>9,537</td><td>29,447</td><td>867,4</td><td>867,2</td></tr></table></div><div class="nota">O pequeno déficit de P² em Júpiter e Saturno não é arredondamento: a lei exata traz a <b>soma</b> das massas no denominador. Kepler não podia ver isso. A Aula 5 mostra de onde vem.</div></section>
+<section class="slide "><h2>Júpiter e suas luas: a mesma lei, outro centro</h2><div class="conteudo centro"><div class="figura"><img src="assets/img/jupiter.jpg" alt=""></div></div><div class="nota">Os quatro satélites galileanos obedecem a P² ∝ a³ com um coeficiente diferente — e é o coeficiente que carrega a massa do corpo central. Imagem: NASA/JPL-Caltech/SwRI/MSSS, Juno.</div></section>
+<section class="slide roteiro"><h2>Do céu observado à órbita</h2><div class="conteudo"><div class="corpo"><p>O laboratório não entrega a órbita vista de cima. Entrega <span class="d">direções</span> — que é o que um observador de fato tem.</p><p style="margin-top:20px">A partir daqui: como converter ângulos em período, em distância e em arquitetura orbital.</p></div></div><div class="nota">Retomando, em uso, o que o Capítulo 1 estabeleceu sobre coordenadas.</div></section>
+<section class="slide "><h2>Três tipos de grandeza, e não se misturam</h2><div class="conteudo centro"><div class="corpo"><ul><li><span class='d'>Eclípticas</span> (λ, β): boas para a dinâmica orbital</li><li><span class='d'>Equatoriais</span> (α, δ): boas para catálogos e telescópios</li><li><span class='d'>Horizontais</span> (A, h): dependem do lugar, da hora e da latitude</li></ul></div></div><div class="nota">λ(t) responde “onde o planeta está na órbita”. h(t) responde “dá para ver agora”. São perguntas diferentes.</div></section>
+<section class="slide "><h2>A altura, já deduzida no Capítulo 1</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_altura.svg" alt=""></div></div><div class="nota">H = θ<sub>LST</sub> − α. Acima do horizonte quando h &gt; 0°. Uma posição orbital ótima não garante observação nenhuma.</div></section>
+<section class="slide "><h2>Elongação solar</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_elong.svg" alt=""></div></div><div class="nota">Oposição: E ≃ 180°, planeta e Sol em lados opostos do céu, visível a noite toda. Conjunção: E ≃ 0°, perdido no brilho do Sol.</div></section>
+<section class="slide "><h2>Movimento direto e retrógrado</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_dlambda.svg" alt=""></div></div><div class="nota">Δλ &gt; 0 é movimento direto; Δλ &lt; 0 é retrógrado. Cuidado com a passagem por 0°: use a diferença embrulhada.</div></section>
+<section class="slide "><h2>O laço retrógrado de Marte</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_retrogrado.png" alt=""></div></div><div class="nota">Perto da oposição a Terra passa o planeta por dentro, e a direção aparente inverte por algumas semanas. Foi este laço que os epiciclos existiam para descrever.</div></section>
+<section class="slide "><h2>Período sinódico e período sideral</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_sinext.svg" alt=""><img src="assets/eq/a4_sinint.svg" alt=""></div></div><div class="nota">Acima, planeta externo; abaixo, interno. S é o que se mede — o intervalo entre oposições sucessivas. P é o que se quer.</div></section>
+<section class="slide "><h2>Um aviso que o roteiro leva a sério</h2><div class="conteudo centro"><div class="corpo"><ul><li>A inversão é <span class='d'>mal condicionada</span> quando S se aproxima de um ano</li><li>Saturno: S ≃ 378 dias, e <b>um dia</b> de erro desloca P em 7%</li><li>Júpiter: 2,6%. Marte: 0,1%</li><li>A saída é a média de dezenas de oposições — e aí os três fecham dentro de 0,1%</li></ul></div></div><div class="nota">É subtração de números quase iguais. O laboratório cobre 60 anos justamente para permitir a média.</div></section>
+<section class="slide "><h2>Maior elongação: a órbita de um planeta interno</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_emax.svg" alt=""></div></div><div class="nota">Na maior elongação a linha de visada tangencia a órbita, e o ângulo no planeta é reto. Geometria pura: nenhum período entra.</div></section>
+<section class="slide "><h2>Mas a excentricidade espalha as máximas</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_faixa.svg" alt=""></div></div><div class="nota">Em Vênus (e = 0,007) a faixa tem 2° e tanto faz. Em Mercúrio (e = 0,206) ela vai de 18° a 28° — e usar só a maior erra a por 20%.</div></section>
+<section class="slide "><h2>As elongações máximas, medidas</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_elongacoes.png" alt=""></div></div><div class="nota">À esquerda, Vênus: todas as máximas na mesma linha. À direita, Mercúrio: espalhadas pela faixa inteira. O que estima a é a <b>média</b>, não a maior.</div></section>
+<section class="slide roteiro"><h2>O laboratório</h2><div class="conteudo"><div class="corpo"><p>Você trabalha como um observador pré-telescópico: o painel mostra <span class="d">posições aparentes</span> — longitude e latitude eclípticas, ascensão reta, declinação, altura e elongação.</p><p style="margin-top:18px">A tarefa é construir, só com esses ângulos, a evidência que levou às leis de Kepler.</p></div></div><div class="nota">rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-4/ &mdash; janela de 22 000 dias, cerca de 60 anos.</div></section>
+<section class="slide "><h2>Os sete experimentos</h2><div class="conteudo"><div class="corpo"><ul><li>Caderno de Marte: λ(t), direto e retrógrado</li><li>Período sinódico e sideral, pela <span class='d'>média</span> de várias oposições</li><li>O teste da terceira lei, com Mercúrio e Vênus</li><li>Maior elongação e o efeito da excentricidade</li><li>Aplicar a lei aos externos — e notar que ali ela é <i>usada</i>, não testada</li><li>Opcional: triangular Marte como Kepler fez</li><li>Altura, ascensão reta e janela observacional</li></ul></div></div><div class="nota">A entrega declara quantas oposições foram usadas, e deixa claro que a e P saíram de medidas independentes.</div></section>
+<section class="slide "><h2>A armadilha que o roteiro evita</h2><div class="conteudo centro"><div class="corpo"><p style="text-align:center">Se você obtém a de P por a = P<sup>2/3</sup> e depois calcula P²/a³…</p></div><div class="cadeia">o resultado é exatamente 1 &mdash; para qualquer P</div><div class="corpo"><p style="text-align:center;color:#aaa69c">inclusive para um planeta inventado. Um teste que não pode falhar não é um teste.</p></div></div><div class="nota">Por isso o teste é feito com Mercúrio e Vênus, onde a vem da elongação e P vem do tempo — duas medidas que não se conversam.</div></section>
+<section class="slide "><h2>O que torna o teste um teste</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_teste.svg" alt=""></div></div><div class="nota">a da média das elongações máximas; P dos intervalos entre conjunções inferiores. Nenhuma das duas usa a terceira lei.</div></section>
+<section class="slide "><h2>O resultado</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_teste.png" alt=""></div></div><div class="nota">Cinco planetas, a e P medidos separadamente, sobre a reta P = a^(3/2). Mercúrio fecha em P²/a³ = 1,05 e Vênus em 1,00.</div></section>
+<section class="slide fecho"><h2>O que fica do Capítulo 4</h2><div class="conteudo"><div class="corpo"><ul><li>A elipse é geometria: focos, excentricidade, e três propriedades que a Aula 5 vai usar</li><li>As três leis descrevem as órbitas sem explicar nenhuma — e isso é uma etapa legítima da física</li><li>Ângulos medidos do chão bastam para extrair período, raio orbital e a arquitetura do Sistema Solar</li><li>Medir <span class="d">independentemente</span> é o que separa um teste de uma tautologia</li></ul></div></div><div class="nota">Na Aula 5: entra a gravitação, as três leis passam a ser deduzidas de uma única equação de movimento — e uma órbita medida vira uma massa em quilogramas.</div></section>
+</div>
+<div class="barra"></div>
+<div class="tit">Aula 4 &middot; Astronomia (AST0001)</div>
+<div class="hud">
+  <button onclick="ant()">&larr;</button>
+  <span id="cnt"></span>
+  <button onclick="prox()">&rarr;</button>
+  <button onclick="telaCheia()">tela cheia (F)</button>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+const palco=document.getElementById('palco');
+function escala(){
+  const k=Math.min(window.innerWidth/1280,window.innerHeight/720);
+  slides.forEach(s=>s.style.transform='scale('+k+')');
+}
+function mostra(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.getElementById('cnt').textContent=(i+1)+' / '+slides.length;
+  document.querySelector('.barra').style.width=((i+1)/slides.length*100)+'%';
+  location.hash=i+1;
+}
+function prox(){mostra(i+1)} function ant(){mostra(i-1)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','n','N','Enter'].includes(e.key)){prox();e.preventDefault()}
+  else if(['ArrowLeft','ArrowUp','PageUp','p','P','Backspace'].includes(e.key)){ant();e.preventDefault()}
+  else if(e.key==='Home'){mostra(0)} else if(e.key==='End'){mostra(slides.length-1)}
+  else if(e.key==='f'||e.key==='F'){telaCheia()}
+});
+addEventListener('click',e=>{
+  if(e.target.closest('.hud'))return;
+  (e.clientX < window.innerWidth*0.28) ? ant() : prox();
+});
+function telaCheia(){
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen()}
+  else{document.exitFullscreen()}
+}
+addEventListener('resize',escala);
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+addEventListener('touchend',e=>{if(x0===null)return;
+  const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>50){dx<0?prox():ant()} x0=null});
+escala();
+mostra(parseInt(location.hash.replace('#',''))-1||0);
+</script>
+</body></html>
