@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elongação: as duas vistas | Astronomia (AST0001)</title>
+<style>
+:root{--bg:#050505;--panel:#101010;--panel2:#151515;--line:#343434;--text:#f4f4f1;
+      --muted:#aaa69c;--accent:#d7b46a;--blue:#72a7ff;--cyan:#6fd3d8;--warn:#e6a15b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+.shell{width:min(1300px,calc(100vw - 20px));margin:0 auto;padding:14px 0 20px}
+h1{margin:0;font-size:23px;font-weight:650;letter-spacing:-.2px}
+.sub{margin-top:4px;font-size:13.5px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 330px;gap:14px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+canvas{display:block;width:100%;border-radius:8px;background:#080808}
+.rot{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.control{margin-bottom:13px}
+.control label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.control label b{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);background:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{border-color:var(--accent);color:var(--bg);background:var(--accent);font-weight:600}
+.metric{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1c1c1c;font-size:13px}
+.metric:last-child{border-bottom:none}
+.metric small{color:var(--muted)}
+.metric strong{font-variant-numeric:tabular-nums;font-weight:600}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;margin-right:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.tit{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+.tit:first-child{margin-top:0}
+.nota{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.5}
+.tog{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin:6px 0;cursor:pointer}
+.tog input{accent-color:var(--accent)}
+body.embed{overflow:hidden}
+body.embed .shell{padding:6px 0 6px;width:calc(100vw - 8px)}
+body.embed h1,body.embed .sub{display:none}
+body.embed .panel{padding:9px;border-radius:9px}
+body.embed .tit{margin:9px 0 5px}
+body.embed .tit:first-child{margin-top:0}
+body.embed .control{margin-bottom:9px}
+body.embed .metric{padding:2px 0;font-size:11.5px}
+body.embed .nota{display:none}
+body.embed .chip{padding:3px 8px;font-size:11px}
+body.embed .chips{gap:4px;margin-bottom:8px}
+body.embed .tog{margin:4px 0;font-size:11.5px}
+body.embed .control label{font-size:11.5px;margin-bottom:3px}
+body.embed .btn{padding:5px 10px;font-size:12px}
+body.embed .rot{font-size:10px;margin-bottom:3px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.duas{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="shell">
+<h1>Elongação &middot; as duas vistas</h1>
+<div class="sub">À esquerda, a geometria que ninguém vê: Sol, Terra e planeta vistos de cima. À direita, o que o observador
+realmente vê: a separação angular entre o planeta e o Sol no céu. <b>É o mesmo ângulo</b> — o de vértice na Terra.</div>
+<div class="grid">
+  <div>
+    <div class="panel">
+      <div class="duas">
+        <div><div class="rot">vista de cima &middot; heliocêntrica</div><canvas id="top" width="880" height="760"></canvas></div>
+        <div><div class="rot" id="rotceu">vista do céu &middot; no crepúsculo em que ele aparece</div><canvas id="sky" width="880" height="760"></canvas></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="rot">elongação ao longo do tempo</div>
+      <canvas id="str" width="1660" height="300"></canvas>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <div class="tit">Planeta</div>
+      <div class="chips" id="chips"></div>
+      <div class="control"><label>tempo <b id="vt">dia 0</b></label>
+        <input id="t" type="range" min="0" max="4000" step="0.5" value="0"></div>
+      <div class="control"><label>velocidade <b id="vs">1,0&times;</b></label>
+        <input id="s" type="range" min="0.2" max="6" step="0.1" value="1"></div>
+      <label class="tog"><input type="checkbox" id="tan" checked> marcar o ângulo reto na maior elongação</label>
+      <label class="tog"><input type="checkbox" id="rast" checked> rastro do planeta</label>
+      <button class="btn" id="play">pausar</button><button class="btn" id="reset">reiniciar</button>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div class="tit">Leituras</div>
+      <div class="metric"><small>elongação <i>E</i></small><strong id="mE" style="color:var(--accent)">–</strong></div>
+      <div class="metric"><small>a leste / a oeste do Sol</small><strong id="mL">–</strong></div>
+      <div class="metric"><small>ângulo Sol–planeta–Terra</small><strong id="mA">–</strong></div>
+      <div class="metric"><small>distância Terra–planeta</small><strong id="mD">–</strong></div>
+      <div class="metric"><small>maior <i>E</i> já observada</small><strong id="mM">–</strong></div>
+      <div class="metric"><small><i>a</i> &asymp; sen&#8202;⟨<i>E</i><sub>máx</sub>⟩</small><strong id="mest" style="color:var(--cyan)">–</strong></div>
+      <div class="metric"><small><i>a</i> tabelado</small><strong id="mreal">–</strong></div>
+      <div class="nota" id="nota"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const $=i=>document.getElementById(i);
+const tc=$("top").getContext("2d"), sc=$("sky").getContext("2d"), st=$("str").getContext("2d");
+const DEG=Math.PI/180, RAD=180/Math.PI;
+const EL={
+ "Mercúrio":{a:0.38709927,e:0.20563593,peri:77.45779628,L:252.25032350,P:0.2408467,cor:"#c8c0ad",int:true},
+ "Vênus"   :{a:0.72333566,e:0.00677672,peri:131.60246718,L:181.97909950,P:0.6151973,cor:"#f1d08a",int:true},
+ "Marte"   :{a:1.52371034,e:0.09339410,peri:-23.94362959,L:-4.55343205,P:1.8808476,cor:"#e2795b",int:false},
+ "Júpiter" :{a:5.20288700,e:0.04838624,peri:14.72847983,L:34.39644051,P:11.862615,cor:"#d8b482",int:false}};
+const TERRA={a:1.00000261,e:0.01671123,peri:102.93768193,L:100.46457166,P:1.0000174};
+let alvo="Mercúrio", t=0, last=performance.now(), rodando=true, maxE=0, maximos=[], rastro=[];
+function fmt(x,d=2){return x.toFixed(d).replace(".",",");}
+function norm(d){return ((d%360)+360)%360;}
+function wrap180(d){const v=norm(d+180)-180; return v===-180?180:v;}
+function helio(el,day){
+  const M=norm(el.L+(360/(el.P*365.25))*day-el.peri)*DEG;
+  let E=M; for(let i=0;i<12;i++)E-=(E-el.e*Math.sin(E)-M)/(1-el.e*Math.cos(E));
+  const xo=el.a*(Math.cos(E)-el.e), yo=el.a*Math.sqrt(1-el.e*el.e)*Math.sin(E);
+  const w=el.peri*DEG;
+  return [xo*Math.cos(w)-yo*Math.sin(w), xo*Math.sin(w)+yo*Math.cos(w)];
+}
+function estado(day){
+  const T=helio(TERRA,day), P=helio(EL[alvo],day);
+  const lamS=norm(Math.atan2(-T[1],-T[0])*RAD);
+  const lamP=norm(Math.atan2(P[1]-T[1],P[0]-T[0])*RAD);
+  const sE=wrap180(lamP-lamS);                       // >0 = a leste do Sol
+  const d=Math.hypot(P[0]-T[0],P[1]-T[1]);
+  // angulo no PLANETA, entre o Sol e a Terra
+  const v1=[-P[0],-P[1]], v2=[T[0]-P[0],T[1]-P[1]];
+  const ang=Math.acos((v1[0]*v2[0]+v1[1]*v2[1])/(Math.hypot(...v1)*Math.hypot(...v2)))*RAD;
+  return {T,P,lamS,lamP,E:Math.abs(sE),sE,d,ang};
+}
+function orb(ctx,el,k,cx,cy,cor,lw){
+  ctx.strokeStyle=cor; ctx.lineWidth=lw; ctx.beginPath();
+  for(let i=0;i<=240;i++){const day=i/240*el.P*365.25; const p=helio(el,day);
+    const X=cx+p[0]*k, Y=cy-p[1]*k; i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);}
+  ctx.closePath(); ctx.stroke();
+}
+function drawTop(s){
+  const W=$("top").width,H=$("top").height, ctx=tc;
+  ctx.clearRect(0,0,W,H);
+  const amax=Math.max(EL[alvo].a,1)*1.16;
+  const k=Math.min(W,H)*0.44/amax, cx=W/2, cy=H/2;
+  orb(ctx,TERRA,k,cx,cy,"#2b3a4d",2);
+  orb(ctx,EL[alvo],k,cx,cy,"#3a3226",2);
+  const T=[cx+s.T[0]*k, cy-s.T[1]*k], P=[cx+s.P[0]*k, cy-s.P[1]*k], S=[cx,cy];
+  if($("rast").checked){
+    rastro.push(P); if(rastro.length>900) rastro.shift();
+    ctx.strokeStyle=EL[alvo].cor+"44"; ctx.lineWidth=2; ctx.beginPath();
+    rastro.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p)); ctx.stroke();
+  }
+  // triangulo Sol-Terra-planeta
+  ctx.strokeStyle="#4a4a4a"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(...S); ctx.lineTo(...P); ctx.stroke();
+  ctx.strokeStyle="#d7b46a"; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(...T); ctx.lineTo(...S); ctx.stroke();
+  ctx.strokeStyle=EL[alvo].cor; ctx.beginPath(); ctx.moveTo(...T); ctx.lineTo(...P); ctx.stroke();
+  // arco da elongacao, com vertice na Terra
+  const aS=Math.atan2(S[1]-T[1],S[0]-T[0]), aP=Math.atan2(P[1]-T[1],P[0]-T[0]);
+  const R=Math.min(58, Math.hypot(P[0]-T[0],P[1]-T[1])*0.55);
+  ctx.strokeStyle="#f4f4f1"; ctx.lineWidth=3; ctx.beginPath();
+  ctx.arc(T[0],T[1],R,aS,aP,wrap180((aP-aS)*RAD)<0); ctx.stroke();
+  const am=(aS+aP)/2 + (Math.abs(aP-aS)>Math.PI?Math.PI:0);
+  ctx.fillStyle="#f4f4f1"; ctx.font="600 27px Inter,sans-serif"; ctx.textAlign="center";
+  ctx.fillText("E="+fmt(s.E,1)+"°", T[0]+Math.cos(am)*(R+34), T[1]+Math.sin(am)*(R+34)+9);
+  // angulo reto no planeta, quando perto de 90
+  if($("tan").checked && EL[alvo].int && Math.abs(s.ang-90)<2.2){
+    const u1=Math.atan2(S[1]-P[1],S[0]-P[0]), u2=Math.atan2(T[1]-P[1],T[0]-P[0]);
+    ctx.strokeStyle="#6fd3d8"; ctx.lineWidth=3.5;
+    ctx.beginPath(); ctx.arc(P[0],P[1],26,u1,u2,wrap180((u2-u1)*RAD)<0); ctx.stroke();
+    ctx.fillStyle="#6fd3d8"; ctx.font="600 24px Inter,sans-serif";
+    ctx.fillText("90°", P[0]+Math.cos((u1+u2)/2)*52, P[1]+Math.sin((u1+u2)/2)*52+8);
+    ctx.fillText("maior elongação", W/2, H-18);
+  }
+  const g=ctx.createRadialGradient(S[0],S[1],2,S[0],S[1],26);
+  g.addColorStop(0,"#ffe6a8"); g.addColorStop(1,"rgba(215,180,106,0)");
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(...S,26,0,7); ctx.fill();
+  ctx.fillStyle="#f2c14e"; ctx.beginPath(); ctx.arc(...S,11,0,7); ctx.fill();
+  ctx.fillStyle="#72a7ff"; ctx.beginPath(); ctx.arc(...T,9,0,7); ctx.fill();
+  ctx.fillStyle=EL[alvo].cor; ctx.beginPath(); ctx.arc(...P,9,0,7); ctx.fill();
+  ctx.font="600 22px Inter,sans-serif"; ctx.textAlign="left";
+  ctx.fillStyle="#72a7ff"; ctx.fillText("Terra",T[0]+14,T[1]+8);
+  ctx.fillStyle=EL[alvo].cor; ctx.fillText(alvo,P[0]+14,P[1]+8);
+}
+function drawSky(s){
+  const W=$("sky").width,H=$("sky").height, ctx=sc;
+  ctx.clearRect(0,0,W,H);
+  // a oeste do Sol o planeta so aparece antes do amanhecer: mostramos o crepusculo em que ele e visivel
+  const anoitecer = s.sE>=0;
+  const hy=H*0.78, cx=W/2, R=Math.min(W*0.46,hy*0.84);
+  const gg=ctx.createLinearGradient(0,hy-R*0.9,0,hy);
+  gg.addColorStop(0,"rgba(20,26,40,0)");
+  gg.addColorStop(1, anoitecer? "rgba(120,70,25,0.30)" : "rgba(40,70,120,0.28)");
+  ctx.fillStyle=gg; ctx.fillRect(0,hy-R,W,R);
+  ctx.fillStyle="#0d0d0d"; ctx.fillRect(0,hy,W,H-hy);
+  ctx.strokeStyle="#4a4a4a"; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(0,hy); ctx.lineTo(W,hy); ctx.stroke();
+  ctx.strokeStyle="#2b3a4d"; ctx.lineWidth=2; ctx.setLineDash([6,7]);
+  ctx.beginPath(); ctx.arc(cx,hy,R,Math.PI,0); ctx.stroke(); ctx.setLineDash([]);
+  const sgn = anoitecer? 1 : -1;                       // graus contados a partir do Sol, para cima
+  const base = anoitecer? Math.PI : 0;                 // Sol no horizonte oeste ou leste
+  const ang=e=>[cx+R*Math.cos(base+sgn*e*DEG), hy+R*Math.sin(base+sgn*e*DEG)];
+  ctx.fillStyle="#4a4a4a"; ctx.font="19px Inter,sans-serif"; ctx.textAlign="center";
+  for(let e=0;e<=180;e+=30){const p=ang(e);
+    ctx.beginPath(); ctx.arc(...p,3,0,7); ctx.fill();
+    if(e%60===0 && e>0) ctx.fillText(e+"°", p[0], p[1]-14);}
+  const E=Math.abs(s.sE);
+  const ps=ang(0), pp=ang(E);
+  ctx.strokeStyle="#f4f4f1"; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.arc(cx,hy,R,base, base+sgn*E*DEG, !anoitecer); ctx.stroke();
+  const Rg=R*0.36;
+  const gh=ctx.createRadialGradient(ps[0],ps[1],4,ps[0],ps[1],Rg);
+  gh.addColorStop(0,"rgba(255,217,138,0.55)"); gh.addColorStop(0.45,"rgba(215,180,106,0.16)");
+  gh.addColorStop(1,"rgba(215,180,106,0)");
+  ctx.fillStyle=gh; ctx.beginPath(); ctx.arc(...ps,Rg,0,7); ctx.fill();
+  ctx.fillStyle="#f2c14e"; ctx.beginPath(); ctx.arc(...ps,13,0,7); ctx.fill();
+  ctx.fillStyle=EL[alvo].cor; ctx.beginPath(); ctx.arc(...pp,10,0,7); ctx.fill();
+  ctx.font="600 22px Inter,sans-serif"; ctx.fillStyle="#d7b46a"; ctx.textAlign="center";
+  ctx.fillText("Sol", ps[0]+(anoitecer?26:-26), ps[1]+28);
+  ctx.fillStyle=EL[alvo].cor; ctx.fillText(alvo, pp[0], pp[1]-22);
+  const cSol=Math.cos(base);                       // -1 no anoitecer (Sol a oeste), +1 no amanhecer
+  ctx.fillStyle="#5a5a5a"; ctx.font="20px Inter,sans-serif";
+  ctx.fillText(anoitecer?"oeste":"leste", cx+cSol*R*0.72, hy+58);
+  ctx.fillText(anoitecer?"leste":"oeste", cx-cSol*R*0.92, hy+58);
+  ctx.fillStyle="#8a7754"; ctx.font="18px Inter,sans-serif";
+  ctx.fillText("brilho do Sol", cx+cSol*R*0.34, hy-R*0.10);
+  ctx.fillStyle=anoitecer?"#e6a15b":"#72a7ff"; ctx.font="600 20px Inter,sans-serif";
+  ctx.fillText(anoitecer? "céu ao anoitecer — o planeta se põe depois do Sol"
+                        : "céu ao amanhecer — o planeta nasce antes do Sol", cx, H-16);
+}
+function drawStrip(){
+  const W=$("str").width,H=$("str").height, PL=62,PB=34,PT=16;
+  st.clearRect(0,0,W,H);
+  const el=EL[alvo], dias=+$("t").max;
+  const Y=e=>H-PB-(e/180)*(H-PB-PT);
+  st.strokeStyle="#232323"; st.lineWidth=1;
+  [0,45,90,135,180].forEach(e=>{st.beginPath();st.moveTo(PL,Y(e));st.lineTo(W-12,Y(e));st.stroke();
+    st.fillStyle="#5a5a5a";st.font="17px Inter,sans-serif";st.textAlign="right";st.fillText(e+"°",PL-8,Y(e)+6);});
+  st.textAlign="left";
+  if(el.int){
+    const lo=Math.asin(el.a*(1-el.e))*RAD, hi=Math.asin(el.a*(1+el.e))*RAD;
+    st.fillStyle="rgba(111,211,216,0.16)"; st.fillRect(PL,Y(hi),W-PL-12,Y(lo)-Y(hi));
+    st.strokeStyle="#6fd3d8"; st.setLineDash([7,6]); st.lineWidth=2;
+    st.beginPath();st.moveTo(PL,Y(hi));st.lineTo(W-12,Y(hi));st.stroke();
+    st.setLineDash([]);
+    st.fillStyle="#6fd3d8"; st.font="18px Inter,sans-serif";
+    st.fillText("teto: arcsen[a(1+e)] = "+fmt(hi,1)+"°", PL+10, Y(hi)-10);
+  }
+  st.strokeStyle=el.cor; st.lineWidth=2.4; st.beginPath();
+  const N=560;
+  for(let i=0;i<=N;i++){const d=i/N*dias; const e=estado(d).E;
+    const X=PL+(d/dias)*(W-PL-12); i?st.lineTo(X,Y(e)):st.moveTo(X,Y(e));}
+  st.stroke();
+  const X=PL+(t/dias)*(W-PL-12), e=estado(t).E;
+  st.strokeStyle="#f4f4f1"; st.lineWidth=1.5;
+  st.beginPath();st.moveTo(X,PT);st.lineTo(X,H-PB);st.stroke();
+  st.fillStyle="#f4f4f1"; st.beginPath(); st.arc(X,Y(e),6,0,7); st.fill();
+  st.fillStyle="#6a6a6a"; st.font="17px Inter,sans-serif"; st.textAlign="center";
+  st.fillText("tempo (dias)", (PL+W)/2, H-10); st.textAlign="left";
+}
+function chips(){
+  const c=$("chips"); c.innerHTML="";
+  Object.keys(EL).forEach(n=>{const b=document.createElement("button");b.className="chip";b.textContent=n;
+    b.onclick=()=>{alvo=n;reinicia();};c.appendChild(b);});
+}
+function marca(){[...$("chips").children].forEach(b=>b.classList.toggle("on",b.textContent===alvo));}
+function reinicia(){
+  t=0; maxE=0; maximos=[]; rastro=[];
+  $("t").max = EL[alvo].int? 3000 : 3000;
+  $("mreal").textContent=fmt(EL[alvo].a,3)+" UA";
+  marca();
+  $("nota").textContent = EL[alvo].int
+   ? "Repare no teto: por mais que o tempo passe, a elongação nunca o ultrapassa. É isso que prende Mercúrio e Vênus ao crepúsculo — e é isso que mede o raio da órbita."
+   : "Planeta externo: a elongação percorre toda a faixa de 0° a 180°. Em 180° é oposição — o planeta nasce quando o Sol se põe, e fica visível a noite inteira.";
+}
+function laco(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now;
+  if(rodando){ t+=dt*22*(+$("s").value); if(t> +$("t").max) t=0, rastro=[]; $("t").value=t; }
+  const s=estado(t);
+  // colecionar maximos locais
+  const e0=estado(t-1.5).E, e2=estado(t+1.5).E;
+  if(s.E>=e0 && s.E>=e2 && s.E>1){ if(!maximos.length||Math.abs(maximos[maximos.length-1].t-t)>20) maximos.push({t:t,E:s.E}); }
+  maxE=Math.max(maxE,s.E);
+  drawTop(s); drawSky(s); drawStrip();
+  $("vt").textContent="dia "+fmt(t,0);
+  $("mE").textContent=fmt(s.E,2)+"°";
+  $("mL").textContent=Math.abs(s.sE)<0.5?"alinhado":(s.sE>0?"leste (anoitecer)":"oeste (amanhecer)");
+  $("mA").textContent=fmt(s.ang,1)+"°";
+  $("mD").textContent=fmt(s.d,3)+" UA";
+  $("mM").textContent=fmt(maxE,2)+"°";
+  $("mest").textContent = maximos.length>=2
+     ? fmt(Math.sin(maximos.reduce((a,b)=>a+b.E,0)/maximos.length*DEG),3)+" UA  ("+maximos.length+" máx.)"
+     : "aguardando…";
+  requestAnimationFrame(laco);
+}
+$("t").addEventListener("input",()=>{t=+$("t").value; rastro=[];});
+$("s").addEventListener("input",()=>$("vs").textContent=fmt(+$("s").value,1)+"×");
+$("play").onclick=()=>{rodando=!rodando;$("play").textContent=rodando?"pausar":"continuar";};
+$("reset").onclick=reinicia;
+chips(); reinicia();
+if(new URLSearchParams(location.search).has("embed")){document.body.classList.add("embed");
+  $("top").height=658;$("sky").height=658;$("str").height=278;}
+requestAnimationFrame(laco);
+</script>
+</body></html>
