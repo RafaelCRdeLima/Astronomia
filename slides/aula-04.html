@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Aula 3 — Movimentos, unidades e fotometria</title><style>
+<title>Aula 4 — Órbitas elípticas e as leis de Kepler</title><style>
 :root{--bg:#050505;--panel:#101010;--line:#343434;--text:#f4f4f1;--muted:#aaa69c;--accent:#d7b46a}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
@@ -99,6 +99,51 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <section class="slide "><h2>A armadilha que o roteiro evita</h2><div class="conteudo centro"><div class="corpo"><p style="text-align:center">Se você obtém a de P por a = P<sup>2/3</sup> e depois calcula P²/a³…</p></div><div class="cadeia">o resultado é exatamente 1 &mdash; para qualquer P</div><div class="corpo"><p style="text-align:center;color:#aaa69c">inclusive para um planeta inventado. Um teste que não pode falhar não é um teste.</p></div></div><div class="nota">Por isso o teste é feito com Mercúrio e Vênus, onde a vem da elongação e P vem do tempo — duas medidas que não se conversam.</div></section>
 <section class="slide "><h2>O que torna o teste um teste</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_teste.svg" alt=""></div></div><div class="nota">a da média das elongações máximas; P dos intervalos entre conjunções inferiores. Nenhuma das duas usa a terceira lei.</div></section>
 <section class="slide "><h2>O resultado</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_teste.png" alt=""></div></div><div class="nota">Cinco planetas, a e P medidos separadamente, sobre a reta P = a^(3/2). Mercúrio fecha em P²/a³ = 1,05 e Vênus em 1,00.</div></section>
+<section class="slide "><h2>Como o painel está organizado</h2><div class="conteudo"><div class="corpo"><ul>
+<li><span class="d">Observação</span> — o mapa do céu, o planeta escolhido, e os controles: data, hora sideral e latitude</li>
+<li><span class="d">Inferência de Kepler</span> — os gráficos de λ(t) e de elongação, que se preenchem com o que você registrou</li>
+<li><span class="d">Caderno de dados</span> — a tabela das observações, com todas as colunas</li>
+<li><span class="d">Template de Relatório</span> — gera o artigo em LaTeX com os seus dados</li>
+</ul></div></div><div class="nota">Os quatro botões de ação — registrar, exportar, limpar registros e limpar régua — ficam juntos no painel de instrumentos, abaixo da régua angular.</div></section>
+
+<section class="slide "><h2>Passo a passo: montar o caderno</h2><div class="conteudo"><div class="corpo"><ol class="cadeia-num">
+<li>Escolha o planeta no seletor</li>
+<li>Ponha a data no dia 0</li>
+<li>Clique em <span class="d">Registrar observação</span></li>
+<li>Avance a data de 20 a 30 dias</li>
+<li>Registre de novo — e repita</li>
+<li>Três anos de Marte pedem umas 40 entradas</li>
+<li>Confira na aba <span class="d">Caderno de dados</span></li>
+<li>Exporte o CSV antes de fechar a página</li>
+</ol></div></div><div class="nota">O caderno vive só na memória do navegador: fechar a aba apaga tudo. Exporte, ou gere o template, antes de sair.</div></section>
+
+<section class="slide "><h2>Passo a passo: os números que a entrega pede</h2><div class="conteudo"><div class="corpo"><ol class="cadeia-num">
+<li><b>Oposições:</b> avance a data e observe a coluna de elongação passar perto de 180°</li>
+<li>Anote a data de cada uma — quanto mais, melhor</li>
+<li>Tire a <span class="d">média</span> dos intervalos: esse é S</li>
+<li>Para externo, 1/P = 1 − 1/S</li>
+<li><b>Internos:</b> registre elongações em muitas datas</li>
+<li>Colecione <span class="d">todas</span> as máximas locais</li>
+<li>a ≃ sen(média delas)</li>
+<li>Só então calcule P²/a³</li>
+</ol></div></div><div class="nota">Conjunção inferior e superior dão elongação zero: distinga pelo tamanho aparente do planeta no mapa. É entre as <b>inferiores</b> que se mede o período sinódico.</div></section>
+
+<section class="slide "><h2>O artigo sai pronto do painel</h2><div class="conteudo"><div class="corpo">
+<p>Na aba <span class="d">Template de Relatório</span>, escreva os nomes do grupo — até três — e clique em <span class="d">Gerar template</span>. O laboratório salva:</p>
+<ul style="margin-top:14px">
+<li><span class="d">main.tex</span> no modelo de artigo da disciplina, com o resumo já apontando quantas observações você registrou</li>
+<li>as figuras do céu, de λ(t) e da elongação</li>
+<li>a tabela das observações e a do teste da terceira lei</li>
+<li>o CSV do caderno e o logotipo</li>
+</ul></div></div><div class="nota">As figuras e as tabelas já vêm referenciadas no texto. Envie a pasta ao Overleaf e compile duas vezes. <b>Registre as observações antes de gerar:</b> o template leva as que estiverem no caderno naquele momento.</div></section>
+
+<section class="slide "><h2>O que entregar — e o que custa nota</h2><div class="conteudo"><div class="corpo"><ul>
+<li>O caderno exportado e o gráfico λ(t) de Marte, com os intervalos retrógrados marcados</li>
+<li>S e P de um externo, <span class="d">declarando quantas oposições</span> entraram na média</li>
+<li>A tabela do teste para Mercúrio e Vênus, deixando claro que a e P são independentes</li>
+<li>A previsão de a para os externos, dita como previsão</li>
+</ul></div></div><div class="nota">Os três erros mais caros: obter a de P e chamar isso de teste; usar <b>uma</b> oposição de Saturno; e pegar a <b>maior</b> elongação de Mercúrio em vez da média.</div></section>
+
 <section class="slide fecho"><h2>O que fica do Capítulo 4</h2><div class="conteudo"><div class="corpo"><ul><li>A elipse é geometria: focos, excentricidade, e três propriedades que a Aula 5 vai usar</li><li>As três leis descrevem as órbitas sem explicar nenhuma — e isso é uma etapa legítima da física</li><li>Ângulos medidos do chão bastam para extrair período, raio orbital e a arquitetura do Sistema Solar</li><li>Medir <span class="d">independentemente</span> é o que separa um teste de uma tautologia</li></ul></div></div><div class="nota">Na Aula 5: entra a gravitação, as três leis passam a ser deduzidas de uma única equação de movimento — e uma órbita medida vira uma massa em quilogramas.</div></section>
 </div>
 <div class="barra"></div>
