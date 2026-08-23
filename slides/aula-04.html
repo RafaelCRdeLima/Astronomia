@@ -39,6 +39,14 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
  border-bottom:1px solid var(--line);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
 .tb td{padding:12px 10px;border-bottom:1px solid #1e1e1e}
 .tb.sym th{text-transform:none;letter-spacing:.02em;font-size:22px}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(215,180,106,.38)}
+a:hover{border-bottom-color:var(--accent)}
+.abrir{display:inline-block;margin-top:26px;padding:14px 26px;border:1px solid var(--accent);
+ border-radius:12px;color:var(--accent);font-size:26px;font-weight:600;text-decoration:none;
+ border-bottom:1px solid var(--accent)}
+.abrir:hover{background:var(--accent);color:var(--bg)}
+.abrir small{display:block;font-size:17px;font-weight:400;color:var(--muted);margin-top:5px}
+.abrir:hover small{color:var(--bg)}
 .slide.dash{padding:30px 40px 42px}
 .slide.dash h2{font-size:33px;margin-bottom:10px}
 .dashbox{flex:1;min-height:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#080808}
@@ -94,7 +102,7 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <section class="slide "><h2>Mas a excentricidade espalha as máximas</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_faixa.svg" alt=""></div></div><div class="nota">Em Vênus (e = 0,007) a faixa tem 2° e tanto faz. Em Mercúrio (e = 0,206) ela vai de 18° a 28° — e usar só a maior erra a por 20%.</div></section>
 <section class="slide "><h2>As elongações máximas, medidas</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_elongacoes.png" alt=""></div></div><div class="nota">À esquerda, Vênus: todas as máximas na mesma linha. À direita, Mercúrio: espalhadas pela faixa inteira. O que estima a é a <b>média</b>, não a maior.</div></section>
 <section class="slide dash"><h2>Explorar: elongação, as duas vistas</h2><div class="dashbox"><iframe data-src="../elongacao/?embed=1" title="Explorar: elongação, as duas vistas" loading="lazy"></iframe></div><div class="nota">A geometria de cima e o céu, no mesmo instante: a elongação é o ângulo de vértice na Terra.</div></section>
-<section class="slide roteiro"><h2>O laboratório</h2><div class="conteudo"><div class="corpo"><p>Você trabalha como um observador pré-telescópico: o painel mostra <span class="d">posições aparentes</span> — longitude e latitude eclípticas, ascensão reta, declinação, altura e elongação.</p><p style="margin-top:18px">A tarefa é construir, só com esses ângulos, a evidência que levou às leis de Kepler.</p></div></div><div class="nota">rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-4/ &mdash; janela de 22 000 dias, cerca de 60 anos.</div></section>
+<section class="slide roteiro"><h2>O laboratório</h2><div class="conteudo"><div class="corpo"><p>Você trabalha como um observador pré-telescópico: o painel mostra <span class="d">posições aparentes</span> — longitude e latitude eclípticas, ascensão reta, declinação, altura e elongação.</p><p style="margin-top:18px">A tarefa é construir, só com esses ângulos, a evidência que levou às leis de Kepler.</p><a class="abrir" href="https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-4/" target="_blank" rel="noopener">Abrir o laboratório<small>rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-4/</small></a></div></div><div class="nota">Janela de 22&thinsp;000 dias, cerca de sessenta anos &mdash; o bastante para duas órbitas de Saturno.</div></section>
 <section class="slide "><h2>Os sete experimentos</h2><div class="conteudo"><div class="corpo"><ul><li>Caderno de Marte: λ(t), direto e retrógrado</li><li>Período sinódico e sideral, pela <span class='d'>média</span> de várias oposições</li><li>O teste da terceira lei, com Mercúrio e Vênus</li><li>Maior elongação e o efeito da excentricidade</li><li>Aplicar a lei aos externos — e notar que ali ela é <i>usada</i>, não testada</li><li>Opcional: triangular Marte como Kepler fez</li><li>Altura, ascensão reta e janela observacional</li></ul></div></div><div class="nota">A entrega declara quantas oposições foram usadas, e deixa claro que a e P saíram de medidas independentes.</div></section>
 <section class="slide "><h2>A armadilha que o roteiro evita</h2><div class="conteudo centro"><div class="corpo"><p style="text-align:center">Se você obtém a de P por a = P<sup>2/3</sup> e depois calcula P²/a³…</p></div><div class="cadeia">o resultado é exatamente 1 &mdash; para qualquer P</div><div class="corpo"><p style="text-align:center;color:#aaa69c">inclusive para um planeta inventado. Um teste que não pode falhar não é um teste.</p></div></div><div class="nota">Por isso o teste é feito com Mercúrio e Vênus, onde a vem da elongação e P vem do tempo — duas medidas que não se conversam.</div></section>
 <section class="slide "><h2>O que torna o teste um teste</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a4_teste.svg" alt=""></div></div><div class="nota">a da média das elongações máximas; P dos intervalos entre conjunções inferiores. Nenhuma das duas usa a terceira lei.</div></section>
@@ -106,7 +114,7 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <li><span class="d">Template de Relatório</span> — gera o artigo em LaTeX com os seus dados</li>
 </ul></div></div><div class="nota">Os quatro botões de ação — registrar, exportar, limpar registros e limpar régua — ficam juntos no painel de instrumentos, abaixo da régua angular.</div></section>
 
-<section class="slide "><h2>A tela do laboratório</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_lab_painel.png" alt=""></div></div><div class="nota"><span class="d">1</span> as abas &nbsp;&middot;&nbsp; <span class="d">2</span> o mapa do céu &nbsp;&middot;&nbsp; <span class="d">3</span> planeta, data, hora sideral, latitude &nbsp;&middot;&nbsp; <span class="d">4</span> os botões de ação</div></section>
+<section class="slide "><h2>A tela do laboratório</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_lab_painel.png" alt=""></div></div><div class="nota"><span class="d">1</span> as abas &nbsp;&middot;&nbsp; <span class="d">2</span> o mapa do céu &nbsp;&middot;&nbsp; <span class="d">3</span> planeta, data, hora sideral, latitude &nbsp;&middot;&nbsp; <span class="d">4</span> os botões de ação &nbsp;&mdash;&nbsp; <a href="https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-4/" target="_blank" rel="noopener">abrir ao vivo</a></div></section>
 
 <section class="slide "><h2>Passo a passo: montar o caderno</h2><div class="conteudo"><div class="corpo"><ol class="cadeia-num">
 <li>Escolha o planeta no seletor</li>
@@ -148,7 +156,7 @@ h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(
 <li>A previsão de a para os externos, dita como previsão</li>
 </ul></div></div><div class="nota">Os três erros mais caros: obter a de P e chamar isso de teste; usar <b>uma</b> oposição de Saturno; e pegar a <b>maior</b> elongação de Mercúrio em vez da média.</div></section>
 
-<section class="slide fecho"><h2>O que fica do Capítulo 4</h2><div class="conteudo"><div class="corpo"><ul><li>A elipse é geometria: focos, excentricidade, e três propriedades que a Aula 5 vai usar</li><li>As três leis descrevem as órbitas sem explicar nenhuma — e isso é uma etapa legítima da física</li><li>Ângulos medidos do chão bastam para extrair período, raio orbital e a arquitetura do Sistema Solar</li><li>Medir <span class="d">independentemente</span> é o que separa um teste de uma tautologia</li></ul></div></div><div class="nota">Na Aula 5: entra a gravitação, as três leis passam a ser deduzidas de uma única equação de movimento — e uma órbita medida vira uma massa em quilogramas.</div></section>
+<section class="slide fecho"><h2>O que fica do Capítulo 4</h2><div class="conteudo"><div class="corpo"><ul><li>A elipse é geometria: focos, excentricidade, e três propriedades que a Aula 5 vai usar</li><li>As três leis descrevem as órbitas sem explicar nenhuma — e isso é uma etapa legítima da física</li><li>Ângulos medidos do chão bastam para extrair período, raio orbital e a arquitetura do Sistema Solar</li><li>Medir <span class="d">independentemente</span> é o que separa um teste de uma tautologia</li></ul></div></div><div class="nota">Laboratório: <a href="https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-4/" target="_blank" rel="noopener">laboratorio-capitulo-4</a>. Na Aula 5: entra a gravitação, as três leis passam a ser deduzidas de uma única equação de movimento — e uma órbita medida vira uma massa em quilogramas.</div></section>
 </div>
 <div class="barra"></div>
 <div class="tit">Aula 4 &middot; Astronomia (AST0001)</div>
@@ -187,7 +195,7 @@ addEventListener('keydown',e=>{
   else if(e.key==='f'||e.key==='F'){telaCheia()}
 });
 addEventListener('click',e=>{
-  if(e.target.closest('.hud'))return;
+  if(e.target.closest('.hud')||e.target.closest('a'))return;
   (e.clientX < window.innerWidth*0.28) ? ant() : prox();
 });
 function telaCheia(){
