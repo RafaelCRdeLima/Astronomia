@@ -276,6 +276,26 @@
       padding: 9px;
     }
 
+    .toolbar.acoes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin: 8px 0 2px;
+    }
+
+    .toolbar.acoes .button {
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+    }
+
+    /* a ação principal e a da régua ocupam a linha inteira; exportar e limpar
+       registros dividem a do meio */
+    .toolbar.acoes .button:first-child,
+    .toolbar.acoes .button:last-child {
+      grid-column: 1 / -1;
+    }
+
     .control {
       padding: 10px 0;
       border-bottom: 1px solid rgba(52, 52, 52, 0.72);
@@ -504,9 +524,6 @@
     <div class="toolbar">
       <a class="button" href="../">Página principal</a>
       <a class="button" href="../apostila-astrofisica-moderna/">Apostila</a>
-      <button class="button" id="recordObservation" type="button">Registrar observação</button>
-      <button class="button" id="exportCsv" type="button">Exportar CSV</button>
-      <button class="button" id="clearLog" type="button">Limpar registros</button>
       <span class="chip">Observáveis: ângulos no céu</span>
     </div>
 
@@ -584,7 +601,16 @@
           <div class="control">
             <label>Régua angular</label>
             <div class="readout"><span id="angularMeasureReadout">clique em dois pontos</span><span>separação</span></div>
-            <button class="button" id="clearMeasure" type="button">Limpar régua</button>
+          </div>
+
+          <div class="control">
+            <label>Caderno de observações</label>
+            <div class="toolbar acoes">
+              <button class="button" id="recordObservation" type="button">Registrar observação</button>
+              <button class="button" id="exportCsv" type="button">Exportar CSV</button>
+              <button class="button" id="clearLog" type="button">Limpar registros</button>
+              <button class="button" id="clearMeasure" type="button">Limpar régua</button>
+            </div>
           </div>
 
           <div class="formula">
