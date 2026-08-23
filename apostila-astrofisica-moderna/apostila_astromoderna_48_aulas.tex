@@ -749,6 +749,79 @@ Apontar um telescópio exige uma cadeia de correções, e é instrutivo enumerá
 
 A soma dessas correções pode ultrapassar um minuto de arco. Nenhuma delas é opcional em trabalho de precisão, e a ordem importa --- é por isso que existem bibliotecas padronizadas de redução astrométrica, e por que reimplementá-las manualmente é um caminho conhecido para erros silenciosos.
 
+\subsection*{Laboratório}
+\addcontentsline{toc}{subsection}{Laboratório -- Capítulo 1}
+O laboratório interativo deste capítulo está disponível em:
+
+\begin{center}
+\url{https://rafaelcrdelima.github.io/Astronomia/laboratorio-capitulo-1a/}
+\end{center}
+
+Neste laboratório você não recebe coordenadas: você as \emph{produz}. O painel mostra a abóbada celeste
+vista de Joinville, e o único instrumento é um que lê \textbf{azimute e altura} --- exatamente o que se mede
+do chão. Tudo o mais tem de ser deduzido: a ascensão reta e a declinação saem da conversão com a hora
+sideral, e a orientação de dois planos fundamentais do céu sai de ajustar um círculo máximo a um conjunto
+de medidas suas. Ao final, dois números que este capítulo tratou como dados --- a inclinação do plano
+galáctico e a obliquidade da eclíptica --- terão sido \emph{medidos}, com incerteza.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
+\textbf{Preparação dos dados.} Abra o laboratório. Escolha a \textit{precisão de leitura} do instrumento --- é
+o erro que suas medidas vão carregar, e vale começar com um valor generoso para depois apertá-lo. Ajuste o dia
+do ano e a hora local, ligue as populações que quiser ver (campo estelar, faixa galáctica, Sol, planetas) e
+clique nos objetos na abóbada para registrar cada medida. O CSV exportado traz, para cada registro, o azimute
+e a altura lidos, a data e a hora, e as coordenadas equatoriais correspondentes.
+
+\textbf{Experimento 1: do que se mede ao que se cataloga.}
+Registre meia dúzia de objetos em uma mesma noite. Para \emph{um} deles, faça a conversão à mão: com a latitude
+$\varphi=-26{,}30^\circ$, a hora sideral local e as fórmulas da seção de transformação, obtenha $\delta$ e depois
+$H$, e daí $\alpha=\theta_{\rm LST}-H$. Só então compare com a coluna do arquivo. Se não bater, o erro costuma
+estar no quadrante do azimute ou no sinal da latitude --- e é justamente para pegar isso que a conta é feita à
+mão uma vez.
+
+\textbf{Experimento 2: o mesmo objeto, horários diferentes.}
+Escolha um objeto e registre-o em três ou quatro horários da mesma noite. Monte uma tabela com azimute, altura,
+$\alpha$ e $\delta$. Duas colunas mudam muito e duas praticamente não mudam. Explique por quê, e diga quanto o
+ângulo horário avançou entre a primeira e a última medida --- compare com o intervalo de tempo decorrido e
+comente a diferença entre dia solar e dia sideral.
+
+\textbf{Experimento 3: o plano galáctico é um círculo máximo?}
+Ligue a faixa galáctica e registre pelo menos vinte objetos dela, espalhados pelo céu --- não concentre tudo em
+um pedaço. Faça o gráfico de $\delta$ contra $\alpha$. Se o plano galáctico for um círculo máximo inclinado em
+relação ao equador celeste, os pontos devem cair sobre uma senoide, e não sobre uma reta. Ajuste e obtenha a
+inclinação $i$ e a declinação do polo galáctico, com incerteza.
+
+\textbf{Experimento 4: a eclíptica, medida pelo Sol.}
+Registre a posição do Sol em muitas datas ao longo de um ano --- quanto mais espalhadas, melhor. O mesmo ajuste
+de círculo máximo devolve agora a \textbf{obliquidade da eclíptica} $\varepsilon$. Compare com o valor de
+referência, $23{,}44^\circ$, e discuta se a diferença é compatível com a precisão de leitura que você escolheu.
+
+\textbf{Experimento 5: os planetas estão na eclíptica?}
+Registre os cinco planetas visíveis a olho nu e converta cada um para coordenadas eclípticas usando \emph{a
+obliquidade que você mediu}, não a tabelada. As latitudes eclípticas $\beta$ devem sair pequenas, mas não nulas.
+Diga quanto valem, e explique a origem física do resíduo.
+
+\textbf{Experimento 6: o preço da precisão.}
+Repita o Experimento 4 com uma precisão de leitura visivelmente pior e outra visivelmente melhor, mantendo o
+mesmo número de medidas. Registre como a incerteza de $\varepsilon$ responde. A relação esperada é
+$\sigma\propto1/\sqrt{N}$ para $N$ medidas de mesma qualidade: verifique se o que você observa é compatível com
+isso, e diga o que sai mais barato --- medir melhor ou medir mais vezes.
+\end{lessonblock}
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Formato da entrega}
+A entrega é um artigo curto, no modelo da disciplina, e o próprio laboratório monta o esqueleto.
+
+\textbf{Gerando o esqueleto.} Na aba \textit{Template de Relatório}, escreva os nomes do grupo --- até três ---
+e clique em \textit{Gerar template}. O laboratório salva \texttt{main.tex} já no modelo de artigo da
+disciplina, o logotipo, as figuras dos ajustes, as tabelas em LaTeX e os CSVs das medidas. As figuras e as
+tabelas já estão referenciadas no texto: o que falta é escrever. Registre as medidas \emph{antes} de gerar.
+
+\textbf{O que o artigo precisa conter.} A tabela das medidas registradas, com a precisão de leitura declarada;
+a conversão feita à mão no Experimento 1, mostrada passo a passo; os dois gráficos de ajuste; e os dois
+resultados principais com incerteza --- a inclinação do plano galáctico e a obliquidade da eclíptica ---
+comparados com os valores de referência. Feche discutindo qual das duas medidas saiu melhor e por quê.
+\end{lessonblock}
+
+
 \newpage
 \section*{Capítulo 2 -- Paralaxe, brilho e luminosidade}
 \addcontentsline{toc}{section}{Capítulo 2 -- Paralaxe, brilho e luminosidade}
