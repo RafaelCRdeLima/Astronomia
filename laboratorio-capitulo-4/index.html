@@ -514,6 +514,7 @@
       <button class="button view-tab" type="button" data-view="observationView" aria-selected="true">Observação</button>
       <button class="button view-tab" type="button" data-view="analysisView" aria-selected="false">Inferência de Kepler</button>
       <button class="button view-tab" type="button" data-view="dataView" aria-selected="false">Caderno de dados</button>
+      <button class="button view-tab" type="button" data-view="reportView" aria-selected="false">Template de Relatório</button>
     </div>
 
     <section class="layout view active" id="observationView" aria-label="Dashboard de observação">
@@ -655,6 +656,39 @@
               </thead>
               <tbody id="tableBody"></tbody>
             </table>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="view" id="reportView" aria-label="Template de relatório">
+      <section class="panel">
+        <h2>Template de Relatório</h2>
+        <div class="body">
+          <div class="tasks">
+            <div class="task">
+              <strong>Gerar o artigo em LaTeX, no modelo da disciplina</strong>
+              Preencha os nomes do grupo (at&eacute; tr&ecirc;s) e clique em Gerar template. O laborat&oacute;rio salva
+              main.tex j&aacute; no modelo de artigo da disciplina, o logo, as figuras do c&eacute;u e do gr&aacute;fico,
+              a tabela de observa&ccedil;&otilde;es em LaTeX e o CSV do caderno de dados. S&oacute; falta escrever.
+              <br><br>Registre as observa&ccedil;&otilde;es <em>antes</em> de gerar: o template leva as que estiverem no caderno.
+            </div>
+          </div>
+          <div class="control">
+            <label for="studentNameInput">Aluno 1</label>
+            <input id="studentNameInput" type="text" placeholder="Nome completo">
+          </div>
+          <div class="control">
+            <label for="studentNameInput2">Aluno 2</label>
+            <input id="studentNameInput2" type="text" placeholder="Nome completo">
+          </div>
+          <div class="control">
+            <label for="studentNameInput3">Aluno 3</label>
+            <input id="studentNameInput3" type="text" placeholder="Nome completo">
+          </div>
+          <div class="toolbar">
+            <button class="button" id="generateTemplate" type="button">Gerar template</button>
+            <span class="chip" id="reportStatus">Aguardando gera&ccedil;&atilde;o do relat&oacute;rio.</span>
           </div>
         </div>
       </section>
@@ -1401,6 +1435,427 @@
     hourSlider.value = query.get("hour") || "22";
     latitudeSlider.value = query.get("lat") || "-27";
     render();
+
+    // ================================================================
+    //  Template de relatorio: gera o artigo em LaTeX no modelo da
+    //  disciplina, com as observacoes que o aluno registrou.
+    // ================================================================
+    function latexEscape(value) {
+      const text = String(value ?? "")
+        .replaceAll("λ", "lambda").replaceAll("β", "beta").replaceAll("α", "alpha")
+        .replaceAll("δ", "delta").replaceAll("☉", "\\odot").replaceAll("−", "-");
+      const rep = {"\\":"\\textbackslash{}","{":"\\{","}":"\\}","$":"\\$","&":"\\&",
+                   "%":"\\%","#":"\\#","_":"\\_","~":"\\textasciitilde{}","^":"\\textasciicircum{}"};
+      return text.replace(/[\\{}$&%#_~^]/g, c => rep[c]);
+    }
+    function num(v, d = 2) {
+      return Number.isFinite(v) ? v.toFixed(d).replace(".", ",") : "--";
+    }
+    function downloadBlob(filename, blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+    function canvasToBlob(canvas) {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(b => b ? resolve(b) : reject(new Error("Não foi possível gerar a figura PNG.")), "image/png");
+      });
+    }
+    async function fetchBlob(path) {
+      const r = await fetch(path);
+      if (!r.ok) throw new Error("Não foi possível carregar " + path);
+      return r.blob();
+    }
+    function chartFigureBlob(mode) {
+      const salvo = chartMode;
+      chartMode = mode; drawChart();
+      return canvasToBlob(chart).finally(() => { chartMode = salvo; drawChart(); });
+    }
+    function observacoesCsv() {
+      const head = ["dia","data","planeta","lambda_deg","beta_deg","ra_h","dec_deg",
+                    "azimute_deg","altura_deg","elongacao_deg","lambda_sol_deg"];
+      const linhas = [head.join(",")];
+      observations.forEach(r => linhas.push([r.day, r.date, r.planet, r.lambda, r.beta, r.ra,
+        r.dec, r.az, r.alt, r.elongation, r.sunLambda]
+        .map(v => typeof v === "number" ? v.toFixed(6) : `"${String(v).replaceAll('"','""')}"`).join(",")));
+      return linhas.join("\n");
+    }
+    function tabelaObservacoesTex() {
+      const linhas = observations.map(r =>
+        [latexEscape(r.date), latexEscape(r.planet), num(r.lambda,2), num(r.beta,2),
+         num(r.ra,3), num(r.dec,2), num(r.alt,1), num(r.elongation,2), num(r.sunLambda,2)]
+        .join(" & ") + " \\\\");
+      return `% Gerada pelo laboratório do Capítulo 4. Requer booktabs.
+\\begin{table*}[t]
+\\centering
+\\compacttables
+\\caption{Observações registradas no laboratório. Todas as colunas são ângulos medidos no céu;
+nenhuma distância foi usada para obtê-las.}
+\\label{tab:observacoes}
+\\begin{tabular}{llrrrrrrr}
+\\toprule
+data & planeta & $\\lambda$ (\\si{\\degree}) & $\\beta$ (\\si{\\degree}) & $\\alpha$ (h) &
+$\\delta$ (\\si{\\degree}) & $h$ (\\si{\\degree}) & $E$ (\\si{\\degree}) & $\\lambda_\\odot$ (\\si{\\degree}) \\\\
+\\midrule
+${linhas.join("\n")}
+\\bottomrule
+\\end{tabular}
+\\end{table*}`;
+    }
+    function tabelaKeplerTex() {
+      return `% Preencha com os SEUS valores medidos. As duas ultimas colunas so fazem
+% sentido se a e P vierem de medidas independentes -- veja o Experimento 3.
+\\begin{table}[t]
+\\centering
+\\compacttables
+\\caption{Teste da terceira lei. Para Mercúrio e Vênus, $a$ vem da média das elongações máximas e
+$P$ do intervalo entre conjunções inferiores: são medidas independentes, e por isso a última coluna
+é um teste. Para os planetas externos, $a$ foi \\emph{previsto} pela lei a partir de $P$, e a
+comparação afere a medida de $P$, não a lei.}
+\\label{tab:kepler}
+\\begin{tabular}{lrrrr}
+\\toprule
+planeta & $S$ (d) & $P$ (anos) & $a$ (UA) & $P^{2}/a^{3}$ \\\\
+\\midrule
+Mercúrio & & & & \\\\
+Vênus    & & & & \\\\
+\\midrule
+Marte    & & & & \\\\
+Júpiter  & & & & \\\\
+Saturno  & & & & \\\\
+\\bottomrule
+\\end{tabular}
+\\end{table}`;
+    }
+
+    function reportMainTex(nomes) {
+      const autoresTex = nomes.map(latexEscape).join(", ");
+      const emailsTex  = nomes.map((_, i) => `aluno${i + 1}@edu.udesc.br`).join(", ");
+      const sobrenome  = n => n.trim().split(/\s+/).pop();
+      // 'et al.' significa 'e outros': so cabe a partir de tres autores
+      const curtoTex   = latexEscape(
+        nomes.length === 1 ? nomes[0]
+        : nomes.length === 2 ? sobrenome(nomes[0]) + " e " + sobrenome(nomes[1])
+        : sobrenome(nomes[0]) + " et al.");
+      const nObs = observations.length;
+      return `% =====================================================================
+%  ARTIGO -- Laboratório do Capítulo 4
+%  Astronomia (AST0001) -- Curso de Física -- UDESC Joinville
+%
+%  Gerado pelo laboratório, no modelo de artigo da disciplina. As figuras,
+%  as tabelas e o CSV vieram junto e já estão referenciados no texto.
+%  O que falta é escrever.
+%
+%  COMO USAR
+%   1. Preencha os campos marcados "PREENCHA AQUI".
+%   2. Escreva nas seções indicadas, apagando as instruções.
+%   3. Compile com pdfLaTeX DUAS vezes (a segunda resolve as referências).
+% =====================================================================
+
+\\documentclass[10pt,a4paper,twocolumn]{article}
+
+\\usepackage[utf8]{inputenc}
+\\usepackage[T1]{fontenc}
+\\usepackage[brazil]{babel}
+\\usepackage{amsmath,amssymb}
+\\let\\Bbbk\\relax
+\\usepackage{newtxtext,newtxmath}
+\\usepackage{microtype}
+\\usepackage[a4paper,top=2.4cm,bottom=2.2cm,left=1.9cm,right=1.9cm,
+            columnsep=0.7cm]{geometry}
+\\usepackage{graphicx}
+\\usepackage{booktabs}
+\\usepackage{siunitx}
+\\usepackage{caption}
+\\usepackage{titlesec}
+\\usepackage{fancyhdr}
+\\usepackage{xcolor}
+\\usepackage[colorlinks=true,linkcolor=udescverde,citecolor=udescverde,
+            urlcolor=udescverde]{hyperref}
+
+\\definecolor{udescverde}{HTML}{1B6B3A}
+\\definecolor{cinza}{HTML}{5A5A5A}
+
+\\sisetup{output-decimal-marker={,}, per-mode=symbol}
+
+\\captionsetup{font=small,labelfont={bf,color=udescverde},labelsep=period}
+\\titleformat{\\section}{\\normalfont\\bfseries\\color{udescverde}}
+            {\\thesection.}{0.5em}{\\MakeUppercase}
+\\titleformat{\\subsection}{\\normalfont\\bfseries\\itshape}{\\thesubsection.}{0.5em}{}
+\\titlespacing*{\\section}{0pt}{1.6ex}{0.8ex}
+\\setlength{\\parindent}{1.2em}
+
+% usado pelas tabelas que o laboratório gerou
+\\newcommand{\\compacttables}{\\footnotesize\\setlength{\\tabcolsep}{3pt}}
+
+% ---------------------------------------------------- PREENCHA AQUI
+\\newcommand{\\titulo}{A arquitetura do Sistema Solar deduzida de medidas angulares}
+\\newcommand{\\autores}{${autoresTex}}
+% um endereço por autor, na mesma ordem dos nomes
+\\newcommand{\\emails}{${emailsTex}}
+% aparece no cabeçalho das páginas; troquem se preferirem outra forma
+\\newcommand{\\autoresCurto}{${curtoTex}}
+\\newcommand{\\tituloCurto}{Órbitas e leis de Kepler}
+\\newcommand{\\semestre}{2026/2}
+% -------------------------------------------------------------------
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\fancyhead[L]{\\footnotesize\\textcolor{cinza}{\\autoresCurto}}
+\\fancyhead[R]{\\footnotesize\\textcolor{cinza}{\\tituloCurto}}
+\\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}
+\\renewcommand{\\headrulewidth}{0.3pt}
+\\fancypagestyle{primeira}{%
+  \\fancyhf{}\\renewcommand{\\headrulewidth}{0pt}
+  \\fancyfoot[C]{\\footnotesize\\textcolor{cinza}{\\thepage}}}
+
+\\begin{document}
+
+\\twocolumn[
+\\begin{@twocolumnfalse}
+
+\\noindent
+\\begin{minipage}{0.78\\textwidth}
+  {\\footnotesize\\textcolor{udescverde}{\\textbf{ASTRONOMIA (AST0001)}}\\\\[2pt]
+   \\textcolor{cinza}{Universidade do Estado de Santa Catarina\\, $\\cdot$\\,
+   Centro de Ciências Tecnológicas\\, $\\cdot$\\, Curso de Física}\\\\[2pt]
+   \\textcolor{cinza}{Joinville, \\semestre}}
+\\end{minipage}
+\\hfill
+\\begin{minipage}{0.20\\textwidth}
+  \\raggedleft{\\includegraphics[height=1.5cm]{udesc.png}}
+\\end{minipage}
+
+\\vspace{2pt}
+{\\color{udescverde}\\rule{\\textwidth}{1pt}}
+
+\\vspace{1.1em}
+\\begin{center}
+  {\\LARGE\\bfseries \\titulo\\par}
+  \\vspace{0.9em}
+  {\\large \\autores\\par}
+  \\vspace{0.3em}
+  {\\footnotesize\\itshape\\textcolor{cinza}{\\emails}\\par}
+  \\vspace{0.3em}
+  {\\footnotesize\\textcolor{cinza}{Recebido em \\today}\\par}
+\\end{center}
+
+\\vspace{0.9em}
+
+% ------------------------------------------------------------ RESUMO
+% Um parágrafo, de 120 a 200 palavras: contexto em uma frase, o que foi
+% feito, que dados, o RESULTADO NUMÉRICO com incerteza, e a conclusão em
+% uma frase. Escrito por último, lido primeiro. Sem citar figuras.
+\\noindent\\rule{\\textwidth}{0.3pt}
+\\vspace{0.5em}
+
+{\\small
+\\noindent\\textbf{Resumo.}
+Escreva aqui. Diga que registrou ${nObs} observações de posição aparente de
+planetas em um simulador de céu, e que dessas direções --- e apenas delas ---
+extraiu períodos sinódicos, períodos siderais e raios orbitais. Diga quantas
+oposições ou conjunções usou em cada média. Apresente o resultado principal em
+números: o valor de $P^{2}/a^{3}$ obtido para Mercúrio e para Vênus, com $a$ e
+$P$ medidos de forma independente, e o desvio em relação a $1$. Termine dizendo
+o que limita a medida.
+
+\\vspace{0.6em}
+\\noindent\\textbf{Palavras-chave:} astronomia de posição --- leis de Kepler ---
+período sinódico --- elongação
+}
+
+\\vspace{0.5em}
+\\noindent\\rule{\\textwidth}{0.3pt}
+\\vspace{1.4em}
+
+\\end{@twocolumnfalse}
+]
+\\thispagestyle{primeira}
+
+% =====================================================================
+\\section{Introdução}
+% =====================================================================
+% Do que trata, por que importa, e qual pergunta este artigo responde.
+% Aqui: um observador preso à Terra mede apenas DIREÇÕES. A pergunta é
+% quanto da arquitetura do Sistema Solar se deduz só disso -- que foi
+% exatamente a situação de Copérnico e de Kepler.
+
+Escreva aqui.
+
+% =====================================================================
+\\section{Revisão Teórica}
+% =====================================================================
+% As relações que você vai usar, com as hipóteses de cada uma ditas em
+% voz alta. Não copie a apostila: reescreva com suas palavras, e diga
+% onde cada fórmula vale e onde deixa de valer.
+
+A elongação solar é a separação angular aparente entre o planeta e o Sol,
+\\begin{equation}
+E = \\left|\\,\\mathrm{wrap}_{180}(\\lambda_p - \\lambda_\\odot)\\,\\right| ,
+\\label{eq:elong}
+\\end{equation}
+onde $\\lambda$ são longitudes eclípticas geocêntricas. Para um planeta
+externo, o período sinódico $S$ e o sideral $P$ se relacionam por
+\\begin{equation}
+\\frac{1}{P} = 1 - \\frac{1}{S} ,
+\\label{eq:sinodico}
+\\end{equation}
+com ambos em anos; para um planeta interno, o sinal se inverte.
+% ATENÇÃO: a Eq. (2) é mal condicionada quando S se aproxima de um ano.
+% Diga isso aqui, com números, e explique por que você usou uma média de
+% várias oposições em vez de um único intervalo.
+
+Para um planeta interno em órbita aproximadamente circular, a maior
+elongação ocorre quando a linha de visada tangencia a órbita, e
+\\begin{equation}
+a \\simeq \\sin\\left\\langle E_{\\max}\\right\\rangle .
+\\label{eq:emax}
+\\end{equation}
+% Explique por que aparece uma MÉDIA e não o máximo: a excentricidade
+% espalha as elongações máximas entre arcsen[a(1-e)] e arcsen[a(1+e)].
+
+% =====================================================================
+\\section{Metodologia}
+% =====================================================================
+% O que você fez, na ordem, com detalhe suficiente para alguém repetir.
+% Quantas datas registrou, com que espaçamento, para que planetas, e como
+% identificou oposições, conjunções e elongações máximas.
+
+Escreva aqui. As ${nObs} observações registradas estão na
+Tabela~\\ref{tab:observacoes}; o arquivo \\texttt{dados/observacoes.csv}
+traz as mesmas colunas em formato aberto.
+
+\\begin{figure}[t]
+\\centering
+\\includegraphics[width=\\columnwidth]{figuras/mapa_celeste.png}
+\\caption{O céu do simulador no instante de uma das observações. Escreva na
+legenda o que se vê e por que essa configuração importa.}
+\\label{fig:mapa}
+\\end{figure}
+
+% =====================================================================
+\\section{Resultados}
+% =====================================================================
+% Só os números e o que eles mostram. Interpretação fica na Discussão.
+
+\\begin{figure}[t]
+\\centering
+\\includegraphics[width=\\columnwidth]{figuras/grafico_longitude.png}
+\\caption{Longitude eclíptica em função do tempo. Marque os intervalos em que
+$\\Delta\\lambda < 0$ e explique o que são.}
+\\label{fig:lambda}
+\\end{figure}
+
+\\begin{figure}[t]
+\\centering
+\\includegraphics[width=\\columnwidth]{figuras/grafico_elongacao.png}
+\\caption{Elongação solar em função do tempo. Para um planeta interno, indique
+o teto que a excentricidade impõe.}
+\\label{fig:elong}
+\\end{figure}
+
+Escreva aqui, apoiando-se na Tabela~\\ref{tab:kepler}.
+
+\\input{tabelas/tabela_kepler.tex}
+
+% =====================================================================
+\\section{Discussão}
+% =====================================================================
+% O que os números querem dizer, e o que NÃO querem. Duas perguntas que
+% este laboratório cobra:
+%   (a) Por que o teste da terceira lei foi feito com Mercúrio e Vênus, e
+%       não com os externos? O que aconteceria se você obtivesse a de P
+%       por a = P^(2/3) e depois calculasse P^2/a^3?
+%   (b) Qual foi a maior fonte de erro: a leitura das datas, o número de
+%       oposições na média, ou a excentricidade das órbitas?
+
+Escreva aqui.
+
+% =====================================================================
+\\section{Conclusão}
+% =====================================================================
+% Três a cinco frases. O que foi medido, com que número, e o que isso
+% permite afirmar sobre a arquitetura do Sistema Solar.
+
+Escreva aqui.
+
+% =====================================================================
+\\section*{Referências}
+% =====================================================================
+% Formato livre, mas consistente. Inclua a apostila da disciplina e ao
+% menos uma fonte externa.
+
+\\begin{thebibliography}{9}\\footnotesize
+\\bibitem{apostila} LIMA, R. C. R. \\emph{Astrofísica Moderna: apostila de
+capítulos de estudo}. UDESC Joinville, 2026. Capítulo 4.
+\\bibitem{co} CARROLL, B. W.; OSTLIE, D. A. \\emph{An Introduction to Modern
+Astrophysics}. 2. ed. Cambridge University Press, 2017.
+\\end{thebibliography}
+
+\\input{tabelas/tabela_observacoes.tex}
+
+\\end{document}
+`;
+    }
+
+    async function buildReportFiles(nomes) {
+      const [udescLogo] = await Promise.all([fetchBlob("../modelo-artigo/udesc.png")]);
+      return [
+        { name: "main.tex", blob: new Blob([reportMainTex(nomes)], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "udesc.png", blob: udescLogo },
+        { name: "tabelas/tabela_observacoes.tex", blob: new Blob([tabelaObservacoesTex()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "tabelas/tabela_kepler.tex", blob: new Blob([tabelaKeplerTex()], { type: "text/x-tex;charset=utf-8" }) },
+        { name: "dados/observacoes.csv", blob: new Blob([observacoesCsv()], { type: "text/csv;charset=utf-8" }) },
+        { name: "figuras/mapa_celeste.png", blob: await canvasToBlob(sky) },
+        { name: "figuras/grafico_longitude.png", blob: await chartFigureBlob("longitude") },
+        { name: "figuras/grafico_elongacao.png", blob: await chartFigureBlob("elongation") },
+      ];
+    }
+
+    async function saveReportFiles(files) {
+      if (window.showDirectoryPicker) {
+        const directory = await window.showDirectoryPicker({ mode: "readwrite" });
+        for (const file of files) {
+          const parts = file.name.split("/");
+          const filename = parts.pop();
+          let target = directory;
+          for (const part of parts) target = await target.getDirectoryHandle(part, { create: true });
+          const handle = await target.getFileHandle(filename, { create: true });
+          const w = await handle.createWritable();
+          await w.write(file.blob); await w.close();
+        }
+        return `${files.length} arquivos salvos na pasta escolhida.`;
+      }
+      files.forEach((file, i) => setTimeout(() => downloadBlob(file.name.replaceAll("/", "_"), file.blob), i * 150));
+      return "Seu navegador não abriu seletor de pasta; os arquivos foram baixados individualmente.";
+    }
+
+    async function generateReportTemplate() {
+      const campos = ["studentNameInput", "studentNameInput2", "studentNameInput3"].map(id => document.getElementById(id));
+      const status = document.getElementById("reportStatus");
+      const nomes = campos.map(el => el.value.trim()).filter(Boolean);
+      if (!nomes.length) {
+        status.textContent = "Digite ao menos o nome do primeiro aluno antes de gerar.";
+        campos[0].focus(); return;
+      }
+      if (observations.length === 0) {
+        status.textContent = "Registre ao menos uma observação antes de gerar o template.";
+        return;
+      }
+      try {
+        status.textContent = "Gerando arquivos do relatório...";
+        status.textContent = await saveReportFiles(await buildReportFiles(nomes));
+      } catch (error) {
+        status.textContent = error.name === "AbortError"
+          ? "Salvamento cancelado."
+          : "Não foi possível gerar o template. Verifique se a página está publicada/servida por HTTP.";
+        console.error(error);
+      }
+    }
+
+    document.getElementById("generateTemplate").addEventListener("click", generateReportTemplate);
   </script>
 </body>
 </html>
