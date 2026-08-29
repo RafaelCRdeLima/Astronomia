@@ -971,7 +971,7 @@ Nenhuma medida vem sem incerteza, e a da paralaxe se propaga para a distância d
 \[
 \sigma_q^{2}=\sum_i\left(\frac{\partial q}{\partial x_i}\right)^{2}\sigma_{x_i}^{2},
 \]
-deduzida no Capítulo 18. Aqui há uma variável só. Como $d=1/p$, a derivada é $\mathrm{d}d/\mathrm{d}p=-1/p^{2}$, e a regra dá $\sigma_d=|{-}1/p^{2}|\,\sigma_p=\sigma_p/p^{2}$. Dividindo por $d=1/p$:
+deduzida no Capítulo 19. Aqui há uma variável só. Como $d=1/p$, a derivada é $\mathrm{d}d/\mathrm{d}p=-1/p^{2}$, e a regra dá $\sigma_d=|{-}1/p^{2}|\,\sigma_p=\sigma_p/p^{2}$. Dividindo por $d=1/p$:
 \[
 \boxed{\ \frac{\sigma_d}{d}=\frac{\sigma_p}{p}\ }
 \]
@@ -1242,7 +1242,7 @@ A \textbf{aberração da luz} decorre da composição de velocidades entre a vel
 \[
 \theta_{\rm ab}\simeq\frac{v_\oplus}{c}=\frac{29{,}8}{3\times10^{5}}\simeq9{,}9\times10^{-5}\,\mathrm{rad}\simeq20{,}5''.
 \]
-Note que esse valor é vinte vezes maior que a maior paralaxe existente e --- crucialmente --- \emph{não depende da distância}. Aberração e paralaxe também estão defasadas de um quarto de período: a aberração é máxima quando a velocidade é perpendicular à linha de visada, a paralaxe quando o deslocamento de posição é. Foi essa defasagem que permitiu a Bradley, em 1728, identificar a aberração e, no processo, obter a primeira prova direta do movimento orbital da Terra.
+Note que esse valor é quase \textbf{vinte e sete vezes} maior que a maior paralaxe existente --- a de Proxima Centauri, $0{,}769''$ --- e que, crucialmente, ele \emph{não depende da distância}. Aberração e paralaxe também estão defasadas de um quarto de período: a aberração é máxima quando a velocidade é perpendicular à linha de visada, a paralaxe quando o deslocamento de posição é. Foi essa defasagem que permitiu a Bradley, em 1728, identificar a aberração e, no processo, obter a primeira prova direta do movimento orbital da Terra.
 
 O \textbf{movimento próprio} $\mu$ é o deslocamento angular real da estrela no céu, em segundos de arco por ano, e relaciona-se à velocidade tangencial por
 \[
@@ -1373,7 +1373,7 @@ m_{\rm AB}=-2{,}5\log_{10}\left(\frac{F_\nu}{3631\,\mathrm{Jy}}\right).
 \]
 A constante $3631\,\mathrm{Jy}$ é escolhida para que os dois sistemas coincidam aproximadamente na banda $V$. A vantagem é que uma magnitude AB converte-se diretamente em unidades físicas sem tabela auxiliar --- razão pela qual levantamentos modernos, do SDSS ao Rubin, adotaram esse padrão.
 
-A conversão entre sistemas depende da banda e chega a $0{,}5$ mag no infravermelho. Misturar magnitudes AB e Vega é um erro silencioso e comum, que produz distâncias e luminosidades erradas sem gerar nenhum sintoma óbvio.
+A conversão entre sistemas depende da banda, e o deslocamento cresce muito para o vermelho: é de poucos centésimos em $V$, sobe a $0{,}45$ mag em $I$, a $0{,}89$ em $J$ e a $1{,}85$ em $K_s$, e passa de $3$ mag nas bandas do WISE. Misturar magnitudes AB e Vega é um erro silencioso e comum, que produz distâncias e luminosidades erradas sem gerar nenhum sintoma óbvio --- e no infravermelho o estrago é de magnitudes inteiras, não de frações.
 
 \subsection*{Redução de dados de imageamento}
 
@@ -1425,7 +1425,7 @@ Para trabalho de alta precisão --- cronometragem de pulsares, trânsitos, ondas
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Propagação de incertezas: o mínimo necessário}
 Todo resultado deste curso é um valor \emph{com} incerteza; sem ela, não é resultado. A
 regra geral, $\sigma_q^{2}=\sum_i(\partial q/\partial x_i)^{2}\sigma_{x_i}^{2}$, está
-enunciada no Capítulo 2 e deduzida no Capítulo 18. Lá também está o caso da potência, que dá
+enunciada no Capítulo 2 e deduzida no Capítulo 19. Lá também está o caso da potência, que dá
 $\sigma_d/d=\sigma_p/p$ para a inversão da paralaxe. Faltam dois casos, igualmente
 frequentes.
 
@@ -1494,7 +1494,7 @@ $\sqrt{N}$.
 \item \textbf{Os dois grupos.} A nuvem principal, que corta o gráfico na diagonal, é a
 \emph{sequência principal}: estrelas que ainda queimam hidrogênio no núcleo. O grupo
 isolado embaixo à esquerda --- fraco, mas azul --- são \emph{anãs brancas}, restos
-compactos de estrelas que já morreram; ambos serão estudados nos Capítulos 8 e 9. Conte
+compactos de estrelas que já morreram; a sequência principal é assunto do Capítulo 8 e as anãs brancas, do Capítulo 10. Conte
 quantas há em cada grupo adotando um critério explícito e dizendo qual é. Um critério
 razoável é $M_G>10$ e $\mathrm{BP}-\mathrm{RP}<1{,}5$; se você escolher outro, a
 contagem muda, e é por isso que o critério tem de estar escrito no artigo.
@@ -1522,10 +1522,10 @@ velocidade radial medida: \texttt{=SE(H2="";"";RAIZ(H2\textasciicircum2+O2\texta
 --- se você não proteger a fórmula, as 561 células vazias entram como zero e viram
 velocidades espaciais falsas.
 \item \textbf{Verificação de sanidade.} Ordene por $v$ e olhe as cinco maiores antes de
-usá-las. Duas delas têm $|v_r|\simeq400\,\mathrm{km\,s^{-1}}$ com $v_t$ quase nulo, e
-caem na região das anãs brancas do diagrama. Para isso ser real, o vetor velocidade
-teria de estar alinhado com a linha de visada dentro de cerca de um grau --- duas vezes,
-em pouco mais de cem objetos. Diga no artigo o que você fez com essas medidas e por quê.
+usá-las. Duas delas têm $|v_r|$ perto de $400\,\mathrm{km\,s^{-1}}$ com $v_t$ pequeno, e caem na região das anãs
+brancas do diagrama. Para isso ser real, o vetor velocidade teria de estar alinhado com a linha de visada
+dentro de $0{,}6^\circ$ em um caso e de $5{,}5^\circ$ no outro --- coincidências de $1$ em $19\,500$ e de $1$ em
+$220$, duas vezes, em pouco mais de cem objetos. Diga no artigo o que você fez com essas medidas e por quê.
 \end{enumerate}
 
 \textbf{Se você fizer o projeto extra}, entregue-o também como artigo curto, no modelo da disciplina, separado do artigo do laboratório.
