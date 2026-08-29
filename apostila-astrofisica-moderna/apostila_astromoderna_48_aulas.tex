@@ -1232,7 +1232,11 @@ Frases como ``a estrela está longe'' ou ``a poeira atrapalha'' não contam sozi
 \newpage
 \section*{Capítulo 3 -- Movimentos, unidades e fotometria}
 \addcontentsline{toc}{section}{Capítulo 3 -- Movimentos, unidades e fotometria}
-Este capítulo aprofunda o que o Capítulo 2 introduziu para uso imediato. Aberração e movimento próprio --- os dois efeitos anuais que se confundem com paralaxe; as unidades astronômicas e suas definições modernas; velocidade tangencial e velocidade espacial; o viés estatístico das paralaxes; correção bolométrica e o zero da escala; sistemas fotométricos. Fecham o capítulo as seções de instrumentação e as escalas de tempo, que são leitura complementar: não são pré-requisito para o artigo, mas você vai precisar delas nos laboratórios seguintes.
+Este capítulo aprofunda o que o Capítulo 2 introduziu para uso imediato, e se divide em quatro partes.
+
+A primeira separa da paralaxe os dois efeitos que se confundem com ela --- aberração e movimento próprio --- e fecha o vetor velocidade. A segunda trata das unidades astronômicas e do que mudou quando elas deixaram de ser medidas e passaram a ser convenções exatas. A terceira é fotometria: correção bolométrica, o zero da escala e os sistemas de magnitude. A quarta, \textbf{propagação de incertezas}, é curta e não é opcional: todo resultado deste curso é um valor com incerteza, e é aqui que estão as duas regras que faltavam.
+
+Depois delas vêm as seções de instrumentação e as escalas de tempo, explicitamente marcadas como leitura complementar, e o \textbf{projeto do Gaia} --- um catálogo real, do qual sai a densidade estelar da vizinhança solar com incerteza. É o trabalho prático deste capítulo.
 
 \subsection*{Aberração e movimento próprio}
 
@@ -1244,11 +1248,9 @@ A \textbf{aberração da luz} decorre da composição de velocidades entre a vel
 \]
 Note que esse valor é quase \textbf{vinte e sete vezes} maior que a maior paralaxe existente --- a de Proxima Centauri, $0{,}769''$ --- e que, crucialmente, ele \emph{não depende da distância}. Aberração e paralaxe também estão defasadas de um quarto de período: a aberração é máxima quando a velocidade é perpendicular à linha de visada, a paralaxe quando o deslocamento de posição é. Foi essa defasagem que permitiu a Bradley, em 1728, identificar a aberração e, no processo, obter a primeira prova direta do movimento orbital da Terra.
 
-O \textbf{movimento próprio} $\mu$ é o deslocamento angular real da estrela no céu, em segundos de arco por ano, e relaciona-se à velocidade tangencial por
-\[
-v_t=\mu\,d,
-\]
-que em unidades práticas fica $v_t\,[\mathrm{km\,s^{-1}}]=4{,}74\,\mu\,['' \mathrm{ano^{-1}}]\,d\,[\mathrm{pc}]$. O fator $4{,}74$ é apenas a conversão de $\mathrm{UA\,ano^{-1}}$ para $\mathrm{km\,s^{-1}}$, deduzido adiante em \emph{Velocidade espacial completa}. \textbf{Cuidado com uma coincidência de dígitos:} este $4{,}74$ é uma velocidade em $\mathrm{km\,s^{-1}}$ e nada tem a ver com $M_{{\rm bol},\odot}=4{,}74$, a magnitude bolométrica absoluta do Sol. São grandezas diferentes, com unidades diferentes, e o mesmo número por acaso. Combinando $v_t$ com a velocidade radial obtida por Doppler, tem-se o vetor velocidade completo --- e é essa combinação, feita para bilhões de estrelas, que transformou o Gaia em um instrumento de dinâmica galáctica.
+O \textbf{movimento próprio} $\mu$ é o deslocamento angular real da estrela no céu, medido em segundos de arco por ano. Ele é o que sobra depois de descontar paralaxe e aberração --- e o que o distingue das duas é a forma: ambas são \emph{periódicas}, com o ano por período, enquanto o movimento próprio é \emph{secular}, acumula sempre no mesmo sentido e cresce sem limite. Uma série de posições longa o bastante separa os três sem ambiguidade: duas senoides defasadas de um quarto de período, mais uma reta.
+
+Converter $\mu$ em velocidade exige a distância, e é o assunto da seção \emph{Velocidade espacial completa}. Combinado com a velocidade radial obtida por Doppler, ele fecha o vetor velocidade --- e é essa combinação, feita para bilhões de estrelas, que transformou o Gaia em um instrumento de dinâmica galáctica.
 
 \subsection*{As unidades e o que elas significam hoje}
 
@@ -1304,6 +1306,8 @@ O fator $4{,}74$ merece dedução, porque ele é frequentemente decorado sem sen
 \]
 O número não é uma constante física; é a razão entre duas unidades escolhidas por seres humanos.
 
+\textbf{Cuidado com uma coincidência de dígitos:} este $4{,}74$ é uma velocidade em $\mathrm{km\,s^{-1}}$ e nada tem a ver com $M_{{\rm bol},\odot}=4{,}74$, a magnitude bolométrica absoluta do Sol, que aparece adiante neste mesmo capítulo. São grandezas diferentes, com unidades diferentes, e o mesmo número por acaso.
+
 O movimento próprio tem duas componentes, e há uma convenção que gera erros: publica-se $\mu_{\alpha*}=\mu_\alpha\cos\delta$, e não $\mu_\alpha$, justamente para que a quantidade represente deslocamento angular verdadeiro sobre o céu --- meridianos convergem nos polos, e sem o fator $\cos\delta$ um objeto polar teria movimento próprio em ascensão reta enorme sem se deslocar quase nada. O módulo é então
 \[
 \mu=\sqrt{\mu_{\alpha*}^{2}+\mu_\delta^{2}}.
@@ -1315,7 +1319,12 @@ v=\sqrt{v_r^{2}+v_t^{2}},
 \]
 e é ela --- não a velocidade radial isolada --- que entra em qualquer estudo de dinâmica galáctica. Note a assimetria de informação: $v_r$ é fácil e independe de distância; $v_t$ exige astrometria \emph{e} distância, e sua incerteza herda ambas. Foi exatamente essa assimetria que o Gaia desfez, ao medir movimentos próprios e paralaxes para o mesmo bilhão de estrelas.
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: por que inverter a paralaxe é enviesado}
+
+\subsection*{O viés de inverter a paralaxe}
+\addcontentsline{toc}{subsection}{O viés de inverter a paralaxe}
+
+A seção anterior terminou em uma assimetria: $v_t$ herda a incerteza da distância, e a distância vem de inverter a paralaxe. Vale olhar de perto o que essa inversão faz com o erro.
+
 A relação $d=1/p$ é exata para os valores verdadeiros. Para valores \emph{medidos}, ela não é.
 
 Suponha que a paralaxe medida tenha erro gaussiano, $p_{\rm obs}=p_{\rm verd}+\epsilon$ com $\epsilon\sim N(0,\sigma_p)$. A distribuição de $1/p_{\rm obs}$ não é gaussiana e, pior, tem média divergente: existe probabilidade não nula de $p_{\rm obs}$ ser arbitrariamente próximo de zero, e o inverso explode. Formalmente, $\langle1/p_{\rm obs}\rangle$ não existe.
@@ -1327,7 +1336,13 @@ Formalizando com o teorema de Bayes, e adotando densidade espacial uniforme como
 P(d\,|\,p_{\rm obs})\propto d^{2}\exp\left[-\frac{(p_{\rm obs}-1/d)^{2}}{2\sigma_p^{2}}\right],
 \]
 em que o fator $d^{2}$ vem do elemento de volume. Para $\sigma_p/p\lesssim0{,}1$ a correção é pequena e $1/p$ é aceitável; para $\sigma_p/p\gtrsim0{,}2$ ela domina, e usar $1/p$ produz erro sistemático de dezenas de por cento. A regra prática, hoje padrão em trabalhos com Gaia, é: acima de $20\%$ de erro relativo em paralaxe, não inverta --- infira.
-\end{lessonblock}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.86\textwidth]{lutzkelker.png}
+\caption{\textbf{O viés, simulado.} Populações sintéticas com densidade espacial uniforme, e a razão entre a distância obtida por $1/p_{\rm obs}$ e a verdadeira. Com $5\%$ de erro em paralaxe a distribuição é estreita e centrada em $1$; com $40\%$ ela se alarga e o pico desloca para baixo de $1$ --- a distância inferida sai sistematicamente curta, e a mediana não salva.}
+\label{fig:lutzkelker}
+\end{figure}
 
 \subsection*{Correção bolométrica e o zero da escala}
 
@@ -1374,6 +1389,32 @@ m_{\rm AB}=-2{,}5\log_{10}\left(\frac{F_\nu}{3631\,\mathrm{Jy}}\right).
 A constante $3631\,\mathrm{Jy}$ é escolhida para que os dois sistemas coincidam aproximadamente na banda $V$. A vantagem é que uma magnitude AB converte-se diretamente em unidades físicas sem tabela auxiliar --- razão pela qual levantamentos modernos, do SDSS ao Rubin, adotaram esse padrão.
 
 A conversão entre sistemas depende da banda, e o deslocamento cresce muito para o vermelho: é de poucos centésimos em $V$, sobe a $0{,}45$ mag em $I$, a $0{,}89$ em $J$ e a $1{,}85$ em $K_s$, e passa de $3$ mag nas bandas do WISE. Misturar magnitudes AB e Vega é um erro silencioso e comum, que produz distâncias e luminosidades erradas sem gerar nenhum sintoma óbvio --- e no infravermelho o estrago é de magnitudes inteiras, não de frações.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Propagação de incertezas: o mínimo necessário}
+Todo resultado deste curso é um valor \emph{com} incerteza; sem ela, não é resultado. A
+regra geral, $\sigma_q^{2}=\sum_i(\partial q/\partial x_i)^{2}\sigma_{x_i}^{2}$, está
+enunciada no Capítulo 2 e deduzida no Capítulo 19. Lá também está o caso da potência, que dá
+$\sigma_d/d=\sigma_p/p$ para a inversão da paralaxe. Faltam dois casos, igualmente
+frequentes.
+
+\textbf{Logaritmo e magnitudes.} Se $m=-2{,}5\log_{10}F$, então
+\[
+\sigma_m=\frac{2{,}5}{\ln10}\frac{\sigma_F}{F}=1{,}0857\,\frac{\sigma_F}{F},
+\]
+de modo que $1\%$ de erro em fluxo é $0{,}011$ magnitude. O caminho inverso,
+$\sigma_F/F=0{,}921\,\sigma_m$, converte incerteza fotométrica em incerteza de fluxo.
+
+\textbf{Módulo de distância.} De $m-M=5\log_{10}d-5$ segue
+\[
+\frac{\sigma_d}{d}=\frac{\ln10}{5}\,\sigma_{(m-M)}\simeq0{,}46\,\sigma_{(m-M)},
+\]
+que é a mesma conta já feita para a extinção: $0{,}1$ magnitude de erro no módulo, ou em
+$A_V$, vale $4{,}6\%$ na distância.
+\end{lessonblock}
+
+\begin{noticebox}
+As quatro seções seguintes --- redução de imagens, astrometria de placa, refração e escalas de tempo --- são \textbf{leitura complementar}. Elas não são pré-requisito para nenhum artigo deste capítulo nem do anterior, mas você vai precisar delas nos laboratórios dos capítulos seguintes. O projeto do Gaia, que fecha o capítulo, depende apenas do que veio antes desta caixa.
+\end{noticebox}
 
 \subsection*{Redução de dados de imageamento}
 
@@ -1422,30 +1463,19 @@ Medidas de precisão exigem distinguir escalas de tempo que diferem por termos p
 
 Para trabalho de alta precisão --- cronometragem de pulsares, trânsitos, ondas gravitacionais --- usa-se \textbf{BJD}$_\mathrm{TDB}$: a data juliana corrigida para o baricentro do Sistema Solar e expressa em uma escala relativisticamente consistente. A correção baricêntrica chega a $\pm8{,}3$ minutos --- o tempo que a luz leva para cruzar $1\,\mathrm{UA}$ --- e ignorá-la introduz uma modulação anual espúria de mesmo período em qualquer série temporal. Muitos ``sinais anuais'' na literatura têm essa origem.
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Propagação de incertezas: o mínimo necessário}
-Todo resultado deste curso é um valor \emph{com} incerteza; sem ela, não é resultado. A
-regra geral, $\sigma_q^{2}=\sum_i(\partial q/\partial x_i)^{2}\sigma_{x_i}^{2}$, está
-enunciada no Capítulo 2 e deduzida no Capítulo 19. Lá também está o caso da potência, que dá
-$\sigma_d/d=\sigma_p/p$ para a inversão da paralaxe. Faltam dois casos, igualmente
-frequentes.
 
-\textbf{Logaritmo e magnitudes.} Se $m=-2{,}5\log_{10}F$, então
-\[
-\sigma_m=\frac{2{,}5}{\ln10}\frac{\sigma_F}{F}=1{,}0857\,\frac{\sigma_F}{F},
-\]
-de modo que $1\%$ de erro em fluxo é $0{,}011$ magnitude. O caminho inverso,
-$\sigma_F/F=0{,}921\,\sigma_m$, converte incerteza fotométrica em incerteza de fluxo.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{completeza.png}
+\caption{\textbf{Como se sabe até onde um catálogo é completo.} Se a densidade espacial for uniforme, $N(<d)$ cresce como $d^{3}$ e a razão $N(<d)/d^{3}$ é constante. Enquanto a curva está plana, a amostra contém tudo o que existe até ali; quando começa a cair, o catálogo já está perdendo objetos, e o raio em que isso acontece é o maior que se pode usar em um cálculo de densidade.}
+\label{fig:completeza}
+\end{figure}
 
-\textbf{Módulo de distância.} De $m-M=5\log_{10}d-5$ segue
-\[
-\frac{\sigma_d}{d}=\frac{\ln10}{5}\,\sigma_{(m-M)}\simeq0{,}46\,\sigma_{(m-M)},
-\]
-que é a mesma conta já feita para a extinção: $0{,}1$ magnitude de erro no módulo, ou em
-$A_V$, vale $4{,}6\%$ na distância.
-\end{lessonblock}
+\subsection*{O projeto do capítulo: a vizinhança solar medida com o Gaia}
+\addcontentsline{toc}{subsection}{O projeto do capítulo -- a vizinhança solar com o Gaia}
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{Projeto extra -- a vizinhança solar medida com o Gaia}
-\textbf{Este projeto é opcional.} Ele não substitui o artigo do laboratório acima; é para quem quiser trabalhar com um catálogo real, e não simulado, e chegar a um número que se compara com a literatura. Vale como trabalho complementar.
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroBlue}]{A vizinhança solar medida com o Gaia}
+\textbf{Este é o trabalho prático do Capítulo 3}, e é o único dos primeiros capítulos que usa um catálogo \emph{real}, e não simulado: 2000 estrelas do Gaia, com as imperfeições que um catálogo real tem. Ele é independente do artigo do laboratório do Capítulo 2 --- não o substitui nem o repete --- e vale como trabalho complementar, entregue à parte.
 
 \textbf{Arquivo:} \texttt{01\_gaia\_estrelas\_25pc.csv} --- as 2000 estrelas mais próximas
 do Sol com paralaxe medida pelo Gaia. Colunas, nesta ordem: \texttt{source\_id} (A),
@@ -1502,7 +1532,7 @@ contagem muda, e é por isso que o critério tem de estar escrito no artigo.
 \texttt{=E2/D2}. Para quantas estrelas a distância é melhor que $1\%$? E quantas passam de
 $20\%$, faixa em que inverter a paralaxe deixa de ser legítimo? Explique o resultado que
 encontrar --- ele diz respeito a esta amostra, não ao método.
-\item \textbf{Teste de completeza.} Se as estrelas estivessem distribuídas com densidade
+\item \textbf{Teste de completeza} (Figura~\ref{fig:completeza}). Se as estrelas estivessem distribuídas com densidade
 uniforme, o número dentro de um raio $d$ cresceria como $N(<d)\propto d^{3}$. Conte
 $N(<d)$ para $d=6,8,10,\ldots,18\,\mathrm{pc}$ (no Excel:
 \texttt{=CONT.SE(K:K;"<10")}, ou \texttt{COUNTIF} em inglês) e faça o gráfico de
@@ -1528,7 +1558,7 @@ dentro de $0{,}6^\circ$ em um caso e de $5{,}5^\circ$ no outro --- coincidência
 $220$, duas vezes, em pouco mais de cem objetos. Diga no artigo o que você fez com essas medidas e por quê.
 \end{enumerate}
 
-\textbf{Se você fizer o projeto extra}, entregue-o também como artigo curto, no modelo da disciplina, separado do artigo do laboratório.
+\textbf{A entrega} é um artigo curto, no modelo da disciplina, separado do artigo do laboratório do Capítulo 2.
 \begin{itemize}
 \item \textbf{Resumo} --- um parágrafo com a densidade medida, sua incerteza e a
 comparação com a referência, em números.
