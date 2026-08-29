@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Artigo do laboratório do Capítulo 5 | Astronomia</title>
+  <style>
+    :root { --bg:#050505; --panel:#101010; --line:#343434; --text:#f4f4f1; --muted:#aaa69c; --accent:#d7b46a; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--text); background:var(--bg);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .shell { width:min(1080px, calc(100vw - 32px)); margin:0 auto; padding:28px 0 48px; }
+    header { display:flex; justify-content:space-between; gap:18px; align-items:end;
+      padding-bottom:18px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+    h1 { margin:0; font-size:clamp(28px,4vw,46px); line-height:1.05; }
+    h2 { margin:34px 0 0; font-size:20px; color:var(--accent); }
+    p { margin:10px 0 0; color:var(--muted); line-height:1.6; }
+    a { color:var(--accent); }
+    code { background:var(--panel); border:1px solid var(--line); border-radius:5px;
+      padding:1px 5px; font-size:13px; color:var(--text); }
+    pre { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+      padding:14px; overflow-x:auto; font-size:13px; }
+    .badge { color:var(--accent); border:1px solid var(--line); padding:8px 10px; border-radius:8px; font-size:14px; }
+    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); margin-top:22px; }
+    .card { border:1px solid var(--line); background:var(--panel); border-radius:12px;
+      padding:16px; text-decoration:none; color:var(--text); display:block; }
+    .card:hover { border-color:var(--accent); }
+    .card strong { display:block; font-size:16px; }
+    .card span { display:block; color:var(--muted); font-size:14px; margin-top:6px; }
+    ul { color:var(--muted); line-height:1.7; }
+    .nav { margin-top:30px; display:flex; gap:12px; flex-wrap:wrap; }
+    .nav a { border:1px solid var(--line); background:var(--panel); border-radius:10px;
+      padding:12px 14px; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>Artigo do laboratório do Capítulo 5</h1>
+    <p class="lead">Esqueleto do artigo do <strong>laboratório de dados do Capítulo 5</strong> &mdash; pesar o Sol, Júpiter, Saturno e a Terra pela terceira lei de Kepler &mdash; no modelo de artigo da disciplina.</p>
+
+    <div class="grid">
+      <a class="card" href="modelo-artigo-massas.zip"><strong>Baixar o pacote (.zip)</strong>
+        <span>main.tex, o PDF, o logotipo e a figura de exemplo</span></a>
+      <a class="card" href="main.pdf"><strong>Ver como fica (PDF)</strong>
+        <span>o esqueleto compilado, com a figura de exemplo</span></a>
+      <a class="card" href="main.tex"><strong>Ver o main.tex</strong>
+        <span>só o arquivo fonte, para inspecionar antes de baixar</span></a>
+    </div>
+
+    <h2>Por que este é diferente</h2>
+    <p>Nos laboratórios dos Capítulos 1, 2 e 4 o próprio painel gera o
+    <code>main.tex</code> já preenchido. Aqui não há painel: o laboratório do Capítulo 5 é um
+    CSV com 21 corpos reais, que você analisa no Excel ou em Python. O que este pacote entrega
+    é o <strong>esqueleto certo</strong> &mdash; as seções na ordem, a equação escrita e os
+    lugares da tabela e do gráfico já referenciados no texto.</p>
+
+    <h2>O que vem dentro</h2>
+    <ul>
+      <li><code>main.tex</code> &mdash; as seções, a terceira lei já escrita nas duas formas, e
+      comentários dizendo o que cada parte cobra</li>
+      <li><code>main.pdf</code> &mdash; como fica compilado</li>
+      <li><code>udesc.png</code> &mdash; o logotipo do cabeçalho</li>
+      <li><code>figuras/</code> &mdash; o gráfico de $\log P$ contra $\log a$, <strong>de
+      exemplo</strong>, feito com os dados reais do arquivo. Substitua pelo seu.</li>
+    </ul>
+
+    <h2>Como usar</h2>
+    <ol>
+      <li>Baixe o <code>.zip</code>, descompacte e envie a pasta inteira ao Overleaf.</li>
+      <li>Preencha os campos marcados <code>PREENCHA</code> no topo do <code>main.tex</code>.</li>
+      <li>Troque a figura de exemplo pela sua.</li>
+      <li>Escreva. Os comentários <code>%</code> dizem o que cada seção precisa conter.</li>
+      <li>Compile com pdfLaTeX <strong>duas vezes</strong> &mdash; a segunda resolve as referências.</li>
+    </ol>
+
+    <h2>O arquivo de dados</h2>
+    <p><code>02_terceira_lei_kepler.csv</code>, em
+    <a href="../apostila-astrofisica-moderna/dados/">dados dos laboratórios</a>.
+    O roteiro está no Capítulo 5 da apostila.</p>
+
+    <p class="nav"><a href="../">Página do curso</a> &middot;
+       <a href="../apostila-astrofisica-moderna/">Apostila</a> &middot;
+       <a href="../modelo-artigo/">Modelo de artigo genérico</a></p>
+</main>
+</body>
+</html>
