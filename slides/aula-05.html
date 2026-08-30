@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aula 5 — Gravitação newtoniana e dinâmica orbital</title><style>
+:root{--bg:#050505;--panel:#101010;--line:#343434;--text:#f4f4f1;--muted:#aaa69c;--accent:#d7b46a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+#palco{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.slide{position:absolute;width:1280px;height:720px;padding:64px 78px;display:none;
+ flex-direction:column;transform-origin:center center}
+.slide.on{display:flex}
+h1{font-size:60px;line-height:1.08;font-weight:700;letter-spacing:-.5px}
+h2{font-size:42px;line-height:1.15;font-weight:650;margin-bottom:26px;color:var(--text)}
+.sub{margin-top:22px;font-size:24px;color:var(--muted)}
+.conteudo{flex:1;display:flex;flex-direction:column;min-height:0;gap:16px}
+.conteudo.centro{justify-content:center}
+.corpo{font-size:27px;line-height:1.55;color:#e8e6e0}
+.corpo ul{list-style:none}
+.corpo li{margin:14px 0;padding-left:34px;position:relative}
+.corpo li::before{content:"";position:absolute;left:6px;top:16px;width:10px;height:10px;
+ border-radius:50%;background:var(--accent)}
+.corpo ol.cadeia-num{counter-reset:c;list-style:none;column-count:2;column-gap:48px}
+.corpo ol.cadeia-num li{counter-increment:c;margin:10px 0;padding-left:44px;position:relative;font-size:25px}
+.corpo ol.cadeia-num li::before{content:counter(c);position:absolute;left:0;top:0;width:30px;height:30px;
+ border-radius:8px;background:none;border:1px solid var(--line);color:var(--accent);
+ font-size:17px;display:flex;align-items:center;justify-content:center}
+.d{color:var(--accent);font-weight:600}
+.cadeia{font-size:32px;color:var(--accent);text-align:center;margin:26px 0;letter-spacing:.5px}
+.eqs{display:flex;flex-direction:column;align-items:center;gap:30px}
+.eqs img{max-width:92%;max-height:150px}
+.figura{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.figura img{height:100%;width:100%;object-fit:contain}
+.figura.claro img{background:#fff;border-radius:14px;padding:16px}
+.nota{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);
+ font-size:20px;color:var(--muted);line-height:1.5}
+.tb{width:100%;border-collapse:collapse;font-size:24px;margin-top:8px}
+.tb th{text-align:left;padding:12px 10px;color:var(--accent);font-weight:600;
+ border-bottom:1px solid var(--line);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+.tb td{padding:12px 10px;border-bottom:1px solid #1e1e1e}
+.tb.sym th{text-transform:none;letter-spacing:.02em;font-size:22px}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(215,180,106,.38)}
+a:hover{border-bottom-color:var(--accent)}
+.abrir{display:inline-block;margin-top:26px;padding:14px 26px;border:1px solid var(--accent);
+ border-radius:12px;color:var(--accent);font-size:26px;font-weight:600;text-decoration:none;
+ border-bottom:1px solid var(--accent)}
+.abrir:hover{background:var(--accent);color:var(--bg)}
+.abrir small{display:block;font-size:17px;font-weight:400;color:var(--muted);margin-top:5px}
+.abrir:hover small{color:var(--bg)}
+.slide.dash{padding:30px 40px 42px}
+.slide.dash h2{font-size:33px;margin-bottom:10px}
+.dashbox{flex:1;min-height:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#080808}
+.dashbox iframe{display:block;width:100%;height:100%;border:0}
+.slide.dash .nota{margin-top:12px;padding-top:12px;font-size:19px}
+.capa{justify-content:center;text-align:center}
+.capa h1{font-size:76px}
+.capa .marca{margin-bottom:36px;font-size:20px;color:var(--accent);letter-spacing:.16em;text-transform:uppercase}
+.capa .rodape{margin-top:52px;font-size:21px;color:var(--muted)}
+.roteiro h2,.fecho h2{color:var(--accent)}
+.barra{position:fixed;left:0;bottom:0;height:3px;background:var(--accent);transition:width .18s}
+.hud{position:fixed;right:20px;bottom:14px;font-size:15px;color:var(--muted);
+ display:flex;gap:16px;align-items:center;user-select:none}
+.hud button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;
+ padding:5px 11px;font-size:15px;cursor:pointer;font-family:inherit}
+.hud button:hover{border-color:var(--accent);color:var(--accent)}
+.tit{position:fixed;left:20px;bottom:14px;font-size:15px;color:#4f4f4f}
+@media print{.hud,.barra,.tit{display:none}}
+</style></head>
+<body>
+<div id="palco">
+<section class="slide capa"><div class="marca">Astronomia (AST0001) &middot; Curso de Física &middot; UDESC</div><h1>Gravitação newtoniana e dinâmica orbital</h1><div class="sub">Aula 5 &middot; Capítulo 5 &middot; de onde vêm as três leis, e como uma órbita vira massa</div><div class="rodape">Prof. Dr. Rafael Camargo Rodrigues de Lima &middot; 2026/2</div></section>
+<section class="slide roteiro"><h2>O que esta aula responde</h2><div class="conteudo"><div class="corpo"><ul><li>De onde vem a constante da terceira lei — e por que ela é a <span class="d">mesma</span> para todos</li><li>As três leis de Kepler deduzidas de <span class="d">uma única</span> equação de movimento</li><li>Por que órbitas abertas existem, coisa que Kepler não podia saber</li><li>Como uma órbita medida vira uma massa em quilogramas</li><li>Por que um sistema autogravitante esquenta ao perder energia</li></ul></div></div><div class="nota">A Aula 4 descreveu as órbitas. Esta explica.</div></section>
+<section class="slide "><h2>O que o Capítulo 4 deixou em aberto</h2><div class="conteudo centro"><div class="corpo"><ul><li>Kepler tirou P² ∝ a³ dos dados de Tycho — e parou aí</li><li>Não sabia de onde vinha a constante</li><li>Nem por que ela é a mesma para os oito planetas</li><li>Nem o que aconteceria com um corpo que <span class='d'>não voltasse</span></li><li>As três leis eram descrição. Faltava a causa.</li></ul></div></div><div class="nota">Newton publica a resposta em 1687, setenta e oito anos depois da primeira lei.</div></section>
+<section class="slide "><h2>Órbitas são uma balança</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_balanca.svg" alt=""></div></div><div class="nota">Vale para planetas ao redor do Sol, estrelas ao redor do centro galáctico, gás em discos e matéria em aglomerados. Muda a geometria, não a ideia.</div></section>
+<section class="slide "><h2>E a terceira lei, na forma completa</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_k3geral.svg" alt=""></div></div><div class="nota">Aparece a <b>soma</b> das massas, não a massa central. Em planetas a estrela domina; em binárias, não — e é aí que a lei vira instrumento.</div></section>
+<section class="slide "><h2>Do laboratório da aula passada à massa do Sol</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_massasol.svg" alt=""></div></div><div class="nota">O laboratório entregou a e P a partir de ângulos. Estes dois números já dão a massa central: é o primeiro número do curso que não sai de geometria nenhuma.</div></section>
+<section class="slide roteiro"><h2>O problema de dois corpos</h2><div class="conteudo"><div class="corpo"><p>Praticamente toda a mecânica celeste sai de <span class="d">um único problema</span>, e vale resolvê-lo por completo uma vez.</p><p style="margin-top:18px">Duas massas, só gravidade entre elas. Três passos, e as três leis caem.</p></div></div><div class="nota">É o último problema de muitos corpos que tem solução fechada. Com três, acaba.</div></section>
+<section class="slide "><h2>As equações de movimento</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_eqmov.svg" alt=""></div></div></section>
+<section class="slide "><h2>Primeiro passo: separar o centro de massa</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_cm.svg" alt=""></div></div><div class="nota">Ele se move em linha reta com velocidade constante. Trabalhando no referencial em que está parado, o problema perde três graus de liberdade.</div></section>
+<section class="slide "><h2>Segundo passo: reduzir a um corpo</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_reduz.svg" alt=""></div></div><div class="nota">Idêntica à de uma partícula de massa μ orbitando um centro fixo de massa M. Dois corpos viraram um — e muda o valor de M, não a forma da solução.</div></section>
+<section class="slide "><h2>Terceiro passo: o movimento é plano</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_plano.svg" alt=""></div></div><div class="nota">ℓ é constante e perpendicular a r, logo tudo acontece em um plano fixo. Restam duas coordenadas.</div></section>
+<section class="slide "><h2>A segunda lei já está aqui</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_areal.svg" alt=""></div></div><div class="nota">A lei das áreas não depende da forma 1/r² da força — vale para <b>qualquer</b> força central. São a primeira e a terceira que exigem gravitação newtoniana.</div></section>
+<section class="slide "><h2>A substituição de Binet</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_binet.svg" alt=""></div></div><div class="nota">Trocar r por u = 1/r transforma uma equação difícil em uma que todo mundo sabe resolver.</div></section>
+<section class="slide "><h2>A equação da órbita</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_orbita.svg" alt=""></div></div><div class="nota">Oscilador harmônico com termo forçado constante — talvez a equação diferencial mais bem comportada da física.</div></section>
+<section class="slide "><h2>E a primeira lei <i>emerge</i></h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_conica.svg" alt=""></div></div><div class="nota">Não foi suposta em momento nenhum: ela é a solução. E vem com um bônus — para e ≥ 1 a curva é aberta, coisa que Kepler não tinha como saber.</div></section>
+<section class="slide "><h2>As quatro cônicas, de uma vez</h2><div class="conteudo centro"><div class="corpo"><ul><li><span class='d'>e = 0</span> — circunferência</li><li><span class='d'>0 &lt; e &lt; 1</span> — elipse: órbita ligada, volta sempre</li><li><span class='d'>e = 1</span> — parábola: o limite exato do escape</li><li><span class='d'>e &gt; 1</span> — hipérbole: passa uma vez e não volta</li></ul></div></div><div class="nota">A mesma equação descreve as quatro. O que muda é a energia do lançamento.</div></section>
+<section class="slide "><h2>O semi-latus rectum liga a geometria à dinâmica</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_p.svg" alt=""></div></div><div class="nota">O p que no Capítulo 4 era só um comprimento da elipse agora tem conteúdo físico: é ℓ²/GM.</div></section>
+<section class="slide "><h2>Aquecimento: a terceira lei no caso circular</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_circ.svg" alt=""></div></div><div class="nota">A soma das massas não foi imposta — ela vem da equação do movimento relativo. Falta mostrar que, na elipse, r vira a.</div></section>
+<section class="slide "><h2>A terceira lei, sem supor círculo</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_k3ded.svg" alt=""></div></div><div class="nota">A excentricidade sumiu: órbitas muito alongadas e quase circulares de mesmo semieixo maior têm exatamente o mesmo período.</div></section>
+<section class="slide "><h2>Energia orbital</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_energia.svg" alt=""></div></div><div class="nota">Depende <b>só</b> do semieixo maior. Duas órbitas de mesmo a têm a mesma energia, por mais diferentes que pareçam.</div></section>
+<section class="slide "><h2>A equação vis-viva</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_visviva.svg" alt=""></div></div><div class="nota">Dá a rapidez em qualquer ponto de qualquer órbita. Circular: r = a e v = √(GM/r). Escape: a → ∞. Hiperbólica: ε > 0.</div></section>
+<section class="slide dash"><h2>Explorar: vis-viva e as quatro cônicas</h2><div class="dashbox"><iframe data-src="../vis-viva/?embed=1" title="Explorar: vis-viva e as quatro cônicas" loading="lazy"></iframe></div><div class="nota">Lance sempre do mesmo ponto e mude só a rapidez. À direita, a parábola cai <b>em cima</b> da curva de escape.</div></section>
+<section class="slide "><h2>A velocidade de escape</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_esc.svg" alt=""></div></div><div class="nota">Escapar custa exatamente √2 vezes a velocidade circular. Para a Terra, 11,2 km/s; para uma anã branca de massa solar e raio terrestre, 6 455 km/s — 2% da velocidade da luz.</div></section>
+<section class="slide "><h2>Onde o corpo está em cada instante</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_anomalia.svg" alt=""></div></div><div class="nota">A anomalia excêntrica E vem da projeção da elipse sobre o círculo circunscrito.</div></section>
+<section class="slide "><h2>A equação de Kepler</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_kepler.svg" alt=""><img src="assets/eq/a5_newton.svg" alt=""></div></div><div class="nota">Transcendental: não há solução fechada. Resolve-se por Newton-Raphson em poucas iterações — é o cálculo que toda efeméride faz milhões de vezes por dia.</div></section>
+<section class="slide roteiro"><h2>Binárias: a órbita vira massa</h2><div class="conteudo"><div class="corpo"><p>Em um sistema binário cada estrela descreve uma elipse em torno do centro de massa. A geometria observada já entrega a <span class="d">razão</span> das massas; a terceira lei entrega a <span class="d">soma</span>.</p><p style="margin-top:18px">Com as duas, saem as massas separadas.</p></div></div><div class="nota">É a única forma de obter massa estelar sem hipótese de modelo.</div></section>
+<section class="slide "><h2>A razão, pela geometria</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_razao.svg" alt=""></div></div></section>
+<section class="slide "><h2>A amplitude da velocidade radial</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_k1.svg" alt=""></div></div><div class="nota">O fator sen i aparece porque só se mede a projeção na linha de visada. É a limitação fundamental do método.</div></section>
+<section class="slide "><h2>A função de massa</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_fmassa.svg" alt=""></div></div><div class="nota">Tudo do lado direito é observável. Se apenas uma componente é vista, f(m) é um <b>limite inferior</b> para m₂ — e quando ele excede a massa máxima de uma estrela de nêutrons, a companheira invisível não pode ser outra coisa.</div></section>
+<section class="slide "><h2>As leis de Kepler, do Capítulo 4</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a4_kepler.png" alt=""></div></div><div class="nota">Painel (b): as duas famílias caem sobre retas de inclinação 3/2 com coeficientes diferentes. Agora sabemos o que o coeficiente é: G vezes a massa do corpo central.</div></section>
+<section class="slide "><h2>O teorema do virial</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_virial.svg" alt=""></div></div><div class="nota">Para um sistema ligado em equilíbrio, a média temporal de d²I/dt² se anula. Sobra 2K + U = 0.</div></section>
+<section class="slide "><h2>E a consequência contraintuitiva</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_negativa.svg" alt=""></div></div><div class="nota">Se o sistema perde energia, E diminui — e portanto K <b>aumenta</b>. Ele esquenta ao esfriar. Sistemas autogravitantes têm capacidade térmica negativa.</div></section>
+<section class="slide "><h2>Por que isso importa</h2><div class="conteudo centro"><div class="corpo"><ul><li>Uma estrela que irradia <span class='d'>contrai e aquece</span></li><li>Um aglomerado que evapora estrelas fica mais compacto e mais quente</li><li>É por isso que estrelas não atingem equilíbrio térmico com o meio</li><li>E é por isso que a evolução estelar tem a direção que tem</li></ul></div></div><div class="nota">Uma das ideias mais profundas de toda a astrofísica, e ela cabe em duas linhas de álgebra.</div></section>
+<section class="slide roteiro"><h2>Daqui em diante, leitura complementar</h2><div class="conteudo"><div class="corpo"><p>Marés, o problema restrito de três corpos e os pontos de Lagrange <span class="d">aplicam</span> a mecânica já deduzida.</p><p style="margin-top:18px">Não são pré-requisito para o laboratório. O núcleo do capítulo fecha no virial.</p></div></div></section>
+<section class="slide "><h2>Forças de maré</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_mare.svg" alt=""></div></div><div class="nota">A dependência é d⁻³, não d⁻². Por isso a Lua domina as marés terrestres apesar de o Sol ser muito mais massivo: o que conta é M/d³, e nisso a Lua ganha por 2,2 vezes.</div></section>
+<section class="slide "><h2>O limite de Roche</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_roche.svg" alt=""></div></div><div class="nota">Os raios do satélite cancelam. Um tratamento que inclua a deformação troca o 1,26 por 2,44 — o espírito é o mesmo: existe uma distância dentro da qual material não se agrega em luas.</div></section>
+<section class="slide "><h2>O potencial efetivo e a constante de Jacobi</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_phief.svg" alt=""><img src="assets/eq/a5_jacobi.svg" alt=""></div></div><div class="nota">Coriolis não deriva de potencial, mas não realiza trabalho. Sobra uma integral de movimento que define regiões proibidas.</div></section>
+<section class="slide "><h2>Os cinco pontos de Lagrange</h2><div class="conteudo centro"><div class="figura"><img src="assets/fig/a5_lagrange.png" alt=""></div></div><div class="nota">(a) As curvas destacadas passam por L₁ a L₄ — a de L₁ é o oito que define os lóbulos de Roche. (b) A escala real: a raiz cúbica achata tudo, e no sistema Sol–Terra L₂ fica a 1,5 milhão de km, um centésimo da distância ao Sol.</div></section>
+<section class="slide "><h2>Onde ficam, e quais são estáveis</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_hill.svg" alt=""><img src="assets/eq/a5_estab.svg" alt=""></div></div><div class="nota">L₁, L₂ e L₃ são instáveis — missões ali gastam algumas dezenas de m/s por ano em manutenção. L₄ e L₅ são estáveis se a razão de massas passar de 24,96, o que Sol–Júpiter satisfaz com folga: são os troianos.</div></section>
+<section class="slide roteiro"><h2>O laboratório de dados</h2><div class="conteudo"><div class="corpo"><p>21 corpos reais, quatro centros diferentes. A terceira lei na forma newtoniana pesa cada um.</p><p style="margin-top:18px">Em unidades astronômicas, anos e massas solares, ela vira simplesmente M = a³/P².</p></div><a class="abrir" href="https://rafaelcrdelima.github.io/Astronomia/modelo-artigo-massas/" target="_blank" rel="noopener">Baixar o esqueleto do artigo<small>rafaelcrdelima.github.io/Astronomia/modelo-artigo-massas/</small></a></div><div class="nota">Arquivo: 02_terceira_lei_kepler.csv, nos dados dos laboratórios.</div></section>
+<section class="slide "><h2>O que o laboratório pede</h2><div class="conteudo centro"><div class="eqs"><img src="assets/eq/a5_labk3.svg" alt=""></div></div><div class="nota">Agrupe por corpo central, tire a média de cada grupo e converta para quilogramas. Pelos planetas sai 1,00 M☉; pelas luas galileanas, M☉/1047 — a massa de Júpiter.</div></section>
+<section class="slide "><h2>O que o artigo tem de responder</h2><div class="conteudo centro"><div class="corpo"><ul><li>Por que as retas do gráfico log-log são <span class='d'>paralelas</span> mas deslocadas — traduza o deslocamento em massa</li><li>A Terra aparece com <span class='d'>um</span> satélite: o que significa uma média de um valor só?</li><li>O que este método <span class='d'>não</span> mede — ele dá a soma, e só ela</li></ul></div></div><div class="nota">A terceira pergunta é a mais importante: a lei não separa as duas massas, não diz do que o corpo é feito, e não distingue uma estrela de um buraco negro de mesma massa.</div></section>
+<section class="slide fecho"><h2>O que fica do Capítulo 5</h2><div class="conteudo"><div class="corpo"><ul><li>As três leis de Kepler não são três fatos: são <span class="d">uma</span> equação de movimento, vista de três ângulos</li><li>A primeira lei emergiu da dedução — e trouxe as órbitas abertas de brinde</li><li>A constante da terceira lei é G vezes a soma das massas, e é isso que faz de uma órbita uma balança</li><li>Sistemas autogravitantes esquentam ao perder energia</li></ul></div></div><div class="nota">Laboratório: <a href="https://rafaelcrdelima.github.io/Astronomia/modelo-artigo-massas/" target="_blank" rel="noopener">modelo-artigo-massas</a>. No Capítulo 6: a luz entra, e o espectro vira temperatura.</div></section>
+</div>
+<div class="barra"></div>
+<div class="tit">Aula 5 &middot; Astronomia (AST0001)</div>
+<div class="hud">
+  <button onclick="ant()">&larr;</button>
+  <span id="cnt"></span>
+  <button onclick="prox()">&rarr;</button>
+  <button onclick="telaCheia()">tela cheia (F)</button>
+</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+const palco=document.getElementById('palco');
+function escala(){
+  const k=Math.min(window.innerWidth/1280,window.innerHeight/720);
+  slides.forEach(s=>s.style.transform='scale('+k+')');
+}
+function mostra(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.getElementById('cnt').textContent=(i+1)+' / '+slides.length;
+  document.querySelector('.barra').style.width=((i+1)/slides.length*100)+'%';
+  location.hash=i+1;
+  slides.forEach((s,k)=>{
+    const f=s.querySelector('iframe[data-src]');
+    if(!f) return;
+    if(k===i){ if(!f.getAttribute('src')) f.setAttribute('src', f.dataset.src); }
+    else if(f.getAttribute('src')){ f.removeAttribute('src'); }
+  });
+}
+function prox(){mostra(i+1)} function ant(){mostra(i-1)}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','n','N','Enter'].includes(e.key)){prox();e.preventDefault()}
+  else if(['ArrowLeft','ArrowUp','PageUp','p','P','Backspace'].includes(e.key)){ant();e.preventDefault()}
+  else if(e.key==='Home'){mostra(0)} else if(e.key==='End'){mostra(slides.length-1)}
+  else if(e.key==='f'||e.key==='F'){telaCheia()}
+});
+addEventListener('click',e=>{
+  if(e.target.closest('.hud')||e.target.closest('a'))return;
+  (e.clientX < window.innerWidth*0.28) ? ant() : prox();
+});
+function telaCheia(){
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen()}
+  else{document.exitFullscreen()}
+}
+addEventListener('resize',escala);
+let x0=null;
+addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+addEventListener('touchend',e=>{if(x0===null)return;
+  const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>50){dx<0?prox():ant()} x0=null});
+escala();
+mostra(parseInt(location.hash.replace('#',''))-1||0);
+</script>
+</body></html>
