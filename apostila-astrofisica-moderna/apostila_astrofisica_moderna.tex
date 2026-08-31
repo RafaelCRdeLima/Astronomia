@@ -2108,161 +2108,672 @@ A entrega deve conter o caderno de dados exportado; um gráfico $\lambda(t)$ par
 O Capítulo 4 descreveu as órbitas: a forma da curva, as três leis e o que se mede delas do chão. Não explicou
 nenhuma. Kepler obteve $P^{2}\propto a^{3}$ dos dados e não tinha como dizer de onde vinha a constante, nem por
 que ela é a mesma para todos os planetas, nem o que aconteceria com um corpo que não voltasse. Este capítulo
-deduz as três leis de uma única equação de movimento --- e, ao fazê-lo, transforma o que era descrição em
-instrumento de medida: a partir daqui, uma órbita medida vira uma massa em quilogramas.
+deduz as três leis --- e, ao fazê-lo, transforma o que era descrição em instrumento de medida: a partir daqui,
+uma órbita medida vira uma massa em quilogramas.
 
-\subsection*{Órbitas como balança gravitacional}
-\addcontentsline{toc}{subsection}{Órbitas como balança gravitacional}
+O caminho é percorrido \emph{duas vezes}, de propósito. A primeira travessia é elementar: as leis de Newton, a
+aceleração centrípeta deduzida geometricamente, o argumento que leva de Kepler à lei do inverso do quadrado e a
+constante $K$ obtida para duas massas em órbita circular. Ela cabe em papel e lápis, é a que Newton de fato
+percorreu, e já entrega a balança gravitacional que o laboratório do capítulo usa. A segunda travessia é
+vetorial e não supõe círculo em momento nenhum: de uma única equação de movimento saem, em sequência, a
+conservação de energia, a conservação de momento angular, a primeira lei, a segunda e a terceira. O preço da
+elegância é que ela esconde a física atrás da álgebra; por isso vem depois, e não no lugar da primeira.
 
-Órbitas são uma das ferramentas mais poderosas da astrofísica porque a gravidade transforma movimento em medida de massa. No caso circular simples, igualamos força gravitacional e aceleração centrípeta:
+\subsection*{As três leis de Newton}
+\addcontentsline{toc}{subsection}{As três leis de Newton}
+
+Tudo o que segue sai de três enunciados e de uma lei de força. Vale reescrevê-los na forma em que serão usados.
+
+\textbf{Primeira lei (inércia).} Se a resultante das forças sobre um corpo é nula, seu momento linear é constante:
 \[
-\frac{GMm}{r^2}=\frac{mv^2}{r}.
+\sum_i\vec{F}_i=0
+\quad\Longrightarrow\quad
+\vec{p}=m\vec{v}=\text{constante}.
 \]
-Daí vem $v^2=GM/r$ e $M=rv^2/G$. Essa relação aparece em muitos lugares: planetas ao redor do Sol, estrelas ao redor do centro galáctico, gás em discos de galáxias e matéria em aglomerados. A forma exata muda com geometria e distribuição de massa, mas a ideia permanece: movimento orbital é uma balança gravitacional.
+O enunciado é vetorial, e isso não é detalhe: constante significa constante em módulo, direção \emph{e} sentido.
+Um corpo em movimento circular uniforme tem rapidez constante e mesmo assim está acelerado, porque a direção de
+$\vec{v}$ muda. É exatamente esse o caso de um planeta em órbita.
 
-A terceira lei de Kepler generalizada,
+\textbf{Segunda lei.} A força é a taxa de variação do momento linear:
 \[
-P^2=\frac{4\pi^2a^3}{G(M_1+M_2)},
+\vec{F}=\frac{d\vec{p}}{dt}=\frac{d}{dt}\left(m\vec{v}\right)
+=\vec{v}\frac{dm}{dt}+m\frac{d\vec{v}}{dt}.
 \]
-mostra que período e tamanho orbital medem a soma das massas. Em sistemas planetários, normalmente $M_\star\gg M_p$, e a massa do planeta pouco altera o período. Em binárias estelares, as duas massas podem ser comparáveis, e o problema fica mais rico. Por isso estrelas binárias são tão importantes no Carroll \& Ostlie: elas fornecem massas reais, não apenas estimativas teóricas.
+Se a massa é constante, o primeiro termo desaparece e sobra a forma familiar $\vec{F}=m\,d\vec{v}/dt=m\vec{a}$.
+Escrever a lei na forma completa não é preciosismo: o termo $\vec{v}\,dm/dt$ é o que governa foguetes, estrelas
+que perdem massa em vento e objetos que acretam matéria de uma companheira --- todos assuntos deste curso. Neste
+capítulo, porém, as massas são constantes, e usaremos $\vec{F}=m\vec{a}$.
+
+\textbf{Terceira lei (ação e reação).} As forças que dois corpos exercem um sobre o outro são opostas:
+\[
+\vec{F}_{12}=-\vec{F}_{21},
+\qquad
+|\vec{F}_{12}|=|\vec{F}_{21}|.
+\]
+Ela é a mais subestimada das três e a que fará mais trabalho adiante: é dela que virá a simetria entre as duas
+massas na lei da gravitação, e é dela que virá a soma $m_1+m_2$ na terceira lei de Kepler.
+
+\subsection*{Aceleração em órbitas circulares}
+\addcontentsline{toc}{subsection}{Aceleração em órbitas circulares}
+
+Antes da gravitação, um resultado puramente cinemático: de quanto está acelerado um corpo que percorre uma
+circunferência com rapidez constante? A resposta é $v^{2}/r$, e vale deduzi-la, porque o argumento é curto e
+porque ela é o único ingrediente dinâmico da primeira travessia.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Lema: se o módulo de $\vec{r}$ é constante, então $\vec{v}\perp\vec{r}$}
+Seja $|\vec{r}|$ constante. Então $|\vec{r}|^{2}=\sum_i x_i^{2}$ também é, e sua derivada se anula:
+\[
+\frac{d}{dt}\left(\sum_i x_i^{2}\right)=0
+\quad\Longrightarrow\quad
+\sum_i 2x_i\frac{dx_i}{dt}=0
+\quad\Longrightarrow\quad
+\vec{r}\cdot\frac{d\vec{r}}{dt}=\vec{r}\cdot\vec{v}=0.
+\]
+Produto escalar nulo entre vetores não nulos significa perpendicularidade: em qualquer movimento sobre uma
+circunferência, a velocidade é tangente. O lema vale em qualquer número de dimensões e não usa nada além da
+regra da cadeia.
+\end{lessonblock}
+
+Considere o corpo em duas posições separadas por um ângulo pequeno $\theta$, percorridas em um intervalo
+$\Delta t$. Duas leituras da mesma figura:
+
+\textbf{No espaço.} O arco percorrido vale $r\theta$. Para $\Delta t\to0$ a corda tende ao arco, e o
+comprimento percorrido é $v\Delta t$:
+\begin{equation}
+v\,\Delta t=\theta\,r.
+\tag{1}
+\end{equation}
+
+\textbf{Nas velocidades.} Pelo lema, $\vec{v}$ é perpendicular a $\vec{r}$ nas duas posições. Dois vetores
+obtidos girando de $90^\circ$ duas direções separadas por $\theta$ estão eles próprios separados por $\theta$:
+o vetor velocidade girou do mesmo ângulo. Para $\theta$ pequeno, o triângulo isósceles formado por $\vec{v}$,
+$\vec{v}\,'$ e $\Delta\vec{v}$ dá
+\begin{equation}
+|\Delta\vec{v}|=v\,\theta
+\quad\Longrightarrow\quad
+\theta=\frac{\Delta v}{v}.
+\tag{2}
+\end{equation}
+
+Substituindo (2) em (1),
+\[
+v\,\Delta t=\frac{\Delta v}{v}\,r
+\quad\Longrightarrow\quad
+\boxed{\ a=\frac{\Delta v}{\Delta t}=\frac{v^{2}}{r}\ }
+\]
+e, para um corpo de massa $m$,
+\[
+F=\frac{mv^{2}}{r}.
+\]
+
+\begin{noticebox}
+\textbf{Um alerta que economiza confusão.} A força centrípeta \emph{não é um novo tipo de força}. Ela é a
+resultante --- seja lá de que natureza for --- que aponta para o centro da trajetória. Em um carro na curva é o
+atrito; em uma pedra girando na corda é a tração; em um planeta é a gravidade. Escrever $F=mv^{2}/r$ não diz
+nada sobre a origem da força: diz apenas quanto ela precisa valer para a trajetória ser aquela.
+\end{noticebox}
+
+\subsection*{De Kepler a Newton: a lei do inverso do quadrado}
+\addcontentsline{toc}{subsection}{De Kepler a Newton: a lei do inverso do quadrado}
+
+Newton percebeu que a mesma força que faz corpos caírem na Terra se estende até a Lua e a mantém em órbita. A
+pergunta seguinte é quantitativa: como essa força depende da distância? A resposta sai de combinar a
+cinemática recém-deduzida com a terceira lei de Kepler, tratando a órbita como circular.
+
+Em uma circunferência de raio $r$ percorrida em um período $P$,
+\[
+P=\frac{2\pi r}{v}
+\quad\Longrightarrow\quad
+v=\frac{2\pi r}{P}.
+\]
+A terceira lei de Kepler, tomada como fato empírico, diz $P^{2}=Kr^{3}$, com $K$ uma constante que depende só
+das unidades de $P$ e $r$. Então
+\[
+v^{2}=\frac{4\pi^{2}r^{2}}{P^{2}}=\frac{4\pi^{2}r^{2}}{Kr^{3}}=\frac{4\pi^{2}}{Kr}
+\quad\Longrightarrow\quad
+v^{2}\propto\frac{1}{r}.
+\]
+Levando à força centrípeta sobre o planeta de massa $m$:
+\[
+F=\frac{mv^{2}}{r}=\frac{4\pi^{2}}{K}\frac{m}{r^{2}}
+\quad\Longrightarrow\quad
+F\propto\frac{m}{r^{2}}.
+\]
+Falta a massa do Sol. Ela entra pela terceira lei de Newton: o planeta puxa o Sol com força de mesmo módulo, e
+o mesmo raciocínio aplicado ao Sol daria $F\propto M/r^{2}$. Uma única expressão que satisfaça as duas
+proporcionalidades ao mesmo tempo é o produto,
+\[
+\boxed{\ \vec{F}=-\,\frac{GMm}{r^{2}}\,\hat{r}\ }
+\]
+com $G$ uma constante universal --- universal no sentido forte: o mesmo número para a maçã, para a Lua, para
+Júpiter e para uma galáxia. O sinal negativo e o versor $\hat{r}$ registram que a força é atrativa e dirigida
+ao longo da linha que une os corpos. Seu valor,
+$G=6{,}674\times10^{-11}\,\mathrm{m^{3}\,kg^{-1}\,s^{-2}}$, só ficou acessível com o experimento de Cavendish em
+1798 --- que na verdade mediu a densidade média da Terra com uma balança de torção, de onde $G$ se extrai ---,
+111 anos depois dos \textit{Principia}. Newton estabeleceu a forma da lei sem nunca saber o valor da constante,
+e é por isso que a astronomia mede tão bem os produtos $GM$ e tão mal as massas isoladas: $G$ continua sendo a
+constante fundamental pior determinada da física.
+
+\begin{noticebox}
+\textbf{Isso não é um argumento circular?} A pergunta é boa e precisa ser respondida, porque em seguida
+deduziremos a terceira lei de Kepler a partir da lei do inverso do quadrado --- que acabamos de obter da
+terceira lei de Kepler.
+
+Não é circular porque as duas passagens têm estatutos lógicos diferentes. A primeira é uma \emph{inferência}:
+supondo órbitas circulares, a forma $1/r^{2}$ é a que reproduz $P^{2}\propto a^{3}$. Ela não prova nada ---
+apenas sugere a lei. O passo decisivo de Newton foi outro: \emph{postular} que $F=GMm/r^{2}$ vale entre
+quaisquer dois corpos, sempre, e então \emph{deduzir} as consequências. E as consequências vão muito além do
+que entrou: a dedução completa dispensa a hipótese de órbita circular, produz as órbitas abertas, que Kepler
+não descreveu, e corrige a própria terceira lei, trocando a constante $K$ por algo que depende da soma das
+massas --- um efeito ausente da lei empírica. Uma teoria se testa pelo que ela prevê além daquilo de que foi
+construída.
+\end{noticebox}
+
+\subsection*{A constante $K$, deduzida}
+\addcontentsline{toc}{subsection}{A constante $K$, deduzida}
+
+Kepler mediu $K$; agora podemos calculá-la. Considere dois corpos de massas $m_1$ e $m_2$ em órbitas
+circulares em torno do centro de massa comum, com raios $r_1$ e $r_2$ e o mesmo período $P$. A separação entre
+eles é $a=r_1+r_2$, e a definição de centro de massa impõe $m_1r_1=m_2r_2$.
+
+A força gravitacional entre eles depende da separação, não dos raios individuais:
+\[
+F_G=\frac{Gm_1m_2}{(r_1+r_2)^{2}}.
+\]
+Já as forças centrípetas dependem de cada raio:
+\[
+F_1=\frac{m_1v_1^{2}}{r_1},
+\qquad
+F_2=\frac{m_2v_2^{2}}{r_2},
+\qquad\text{com}\qquad
+v_1=\frac{2\pi r_1}{P},
+\quad
+v_2=\frac{2\pi r_2}{P}.
+\]
+A gravidade é a única força em jogo, logo $F_G=F_1$:
+\[
+\frac{Gm_1m_2}{(r_1+r_2)^{2}}=\frac{m_1}{r_1}\left(\frac{2\pi r_1}{P}\right)^{2}
+=\frac{4\pi^{2}m_1r_1}{P^{2}}.
+\]
+A massa $m_1$ cancela dos dois lados --- e essa é a razão de a órbita medir a massa do \emph{outro} corpo:
+\[
+\frac{Gm_2}{(r_1+r_2)^{2}}=\frac{4\pi^{2}r_1}{P^{2}}.
+\]
+Fazendo o mesmo com $F_G=F_2$:
+\[
+\frac{Gm_1}{(r_1+r_2)^{2}}=\frac{4\pi^{2}r_2}{P^{2}}.
+\]
+Dividindo uma pela outra recupera-se $m_2/m_1=r_1/r_2$, que é a definição de centro de massa --- boa aferição
+de que nada se perdeu no caminho. Somando as duas:
+\[
+\frac{G(m_1+m_2)}{(r_1+r_2)^{2}}=\frac{4\pi^{2}(r_1+r_2)}{P^{2}},
+\]
+e com $a=r_1+r_2$,
+\[
+\boxed{\ P^{2}=\frac{4\pi^{2}}{G(m_1+m_2)}\,a^{3}\ }
+\qquad\text{ou seja}\qquad
+K=\frac{4\pi^{2}}{G(m_1+m_2)}.
+\]
+
+A constante de Kepler não é constante. Ela depende da soma das massas do par, e só \emph{parece} universal no
+Sistema Solar porque, para todo planeta, $M_\odot+m\simeq M_\odot$ com erro menor que um milésimo. Esse termo
+era invisível nos dados de Tycho e é o que explica o pequeno déficit de $P^{2}/a^{3}$ observado na tabela do
+Capítulo 4 para Júpiter. É também ele que dá utilidade à lei: se $K$ fosse mesmo uma constante da natureza, a
+terceira lei não mediria nada.
+
+\subsection*{Determinação de massas}
+\addcontentsline{toc}{subsection}{Determinação de massas}
+
+Escrita ao contrário, a relação recém-deduzida é um instrumento de medida:
+\[
+m_1+m_2=\frac{4\pi^{2}a^{3}}{GP^{2}},
+\]
+e quando um dos corpos domina, $M\gg m$, ela dá diretamente a massa central, $M=4\pi^{2}a^{3}/GP^{2}$. Duas
+grandezas geométricas --- um tamanho e um tempo --- entregam uma massa em quilogramas.
+
+O mesmo resultado aparece em forma mais crua igualando gravidade e aceleração centrípeta para uma órbita
+circular, $GMm/r^{2}=mv^{2}/r$, de onde $v^{2}=GM/r$ e
+\[
+M=\frac{rv^{2}}{G}.
+\]
+Nessa forma ela reaparece o curso inteiro: planetas ao redor do Sol, estrelas ao redor do centro galáctico, gás
+em discos de galáxias e matéria em aglomerados. A geometria muda, a distribuição de massa muda, os fatores
+numéricos mudam --- a ideia não: movimento orbital é uma balança.
+
+\begin{lessonblock}{Um sistema de unidades em que a conta some}
+A constante $K=4\pi^{2}/G(M+m)$ depende das unidades escolhidas, e há uma escolha que a torna igual a 1.
+Meça períodos em anos, distâncias em unidades astronômicas e massas em massas solares. Para o sistema
+Terra--Sol, $P=1$, $a=1$ e $M+m\simeq1$, de modo que
+\[
+K=\frac{P^{2}(M+m)}{a^{3}}=\frac{(1\,\text{ano})^{2}\,(1\,M_\odot)}{(1\,\mathrm{UA})^{3}}=1,
+\]
+e a terceira lei fica simplesmente
+\[
+\boxed{\ P^{2}=\frac{a^{3}}{M}\ }
+\qquad\Longleftrightarrow\qquad
+M=\frac{a^{3}}{P^{2}}.
+\]
+É nessa forma que o laboratório deste capítulo é feito: entrando com $a$ em UA e $P$ em anos, sai a massa em
+massas solares, sem nenhuma constante física pelo caminho.
+\end{lessonblock}
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Exemplo resolvido: a massa de Marte, a partir de Deimos}
+Deimos, o menor satélite de Marte, tem período sideral $P_D=1{,}262$ dias e distância média
+$a_D=23\,500\,\mathrm{km}$. Qual a massa de Marte?
+
+\textbf{(a) Em massas terrestres, sem usar constante alguma.} Compare o par Marte--Deimos com o par
+Terra--Lua. Para cada um, com a massa do satélite desprezível,
+\[
+K_\oplus^{-1}=\frac{a_L^{3}}{P_L^{2}}\propto M_\oplus,
+\qquad
+K_M^{-1}=\frac{a_D^{3}}{P_D^{2}}\propto M_M
+\quad\Longrightarrow\quad
+\frac{M_M}{M_\oplus}=\frac{a_D^{3}}{a_L^{3}}\cdot\frac{P_L^{2}}{P_D^{2}}.
+\]
+Com $P_L=27{,}3$ dias e $a_L=384\,000\,\mathrm{km}$:
+\[
+M_M=\left(\frac{23\,500}{384\,000}\right)^{3}\left(\frac{27{,}3}{1{,}262}\right)^{2}M_\oplus
+=0{,}11\,M_\oplus.
+\]
+As unidades de $a$ e de $P$ cancelam; podiam ser quilômetros e dias, ou pés e semanas.
+
+\textbf{(b) Em massas solares.} Mesma ideia, tomando agora como referência o par Sol--Terra, com
+$P_\oplus=365{,}25$ dias e $a_\oplus=1{,}5\times10^{8}\,\mathrm{km}$:
+\[
+M_M=\left(\frac{P_\oplus^{2}}{a_\oplus^{3}}\cdot\frac{a_D^{3}}{P_D^{2}}\right)M_\odot
+=3{,}2\times10^{-7}\,M_\odot.
+\]
+
+\textbf{Confira.} Os valores tabelados são $0{,}107\,M_\oplus$ e $3{,}23\times10^{-7}\,M_\odot$. Repare no que
+não foi preciso: nem $G$, nem a massa da Terra, nem a massa do Sol, nem sequer converter unidades. Toda medida
+de massa em astronomia é, no fundo, uma comparação entre duas órbitas.
+\end{lessonblock}
 
 \observaveis{período orbital, semieixo maior angular, velocidade radial}{massa total, inclinação orbital, separação física}{distância calibrada, órbita aproximadamente kepleriana, identificação correta dos componentes}{Que parte da massa foi medida dinamicamente e que parte depende de uma hipótese geométrica?}
 
-\begin{lessonblock}{Do laboratório do Capítulo 4 à massa do Sol}
-O laboratório do capítulo anterior entregou $a$ e $P$ a partir de ângulos. Com a forma dimensional da terceira lei, esses dois números já dão a massa central:
+\begin{lessonblock}{Do laboratório do Capítulo 4 à massa do Sol, em quilogramas}
+Nas unidades astronômicas acima a massa do Sol vale 1 por construção, o que é conveniente e não informa nada.
+Para obter o número em quilogramas é preciso voltar ao SI, e aí entra $G$:
 \[
-M_\odot=\frac{4\pi^2a^3}{GP^2}.
+M_\odot=\frac{4\pi^{2}a^{3}}{GP^{2}}.
 \]
-Use $a=1\,\mathrm{UA}$ e $P=1\,\mathrm{ano}$ para recuperar a escala de massa do Sol. É a ponte entre astronomia de posição e dinâmica gravitacional --- e é o primeiro número do curso que não sai de geometria nenhuma.
+O laboratório do capítulo anterior entregou $a$ e $P$ a partir de ângulos medidos do chão. Converta
+$a=1\,\mathrm{UA}=1{,}496\times10^{11}\,\mathrm{m}$ e $P=1\,\text{ano}=3{,}156\times10^{7}\,\mathrm{s}$, use
+$G=6{,}674\times10^{-11}$ em unidades SI e confira que sai $2{,}0\times10^{30}\,\mathrm{kg}$. É a ponte entre
+astronomia de posição e dinâmica gravitacional --- e é o primeiro número do curso que não sai de geometria
+nenhuma.
 \end{lessonblock}
 
-\subsection*{O problema de dois corpos, resolvido do início}
-\addcontentsline{toc}{subsection}{O problema de dois corpos, resolvido do início}
+\subsection*{O problema de dois corpos: a equação do movimento}
+\addcontentsline{toc}{subsection}{O problema de dois corpos: a equação do movimento}
 
-Praticamente toda a mecânica celeste sai de um único problema, e vale resolvê-lo por completo uma vez. Duas massas $m_1$ e $m_2$ interagem apenas gravitacionalmente. As equações de movimento são
+Começa aqui a segunda travessia. Tudo o que foi obtido até agora supôs órbita circular; nada do que segue
+supõe. Duas massas $M$ e $m$ interagem apenas gravitacionalmente. Em um referencial inercial qualquer, com
+posições $\vec{r}_M$ e $\vec{r}_m$, defina o vetor \emph{relativo}
 \[
-m_1\ddot{\vec{r}}_1=-\frac{Gm_1m_2}{r^{3}}(\vec{r}_1-\vec{r}_2),
+\vec{r}=\vec{r}_m-\vec{r}_M,
 \qquad
-m_2\ddot{\vec{r}}_2=-\frac{Gm_1m_2}{r^{3}}(\vec{r}_2-\vec{r}_1),
+r=|\vec{r}|,
 \]
-com $\vec{r}=\vec{r}_1-\vec{r}_2$ e $r=|\vec{r}|$.
-
-\textbf{Primeiro passo: separar o centro de massa.} Somando as duas equações,
+que aponta do corpo central para o corpo que orbita. Aplicando a segunda lei de Newton à lei da gravitação, a
+força sobre $m$ é
 \[
-m_1\ddot{\vec{r}}_1+m_2\ddot{\vec{r}}_2=0
+m\,\ddot{\vec{r}}_m=-\frac{GMm}{r^{3}}\vec{r},
+\]
+onde a potência $r^{3}$ no denominador aparece porque $\vec{r}$, e não $\hat{r}$, está no numerador. Pela
+terceira lei de Newton, a força sobre $M$ é a oposta:
+\[
+M\,\ddot{\vec{r}}_M=+\frac{GMm}{r^{3}}\vec{r}.
+\]
+
+\textbf{Somando as duas} equações, o lado direito se cancela e sobra
+$m\ddot{\vec{r}}_m+M\ddot{\vec{r}}_M=0$, isto é, $\ddot{\vec{R}}_{\rm cm}=0$ com
+$\vec{R}_{\rm cm}=(M\vec{r}_M+m\vec{r}_m)/(M+m)$: o centro de massa move-se em linha reta com velocidade
+constante. Podemos trabalhar no referencial em que ele está parado, e o problema perde três graus de liberdade.
+
+\textbf{Dividindo cada uma pela respectiva massa e subtraindo}, o lado esquerdo vira
+$\ddot{\vec{r}}_m-\ddot{\vec{r}}_M=\ddot{\vec{r}}$ e o direito se combina:
+\[
+\ddot{\vec{r}}=-\frac{G(M+m)}{r^{3}}\vec{r}.
+\]
+Escrevendo $M_{\rm tot}=M+m$ para a massa total do par, chega-se à equação central de todo o capítulo:
+\begin{equation}
+\boxed{\ \ddot{\vec{r}}+\frac{GM_{\rm tot}}{r^{3}}\vec{r}=0\ }
+\tag{$\star$}
+\end{equation}
+Ela é a \textbf{equação do movimento relativo}, e é idêntica à de uma única partícula orbitando um centro fixo
+de massa $M_{\rm tot}$. Dois corpos viraram um. É por isso que a solução do problema de Kepler serve tanto
+para um planeta em torno do Sol quanto para duas estrelas de massas comparáveis: muda o valor da massa que
+aparece, não a forma da solução. Se além disso interessarem as energias absolutas, e não só as por unidade de
+massa, entra a \textbf{massa reduzida} $\mu=Mm/(M+m)$, que é a massa efetiva do corpo fictício.
+
+Nas três seções seguintes, $(\star)$ será multiplicada por três coisas diferentes --- escalarmente por
+$\dot{\vec{r}}$, vetorialmente por $\vec{r}$ e vetorialmente pelo vetor que resultar da segunda operação --- e
+cada produto entregará uma lei de conservação. Não há truque adicional: é sempre a mesma equação, vista de
+ângulos diferentes.
+
+\begin{noticebox}
+\textbf{Notação, para não se perder entre livros.} Daqui em diante $M_{\rm tot}$ é a massa total do par. Ela
+aparece com dois conjuntos de nomes, conforme a situação: $M_{\rm tot}=M+m$ quando um corpo domina --- um
+planeta em torno do Sol --- e $M_{\rm tot}=m_1+m_2$ quando as massas são comparáveis, como em uma binária. É a
+mesma grandeza; muda só o rótulo. O produto $GM_{\rm tot}$ aparece o tempo todo. Boa parte dos textos de mecânica celeste abrevia esse produto
+como $\mu\equiv G(M+m)$, o \emph{parâmetro gravitacional padrão}; nesta apostila a letra $\mu$ já designa o
+movimento próprio (Capítulo 3), a massa reduzida (acima) e o peso molecular médio (Capítulo 9), de modo que o
+produto fica escrito por extenso. Do mesmo modo, o momento angular por unidade de massa é escrito
+$\vec{\ell}=\vec{r}\times\dot{\vec{r}}$; muitos livros o chamam $\vec{h}$. São a mesma coisa com nomes
+diferentes.
+\end{noticebox}
+
+\subsection*{Conservação da energia}
+\addcontentsline{toc}{subsection}{Conservação da energia}
+
+Multiplique $(\star)$ escalarmente por $\dot{\vec{r}}$:
+\[
+\dot{\vec{r}}\cdot\ddot{\vec{r}}+\frac{GM_{\rm tot}}{r^{3}}\,\vec{r}\cdot\dot{\vec{r}}=0.
+\]
+Os dois termos são derivadas totais disfarçadas. O primeiro:
+\[
+\dot{\vec{r}}\cdot\ddot{\vec{r}}=\frac{1}{2}\frac{d}{dt}\left(\dot{\vec{r}}\cdot\dot{\vec{r}}\right)
+=\frac{d}{dt}\left(\frac{v^{2}}{2}\right).
+\]
+O segundo exige uma identidade que será usada várias vezes: de $r^{2}=\vec{r}\cdot\vec{r}$ segue
+$2r\dot{r}=2\,\vec{r}\cdot\dot{\vec{r}}$, ou seja
+\[
+\vec{r}\cdot\dot{\vec{r}}=r\dot{r}
+\]
+--- em palavras, a projeção da velocidade sobre a direção radial é a taxa de variação da distância, que é o
+mesmo que escrever $\vec{r}\cdot\dot{\vec{r}}=vr\cos\alpha$ com $\alpha$ o ângulo entre os dois vetores.
+Então
+\[
+\frac{GM_{\rm tot}}{r^{3}}\,\vec{r}\cdot\dot{\vec{r}}=\frac{GM_{\rm tot}\dot{r}}{r^{2}}
+=\frac{d}{dt}\left(-\frac{GM_{\rm tot}}{r}\right).
+\]
+Somando, a equação inteira vira a derivada de uma coisa só:
+\[
+\frac{d}{dt}\left[\frac{v^{2}}{2}-\frac{GM_{\rm tot}}{r}\right]=0
 \quad\Longrightarrow\quad
-\ddot{\vec{R}}_{\rm cm}=0,
-\qquad
-\vec{R}_{\rm cm}\equiv\frac{m_1\vec{r}_1+m_2\vec{r}_2}{m_1+m_2}.
+\boxed{\ \varepsilon=\frac{v^{2}}{2}-\frac{GM_{\rm tot}}{r}=\text{constante}\ }
 \]
-O centro de massa move-se em linha reta com velocidade constante. Podemos, portanto, trabalhar no referencial em que ele está parado, e o problema perde três graus de liberdade.
+$\varepsilon$ é a \textbf{energia mecânica específica}, isto é, por unidade de massa reduzida. O primeiro termo
+é cinético, o segundo é o potencial gravitacional, e o sinal de $\varepsilon$ decide o destino da órbita:
+negativa, o corpo está ligado e volta sempre; nula ou positiva, ele não volta. Multiplicando por $\mu$
+recuperam-se as energias absolutas.
 
-\textbf{Segundo passo: reduzir a um corpo.} Dividindo cada equação pela respectiva massa e subtraindo,
+\subsection*{Conservação do momento angular}
+\addcontentsline{toc}{subsection}{Conservação do momento angular}
+
+Agora multiplique $(\star)$ \emph{vetorialmente} por $\vec{r}$, pela esquerda:
 \[
-\ddot{\vec{r}}=-\frac{G(m_1+m_2)}{r^{3}}\vec{r}.
+\vec{r}\times\ddot{\vec{r}}+\frac{GM_{\rm tot}}{r^{3}}\,\vec{r}\times\vec{r}=0.
 \]
-Definindo a \textbf{massa reduzida} $\mu=m_1m_2/(m_1+m_2)$ e a massa total $M=m_1+m_2$, a equação acima é idêntica à de uma partícula de massa $\mu$ orbitando um centro fixo de massa $M$. Dois corpos viraram um. É por isso que a solução do problema de Kepler serve tanto para um planeta em torno do Sol quanto para duas estrelas de massas comparáveis: muda o valor de $M$, não a forma da solução.
-
-\textbf{Terceiro passo: o movimento é plano.} O momento angular específico $\vec{\ell}=\vec{r}\times\dot{\vec{r}}$ tem derivada
+O segundo termo é nulo, porque o produto vetorial de um vetor por ele mesmo é zero --- e é exatamente aqui que
+entra a informação de que a força é \emph{central}, isto é, paralela a $\vec{r}$. Sobra
 \[
-\frac{d\vec{\ell}}{dt}=\dot{\vec{r}}\times\dot{\vec{r}}+\vec{r}\times\ddot{\vec{r}}
-=\vec{r}\times\left(-\frac{GM}{r^{3}}\vec{r}\right)=0.
+\vec{r}\times\ddot{\vec{r}}=0.
 \]
-Como $\vec{\ell}$ é constante e perpendicular a $\vec{r}$, o movimento ocorre em um plano fixo. Em coordenadas polares nesse plano, $\ell=r^{2}\dot{\theta}$.
-
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: a segunda lei de Kepler é conservação de momento angular}
-A área varrida pelo raio vetor em um intervalo $dt$ é a de um triângulo estreito de base $r\,d\theta$ e altura $r$:
+Por outro lado,
 \[
-dA=\tfrac{1}{2}r^{2}d\theta
+\frac{d}{dt}\left(\vec{r}\times\dot{\vec{r}}\right)
+=\underbrace{\dot{\vec{r}}\times\dot{\vec{r}}}_{=\,0}+\vec{r}\times\ddot{\vec{r}}=0,
+\]
+de modo que
+\[
+\boxed{\ \vec{\ell}=\vec{r}\times\dot{\vec{r}}=\text{constante}\ }
+\]
+$\vec{\ell}$ é o momento angular por unidade de massa; o momento angular propriamente dito é
+$\vec{L}=\mu\,\vec{r}\times\dot{\vec{r}}$. Como $\vec{\ell}$ é constante e, por construção, perpendicular a
+$\vec{r}$ em todo instante, o vetor posição está sempre no mesmo plano: \textbf{o movimento é plano}, e restam
+duas coordenadas em vez de três. Repare que só se usou que a força é central; a forma $1/r^{2}$ não entrou.
+
+\subsection*{A primeira lei de Kepler}
+\addcontentsline{toc}{subsection}{A primeira lei de Kepler}
+
+Falta a terceira multiplicação. Tome $(\star)$ e multiplique vetorialmente por $\vec{\ell}$, pela direita:
+\[
+\left(\ddot{\vec{r}}+\frac{GM_{\rm tot}}{r^{3}}\vec{r}\right)\times\vec{\ell}=0
 \quad\Longrightarrow\quad
-\frac{dA}{dt}=\tfrac{1}{2}r^{2}\dot{\theta}=\frac{\ell}{2}.
+\ddot{\vec{r}}\times\vec{\ell}=-\frac{GM_{\rm tot}}{r^{3}}\,\vec{r}\times\vec{\ell}
+=\frac{GM_{\rm tot}}{r^{3}}\,\vec{\ell}\times\vec{r}.
 \]
-Como $\ell$ é constante, $dA/dt$ é constante: áreas iguais em tempos iguais. A segunda lei de Kepler não depende da forma $1/r^2$ da força --- vale para \emph{qualquer} força central. É a primeira e a terceira leis que exigem especificamente gravitação newtoniana.
+Substituindo $\vec{\ell}=\vec{r}\times\dot{\vec{r}}$ e usando a identidade do duplo produto vetorial,
+$(\vec{a}\times\vec{b})\times\vec{c}=(\vec{a}\cdot\vec{c})\,\vec{b}-(\vec{b}\cdot\vec{c})\,\vec{a}$, com
+$\vec{a}=\vec{r}$, $\vec{b}=\dot{\vec{r}}$ e $\vec{c}=\vec{r}$:
+\[
+\left(\vec{r}\times\dot{\vec{r}}\right)\times\vec{r}
+=(\vec{r}\cdot\vec{r})\,\dot{\vec{r}}-(\dot{\vec{r}}\cdot\vec{r})\,\vec{r}
+=r^{2}\dot{\vec{r}}-r\dot{r}\,\vec{r},
+\]
+onde na última passagem entrou de novo $\vec{r}\cdot\dot{\vec{r}}=r\dot{r}$. Logo
+\[
+\ddot{\vec{r}}\times\vec{\ell}
+=GM_{\rm tot}\left[\frac{\dot{\vec{r}}}{r}-\frac{\dot{r}\,\vec{r}}{r^{2}}\right].
+\]
+O colchete é uma derivada exata --- é precisamente a derivada do versor radial:
+\[
+\frac{d}{dt}\left(\frac{\vec{r}}{r}\right)
+=\frac{\dot{\vec{r}}}{r}-\frac{\vec{r}\,\dot{r}}{r^{2}}.
+\]
+E o lado esquerdo também é, porque $\vec{\ell}$ é constante:
+$\ddot{\vec{r}}\times\vec{\ell}=\frac{d}{dt}(\dot{\vec{r}}\times\vec{\ell})$. A equação toda é então uma
+igualdade entre duas derivadas, e integra-se de imediato:
+\begin{equation}
+\boxed{\ \dot{\vec{r}}\times\vec{\ell}=GM_{\rm tot}\,\frac{\vec{r}}{r}+\vec{\beta}\ }
+\tag{A}
+\end{equation}
+com $\vec{\beta}$ um vetor constante de integração. Onde ele está? O lado esquerdo é perpendicular a
+$\vec{\ell}$, por ser um produto vetorial que tem $\vec{\ell}$ como fator; e o primeiro termo do lado direito
+também é, por ser paralelo a $\vec{r}$, que está no plano da órbita. A diferença entre os dois é $\vec{\beta}$,
+logo $\vec{\beta}\cdot\vec{\ell}=0$: \textbf{$\vec{\beta}$ também está no plano da órbita}.
+Temos agora dois vetores constantes, $\vec{\ell}$ e $\vec{\beta}$, e um escalar constante, $\varepsilon$.
+
+Multiplique (A) escalarmente por $\vec{r}$ e chame de $\theta$ o ângulo entre $\vec{r}$ e $\vec{\beta}$:
+\[
+\vec{r}\cdot\left(\dot{\vec{r}}\times\vec{\ell}\right)
+=GM_{\rm tot}\frac{\vec{r}\cdot\vec{r}}{r}+\vec{r}\cdot\vec{\beta}
+=GM_{\rm tot}\,r+\beta r\cos\theta.
+\]
+O lado esquerdo se simplifica com a identidade do produto misto,
+$\vec{a}\cdot(\vec{b}\times\vec{c})=(\vec{a}\times\vec{b})\cdot\vec{c}$:
+\[
+\vec{r}\cdot\left(\dot{\vec{r}}\times\vec{\ell}\right)
+=\left(\vec{r}\times\dot{\vec{r}}\right)\cdot\vec{\ell}
+=\vec{\ell}\cdot\vec{\ell}=\ell^{2}.
+\]
+Igualando e pondo $r$ em evidência:
+\[
+\ell^{2}=r\left(GM_{\rm tot}+\beta\cos\theta\right)
+=GM_{\rm tot}\,r\left(1+\frac{\beta}{GM_{\rm tot}}\cos\theta\right),
+\]
+e isolando $r$ chega-se à \textbf{equação da trajetória}:
+\[
+\boxed{\ r(\theta)=\frac{\ell^{2}/GM_{\rm tot}}{1+\dfrac{\beta}{GM_{\rm tot}}\cos\theta}
+=\frac{p}{1+e\cos\theta}\ }
+\]
+com
+\[
+p=\frac{\ell^{2}}{GM_{\rm tot}}
+\qquad\text{e}\qquad
+e=\frac{\beta}{GM_{\rm tot}}.
+\]
+Esta é a equação de uma cônica em coordenadas polares com o foco na origem. \textbf{A primeira lei de Kepler
+não foi suposta em momento nenhum: ela é a solução.} O parâmetro $p$ é o \textit{semi-latus rectum} do
+Capítulo 4, que agora ganha conteúdo dinâmico, e $e$ é a excentricidade. Como $r$ é mínimo quando
+$\cos\theta=1$, o vetor $\vec{\beta}$ aponta para o pericentro: ele é a direção do periélio, escrita como
+constante de movimento. A menos do fator $GM_{\rm tot}$, é o que se chama vetor de Laplace--Runge--Lenz, ou
+vetor excentricidade, $\vec{e}=\vec{\beta}/GM_{\rm tot}$.
+
+E veio um resultado que Kepler não poderia ter obtido: a solução não se limita a curvas fechadas.
+\[
+e=0\ \text{circunferência};\qquad
+0<e<1\ \text{elipse};\qquad
+e=1\ \text{parábola};\qquad
+e>1\ \text{hipérbole}.
+\]
+As duas primeiras são movimentos cíclicos; as duas últimas, movimentos infinitos --- o corpo passa uma vez e
+não volta. É a mesma família de curvas que se obtém seccionando um cone com um plano, e daí o nome.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{A excentricidade é energia disfarçada}
+As constantes $\varepsilon$, $\ell$ e $e$ não são independentes. De (A), $\vec{\beta}=\dot{\vec{r}}\times\vec{\ell}-GM_{\rm tot}\vec{r}/r$; tomando o módulo ao quadrado,
+\[
+\beta^{2}=\left|\dot{\vec{r}}\times\vec{\ell}\right|^{2}
++\left(GM_{\rm tot}\right)^{2}
+-2GM_{\rm tot}\frac{\left(\dot{\vec{r}}\times\vec{\ell}\right)\cdot\vec{r}}{r}.
+\]
+Como $\vec{\ell}$ é perpendicular a $\dot{\vec{r}}$, o primeiro termo vale $v^{2}\ell^{2}$; o último já foi
+calculado acima e vale $\ell^{2}$. Com $\beta=e\,GM_{\rm tot}$:
+\[
+\left(GM_{\rm tot}\right)^{2}e^{2}
+=v^{2}\ell^{2}+\left(GM_{\rm tot}\right)^{2}-\frac{2GM_{\rm tot}\ell^{2}}{r},
+\]
+e reagrupando aparece exatamente a combinação que define $\varepsilon$:
+\[
+\left(GM_{\rm tot}\right)^{2}\left(e^{2}-1\right)
+=2\ell^{2}\left(\frac{v^{2}}{2}-\frac{GM_{\rm tot}}{r}\right)
+\quad\Longrightarrow\quad
+\boxed{\ \varepsilon=\frac{\left(GM_{\rm tot}\right)^{2}\left(e^{2}-1\right)}{2\ell^{2}}\ }
+\]
+A forma da órbita é decidida pela energia, e a correspondência é exata: $e<1\Leftrightarrow\varepsilon<0$
+(ligada), $e=1\Leftrightarrow\varepsilon=0$ (limite de escape), $e>1\Leftrightarrow\varepsilon>0$ (livre).
+Nada disso foi imposto --- saiu de multiplicar $(\star)$ por três vetores diferentes.
 \end{lessonblock}
 
-\subsection*{A equação da órbita}
-
-Para obter $r(\theta)$, usa-se a substituição de Binet, $u=1/r$. Da conservação do momento angular, $\dot{\theta}=\ell u^{2}$, e portanto
+\begin{lessonblock}{Caminho alternativo: a substituição de Binet}
+A mesma equação da trajetória sai por uma rota mais curta, útil porque se generaliza a outras leis de força.
+Troque a variável $r$ por $u=1/r$ e use $\dot{\theta}=\ell u^{2}$:
 \[
-\dot{r}=\frac{dr}{d\theta}\dot{\theta}=-\frac{1}{u^{2}}\frac{du}{d\theta}\ell u^{2}=-\ell\frac{du}{d\theta},
+\dot{r}=\frac{dr}{d\theta}\dot{\theta}=-\ell\frac{du}{d\theta},
 \qquad
-\ddot{r}=-\ell\frac{d^{2}u}{d\theta^{2}}\dot{\theta}=-\ell^{2}u^{2}\frac{d^{2}u}{d\theta^{2}}.
+\ddot{r}=-\ell^{2}u^{2}\frac{d^{2}u}{d\theta^{2}}.
 \]
-A equação radial do movimento em coordenadas polares é $\ddot{r}-r\dot{\theta}^{2}=-GM/r^{2}$. Substituindo:
+A equação radial em coordenadas polares é $\ddot{r}-r\dot{\theta}^{2}=-GM_{\rm tot}/r^{2}$; substituindo e
+dividindo por $-\ell^{2}u^{2}$:
 \[
--\ell^{2}u^{2}\frac{d^{2}u}{d\theta^{2}}-\ell^{2}u^{3}=-GMu^{2},
+\frac{d^{2}u}{d\theta^{2}}+u=\frac{GM_{\rm tot}}{\ell^{2}},
 \]
-e dividindo por $-\ell^{2}u^{2}$:
-\[
-\boxed{\ \frac{d^{2}u}{d\theta^{2}}+u=\frac{GM}{\ell^{2}}\ }
-\]
-Este é o oscilador harmônico com termo forçado constante --- talvez a equação diferencial mais bem comportada da física. Sua solução geral é
-\[
-u(\theta)=\frac{GM}{\ell^{2}}\left[1+e\cos(\theta-\theta_0)\right],
-\]
-com $e$ e $\theta_0$ constantes de integração. Invertendo,
-\[
-\boxed{\ r(\theta)=\frac{\ell^{2}/GM}{1+e\cos\theta}=\frac{p}{1+e\cos\theta}\ }
-\]
-escolhendo $\theta_0=0$. Esta é a equação de uma cônica em coordenadas polares com foco na origem. Para $e<1$ é uma elipse, $e=1$ uma parábola, $e>1$ uma hipérbole. \textbf{A primeira lei de Kepler não foi assumida: ela emergiu.} E emergiu junto com a informação adicional de que órbitas abertas também são possíveis, coisa que Kepler não poderia saber.
-
-O parâmetro $p=\ell^{2}/GM$ é o \textit{semi-latus rectum}. Para a elipse, relaciona-se ao semieixo maior por $p=a(1-e^{2})$, de modo que
-\[
-\ell^{2}=GMa(1-e^{2}).
-\]
-As distâncias extremas são o periastro $r_{\rm min}=a(1-e)$, em $\theta=0$, e o apoastro $r_{\rm max}=a(1+e)$, em $\theta=\pi$.
-
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Aquecimento: a terceira lei no caso circular}
-Com a redução de dois corpos já feita, o caso circular sai em três linhas e serve de aferição para a dedução
-completa logo abaixo. A aceleração relativa é $G(M_1+M_2)/r^{2}$, e em uma circunferência ela é a aceleração
-centrípeta $v^{2}/r$, com $v=2\pi r/P$:
-\[
-\frac{G(M_1+M_2)}{r^2}=\frac{v^2}{r}=\frac{4\pi^2r}{P^2}
-\quad\Longrightarrow\quad
-P^2=\frac{4\pi^2r^3}{G(M_1+M_2)}.
-\]
-A soma das massas não foi imposta: ela vem da equação do movimento relativo obtida acima. Falta apenas mostrar
-que, para uma elipse, o raio $r$ é substituído pelo semieixo maior $a$ --- e é isso que a dedução seguinte faz,
-sem supor órbita circular em nenhum momento.
+um oscilador harmônico com termo forçado constante --- talvez a equação diferencial mais bem comportada da
+física. Sua solução é $u=(GM_{\rm tot}/\ell^{2})[1+e\cos(\theta-\theta_0)]$, que invertida devolve a mesma
+cônica. A rota vetorial foi apresentada primeiro porque produz $\vec{\beta}$ e, com ele, a relação entre
+excentricidade e energia; Binet chega mais rápido, mas não entrega isso de graça.
 \end{lessonblock}
 
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: a terceira lei de Kepler}
-Integrando a taxa areal ao longo de um período completo, a área total varrida é a da elipse, $\pi ab$, com $b=a\sqrt{1-e^{2}}$:
+Para a elipse, o \textit{semi-latus rectum} se relaciona ao semieixo maior por $p=a(1-e^{2})$, de modo que
+\[
+\ell^{2}=GM_{\rm tot}\,a\left(1-e^{2}\right),
+\]
+e as distâncias extremas são o pericentro $r_{\rm min}=a(1-e)$, em $\theta=0$, e o apocentro
+$r_{\rm max}=a(1+e)$, em $\theta=\pi$.
+
+\subsection*{A segunda lei de Kepler}
+\addcontentsline{toc}{subsection}{A segunda lei de Kepler}
+
+A lei das áreas já está contida na conservação de $\vec{\ell}$; falta apenas traduzi-la. Escreva a velocidade
+em coordenadas polares no plano da órbita. Com
+\[
+\hat{e}_r=\cos\theta\,\hat{\imath}+\sin\theta\,\hat{\jmath},
+\qquad
+\hat{e}_\theta=-\sin\theta\,\hat{\imath}+\cos\theta\,\hat{\jmath},
+\]
+e $\vec{r}=r\,\hat{e}_r$, derivando no tempo,
+\[
+\vec{v}=\frac{d\vec{r}}{dt}=\dot{r}\,\hat{e}_r+r\dot{\theta}\,\hat{e}_\theta,
+\]
+uma componente radial, que aproxima ou afasta, e uma tangencial, que gira. Então
+\[
+\vec{\ell}=\vec{r}\times\vec{v}=r\,\hat{e}_r\times\left(\dot{r}\,\hat{e}_r+r\dot{\theta}\,\hat{e}_\theta\right)
+=r^{2}\dot{\theta}\,\hat{z},
+\qquad\text{isto é}\qquad
+\ell=r^{2}\dot{\theta}.
+\]
+
+A área varrida pelo raio vetor em um deslocamento $d\vec{r}$ é a de um triângulo de lados $\vec{r}$ e
+$d\vec{r}$:
+\[
+d\vec{A}=\tfrac{1}{2}\,\vec{r}\times d\vec{r}
+\quad\Longrightarrow\quad
+\dot{\vec{A}}=\frac{d\vec{A}}{dt}=\tfrac{1}{2}\,\vec{r}\times\dot{\vec{r}}=\frac{\vec{\ell}}{2}.
+\]
+Mas $\vec{\ell}$ é constante. Logo
+\[
+\boxed{\ \frac{dA}{dt}=\frac{\ell}{2}=\text{constante}\ }
+\]
+que é a segunda lei: áreas iguais em tempos iguais. Em coordenadas polares o mesmo resultado se lê
+$dA=\tfrac{1}{2}r^{2}d\theta$, e $dA/dt=\tfrac{1}{2}r^{2}\dot{\theta}=\ell/2$.
+
+Vale sublinhar o que \emph{não} foi usado: em nenhum ponto entrou a forma $1/r^{2}$ da força. A segunda lei
+vale para qualquer força central --- só precisa que a força aponte ao longo de $\vec{r}$. São a primeira e a
+terceira leis que exigem especificamente gravitação newtoniana.
+
+\subsection*{A terceira lei de Kepler, sem supor círculo}
+\addcontentsline{toc}{subsection}{A terceira lei de Kepler, sem supor círculo}
+
+A primeira travessia obteve $P^{2}=4\pi^{2}a^{3}/GM_{\rm tot}$ supondo órbitas circulares. Agora essa hipótese
+cai. Integrando a taxa areal ao longo de um período completo, a área total varrida é a da elipse inteira,
+$\pi ab$, com $b=a\sqrt{1-e^{2}}$:
 \[
 \pi a b=\frac{\ell}{2}P.
 \]
-Elevando ao quadrado e substituindo $\ell^{2}=GMa(1-e^{2})$ e $b^{2}=a^{2}(1-e^{2})$:
+Elevando ao quadrado e substituindo $\ell^{2}=GM_{\rm tot}a(1-e^{2})$ e $b^{2}=a^{2}(1-e^{2})$:
 \[
-\pi^{2}a^{4}(1-e^{2})=\frac{GMa(1-e^{2})}{4}P^{2},
+\pi^{2}a^{4}(1-e^{2})=\frac{GM_{\rm tot}\,a(1-e^{2})}{4}P^{2},
 \]
 e o fator $(1-e^{2})$ cancela dos dois lados, deixando
 \[
-\boxed{\ P^{2}=\frac{4\pi^{2}a^{3}}{G(m_1+m_2)}\ }
+\boxed{\ P^{2}=\frac{4\pi^{2}a^{3}}{GM_{\rm tot}}=\frac{4\pi^{2}a^{3}}{G(m_1+m_2)}\ }
 \]
-Dois comentários que costumam passar batidos. Primeiro: a excentricidade sumiu --- órbitas muito alongadas e quase circulares de mesmo semieixo maior têm exatamente o mesmo período. Segundo: aparece a soma das massas, não a massa central. Kepler obteve $P^2\propto a^3$ empiricamente porque, no Sistema Solar, $m_{\rm planeta}\ll M_\odot$ e a soma é praticamente constante. Em binárias estelares esse termo é a razão de a terceira lei virar uma balança.
-\end{lessonblock}
+--- o mesmo resultado da primeira travessia, agora sem nenhuma hipótese sobre a forma da órbita, e com $a$ o
+semieixo maior da elipse em vez do raio do círculo. Vale reparar em duas coisas. A excentricidade sumiu no
+cancelamento, e isso é uma afirmação física forte: órbitas muito alongadas e quase circulares de mesmo
+semieixo maior têm exatamente o mesmo período --- um cometa e um asteroide de mesmo $a$ voltam juntos. E a
+soma das massas reaparece intacta, o que era de se esperar, já que os dois caminhos partem da mesma lei de
+força.
+
+\begin{noticebox}
+\textbf{O que acabou de acontecer.} Uma equação, $(\star)$, multiplicada por três coisas diferentes, produziu
+as três leis que Kepler levou vinte anos extraindo de tabelas de observação --- e produziu mais do que elas:
+as órbitas abertas, a relação entre excentricidade e energia, e a correção de massa que a lei empírica não
+podia conter. É o exemplo mais limpo, em todo o curso, do que significa explicar em vez de descrever.
+\end{noticebox}
 
 \subsection*{Energia orbital e a equação vis-viva}
+\addcontentsline{toc}{subsection}{Energia orbital e a equação vis-viva}
 
-A energia mecânica específica (por unidade de massa reduzida) é
+A conservação de energia já deu $\varepsilon=v^{2}/2-GM_{\rm tot}/r$, mas não disse quanto vale essa constante
+para uma órbita dada. A relação entre excentricidade e energia, deduzida acima, resolve isso em uma linha.
+Substituindo $\ell^{2}=GM_{\rm tot}\,a(1-e^{2})$ em
+$\varepsilon=(GM_{\rm tot})^{2}(e^{2}-1)/2\ell^{2}$, o fator $(1-e^{2})$ cancela:
 \[
-\varepsilon=\frac{v^{2}}{2}-\frac{GM}{r}.
+\varepsilon=\frac{\left(GM_{\rm tot}\right)^{2}\left(e^{2}-1\right)}{2\,GM_{\rm tot}\,a\left(1-e^{2}\right)}
+\quad\Longrightarrow\quad
+\boxed{\ \varepsilon=-\frac{GM_{\rm tot}}{2a}\ }
 \]
-Avaliando no periastro, onde a velocidade é puramente tangencial e vale $v=\ell/r_{\rm min}$, e usando $\ell^2=GMa(1-e^2)$ e $r_{\rm min}=a(1-e)$:
+A energia depende \emph{só} do semieixo maior --- a excentricidade sumiu, como havia sumido no período. Duas
+órbitas de mesmo $a$ têm a mesma energia e o mesmo período, por mais diferentes que pareçam.
+
+\textbf{Confira por outro caminho.} Avalie $\varepsilon$ no pericentro, onde a velocidade é puramente
+tangencial e vale $v=\ell/r_{\rm min}$, com $r_{\rm min}=a(1-e)$:
 \[
-\varepsilon=\frac{GMa(1-e^{2})}{2a^{2}(1-e)^{2}}-\frac{GM}{a(1-e)}
-=\frac{GM(1+e)}{2a(1-e)}-\frac{GM}{a(1-e)}
-=-\frac{GM}{2a}.
+\varepsilon=\frac{GM_{\rm tot}a(1-e^{2})}{2a^{2}(1-e)^{2}}-\frac{GM_{\rm tot}}{a(1-e)}
+=\frac{GM_{\rm tot}(1+e)}{2a(1-e)}-\frac{GM_{\rm tot}}{a(1-e)}
+=-\frac{GM_{\rm tot}}{2a},
 \]
-Portanto
+o mesmo resultado. Igualando as duas expressões de $\varepsilon$ --- a definição e o valor recém-obtido ---
+obtém-se a \textbf{equação vis-viva}:
 \[
-\boxed{\ \varepsilon=-\frac{GM}{2a}\ }
+\boxed{\ v^{2}=GM_{\rm tot}\left(\frac{2}{r}-\frac{1}{a}\right)\ }
 \]
-A energia depende \emph{só} do semieixo maior. Igualando as duas expressões de $\varepsilon$ obtém-se a \textbf{equação vis-viva}:
-\[
-\boxed{\ v^{2}=GM\left(\frac{2}{r}-\frac{1}{a}\right)\ }
-\]
-que dá a velocidade em qualquer ponto da órbita. Três casos limite valem a pena: para órbita circular, $r=a$ e $v=\sqrt{GM/r}$; para $a\to\infty$, $v=\sqrt{2GM/r}$, a velocidade de escape --- de onde se lê que escapar custa exatamente $\sqrt{2}$ vezes a velocidade circular; e para $\varepsilon>0$ a órbita é hiperbólica e o corpo não retorna.
+que dá a velocidade em qualquer ponto de qualquer órbita. Três casos limite valem a pena: para órbita
+circular, $r=a$ e $v=\sqrt{GM_{\rm tot}/r}$; para $a\to\infty$, $v=\sqrt{2GM_{\rm tot}/r}$, a velocidade de
+escape --- de onde se lê que escapar custa exatamente $\sqrt{2}$ vezes a velocidade circular; e para
+$\varepsilon>0$ a órbita é hiperbólica e o corpo não retorna.
+
+\begin{noticebox}
+\textbf{Explore.} O painel interativo \texttt{vis-viva} põe as quatro cônicas lado a lado: lançando sempre do
+mesmo ponto e mudando só a rapidez, a curva de $v$ contra $r$ se desloca em relação à curva de escape, e a
+parábola cai exatamente sobre ela.
+\begin{center}
+\url{https://rafaelcrdelima.github.io/Astronomia/vis-viva/}
+\end{center}
+\end{noticebox}
 
 \begin{noticebox}
 \textbf{De onde vem o nome.} \textit{Vis viva} é latim: \emph{força viva}. A expressão é de Leibniz, que em 1686
@@ -2291,6 +2802,7 @@ Para a Terra, $v_{\rm esc}\simeq11{,}2\,\mathrm{km\,s^{-1}}$. Para uma anã bran
 \end{lessonblock}
 
 \subsection*{Posição em função do tempo: a equação de Kepler}
+\addcontentsline{toc}{subsection}{Posição em função do tempo: a equação de Kepler}
 
 A solução $r(\theta)$ dá a forma da órbita, mas não diz onde o corpo está em cada instante --- e essa é a pergunta prática. Introduz-se a \textbf{anomalia excêntrica} $E$, definida pela projeção da elipse sobre seu círculo circunscrito, de modo que
 \[
@@ -2309,6 +2821,7 @@ E_{n+1}=E_{n}-\frac{E_{n}-e\sin E_{n}-M_{\rm an}}{1-e\cos E_{n}},
 que converge em poucas iterações para $e$ moderado. Esse é literalmente o cálculo feito para produzir o painel (a) da Figura~\ref{fig:kepler} e é o mesmo que qualquer efeméride executa milhões de vezes por dia.
 
 \subsection*{Binárias: como a órbita vira massa}
+\addcontentsline{toc}{subsection}{Binárias: como a órbita vira massa}
 
 Em um sistema binário, cada estrela descreve uma elipse em torno do centro de massa, com semieixos $a_1$ e $a_2$ satisfazendo $m_1a_1=m_2a_2$ e $a=a_1+a_2$. Isso já fornece a razão de massas diretamente da geometria observada: $m_1/m_2=a_2/a_1$.
 
@@ -2325,6 +2838,7 @@ Tudo do lado direito é observável. O lado esquerdo mistura as duas massas com 
 Se as duas componentes são vistas espectroscopicamente \emph{e} o sistema eclipsa --- caso em que $i\simeq90^\circ$ ---, então todas as ambiguidades desaparecem e obtêm-se massas absolutas com precisão de poucos por cento. Esse é o motivo pelo qual binárias eclipsantes destacadas são a fonte dos dados usados na Figura~\ref{fig:relacaomassaluminosidade}: elas são o único caminho para massas estelares verdadeiramente medidas.
 
 \subsection*{O teorema do virial, deduzido}
+\addcontentsline{toc}{subsection}{O teorema do virial, deduzido}
 
 Considere um sistema de $N$ partículas ligadas gravitacionalmente. Defina o momento de inércia total $I=\sum_i m_ir_i^{2}$. Derivando duas vezes,
 \[
@@ -2348,6 +2862,7 @@ dados que fecha o capítulo; o núcleo se encerra no teorema do virial.
 \end{noticebox}
 
 \subsection*{Forças de maré}
+\addcontentsline{toc}{subsection}{Forças de maré}
 
 Maré é o efeito da \emph{diferença} de força gravitacional entre pontos de um corpo extenso. Um corpo de raio $R$ a distância $d$ de uma massa $M$ sente, entre o centro e a superfície, uma diferença
 \[
@@ -2368,6 +2883,7 @@ Um tratamento mais cuidadoso, incluindo a deformação do satélite, substitui o
 
 
 \subsection*{O problema restrito de três corpos}
+\addcontentsline{toc}{subsection}{O problema restrito de três corpos}
 
 O problema de dois corpos tem solução fechada; o de três, não. Mas um caso particular --- duas massas $m_1>m_2$ em órbita circular e uma terceira massa desprezível --- é tratável e produz resultados que organizam boa parte da dinâmica do Sistema Solar.
 
