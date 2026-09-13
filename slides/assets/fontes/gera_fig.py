@@ -570,10 +570,97 @@ def fig_emissao_absorcao():
     salva(fig, "a6_emissao_absorcao")
 
 
+# ================================================ 12. um espectro deslocado
+def fig_doppler_espectro():
+    """Em cima, o deslocamento visivel de uma galaxia; embaixo, o caso estelar,
+    que e o exemplo do slide anterior: Halfa a -105 km/s."""
+    L0, L1, NX = 370.0, 760.0, 1700
+    lam = np.linspace(L0, L1, NX)
+    sig = 0.9
+    base = np.array([rgb_visivel(l) for l in lam])
+    cont = planck_l(lam * 1e-9, 5772.0)
+    cont = (cont / cont.max()) ** 0.45
+    Z = 0.045                                  # ~13 500 km/s, um aglomerado proximo
+
+    def faixa(z):
+        perfis = np.zeros(NX)
+        for lc, prof, _, _ in FRAUNHOFER:
+            perfis = np.maximum(perfis, prof*np.exp(-0.5*((lam - lc*(1+z))/sig)**2))
+        return base * (cont*(1 - perfis))[:, None]
+
+    fig = plt.figure(figsize=(11.8, 5.35))
+    gs = fig.add_gridspec(5, 1, height_ratios=[1, 1, 1, 0.66, 1.95], hspace=0.40,
+                          left=0.135, right=0.985, top=0.925, bottom=0.085)
+
+    casos = [(-Z, "aproximando", "para o azul", BLUE),
+             (0.0, "em repouso", "o laboratório", MUTED),
+             (+Z, "afastando", "para o vermelho", ROSA)]
+    eixos = []
+    for i, (z, rot, sub, cor) in enumerate(casos):
+        a = fig.add_subplot(gs[i]); eixos.append(a)
+        a.imshow(np.clip(faixa(z), 0, 1)[None, :, :].repeat(2, axis=0),
+                 extent=[L0, L1, 0, 1], aspect="auto", interpolation="bilinear")
+        a.set_yticks([]); a.set_xticks([])
+        a.set_ylabel("%s\n%s" % (rot, sub), rotation=0, ha="right", va="center",
+                     fontsize=10.5, color=cor, labelpad=12)
+        for s in a.spines.values():
+            s.set_color("#9aa5b1"); s.set_linewidth(0.8)
+        if i == 0:
+            a.set_xticks([400, 450, 500, 550, 600, 650, 700, 750])
+            a.xaxis.set_ticks_position("top"); a.xaxis.set_label_position("top")
+            a.tick_params(labelsize=10, colors=MUTED)
+            a.set_xlabel(r"comprimento de onda  $\lambda$  (nm)", fontsize=11.5,
+                         color=INK, labelpad=7)
+
+    # o caminho de duas linhas atraves das tres faixas
+    marcas = ((393.37, "#7b5cff", "Ca II K"), (656.28, "#f24b4b", r"H$\alpha$"))
+    for lc, cor, nome in marcas:
+        pts = [(lc*(1+z), eixos[i]) for i, (z, _, _, _) in enumerate(casos)]
+        for (x0, a0), (x1, a1) in zip(pts[:-1], pts[1:]):
+            fig.add_artist(plt.matplotlib.patches.ConnectionPatch(
+                xyA=(x0, 0), coordsA=a0.transData, xyB=(x1, 1), coordsB=a1.transData,
+                color=cor, lw=1.4, ls=(0, (4, 3)), alpha=0.95))
+
+    # faixa propria para os rotulos, alinhada ao mesmo eixo de lambda
+    rt = fig.add_subplot(gs[3]); rt.set_axis_off()
+    rt.set_xlim(L0, L1); rt.set_ylim(0, 1)
+    for lc, cor, nome in marcas:
+        rt.text(lc*(1+Z), 1.02, nome, ha="center", va="top", fontsize=10.5, color=cor)
+    rt.text((L0+L1)/2, 0.30,
+            "as duas andam juntas: $\\Delta\\lambda/\\lambda$ é o mesmo nas duas, "
+            "$\\Delta\\lambda$ não é",
+            ha="center", va="center", fontsize=10.5, color=INK)
+
+    # ------------------------------------- o caso estelar, com o numero do slide
+    az = fig.add_subplot(gs[4])
+    lz = np.linspace(654.2, 658.4, 1400)
+    l_rep, l_obs = 656.28, 656.05
+    perfil = lambda c: 1 - 0.70*np.exp(-0.5*((lz - c)/0.25)**2)
+    az.plot(lz, perfil(l_rep), color=MUTED, lw=2.0, ls="--", label="repouso, 656,28 nm")
+    az.plot(lz, perfil(l_obs), color=BLUE, lw=2.6, label="observado, 656,05 nm")
+    az.set_xlim(654.2, 658.4); az.set_ylim(0.18, 1.14)
+    az.set_xlabel(r"comprimento de onda  $\lambda$  (nm)", fontsize=11.5, color=INK)
+    az.set_ylabel("fluxo\nnormalizado", fontsize=10.5, color=INK)
+    enfeita(az)
+    az.annotate("", xy=(l_obs, 0.245), xytext=(l_rep, 0.245),
+                arrowprops=dict(arrowstyle="<->", color=INK, lw=1.4))
+    az.text(l_obs - 0.12, 0.245, r"$\Delta\lambda = 0{,}23$ nm",
+            ha="right", va="center", fontsize=10.5, color=INK)
+    az.text(654.35, 0.50, r"$v_r = c\,\Delta\lambda/\lambda_0 = -105$ km/s",
+            ha="left", fontsize=12, color=BLUE)
+    az.set_title("o caso estelar: a mesma H$\\alpha$, a 105 km/s", fontsize=11.5,
+                 color=NAVY, pad=7)
+    leg = az.legend(loc="lower right", fontsize=10, frameon=True, edgecolor=LINE,
+                    facecolor="white")
+    for t in leg.get_texts():
+        t.set_color(INK)
+    salva(fig, "a6_doppler_espectro")
+
+
 if __name__ == "__main__":
     os.makedirs(SAIDA, exist_ok=True)
     for f in (fig_planck, fig_solar, fig_atmosfera, fig_perfis, fig_balmer, fig_termico,
               fig_filtros_curvas, fig_filtro_produto, fig_filtros_duas_estrelas,
-              fig_cores_atomos, fig_emissao_absorcao):
+              fig_cores_atomos, fig_emissao_absorcao, fig_doppler_espectro):
         f()
     print("ok")
