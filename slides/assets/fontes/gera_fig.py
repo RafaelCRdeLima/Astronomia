@@ -259,8 +259,125 @@ def fig_termico():
     salva(fig, "a6_termico")
 
 
+# ===================================================== 7-9. filtros fotometricos
+#
+# Curvas de transmissao aproximadas do sistema Johnson-Cousins: super-gaussianas
+# de ordem 4 com o comprimento de onda efetivo e a largura a meia altura
+# tabelados de cada banda. Sao representativas, nao os dados de um fabricante --
+# as legendas das figuras dizem isso.
+BANDAS = [("U", 365, 66, 0.60, "#8f5fd6"),
+          ("B", 445, 94, 0.72, "#3d7dff"),
+          ("V", 551, 88, 0.80, "#5fc25f"),
+          ("R", 658, 138, 0.78, "#e4543f"),
+          ("I", 806, 149, 0.55, "#8c2f2f")]
+
+
+def transmissao(lam_nm, centro, fwhm, pico, ordem=4):
+    w = fwhm / (2 * np.log(2) ** (1.0 / ordem))
+    return pico * np.exp(-np.abs((lam_nm - centro) / w) ** ordem)
+
+
+def fig_filtros_curvas():
+    """Onde cada filtro deixa passar, com o espectro do Sol por tras."""
+    lam = np.linspace(280, 1000, 2400)
+    fig, ax = plt.subplots(figsize=(10.4, 4.8))
+
+    sol = planck_l(lam * 1e-9, 5772.0)
+    ax.fill_between(lam, 0, sol / sol.max() * 0.92, color=GOLD, alpha=0.13, lw=0, zorder=0)
+    ax.plot(lam, sol / sol.max() * 0.92, color=GOLD, lw=1.3, zorder=1,
+            label="espectro de uma estrela de 5772 K (escala arbitrária)")
+
+    for nome, c, fw, pk, cor in BANDAS:
+        t = transmissao(lam, c, fw, pk)
+        ax.fill_between(lam, 0, t, color=cor, alpha=0.30, lw=0, zorder=2)
+        ax.plot(lam, t, color=cor, lw=2.3, zorder=3)
+        ax.text(c, pk + 0.035, nome, ha="center", fontsize=15, color=cor, fontweight="bold")
+        ax.annotate("", xy=(c - fw / 2, pk * 0.5), xytext=(c + fw / 2, pk * 0.5),
+                    arrowprops=dict(arrowstyle="<->", color=cor, lw=1.1, alpha=0.9))
+
+    ax.set_xlim(280, 1000)
+    ax.set_ylim(0, 1.0)
+    ax.set_xlabel(r"comprimento de onda  $\lambda$  (nm)", fontsize=12, color=INK)
+    ax.set_ylabel("transmissão do filtro", fontsize=12, color=INK)
+    enfeita(ax)
+    leg = ax.legend(loc="upper right", fontsize=10, frameon=True, edgecolor=LINE, facecolor="white")
+    for t in leg.get_texts():
+        t.set_color(INK)
+    ax.text(551, 0.46, "largura a meia altura", ha="center", fontsize=9.5, color="#2f6b2f")
+    salva(fig, "a6_filtros_curvas")
+
+
+def fig_filtro_produto():
+    """O diagrama: espectro vezes transmissao = o que o detector soma."""
+    lam = np.linspace(300, 950, 1800)
+    T = 5772.0
+    F = planck_l(lam * 1e-9, T); F = F / F.max()
+    S = transmissao(lam, 551, 88, 0.80)
+    P = F * S
+
+    fig, axs = plt.subplots(1, 3, figsize=(11.6, 3.5))
+    for ax in axs:
+        ax.set_xlim(300, 950); ax.set_xticks([400, 600, 800])
+        enfeita(ax)
+        ax.set_xlabel(r"$\lambda$ (nm)", fontsize=10.5, color=INK)
+
+    axs[0].fill_between(lam, 0, F, color=GOLD, alpha=0.28, lw=0)
+    axs[0].plot(lam, F, color=GOLD, lw=2.2)
+    axs[0].set_ylim(0, 1.08); axs[0].set_ylabel("normalizado", fontsize=10.5, color=INK)
+    axs[0].set_title(r"$F_\lambda$  — o espectro que chega", fontsize=11.5, color=NAVY, pad=9)
+
+    axs[1].fill_between(lam, 0, S, color="#5fc25f", alpha=0.30, lw=0)
+    axs[1].plot(lam, S, color="#5fc25f", lw=2.2)
+    axs[1].set_ylim(0, 1.08)
+    axs[1].set_title(r"$S_V(\lambda)$  — o filtro V", fontsize=11.5, color=NAVY, pad=9)
+
+    axs[2].fill_between(lam, 0, P, color=CYAN, alpha=0.38, lw=0)
+    axs[2].plot(lam, P, color=BLUE, lw=2.2)
+    axs[2].set_ylim(0, 1.08)
+    axs[2].set_title(r"$F_\lambda\,S_V(\lambda)$  — o que o detector soma",
+                     fontsize=11.5, color=NAVY, pad=9)
+    axs[2].text(625, 0.46, "esta área\né a contagem", fontsize=10.5, color=INK, ha="left")
+
+    for x, s in ((0.347, "×"), (0.655, "=")):
+        fig.text(x, 0.52, s, fontsize=26, color=MUTED, ha="center", va="center")
+    fig.tight_layout(w_pad=4.2)
+    salva(fig, "a6_filtro_produto")
+
+
+def fig_filtros_duas_estrelas():
+    """A mesma dupla de filtros em duas estrelas: de onde sai o indice de cor."""
+    lam = np.linspace(300, 800, 2000)
+    SB = transmissao(lam, 445, 94, 0.72)
+    SV = transmissao(lam, 551, 88, 0.80)
+
+    fig, axs = plt.subplots(1, 2, figsize=(10.6, 4.3))
+    for ax, (T, rot, cor) in zip(axs, [(3000, "estrela fria, 3000 K", ROSA),
+                                       (15000, "estrela quente, 15 000 K", BLUE)]):
+        F = planck_l(lam * 1e-9, T); F = F / F.max()
+        ax.plot(lam, F, color=cor, lw=2.4, zorder=4)
+        ax.fill_between(lam, 0, F * SB / 0.72, color="#3d7dff", alpha=0.42, lw=0, zorder=2)
+        ax.fill_between(lam, 0, F * SV / 0.80, color="#5fc25f", alpha=0.42, lw=0, zorder=3)
+        fb = np.trapz(F * SB, lam) / np.trapz(SB, lam)
+        fv = np.trapz(F * SV, lam) / np.trapz(SV, lam)
+        bv = -2.5 * np.log10(fb / fv)
+        ax.set_xlim(300, 800); ax.set_ylim(0, 1.12)
+        ax.set_xlabel(r"$\lambda$ (nm)", fontsize=11.5, color=INK)
+        ax.set_title(rot, fontsize=12, color=cor, pad=9)
+        enfeita(ax)
+        ax.text(445, 1.04, "B", ha="center", fontsize=14, color="#3d7dff", fontweight="bold")
+        ax.text(551, 1.04, "V", ha="center", fontsize=14, color="#3d9c3d", fontweight="bold")
+        ax.text(0.97, 0.52,
+                "$F_B/F_V$ = %.2f\n$-2{,}5\\,\\log_{10}(F_B/F_V)$ = %+.2f" % (fb / fv, bv),
+                transform=ax.transAxes, ha="right", fontsize=11.5, color=INK,
+                bbox=dict(boxstyle="round,pad=0.45", fc="white", ec=LINE))
+    axs[0].set_ylabel(r"$F_\lambda$, normalizado no máximo do painel", fontsize=10.5, color=INK)
+    fig.tight_layout(w_pad=3.0)
+    salva(fig, "a6_filtros_duas_estrelas")
+
+
 if __name__ == "__main__":
     os.makedirs(SAIDA, exist_ok=True)
-    for f in (fig_planck, fig_solar, fig_atmosfera, fig_perfis, fig_balmer, fig_termico):
+    for f in (fig_planck, fig_solar, fig_atmosfera, fig_perfis, fig_balmer, fig_termico,
+              fig_filtros_curvas, fig_filtro_produto, fig_filtros_duas_estrelas):
         f()
     print("ok")
