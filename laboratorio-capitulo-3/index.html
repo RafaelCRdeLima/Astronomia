@@ -593,7 +593,6 @@
               <thead>
                 <tr>
                   <th>alvo</th>
-                  <th>extração</th>
                   <th>t acum s</th>
                   <th>r estrela px</th>
                   <th>r fundo px</th>
@@ -1088,10 +1087,6 @@
           raw: measuredRate,
         };
       });
-    }
-
-    function extractionLabel() {
-      return "estrela menos fundo";
     }
 
     function canvasPoint(event, canvas) {
@@ -1654,7 +1649,6 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${row.target}</td>
-          <td>${row.extraction}</td>
           <td>${fmt(row.observationSeconds, 1)}</td>
           <td>${fmt(row.starRadius, 1)}</td>
           <td>${fmt(row.skyRadius, 1)}</td>
@@ -1721,16 +1715,12 @@
     function makeObservationSnapshot() {
       const m = metrics();
       const q = apertureQuality(currentTarget());
-      const sequence = observations.length + 1;
       const targetName = currentTarget().name;
-      const slug = `${String(sequence).padStart(2, "0")}_${slugify(targetName)}`;
+      const slug = slugify(targetName);
       const marks = absorptionMarks.map(mark => ({ lambda: mark.lambda }));
       return {
-        id: `${Date.now()}_${sequence}`,
-        sequence,
         slug,
         target: targetName,
-        extraction: extractionLabel(),
         observationSeconds,
         photonTotal,
         starRadius: starAperture ? starAperture.r : NaN,
@@ -1823,74 +1813,6 @@
       return rows;
     }
 
-    function blackbodyCsvRows(observation = null) {
-      return [[
-        "alvo",
-        "tempo_acumulado_s",
-        "ajuste_ativo",
-        "temperatura_corpo_negro_K",
-        "escala_corpo_negro",
-        "lambda_pico_observado_nm",
-        "janela_lambda_min_nm",
-        "janela_lambda_max_nm",
-        "raio_abertura_estrela_px",
-        "raio_abertura_fundo_px",
-        "fracao_coletada",
-        "semente_sessao",
-      ], [
-        observation ? observation.target : currentTarget().name,
-        observation ? observation.observationSeconds : observationSeconds,
-        (observation ? observation.fittingBlackbody : fittingBlackbody) ? "sim" : "nao",
-        (observation ? observation.fittingBlackbody : fittingBlackbody) ? (observation ? observation.blackbodyTemp : Number(blackbodyTempSlider.value)) : "",
-        (observation ? observation.fittingBlackbody : fittingBlackbody) ? (observation ? observation.blackbodyScale : blackbodyScaleValue()) : "",
-        observation ? observation.peak : metrics().peak,
-        observation ? observation.displayLambdaMin : displayLambdaMin,
-        observation ? observation.displayLambdaMax : displayLambdaMax,
-        observation ? observation.starRadius : (starAperture ? starAperture.r : ""),
-        observation ? observation.skyRadius : (skyAperture ? skyAperture.r : ""),
-        observation ? observation.capture : apertureQuality(currentTarget()).capture,
-        sessionSeed,
-      ]];
-    }
-
-    function linesPhotometryCsvRows(observation = null) {
-      const m = observation || metrics();
-      const rows = [[
-        "alvo",
-        "tempo_acumulado_s",
-        "F_B",
-        "F_V",
-        "F_R",
-        "BmenosV",
-        "fluxo_bolometrico_relativo",
-        "linha_indice",
-        "lambda_observado_nm",
-        "melhor_identificacao",
-        "lambda_repouso_nm",
-        "velocidade_radial_km_s",
-      ]];
-      const lines = observation
-        ? (observation.lines.length ? observation.lines : [null])
-        : (absorptionMarks.length ? lineMeasurementsForMarks(absorptionMarks) : [null]);
-      lines.forEach((line, i) => {
-        rows.push([
-          observation ? observation.target : currentTarget().name,
-          observation ? observation.observationSeconds : observationSeconds,
-          m ? m.b : "",
-          m ? m.v : "",
-          m ? m.r : "",
-          m ? m.bv : "",
-          m ? m.bol : "",
-          line ? line.index || i + 1 : "",
-          line ? line.lambdaObserved : "",
-          line ? line.bestLabel : "",
-          line ? line.restLambda : "",
-          line ? line.rv : "",
-        ]);
-      });
-      return rows;
-    }
-
     /* Uma linha só, com tudo o que os oito experimentos pedem. Antes isso estava
        espalhado por tres CSVs que se sobrepunham e nao traziam a temperatura de Wien. */
     function medidasCsvRows() {
@@ -1898,7 +1820,6 @@
       return [[
         "alvo", "tempo_acumulado_s", "fotons_acumulados",
         "raio_abertura_estrela_px", "raio_abertura_fundo_px", "fracao_coletada",
-        "extracao",
         "lambda_pico_observado_nm", "temperatura_wien_K",
         "temperatura_ajuste_corpo_negro_K", "escala_corpo_negro",
         "F_B", "F_V", "F_R", "BmenosV", "fluxo_bolometrico_relativo",
@@ -1906,7 +1827,6 @@
       ], [
         obs.target, obs.observationSeconds, obs.photonTotal,
         obs.starRadius, obs.skyRadius, obs.capture,
-        obs.extraction,
         obs.peak, obs.wienTemp,
         obs.fittingBlackbody ? obs.blackbodyTemp : "",
         obs.fittingBlackbody ? obs.blackbodyScale : "",
@@ -1930,7 +1850,7 @@
 
     function exportCsv() {
       if (!capturarObservacao()) return;
-      const base = `capitulo6_${observations[0].slug.replace(/^\d+_/, "")}`;
+      const base = `capitulo6_${observations[0].slug}`;
       downloadCsv(`${base}_espectro.csv`, fluxCsvRows(observations[0]));
       setTimeout(() => downloadCsv(`${base}_medidas.csv`, medidasCsvRows()), 120);
       setTimeout(() => downloadCsv(`${base}_linhas.csv`, linhasCsvRows()), 240);
@@ -1976,7 +1896,6 @@
 
     function summaryLatexTable() {
       const rows = observations.map(obs => [
-        obs.sequence,
         obs.target,
         obs.observationSeconds,
         obs.starRadius,
@@ -1988,11 +1907,11 @@
       return `\\begin{table*}[t]
 \\centering
 \\compacttables
-\\caption{Resumo das observações registradas.}
-\\begin{tabular}{rlrrrrrr}
+\\caption{Condições e resultado da observação.}
+\\begin{tabular}{lrrrrrr}
 \\toprule
-\\# & Alvo & $t$ & $r_\\star$ & $r_{bg}$ & coleta & $\\lambda_{max}$ & $T_{bb}$ \\\\
- & & (s) & (px) & (px) & (\\%) & (nm) & (K) \\\\
+Alvo & $t$ & $r_\\star$ & $r_{bg}$ & coleta & $\\lambda_{max}$ & $T_{bb}$ \\\\
+ & (s) & (px) & (px) & (\\%) & (nm) & (K) \\\\
 \\midrule
 ${latexRows(rows)}
 \\bottomrule
@@ -2003,7 +1922,6 @@ ${latexRows(rows)}
 
     function photometryLatexTable() {
       const rows = observations.map(obs => [
-        obs.sequence,
         obs.target,
         obs.b,
         obs.v,
@@ -2014,10 +1932,10 @@ ${latexRows(rows)}
       return `\\begin{table*}[t]
 \\centering
 \\compacttables
-\\caption{Fotometria sintética extraída dos espectros líquidos.}
-\\begin{tabular}{rlrrrrr}
+\\caption{Fotometria sintética extraída do espectro líquido.}
+\\begin{tabular}{lrrrrr}
 \\toprule
-\\# & Alvo & $F_B$ & $F_V$ & $F_R$ & $B-V$ & $F_{int}$ \\\\
+Alvo & $F_B$ & $F_V$ & $F_R$ & $B-V$ & $F_{int}$ \\\\
 \\midrule
 ${latexRows(rows)}
 \\bottomrule
@@ -2028,9 +1946,8 @@ ${latexRows(rows)}
 
     function absorptionLinesLatexTable() {
       const rows = observations.flatMap(obs => {
-        if (!obs.lines.length) return [[obs.sequence, obs.target, "--", "--", "nenhuma linha marcada", "--", "--"]];
+        if (!obs.lines.length) return [[obs.target, "--", "--", "nenhuma linha marcada", "--", "--"]];
         return obs.lines.map(line => [
-          obs.sequence,
           obs.target,
           line.index,
           line.lambdaObserved,
@@ -2042,11 +1959,11 @@ ${latexRows(rows)}
       return `\\begin{table*}[t]
 \\centering
 \\compacttables
-\\caption{Linhas de absorção marcadas nos espectros.}
-\\begin{tabular}{rlrrlrr}
+\\caption{Linhas de absorção marcadas no espectro.}
+\\begin{tabular}{lrrlrr}
 \\toprule
-\\# & Alvo & Linha & $\\lambda_{obs}$ & ID & $\\lambda_0$ & $v_r$ \\\\
- & & & (nm) & & (nm) & (km s$^{-1}$) \\\\
+Alvo & Linha & $\\lambda_{obs}$ & ID & $\\lambda_0$ & $v_r$ \\\\
+ & & (nm) & & (nm) & (km s$^{-1}$) \\\\
 \\midrule
 ${latexRows(rows)}
 \\bottomrule
@@ -2076,94 +1993,6 @@ Dados desta observação: \\texttt{dados/espectro.csv} (fluxo por comprimento de
 \\texttt{dados/linhas.csv} (as linhas de absorção marcadas).
 
 `;
-    }
-
-    function allFluxCsvRows() {
-      const rows = [[
-        "observacao",
-        "alvo",
-        "lambda_nm",
-        "fluxo_abertura_estrela",
-        "fluxo_fundo_escalado",
-        "fluxo_liquido_estrela_menos_fundo",
-        "modelo_corpo_negro",
-      ]];
-      observations.forEach(obs => {
-        fluxCsvRows(obs).slice(1).forEach(row => rows.push([obs.sequence, obs.target, ...row]));
-      });
-      return rows;
-    }
-
-    function summaryCsvRows() {
-      return [[
-        "observacao",
-        "alvo",
-        "tempo_acumulado_s",
-        "raio_abertura_estrela_px",
-        "raio_abertura_fundo_px",
-        "fracao_coletada",
-        "lambda_pico_observado_nm",
-        "temperatura_corpo_negro_K",
-        "escala_corpo_negro",
-        "janela_lambda_min_nm",
-        "janela_lambda_max_nm",
-        "semente_sessao",
-      ], ...observations.map(obs => [
-        obs.sequence,
-        obs.target,
-        obs.observationSeconds,
-        obs.starRadius,
-        obs.skyRadius,
-        obs.capture,
-        obs.peak,
-        obs.fittingBlackbody ? obs.blackbodyTemp : "",
-        obs.fittingBlackbody ? obs.blackbodyScale : "",
-        obs.displayLambdaMin,
-        obs.displayLambdaMax,
-        sessionSeed,
-      ])];
-    }
-
-    function photometryCsvRows() {
-      return [[
-        "observacao",
-        "alvo",
-        "F_B",
-        "F_V",
-        "F_R",
-        "BmenosV",
-        "fluxo_bolometrico_relativo",
-      ], ...observations.map(obs => [
-        obs.sequence,
-        obs.target,
-        obs.b,
-        obs.v,
-        obs.r,
-        obs.bv,
-        obs.bol,
-      ])];
-    }
-
-    function allLinesCsvRows() {
-      const rows = [[
-        "observacao",
-        "alvo",
-        "linha_indice",
-        "lambda_observado_nm",
-        "melhor_identificacao",
-        "lambda_repouso_nm",
-        "velocidade_radial_km_s",
-      ]];
-      observations.forEach(obs => {
-        if (!obs.lines.length) {
-          rows.push([obs.sequence, obs.target, "", "", "", "", ""]);
-          return;
-        }
-        obs.lines.forEach(line => {
-          rows.push([obs.sequence, obs.target, line.index, line.lambdaObserved, line.bestLabel, line.restLambda, line.rv]);
-        });
-      });
-      return rows;
     }
 
     function withObservationDrawingState(observation, callback) {
