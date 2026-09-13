@@ -463,10 +463,117 @@ def fig_cores_atomos():
     salva(fig, "a6_cores_atomos")
 
 
+# ============================================ 11. emissao e absorcao (Kirchhoff)
+#
+# Linhas fortes do espectro solar, com a letra de Fraunhofer e a profundidade
+# aproximada (fracao do continuo que some no nucleo da linha).
+FRAUNHOFER = [
+ (393.37, 0.95, "K",  "Ca II"),
+ (396.85, 0.92, "H",  "Ca II"),
+ (410.17, 0.50, "h",  "Hδ"),
+ (422.67, 0.40, "g",  "Ca I"),
+ (434.05, 0.58, "G'", "Hγ"),
+ (438.35, 0.48, "d",  "Fe I"),
+ (486.13, 0.62, "F",  "Hβ"),
+ (516.73, 0.58, "b",  "Mg I"),
+ (517.27, 0.55, "",   "Mg I"),
+ (518.36, 0.52, "",   "Mg I"),
+ (527.04, 0.48, "E",  "Fe I"),
+ (588.99, 0.85, "D",  "Na I"),
+ (589.59, 0.80, "",   "Na I"),
+ (656.28, 0.68, "C",  "Hα"),
+ (686.72, 0.38, "B",  "O₂"),
+]
+
+
+def fig_emissao_absorcao():
+    """As tres situacoes de Kirchhoff, com as MESMAS linhas nas tres."""
+    L0, L1, NX = 380.0, 750.0, 1600
+    lam = np.linspace(L0, L1, NX)
+    sig = 0.85
+    base = np.array([rgb_visivel(l) for l in lam])
+
+    cont = planck_l(lam * 1e-9, 5772.0)
+    cont = (cont / cont.max()) ** 0.45                 # gama, para as pontas não sumirem
+
+    perfis = np.zeros(NX)
+    for lc, prof, _, _ in FRAUNHOFER:
+        perfis = np.maximum(perfis, prof * np.exp(-0.5 * ((lam - lc) / sig) ** 2))
+    emiss = np.zeros(NX)
+    for lc, prof, _, _ in FRAUNHOFER:
+        emiss += prof * np.exp(-0.5 * ((lam - lc) / sig) ** 2)
+    emiss = (emiss / emiss.max()) ** 0.55
+
+    faixas = [("fonte contínua\ncorpo denso e quente", base * cont[:, None]),
+              ("emissão\ngás fino e quente, visto de lado", base * emiss[:, None]),
+              ("absorção\no mesmo contínuo, visto através do gás",
+               base * (cont * (1 - perfis))[:, None])]
+
+    fig = plt.figure(figsize=(11.8, 5.2))
+    gs = fig.add_gridspec(4, 1, height_ratios=[1.85, 1, 1, 1], hspace=0.44,
+                          left=0.24, right=0.985, top=0.985, bottom=0.20)
+
+    # ---------------------------------------------------- o desenho da situação
+    ax = fig.add_subplot(gs[0]); ax.set_axis_off()
+    ax.set_xlim(0, 10); ax.set_ylim(-1.15, 3.1)
+    g = plt.Circle((1.35, 1.35), 0.62, color="#FFD873", zorder=3)
+    ax.add_patch(plt.Circle((1.35, 1.35), 0.95, color="#FFD873", alpha=0.22, zorder=2))
+    ax.add_patch(g)
+    ax.text(1.35, 0.25, "corpo denso\ne quente", ha="center", fontsize=10, color=INK)
+    nuvem = plt.matplotlib.patches.Ellipse((4.6, 1.35), 2.5, 1.7, color=CYAN, alpha=0.22, zorder=2)
+    ax.add_patch(nuvem)
+    ax.add_patch(plt.matplotlib.patches.Ellipse((4.6, 1.35), 2.5, 1.7, fill=False,
+                 edgecolor=CYAN, lw=1.4, ls="--", zorder=3))
+    ax.text(4.6, 0.25, "gás fino e mais frio", ha="center", fontsize=10, color=INK)
+    ax.annotate("", xy=(8.6, 1.35), xytext=(2.1, 1.35),
+                arrowprops=dict(arrowstyle="-|>", color=GOLD, lw=2.6))
+    ax.text(8.75, 1.35, "vê\nabsorção", ha="left", va="center", fontsize=11, color=INK)
+    ax.annotate("", xy=(6.2, 2.85), xytext=(4.9, 1.9),
+                arrowprops=dict(arrowstyle="-|>", color=CYAN, lw=2.2))
+    ax.text(6.35, 2.85, "vê emissão", ha="left", va="center", fontsize=11, color=INK)
+    ax.text(0.9, 2.62, "o gás reemite em todas as direções",
+            ha="left", fontsize=9.5, color=MUTED, style="italic")
+
+    # ---------------------------------------------------------- as três faixas
+    eixos = []
+    for i, (rot, img) in enumerate(faixas):
+        a = fig.add_subplot(gs[i + 1]); eixos.append(a)
+        a.imshow(np.clip(img, 0, 1)[None, :, :].repeat(2, axis=0),
+                 extent=[L0, L1, 0, 1], aspect="auto", interpolation="bilinear")
+        a.set_yticks([])
+        a.set_ylabel(rot, rotation=0, ha="right", va="center", fontsize=10, color=INK, labelpad=12)
+        for s in a.spines.values():
+            s.set_color("#9aa5b1"); s.set_linewidth(0.8)
+        if i == 0:
+            a.set_xticks([400, 450, 500, 550, 600, 650, 700, 750])
+            a.xaxis.set_ticks_position("top"); a.xaxis.set_label_position("top")
+            a.tick_params(labelsize=10, colors=MUTED)
+            a.set_xlabel(r"comprimento de onda  $\lambda$  (nm)", fontsize=11.5,
+                         color=INK, labelpad=8)
+        else:
+            a.set_xticks([])
+
+    # as letras de Fraunhofer, acima da faixa de absorção e escalonadas quando vizinhas
+    ant, alto = -99.0, False
+    for lc, _, letra, _ in FRAUNHOFER:
+        if not letra:
+            continue
+        alto = (lc - ant) < 14.0 and not alto
+        ant = lc
+        eixos[2].annotate(letra, xy=(lc, 0.0), xytext=(lc, -0.90 if alto else -0.40),
+                          ha="center", va="top", fontsize=10, color=INK,
+                          annotation_clip=False,
+                          arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.7,
+                                          shrinkA=1, shrinkB=0))
+    fig.text(0.5, 0.008, "letras de Fraunhofer; profundidades aproximadas, comprimentos de onda tabelados",
+             ha="center", fontsize=9, color=MUTED)
+    salva(fig, "a6_emissao_absorcao")
+
+
 if __name__ == "__main__":
     os.makedirs(SAIDA, exist_ok=True)
     for f in (fig_planck, fig_solar, fig_atmosfera, fig_perfis, fig_balmer, fig_termico,
               fig_filtros_curvas, fig_filtro_produto, fig_filtros_duas_estrelas,
-              fig_cores_atomos):
+              fig_cores_atomos, fig_emissao_absorcao):
         f()
     print("ok")
