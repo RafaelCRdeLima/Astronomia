@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lei de Wien: a cor de um corpo negro | Astronomia (AST0001)</title>
+<title>Corpo negro: a curva de Planck | Astronomia (AST0001)</title>
 <style>
 :root{--bg:#050505;--panel:#101010;--panel2:#151515;--line:#343434;--text:#f4f4f1;
       --muted:#aaa69c;--accent:#d7b46a;--blue:#72a7ff;--cyan:#6fd3d8;--bad:#d96d6d;--good:#8fd18f}
@@ -78,19 +78,19 @@ body.embed .barra{margin:3px 0;font-size:11px}
 </style></head>
 <body>
 <div class="shell">
-<h1>Lei de Wien &middot; a cor de um corpo negro</h1>
-<div class="sub">Mude a temperatura e veja o pico da curva de Planck atravessar o espectro. A curva é
-desenhada <b>na cor do comprimento de onda que ela ocupa</b>: violeta escurecendo no ultravioleta,
-o arco-íris na faixa visível, vermelho escurecendo no infravermelho.<br>
-<span style="opacity:.8">Repare que a <b>forma</b> nunca muda: normalizada pelo pico e em escala log, toda
-temperatura dá exatamente a mesma curva, apenas deslocada. Isso não é limitação do desenho &mdash; é a forma
-geral da lei, B<sub>&lambda;</sub> = &lambda;<sup>&minus;5</sup>&thinsp;f(&lambda;T), que Wien deduziu
-por termodinâmica em 1893, antes de Planck. O &lambda;<sub>máx</sub>&thinsp;&times;&thinsp;T = b que todo
-mundo decora é consequência dela.</span></div>
+<h1>Corpo negro &middot; a curva de Planck</h1>
+<div class="sub">A curva de Planck em escala absoluta: mude a temperatura e a curva inteira
+<b>sobe e anda para a esquerda</b>. Ela é desenhada na cor do comprimento de onda que ocupa &mdash; violeta
+no ultravioleta, o arco-íris no visível, vermelho no infravermelho.<br>
+<span style="opacity:.8">A tracejada dourada é a <b>lei de Wien</b>, que aqui aparece como o que ela é: o
+lugar geométrico dos picos &mdash; um caso especial da curva de Planck, não um assunto à parte. As curvas
+cinzas são outras temperaturas, e repare que <b>nenhuma cruza outra</b>: uma estrela mais quente emite mais
+em todo comprimento de onda, não só no azul. Trocando o eixo para &ldquo;pico = 1&rdquo; a forma se revela
+invariante, que é a versão geral da lei de Wien, B<sub>&lambda;</sub> = &lambda;<sup>&minus;5</sup> f(&lambda;T).</span></div>
 <div class="grid">
   <div>
     <div class="panel">
-      <div class="rot">B<sub>&lambda;</sub>(T) contra comprimento de onda, em escala log &mdash; o pico anda, e a cor do pico anda junto</div>
+      <div class="rot" id="rotulo"></div>
       <canvas id="cv" width="1000" height="556"></canvas>
     </div>
   </div>
@@ -133,10 +133,10 @@ const $=i=>document.getElementById(i);
 const cv=$("cv"), ctx=cv.getContext("2d");
 const H_=6.62607015e-34, C_=2.99792458e8, K_=1.380649e-23, EV=1.602176634e-19;
 const B_WIEN=2.897771955e-3, SIG=5.670374419e-8, T_SOL=5772;
-const LMIN=60, LMAX=15000;           // nm, eixo log
+const LMIN=40, LMAX=20000;           // nm, eixo log
 const VIS0=380, VIS1=750;            // fronteiras da faixa visivel
-let yLog=false, varrendo=false, dir=1, ultimo=performance.now();
-let refSol=true;
+let yLog=true, varrendo=false, dir=1, ultimo=performance.now();
+let refFam=true;
 let Tfixo=T_SOL;          // preset ativo: T exata, sem o arredondamento do slider
 const tempAtual=()=>Tfixo!=null?Tfixo:Math.pow(10,+$("t").value);
 
@@ -144,9 +144,9 @@ const PRE=[["anã marrom · 1000 K",1000],["anã M · 3000 K",3000],["Sol · 577
            ["Vega · 9600 K",9600],["Rigel · 12100 K",12100],["estrela O · 30000 K",30000]];
 
 /* ---------- física ---------- */
-function planck(lam_nm,T){           // B_lambda, unidades arbitrarias mas consistentes
+function planck(lam_nm,T){           // B_lambda em W m^-2 sr^-1 nm^-1
   const l=lam_nm*1e-9;
-  return (2*H_*C_*C_/Math.pow(l,5))/(Math.expm1(H_*C_/(l*K_*T)));
+  return (2*H_*C_*C_/Math.pow(l,5))/(Math.expm1(H_*C_/(l*K_*T)))*1e-9;
 }
 function lamMax(T){ return B_WIEN/T*1e9; }   // nm
 
@@ -223,22 +223,23 @@ function fracoes(T){
 }
 
 /* ---------- desenho ---------- */
+const YMIN=1e-2, YMAX=1e9;            // W m^-2 sr^-1 nm^-1: cobre de 1000 K a 40 000 K
+const FAMILIA=[1000,3000,5772,10000,30000];
+
 function desenha(T){
-  const W=cv.width,Hh=cv.height,PL=74,PR=22,PT=40,PB=128;
+  const W=cv.width,Hh=cv.height,PL=76,PR=22,PT=40,PB=128;
   const X=l=>PL+(Math.log(l/LMIN)/Math.log(LMAX/LMIN))*(W-PL-PR);
   ctx.clearRect(0,0,W,Hh);
   const lmax=lamMax(T), pico=planck(lmax,T);
-  const yTopAbs=planck(lamMax(40000),40000);
-  const Yn=(v,p)=>{
-    if(!yLog) return Hh-PB-(v/p)*(Hh-PB-PT);
-    const lo=Math.log(yTopAbs)-Math.log(1e11), hi=Math.log(yTopAbs);
-    return Hh-PB-((Math.log(Math.max(v,1e-30))-lo)/(hi-lo))*(Hh-PB-PT);
-  };
+  const lo=Math.log10(YMIN), hi=Math.log10(YMAX);
+  const Yn=(v,p)=>yLog
+    ? Hh-PB-((Math.log10(Math.max(v,1e-40))-lo)/(hi-lo))*(Hh-PB-PT)
+    : Hh-PB-(v/p)*(Hh-PB-PT);
   const Y=v=>Yn(v,pico);
-  const DENTRO=y=>y>=PT-40&&y<=Hh-PB;         // a area util do grafico
+  const DENTRO=y=>y>=PT-40&&y<=Hh-PB;
   const PRENDE=y=>Math.min(Hh-PB,Math.max(PT-40,y));
 
-  /* grade vertical em décadas */
+  /* grade vertical em décadas de comprimento de onda */
   ctx.font="17px Inter,sans-serif"; ctx.textAlign="center";
   for(let d=2;d<=4;d++){
     for(let m=1;m<10;m++){
@@ -249,33 +250,41 @@ function desenha(T){
         ctx.fillText(l>=1000?(l/1000)+" µm":l+" nm",X(l),Hh-PB+40); }
     }
   }
+  /* grade horizontal: décadas de B, só na escala absoluta */
+  if(yLog){
+    ctx.textAlign="right";
+    for(let e=Math.ceil(lo);e<=Math.floor(hi);e++){
+      const y=Yn(Math.pow(10,e),1); if(!DENTRO(y)) continue;
+      ctx.strokeStyle=(e%2===0)?"#242424":"#171717"; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(PL,y); ctx.lineTo(W-PR,y); ctx.stroke();
+      if(e%2===0){ ctx.fillStyle="#6a6a6a"; ctx.font="15px Inter,sans-serif";
+        ctx.fillText("10"+sobrescrito(e),PL-8,y+5); }
+    }
+    ctx.textAlign="center"; ctx.font="17px Inter,sans-serif";
+  }
   /* fronteiras das faixas */
-  [[VIS0,"380"],[VIS1,"750"]].forEach(([l])=>{
+  [VIS0,VIS1].forEach(l=>{
     ctx.strokeStyle="#4a4a4a"; ctx.setLineDash([4,5]); ctx.lineWidth=1.4;
     ctx.beginPath(); ctx.moveTo(X(l),PT); ctx.lineTo(X(l),Hh-PB); ctx.stroke(); ctx.setLineDash([]);
   });
-  /* rótulos das três regiões */
   const rot=(a,b,txt,cor)=>{
     const x=(X(a)+X(b))/2; if(X(b)-X(a)<60) return;
-    ctx.fillStyle=cor; ctx.font="600 18px Inter,sans-serif";
-    ctx.fillText(txt,x,PT-14);
+    ctx.fillStyle=cor; ctx.font="600 18px Inter,sans-serif"; ctx.fillText(txt,x,PT-14);
   };
   rot(LMIN,VIS0,"ULTRAVIOLETA","#9b5de5");
   rot(VIS0,VIS1,"VISÍVEL","#e8d44a");
   rot(VIS1,LMAX,"INFRAVERMELHO","#d96d6d");
 
-  /* gradiente do espectro, amostrado ao longo do eixo log */
+  /* gradiente do espectro */
   const grad=ctx.createLinearGradient(PL,0,W-PR,0);
-  for(let i=0;i<=400;i++){
-    const f=i/400, l=LMIN*Math.pow(LMAX/LMIN,f);
-    grad.addColorStop(f,css(corDe(l)));
-  }
-  /* régua 1: o espectro inteiro, na mesma escala log do eixo */
+  for(let i=0;i<=400;i++){ const f=i/400; grad.addColorStop(f,css(corDe(LMIN*Math.pow(LMAX/LMIN,f)))); }
+
+  /* régua 1: o espectro inteiro, na escala log do eixo */
   const fy=Hh-PB+4, fh=16;
   ctx.fillStyle=grad; ctx.fillRect(PL,fy,W-PL-PR,fh);
   ctx.strokeStyle="#2b2b2b"; ctx.lineWidth=1; ctx.strokeRect(PL,fy,W-PL-PR,fh);
 
-  /* régua 2: a faixa visível esticada na largura toda -- é onde o arco-íris se lê */
+  /* régua 2: a faixa visível esticada na largura toda */
   const vy=Hh-PB+64, vh=24, XV=l=>PL+((l-VIS0)/(VIS1-VIS0))*(W-PL-PR);
   const gv=ctx.createLinearGradient(PL,0,W-PR,0);
   for(let i=0;i<=300;i++){ const f=i/300; gv.addColorStop(f,css(arcoIris(VIS0+(VIS1-VIS0)*f))); }
@@ -284,7 +293,6 @@ function desenha(T){
   ctx.fillStyle="#6a6a6a"; ctx.font="15px Inter,sans-serif"; ctx.textAlign="left";
   ctx.fillText("a faixa visível, esticada na largura toda",PL,vy+vh+18);
   ctx.textAlign="right"; ctx.fillText("380 nm  a  750 nm",W-PR,vy+vh+18);
-  /* onde o pico cai dentro do visível */
   if(lmax>=VIS0&&lmax<=VIS1){
     const xv=XV(lmax);
     ctx.fillStyle="#f4f4f1"; ctx.beginPath();
@@ -294,39 +302,61 @@ function desenha(T){
   }
   ctx.textAlign="center";
 
-  /* a curva */
-  const pts=[]; const N=900;
-  for(let i=0;i<=N;i++){
-    const l=LMIN*Math.pow(LMAX/LMIN,i/N), v=planck(l,T), y=Y(v);
-    pts.push([X(l),y,l,v]);
-  }
-  /* área sob a curva, no gradiente */
-  ctx.save();
-  ctx.beginPath(); ctx.moveTo(pts[0][0],Hh-PB);
-  pts.forEach(p=>ctx.lineTo(p[0],PRENDE(p[1])));
-  ctx.lineTo(pts[pts.length-1][0],Hh-PB); ctx.closePath();
-  ctx.clip();
-  ctx.globalAlpha=0.20; ctx.fillStyle=grad; ctx.fillRect(PL,PT-40,W-PL-PR,Hh-PB-PT+40);
-  ctx.restore();
-  /* curva de referência: o Sol, parado, para a forma poder ser comparada */
-  if(refSol && Math.abs(T-T_SOL)/T_SOL>0.02){
-    const picoR=planck(lamMax(T_SOL),T_SOL);
-    ctx.strokeStyle="#6b6b6b"; ctx.lineWidth=1.7; ctx.setLineDash([7,5]);
-    ctx.beginPath(); let cr=false;
+  const N=900;
+  const tracaCurva=(Tc,normPor)=>{           // devolve os pontos, sem pintar
+    const pts=[];
     for(let i=0;i<=N;i++){
-      const l=LMIN*Math.pow(LMAX/LMIN,i/N), y=Yn(planck(l,T_SOL),picoR);
-      if(!DENTRO(y)){cr=false;continue;}
-      const q=[X(l),y]; cr?ctx.lineTo(...q):ctx.moveTo(...q); cr=true;
+      const l=LMIN*Math.pow(LMAX/LMIN,i/N);
+      pts.push([X(l),Yn(planck(l,Tc),normPor),l]);
+    }
+    return pts;
+  };
+
+  /* família de referência: as outras temperaturas, atrás */
+  if(refFam) FAMILIA.forEach(Tf=>{
+    if(Math.abs(Tf-T)/T<0.02) return;
+    const pf=tracaCurva(Tf,planck(lamMax(Tf),Tf));
+    ctx.strokeStyle="#3d3d3d"; ctx.lineWidth=1.4; ctx.beginPath();
+    let c=false;
+    pf.forEach(q=>{ if(!DENTRO(q[1])){c=false;return;} c?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]); c=true; });
+    ctx.stroke();
+    const yp=Yn(planck(lamMax(Tf),Tf),planck(lamMax(Tf),Tf));
+    if(yLog&&DENTRO(yp)){
+      const rot=Tf>=10000?(Tf/1000)+" mil K":Tf+" K";
+      ctx.font="14px Inter,sans-serif"; ctx.textAlign="right";
+      const lr2=ctx.measureText(rot).width, xr2=X(lamMax(Tf))-10, yr2=yp-6;
+      ctx.fillStyle="rgba(5,5,5,.8)"; ctx.fillRect(xr2-lr2-4,yr2-13,lr2+8,18);
+      ctx.fillStyle="#8a8a8a"; ctx.fillText(rot,xr2,yr2);
+      ctx.textAlign="center";
+    }
+  });
+
+  /* lei de Wien: o lugar geométrico dos picos. Só faz sentido na escala absoluta */
+  if(yLog){
+    ctx.strokeStyle="#a08a4e"; ctx.setLineDash([7,5]); ctx.lineWidth=1.9;
+    ctx.beginPath(); let c=false;
+    for(let i=0;i<=240;i++){
+      const Tw=900*Math.pow(45,i/240), lm=lamMax(Tw), y=Yn(planck(lm,Tw),1);
+      if(!DENTRO(y)||X(lm)<PL||X(lm)>W-PR){c=false;continue;}
+      c?ctx.lineTo(X(lm),y):ctx.moveTo(X(lm),y); c=true;
     }
     ctx.stroke(); ctx.setLineDash([]);
-    const xr=X(lamMax(T_SOL)), yr=Yn(picoR,picoR);
+    const Tr=1120, lr=lamMax(Tr), yr=Yn(planck(lr,Tr),1);
     if(DENTRO(yr)){
-      ctx.fillStyle="#8a8a8a"; ctx.font="15px Inter,sans-serif"; ctx.textAlign="center";
-      ctx.fillText("Sol, 5772 K", xr, yr+(yLog?-14:26));
+      ctx.fillStyle="#a08a4e"; ctx.font="600 15px Inter,sans-serif"; ctx.textAlign="right";
+      ctx.fillText("lei de Wien: o lugar dos picos", X(lr)-6, yr+26);
+      ctx.textAlign="center";
     }
   }
 
-  /* traço da curva, colorido em segmentos */
+  /* a curva desta temperatura */
+  const pts=tracaCurva(T,pico);
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(pts[0][0],Hh-PB);
+  pts.forEach(q=>ctx.lineTo(q[0],PRENDE(q[1])));
+  ctx.lineTo(pts[pts.length-1][0],Hh-PB); ctx.closePath(); ctx.clip();
+  ctx.globalAlpha=0.20; ctx.fillStyle=grad; ctx.fillRect(PL,PT-40,W-PL-PR,Hh-PB-PT+40);
+  ctx.restore();
   ctx.lineWidth=3.4; ctx.lineJoin="round"; ctx.lineCap="round";
   for(let i=1;i<pts.length;i++){
     const [x0,y0]=pts[i-1], [x1,y1,l1]=pts[i];
@@ -334,30 +364,35 @@ function desenha(T){
     ctx.strokeStyle=css(corDe(l1));
     ctx.beginPath(); ctx.moveTo(x0,PRENDE(y0)); ctx.lineTo(x1,PRENDE(y1)); ctx.stroke();
   }
+
   /* marca do pico */
   const cp=corDe(lmax), xp=X(lmax), yp=Y(pico);
-  ctx.strokeStyle=cssA(cp,0.85); ctx.lineWidth=1.8; ctx.setLineDash([5,5]);
-  ctx.beginPath(); ctx.moveTo(xp,yp); ctx.lineTo(xp,Hh-PB); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle=css(cp); ctx.beginPath(); ctx.arc(xp,yp,7.5,0,7); ctx.fill();
-  ctx.strokeStyle="#f4f4f1"; ctx.lineWidth=2; ctx.stroke();
-  ctx.fillStyle="#f4f4f1"; ctx.font="600 20px Inter,sans-serif";
-  const txt="λmáx = "+(lmax<1000?lmax.toFixed(0)+" nm":(lmax/1000).toFixed(2).replace(".",",")+" µm");
-  const acima = yp-16 > PT+26;               // so escreve por cima se houver folga
-  const dir = xp>W-280 ? -1 : 1, ty = acima ? yp-16 : yp+36;
-  ctx.textAlign = dir<0 ? "right" : "left";
-  const larg=ctx.measureText(txt).width;
-  ctx.fillStyle="rgba(5,5,5,.78)";
-  ctx.fillRect(xp+dir*10-(dir<0?larg+8:0)-4, ty-19, larg+12, 26);
-  ctx.fillStyle="#f4f4f1";
-  ctx.fillText(txt, xp+dir*14, ty);
+  if(DENTRO(yp)){
+    ctx.strokeStyle=cssA(cp,0.85); ctx.lineWidth=1.8; ctx.setLineDash([5,5]);
+    ctx.beginPath(); ctx.moveTo(xp,yp); ctx.lineTo(xp,Hh-PB); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=css(cp); ctx.beginPath(); ctx.arc(xp,yp,7.5,0,7); ctx.fill();
+    ctx.strokeStyle="#f4f4f1"; ctx.lineWidth=2; ctx.stroke();
+    ctx.font="600 20px Inter,sans-serif";
+    const txt="λmáx = "+(lmax<1000?lmax.toFixed(0)+" nm":(lmax/1000).toFixed(2).replace(".",",")+" µm");
+    const acima=yp-16>PT+26, dir=xp>W-280?-1:1, ty=acima?yp-16:yp+36;
+    ctx.textAlign=dir<0?"right":"left";
+    const larg=ctx.measureText(txt).width;
+    ctx.fillStyle="rgba(5,5,5,.78)";
+    ctx.fillRect(xp+dir*10-(dir<0?larg+8:0)-4, ty-19, larg+12, 26);
+    ctx.fillStyle="#f4f4f1"; ctx.fillText(txt, xp+dir*14, ty);
+  }
 
   /* eixos */
   ctx.strokeStyle="#3a3a3a"; ctx.lineWidth=1.2;
   ctx.beginPath(); ctx.moveTo(PL,PT-40); ctx.lineTo(PL,Hh-PB); ctx.lineTo(W-PR,Hh-PB); ctx.stroke();
   ctx.fillStyle="#8a8a8a"; ctx.font="18px Inter,sans-serif"; ctx.textAlign="center";
   ctx.save(); ctx.translate(24,(PT+Hh-PB)/2); ctx.rotate(-Math.PI/2);
-  ctx.fillText(yLog?"Bλ(T)  — log, escala absoluta":"Bλ(T)  — pico normalizado a 1",0,0);
+  ctx.fillText(yLog?"Bλ(T)   W m⁻² sr⁻¹ nm⁻¹":"Bλ(T)  — pico normalizado a 1",0,0);
   ctx.restore(); ctx.textAlign="left";
+}
+function sobrescrito(n){
+  const d="⁰¹²³⁴⁵⁶⁷⁸⁹";
+  return (n<0?"⁻":"")+String(Math.abs(n)).split("").map(c=>d[+c]).join("");
 }
 
 /* ---------- sincronia ---------- */
@@ -386,8 +421,11 @@ function sync(){
     ? "O pico está no ultravioleta e não chega ao chão: a atmosfera bloqueia. O que se vê é a cauda Rayleigh-Jeans, e ela é azulada. Por isso estrelas muito quentes parecem azul-branco, nunca violeta."
     : "O pico está dentro da faixa visível. Mesmo assim a cor aparente não é a cor do pico: o olho integra a curva inteira, e o resultado puxa para o branco.";
   $("nota").textContent += yLog
-    ? "  Em escala absoluta a curva não só desliza: ela sobe, porque o pico cresce com T⁵ e a área com T⁴."
-    : "  A curva tracejada é o Sol, parado. Compare as formas: são a mesma, deslocada — e é isso que a lei de Wien afirma.";
+    ? "  A curva inteira sobe: o pico cresce com T⁵ e a área sob ela com T⁴. A tracejada dourada é a lei de Wien — o lugar geométrico dos picos."
+    : "  Normalizando pelo pico, a forma se revela sempre a mesma, só deslocada. É a forma geral da lei de Wien; o λmáx×T=b é o corolário."
+  $("rotulo").innerHTML = yLog
+    ? "B<sub>&lambda;</sub>(T) contra comprimento de onda, log-log &mdash; a curva sobe com T, e o pico anda para o azul"
+    : "B<sub>&lambda;</sub>(T) normalizado no pico &mdash; a mesma forma, em qualquer temperatura";
   desenha(T);
 }
 function chips(){
@@ -395,13 +433,13 @@ function chips(){
   PRE.forEach(([n,T])=>{const b=document.createElement("button");b.className="chip";b.textContent=n;
     b.onclick=()=>{Tfixo=T;$("t").value=Math.log10(T);sync();marca(n);};c.appendChild(b);});
   const y=$("chipsY"); y.innerHTML="";
-  [["pico = 1",false],["log absoluto",true]].forEach(([n,v])=>{
+  [["absoluta",true],["pico = 1",false]].forEach(([n,v])=>{
     const b=document.createElement("button");b.className="chip"+(v===yLog?" on":"");b.textContent=n;
     b.onclick=()=>{yLog=v;[...y.children].forEach(z=>z.classList.toggle("on",z===b));sync();};
     y.appendChild(b);});
   const bs=document.createElement("button");
-  bs.className="chip alt"+(refSol?" on":""); bs.textContent="comparar com o Sol";
-  bs.onclick=()=>{refSol=!refSol;bs.classList.toggle("on",refSol);sync();};
+  bs.className="chip alt"+(refFam?" on":""); bs.textContent="outras temperaturas";
+  bs.onclick=()=>{refFam=!refFam;bs.classList.toggle("on",refFam);sync();};
   y.appendChild(bs);
 }
 function marca(n){[...$("chips").children].forEach(b=>b.classList.toggle("on",b.textContent===n));}
