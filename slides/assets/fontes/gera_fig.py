@@ -375,9 +375,98 @@ def fig_filtros_duas_estrelas():
     salva(fig, "a6_filtros_duas_estrelas")
 
 
+# ==================================================== 10. as cores de cada atomo
+#
+# Linhas de emissao no visivel, com intensidades relativas aproximadas -- elas
+# dependem das condicoes da descarga, e a legenda da figura diz isso. Os
+# comprimentos de onda, esses, sao os tabelados.
+LINHAS = [
+ ("Hidrogênio", "H", [(656.28,100),(486.13,42),(434.05,18),(410.17,9),(397.01,5)]),
+ ("Hélio", "He", [(388.86,14),(447.15,28),(471.31,9),(492.19,11),(501.57,38),
+                  (587.56,100),(667.82,42),(706.52,22)]),
+ ("Sódio", "Na", [(498.28,1),(568.26,2),(568.82,3),(588.99,100),(589.59,52),(615.42,2)]),
+ ("Cálcio", "Ca", [(393.37,30),(396.85,22),(422.67,100),(445.48,22),(487.81,8),
+                   (610.27,12),(612.22,15),(616.22,18),(643.91,10)]),
+ ("Mercúrio", "Hg", [(404.66,42),(407.78,10),(435.83,88),(491.60,6),(546.07,100),
+                     (576.96,50),(579.07,55)]),
+ ("Neônio", "Ne", [(585.25,100),(588.19,40),(594.48,45),(597.55,30),(603.00,35),
+                   (607.43,30),(609.62,35),(614.31,50),(616.36,30),(621.73,35),
+                   (626.65,40),(630.48,35),(633.44,60),(638.30,70),(640.22,90),
+                   (650.65,60),(653.29,40),(659.90,45),(667.83,30),(671.70,40),
+                   (692.95,35),(703.24,40)]),
+]
+
+
+def rgb_visivel(l):
+    """Comprimento de onda -> RGB aproximado, com a queda de resposta do olho
+    nas pontas. Aproximacao de Bruton."""
+    if l < 440:   r, g, b = -(l-440)/60.0, 0.0, 1.0
+    elif l < 490: r, g, b = 0.0, (l-440)/50.0, 1.0
+    elif l < 510: r, g, b = 0.0, 1.0, -(l-510)/20.0
+    elif l < 580: r, g, b = (l-510)/70.0, 1.0, 0.0
+    elif l < 645: r, g, b = 1.0, -(l-645)/65.0, 0.0
+    else:         r, g, b = 1.0, 0.0, 0.0
+    if l < 420:   f = 0.30 + 0.70*(l-380)/40.0
+    elif l > 700: f = 0.30 + 0.70*(750-l)/50.0
+    else:         f = 1.0
+    f = max(0.0, min(1.0, f))
+    return np.array([max(r,0)*f, max(g,0)*f, max(b,0)*f])
+
+
+def fig_cores_atomos():
+    L0, L1, NX = 380.0, 750.0, 1500
+    lam = np.linspace(L0, L1, NX)
+    sig = 0.75                                  # nm: largura de desenho da linha
+
+    fig, axs = plt.subplots(len(LINHAS), 2, figsize=(10.8, 5.9),
+                            gridspec_kw={"width_ratios": [13, 1.25], "hspace": 0.38,
+                                         "wspace": 0.035})
+    for i, (nome, simb, linhas) in enumerate(LINHAS):
+        faixa = np.zeros((NX, 3))
+        mistura = np.zeros(3)
+        for lc, inten in linhas:
+            perfil = np.exp(-0.5*((lam-lc)/sig)**2)
+            cor = rgb_visivel(lc)
+            faixa += inten*perfil[:, None]*cor[None, :]
+            mistura += inten*cor
+        if faixa.max() > 0:
+            faixa = (faixa/faixa.max())**(1/1.5)   # gama, para as linhas fracas aparecerem
+        img = np.clip(faixa, 0, 1)[None, :, :].repeat(2, axis=0)
+
+        ax = axs[i, 0]
+        ax.imshow(img, extent=[L0, L1, 0, 1], aspect="auto", interpolation="bilinear")
+        ax.set_yticks([])
+        ax.set_ylabel("%s\n%s" % (nome, simb), rotation=0, ha="right", va="center",
+                      fontsize=11.5, color=INK, labelpad=14)
+        for s in ax.spines.values():
+            s.set_color("#9aa5b1"); s.set_linewidth(0.8)
+        if i == len(LINHAS)-1:
+            ax.set_xticks([400, 450, 500, 550, 600, 650, 700, 750])
+            ax.tick_params(labelsize=10, colors=MUTED)
+            ax.set_xlabel(r"comprimento de onda  $\lambda$  (nm)", fontsize=11.5, color=INK)
+        else:
+            ax.set_xticks([])
+
+        sw = axs[i, 1]
+        mistura = mistura/mistura.max() if mistura.max() > 0 else mistura
+        sw.imshow(np.clip(mistura, 0, 1)[None, None, :].repeat(2, 0).repeat(2, 1),
+                  aspect="auto", interpolation="nearest")
+        sw.set_xticks([]); sw.set_yticks([])
+        for s in sw.spines.values():
+            s.set_color("#9aa5b1"); s.set_linewidth(0.8)
+
+    axs[0, 1].set_title("cor que\no olho vê", fontsize=9.5, color=MUTED, pad=7)
+    fig.text(0.5, 0.005, "intensidades relativas aproximadas; os comprimentos de onda são os tabelados",
+             ha="center", fontsize=9, color=MUTED)
+    axs[0, 0].set_title("as linhas de emissão, nos comprimentos de onda tabelados",
+                        fontsize=11.5, color=NAVY, pad=8)
+    salva(fig, "a6_cores_atomos")
+
+
 if __name__ == "__main__":
     os.makedirs(SAIDA, exist_ok=True)
     for f in (fig_planck, fig_solar, fig_atmosfera, fig_perfis, fig_balmer, fig_termico,
-              fig_filtros_curvas, fig_filtro_produto, fig_filtros_duas_estrelas):
+              fig_filtros_curvas, fig_filtro_produto, fig_filtros_duas_estrelas,
+              fig_cores_atomos):
         f()
     print("ok")
