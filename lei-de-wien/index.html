@@ -25,6 +25,7 @@ input[type=range]{width:100%;accent-color:var(--accent);background:transparent}
 .chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .chip.on{border-color:var(--accent);color:var(--bg);background:var(--accent);font-weight:600}
+.chip.alt{margin-left:8px}
 .metric{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1c1c1c;font-size:13px}
 .metric:last-child{border-bottom:none}
 .metric small{color:var(--muted)}
@@ -81,7 +82,11 @@ body.embed .barra{margin:3px 0;font-size:11px}
 <div class="sub">Mude a temperatura e veja o pico da curva de Planck atravessar o espectro. A curva é
 desenhada <b>na cor do comprimento de onda que ela ocupa</b>: violeta escurecendo no ultravioleta,
 o arco-íris na faixa visível, vermelho escurecendo no infravermelho.<br>
-<span style="opacity:.8">O produto &lambda;<sub>máx</sub>&thinsp;&times;&thinsp;T fica parado enquanto tudo o mais se move. É esta a lei.</span></div>
+<span style="opacity:.8">Repare que a <b>forma</b> nunca muda: normalizada pelo pico e em escala log, toda
+temperatura dá exatamente a mesma curva, apenas deslocada. Isso não é limitação do desenho &mdash; é a forma
+geral da lei, B<sub>&lambda;</sub> = &lambda;<sup>&minus;5</sup>&thinsp;f(&lambda;T), que Wien deduziu
+por termodinâmica em 1893, antes de Planck. O &lambda;<sub>máx</sub>&thinsp;&times;&thinsp;T = b que todo
+mundo decora é consequência dela.</span></div>
 <div class="grid">
   <div>
     <div class="panel">
@@ -97,7 +102,7 @@ o arco-íris na faixa visível, vermelho escurecendo no infravermelho.<br>
       <div class="tit">Temperatura</div>
       <div class="control"><label>T <b id="vt">5772 K</b></label>
         <input id="t" type="range" min="3" max="4.6" step="0.001" value="3.761"></div>
-      <div class="tit">Eixo vertical</div>
+      <div class="tit">Exibição</div>
       <div class="chips" id="chipsY"></div>
       <button class="btn" id="play">varrer</button><button class="btn" id="sol">voltar ao Sol</button>
     </div>
@@ -131,6 +136,7 @@ const B_WIEN=2.897771955e-3, SIG=5.670374419e-8, T_SOL=5772;
 const LMIN=60, LMAX=15000;           // nm, eixo log
 const VIS0=380, VIS1=750;            // fronteiras da faixa visivel
 let yLog=false, varrendo=false, dir=1, ultimo=performance.now();
+let refSol=true;
 let Tfixo=T_SOL;          // preset ativo: T exata, sem o arredondamento do slider
 const tempAtual=()=>Tfixo!=null?Tfixo:Math.pow(10,+$("t").value);
 
@@ -223,11 +229,14 @@ function desenha(T){
   ctx.clearRect(0,0,W,Hh);
   const lmax=lamMax(T), pico=planck(lmax,T);
   const yTopAbs=planck(lamMax(40000),40000);
-  const Y=v=>{
-    if(!yLog) return Hh-PB-(v/pico)*(Hh-PB-PT);
+  const Yn=(v,p)=>{
+    if(!yLog) return Hh-PB-(v/p)*(Hh-PB-PT);
     const lo=Math.log(yTopAbs)-Math.log(1e11), hi=Math.log(yTopAbs);
     return Hh-PB-((Math.log(Math.max(v,1e-30))-lo)/(hi-lo))*(Hh-PB-PT);
   };
+  const Y=v=>Yn(v,pico);
+  const DENTRO=y=>y>=PT-40&&y<=Hh-PB;         // a area util do grafico
+  const PRENDE=y=>Math.min(Hh-PB,Math.max(PT-40,y));
 
   /* grade vertical em décadas */
   ctx.font="17px Inter,sans-serif"; ctx.textAlign="center";
@@ -294,18 +303,36 @@ function desenha(T){
   /* área sob a curva, no gradiente */
   ctx.save();
   ctx.beginPath(); ctx.moveTo(pts[0][0],Hh-PB);
-  pts.forEach(p=>ctx.lineTo(p[0],Math.max(PT-40,p[1])));
+  pts.forEach(p=>ctx.lineTo(p[0],PRENDE(p[1])));
   ctx.lineTo(pts[pts.length-1][0],Hh-PB); ctx.closePath();
   ctx.clip();
   ctx.globalAlpha=0.20; ctx.fillStyle=grad; ctx.fillRect(PL,PT-40,W-PL-PR,Hh-PB-PT+40);
   ctx.restore();
+  /* curva de referência: o Sol, parado, para a forma poder ser comparada */
+  if(refSol && Math.abs(T-T_SOL)/T_SOL>0.02){
+    const picoR=planck(lamMax(T_SOL),T_SOL);
+    ctx.strokeStyle="#6b6b6b"; ctx.lineWidth=1.7; ctx.setLineDash([7,5]);
+    ctx.beginPath(); let cr=false;
+    for(let i=0;i<=N;i++){
+      const l=LMIN*Math.pow(LMAX/LMIN,i/N), y=Yn(planck(l,T_SOL),picoR);
+      if(!DENTRO(y)){cr=false;continue;}
+      const q=[X(l),y]; cr?ctx.lineTo(...q):ctx.moveTo(...q); cr=true;
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    const xr=X(lamMax(T_SOL)), yr=Yn(picoR,picoR);
+    if(DENTRO(yr)){
+      ctx.fillStyle="#8a8a8a"; ctx.font="15px Inter,sans-serif"; ctx.textAlign="center";
+      ctx.fillText("Sol, 5772 K", xr, yr+(yLog?-14:26));
+    }
+  }
+
   /* traço da curva, colorido em segmentos */
   ctx.lineWidth=3.4; ctx.lineJoin="round"; ctx.lineCap="round";
   for(let i=1;i<pts.length;i++){
     const [x0,y0]=pts[i-1], [x1,y1,l1]=pts[i];
-    if(y1<PT-40&&y0<PT-40) continue;
+    if((y1<PT-40&&y0<PT-40)||(y1>Hh-PB&&y0>Hh-PB)) continue;
     ctx.strokeStyle=css(corDe(l1));
-    ctx.beginPath(); ctx.moveTo(x0,Math.max(PT-40,y0)); ctx.lineTo(x1,Math.max(PT-40,y1)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x0,PRENDE(y0)); ctx.lineTo(x1,PRENDE(y1)); ctx.stroke();
   }
   /* marca do pico */
   const cp=corDe(lmax), xp=X(lmax), yp=Y(pico);
@@ -358,6 +385,9 @@ function sync(){
     : lmax<VIS0
     ? "O pico está no ultravioleta e não chega ao chão: a atmosfera bloqueia. O que se vê é a cauda Rayleigh-Jeans, e ela é azulada. Por isso estrelas muito quentes parecem azul-branco, nunca violeta."
     : "O pico está dentro da faixa visível. Mesmo assim a cor aparente não é a cor do pico: o olho integra a curva inteira, e o resultado puxa para o branco.";
+  $("nota").textContent += yLog
+    ? "  Em escala absoluta a curva não só desliza: ela sobe, porque o pico cresce com T⁵ e a área com T⁴."
+    : "  A curva tracejada é o Sol, parado. Compare as formas: são a mesma, deslocada — e é isso que a lei de Wien afirma.";
   desenha(T);
 }
 function chips(){
@@ -369,6 +399,10 @@ function chips(){
     const b=document.createElement("button");b.className="chip"+(v===yLog?" on":"");b.textContent=n;
     b.onclick=()=>{yLog=v;[...y.children].forEach(z=>z.classList.toggle("on",z===b));sync();};
     y.appendChild(b);});
+  const bs=document.createElement("button");
+  bs.className="chip alt"+(refSol?" on":""); bs.textContent="comparar com o Sol";
+  bs.onclick=()=>{refSol=!refSol;bs.classList.toggle("on",refSol);sync();};
+  y.appendChild(bs);
 }
 function marca(n){[...$("chips").children].forEach(b=>b.classList.toggle("on",b.textContent===n));}
 function laco(now){
