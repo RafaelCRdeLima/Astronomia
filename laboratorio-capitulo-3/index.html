@@ -509,9 +509,7 @@
             <label>Comandos</label>
             <div class="command-grid">
               <button class="button" id="resetDetector" type="button">Zerar detector</button>
-              <button class="button" id="recordMeasurement" type="button">Registrar medida</button>
-              <button class="button" id="exportCsv" type="button">Exportar CSVs</button>
-              <button class="button" id="clearLog" type="button">Limpar registros</button>
+              <button class="button" id="exportCsv" type="button">Exportar dados desta observação</button>
             </div>
           </div>
         </div>
@@ -536,32 +534,36 @@
 
           <div class="tasks">
             <div class="task">
-              <strong>Experimento 1: abertura da estrela</strong>
-              Escolha uma estrela no campo e extraia espectros com três raios de abertura. Compare λmax, fluxos BVR e fluxo integrado.
+              <strong>Experimento 1: aquisição</strong>
+              Escolha a estrela, desenhe a abertura sobre ela e outra numa região limpa de fundo, e inicie a aquisição. Registre como o espectro muda a 5 s, 30 s e no fim. Explique por que ele fica menos irregular com mais fótons.
             </div>
             <div class="task">
-              <strong>Experimento 2: abertura de fundo</strong>
-              Posicione o fundo em uma região limpa e depois em uma região contaminada. Explique como a subtração muda o contínuo.
+              <strong>Experimento 2: as condições da medida</strong>
+              Anote o alvo, o raio da abertura da estrela, o raio da abertura de fundo, a fração coletada e o tempo acumulado. Tudo o que vem depois depende desses cinco números, e um relatório sem eles não é reprodutível.
             </div>
             <div class="task">
-              <strong>Experimento 3: fundo local</strong>
-              Compare espectros extraídos com uma abertura de fundo limpa e com uma abertura de fundo contaminada. Quantifique como λmax, T e fluxo integrado mudam.
+              <strong>Experimento 3: temperatura por Wien</strong>
+              No espectro calibrado, localize λmax e calcule T = 2,898×10⁶ / λmax(nm). Diga em que faixa o pico caiu.
             </div>
             <div class="task">
-              <strong>Experimento 4: corpo negro</strong>
-              Pause a aquisição, ative Ajustar corpo-negro e varie temperatura e escala até a curva acompanhar o contínuo observado. Registre a temperatura obtida.
+              <strong>Experimento 4: temperatura por ajuste de corpo negro</strong>
+              Pause a aquisição, ative Ajustar corpo-negro e varie temperatura e escala até a curva acompanhar o contínuo. Compare esta temperatura com a de Wien e explique por que elas podem não coincidir.
             </div>
             <div class="task">
-              <strong>Experimento 5: fotometria em bandas</strong>
-              Registre fluxos B, V e R. Calcule B−V = −2,5 log10(FB/FV) e interprete cor e temperatura.
+              <strong>Experimento 5: cor</strong>
+              Registre F<sub>B</sub>, F<sub>V</sub> e F<sub>R</sub> e calcule B−V = −2,5 log₁₀(F<sub>B</sub>/F<sub>V</sub>). A cor concorda com as duas temperaturas anteriores? Um B−V menor deveria indicar objeto mais quente.
             </div>
             <div class="task">
-              <strong>Experimento 6: velocidade radial</strong>
-              Marque quedas no espectro, registre λ observado e teste identificações possíveis para Hα, Hβ ou Na D. Calcule v ≈ c(λobs−λ0)/λ0 e indique aproximação/recessão.
+              <strong>Experimento 6: fluxo integrado</strong>
+              Integre o espectro líquido na janela observada. Explique por que esse número não é o fluxo bolométrico e o que ficou de fora.
             </div>
             <div class="task">
-              <strong>Experimento 7: luminosidade relativa</strong>
-              Integre o espectro extraído para obter um fluxo bolométrico relativo e compare dois alvos registrados com tempo acumulado parecido.
+              <strong>Experimento 7: velocidade radial</strong>
+              Marque pelo menos duas quedas do espectro, identifique-as e calcule v ≈ c(λobs−λ0)/λ0 em cada uma. Informe aproximação ou afastamento e compare os dois valores entre si.
+            </div>
+            <div class="task">
+              <strong>Experimento 8: interpretação</strong>
+              Separe o que foi medido do que foi inferido, e confronte as três estimativas de temperatura — Wien, ajuste de corpo negro e cor. Se divergirem, diga de onde vem a diferença.
             </div>
           </div>
         </div>
@@ -575,7 +577,7 @@
           <div class="tasks">
             <div class="task">
               <strong>Gerar relatório em LaTeX no formato A&amp;A</strong>
-              Registre uma medida para cada estrela analisada, preencha o nome do aluno e clique em Gerar template. O laboratório salvará o arquivo main.tex, a classe oficial aa.cls, figuras, tabelas auxiliares e CSVs de dados para todas as estrelas registradas.
+              A entrega é de <b>uma observação</b>: uma estrela, um raio de abertura, um raio de fundo, uma exposição — e todos os oito experimentos saem dela. Deixe a observação como quer entregá-la, preencha o nome do aluno e clique em Gerar template. O laboratório salva main.tex já preenchido, a classe oficial aa.cls, as figuras, as tabelas e três CSVs: <code>dados/espectro.csv</code>, <code>dados/medidas.csv</code> e <code>dados/linhas.csv</code>.
             </div>
           </div>
           <div class="control">
@@ -584,7 +586,7 @@
           </div>
           <div class="mode-row">
             <button class="button" id="generateTemplate" type="button">Gerar template</button>
-            <span class="chip" id="reportStatus">Aguardando dados do experimento.</span>
+            <span class="chip" id="reportStatus">Acumule fótons e clique em Gerar template.</span>
           </div>
           <div class="table-wrap">
             <table>
@@ -597,6 +599,7 @@
                   <th>r fundo px</th>
                   <th>coleta %</th>
                   <th>λmax nm</th>
+                  <th>T Wien K</th>
                   <th>T ajuste K</th>
                   <th>FB</th>
                   <th>FV</th>
@@ -1657,6 +1660,7 @@
           <td>${fmt(row.skyRadius, 1)}</td>
           <td>${fmt(100 * row.capture, 0)}</td>
           <td>${fmt(row.peak, 1)}</td>
+          <td>${fmt(row.wienTemp, 0)}</td>
           <td>${fmt(row.blackbodyTemp, 0)}</td>
           <td>${fmt(row.b, 4)}</td>
           <td>${fmt(row.v, 4)}</td>
@@ -1753,16 +1757,21 @@
       };
     }
 
-    function recordMeasurement() {
+    /* O trabalho é de UMA observação: uma estrela, um raio de estrela, um raio
+       de fundo, uma exposição. Capturar substitui o registro anterior, em vez de
+       acumular uma lista -- é o que evita o aluno ficar com CSVs indistinguíveis. */
+    function capturarObservacao() {
       if (!currentSpectrum.length) resetObservation();
       if (observationSeconds < 0.5) {
-        document.getElementById("fieldStatus").textContent = "Inicie a aquisição e acumule fótons antes de registrar a medida.";
-        return;
+        document.getElementById("fieldStatus").textContent =
+          "Acumule fótons antes de exportar: escolha a estrela, desenhe as duas aberturas e inicie a aquisição.";
+        reportStatus.textContent = "Sem dados acumulados.";
+        return false;
       }
-      const observation = makeObservationSnapshot();
-      observations.push(observation);
+      observations.length = 0;
+      observations.push(makeObservationSnapshot());
       renderTable();
-      reportStatus.textContent = `${observations.length} observação(ões) registrada(s).`;
+      return true;
     }
 
     function csvValue(value) {
@@ -1882,27 +1891,50 @@
       return rows;
     }
 
-    function exportFluxCsv() {
-      downloadCsv("laboratorio_3_fluxo_por_comprimento_de_onda.csv", fluxCsvRows());
+    /* Uma linha só, com tudo o que os oito experimentos pedem. Antes isso estava
+       espalhado por tres CSVs que se sobrepunham e nao traziam a temperatura de Wien. */
+    function medidasCsvRows() {
+      const obs = observations[0];
+      return [[
+        "alvo", "tempo_acumulado_s", "fotons_acumulados",
+        "raio_abertura_estrela_px", "raio_abertura_fundo_px", "fracao_coletada",
+        "extracao",
+        "lambda_pico_observado_nm", "temperatura_wien_K",
+        "temperatura_ajuste_corpo_negro_K", "escala_corpo_negro",
+        "F_B", "F_V", "F_R", "BmenosV", "fluxo_bolometrico_relativo",
+        "janela_lambda_min_nm", "janela_lambda_max_nm", "semente_sessao",
+      ], [
+        obs.target, obs.observationSeconds, obs.photonTotal,
+        obs.starRadius, obs.skyRadius, obs.capture,
+        obs.extraction,
+        obs.peak, obs.wienTemp,
+        obs.fittingBlackbody ? obs.blackbodyTemp : "",
+        obs.fittingBlackbody ? obs.blackbodyScale : "",
+        obs.b, obs.v, obs.r, obs.bv, obs.bol,
+        obs.displayLambdaMin, obs.displayLambdaMax, sessionSeed,
+      ]];
     }
 
-    function exportBlackbodyCsv() {
-      downloadCsv("laboratorio_3_parametros_corpo_negro.csv", blackbodyCsvRows());
-    }
-
-    function exportLinesPhotometryCsv() {
-      downloadCsv("laboratorio_3_linhas_e_fotometria.csv", linesPhotometryCsvRows());
+    function linhasCsvRows() {
+      const obs = observations[0];
+      const rows = [[
+        "linha_indice", "lambda_observado_nm", "melhor_identificacao",
+        "lambda_repouso_nm", "velocidade_radial_km_s",
+      ]];
+      if (!obs.lines.length) rows.push(["", "", "", "", ""]);
+      obs.lines.forEach(line => rows.push([
+        line.index, line.lambdaObserved, line.bestLabel, line.restLambda, line.rv,
+      ]));
+      return rows;
     }
 
     function exportCsv() {
-      if (!currentSpectrum.length) resetObservation();
-      if (observationSeconds < 0.5) {
-        document.getElementById("fieldStatus").textContent = "Acumule fótons antes de exportar os dados observados.";
-        return;
-      }
-      exportFluxCsv();
-      setTimeout(exportBlackbodyCsv, 120);
-      setTimeout(exportLinesPhotometryCsv, 240);
+      if (!capturarObservacao()) return;
+      const base = `capitulo6_${observations[0].slug.replace(/^\d+_/, "")}`;
+      downloadCsv(`${base}_espectro.csv`, fluxCsvRows(observations[0]));
+      setTimeout(() => downloadCsv(`${base}_medidas.csv`, medidasCsvRows()), 120);
+      setTimeout(() => downloadCsv(`${base}_linhas.csv`, linhasCsvRows()), 240);
+      reportStatus.textContent = "Três CSVs exportados para " + observations[0].target + ".";
     }
 
     function latexEscape(value) {
@@ -2024,26 +2056,26 @@ ${latexRows(rows)}
     }
 
     function observationSectionsLatex() {
-      return observations.map(obs => {
-        const dataPath = `dados/${obs.slug}_fluxo.csv`;
-        return `\\subsection{${latexEscape(obs.target)}}
+      const obs = observations[0];
+      return `\\subsection{${latexEscape(obs.target)}}
 
 \\begin{figure*}[t]
 \\centering
-\\includegraphics[width=0.98\\textwidth]{figuras/${obs.slug}_fluxo.png}
+\\includegraphics[width=0.98\\textwidth]{figuras/espectro.png}
 \\caption{Fluxo por comprimento de onda de ${latexEscape(obs.target)}. A curva líquida corresponde ao fluxo da abertura da estrela menos o fundo escalado.}
 \\end{figure*}
 
 \\begin{figure*}[t]
 \\centering
-\\includegraphics[width=0.82\\textwidth]{figuras/${obs.slug}_fotometria.png}
+\\includegraphics[width=0.82\\textwidth]{figuras/fotometria.png}
 \\caption{Fotometria sintética de ${latexEscape(obs.target)} nas bandas B, V e R.}
 \\end{figure*}
 
-Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
+Dados desta observação: \\texttt{dados/espectro.csv} (fluxo por comprimento de onda),
+\\texttt{dados/medidas.csv} (uma linha com todas as grandezas medidas e inferidas) e
+\\texttt{dados/linhas.csv} (as linhas de absorção marcadas).
 
 `;
-      }).join("\n");
     }
 
     function allFluxCsvRows() {
@@ -2236,34 +2268,23 @@ Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
         { name: "tabelas/tabela_fotometria.tex", blob: new Blob([photometryLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "tabelas/tabela_linhas_absorcao.tex", blob: new Blob([absorptionLinesLatexTable()], { type: "text/x-tex;charset=utf-8" }) },
         { name: "secoes/observacoes.tex", blob: new Blob([observationSectionsLatex()], { type: "text/x-tex;charset=utf-8" }) },
-        { name: "dados/resumo_observacoes.csv", blob: new Blob([rowsToCsv(summaryCsvRows())], { type: "text/csv;charset=utf-8" }) },
-        { name: "dados/fotometria.csv", blob: new Blob([rowsToCsv(photometryCsvRows())], { type: "text/csv;charset=utf-8" }) },
-        { name: "dados/linhas_absorcao.csv", blob: new Blob([rowsToCsv(allLinesCsvRows())], { type: "text/csv;charset=utf-8" }) },
-        { name: "dados/fluxos_todas_observacoes.csv", blob: new Blob([rowsToCsv(allFluxCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "dados/medidas.csv", blob: new Blob([rowsToCsv(medidasCsvRows())], { type: "text/csv;charset=utf-8" }) },
+        { name: "dados/linhas.csv", blob: new Blob([rowsToCsv(linhasCsvRows())], { type: "text/csv;charset=utf-8" }) },
       ];
 
-      for (const observation of observations) {
-        files.push({
-          name: `dados/${observation.slug}_fluxo.csv`,
-          blob: new Blob([rowsToCsv(fluxCsvRows(observation))], { type: "text/csv;charset=utf-8" }),
-        });
-        files.push({
-          name: `dados/${observation.slug}_parametros.csv`,
-          blob: new Blob([rowsToCsv(blackbodyCsvRows(observation))], { type: "text/csv;charset=utf-8" }),
-        });
-        files.push({
-          name: `dados/${observation.slug}_linhas_fotometria.csv`,
-          blob: new Blob([rowsToCsv(linesPhotometryCsvRows(observation))], { type: "text/csv;charset=utf-8" }),
-        });
-        files.push({
-          name: `figuras/${observation.slug}_fluxo.png`,
-          blob: await observationFigureBlob(observation),
-        });
-        files.push({
-          name: `figuras/${observation.slug}_fotometria.png`,
-          blob: await observationPhotometryFigureBlob(observation),
-        });
-      }
+      const observation = observations[0];
+      files.push({
+        name: "dados/espectro.csv",
+        blob: new Blob([rowsToCsv(fluxCsvRows(observation))], { type: "text/csv;charset=utf-8" }),
+      });
+      files.push({
+        name: "figuras/espectro.png",
+        blob: await observationFigureBlob(observation),
+      });
+      files.push({
+        name: "figuras/fotometria.png",
+        blob: await observationPhotometryFigureBlob(observation),
+      });
 
       renderObservation();
       return files;
@@ -2300,11 +2321,7 @@ Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
         studentNameInput.focus();
         return;
       }
-      if (!observations.length) {
-        reportStatus.textContent = "Registre pelo menos uma medida antes de gerar o relatório.";
-        document.getElementById("fieldStatus").textContent = "Depois de acumular dados de uma estrela, clique em Registrar medida.";
-        return;
-      }
+      if (!capturarObservacao()) return;
 
       try {
         reportStatus.textContent = "Gerando arquivos do relatório...";
@@ -2449,14 +2466,8 @@ Arquivo de dados espectrais: \\texttt{${latexEscape(dataPath)}}.
       updateReadouts();
     });
     document.getElementById("resetDetector").addEventListener("click", resetObservation);
-    document.getElementById("recordMeasurement").addEventListener("click", recordMeasurement);
     document.getElementById("exportCsv").addEventListener("click", exportCsv);
     document.getElementById("generateTemplate").addEventListener("click", generateReportTemplate);
-    document.getElementById("clearLog").addEventListener("click", () => {
-      observations.length = 0;
-      renderTable();
-      reportStatus.textContent = "Aguardando dados do experimento.";
-    });
 
     function observeLoop(timestamp) {
       if (lastFrameTime === null) lastFrameTime = timestamp;

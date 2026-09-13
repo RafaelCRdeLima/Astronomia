@@ -3416,53 +3416,76 @@ O laboratório interativo deste capítulo está disponível em:
 Neste laboratório você atua como um observador que obtém espectros de estrelas desconhecidas a partir de um campo artificial controlado. A simulação não entrega diretamente temperatura ou velocidade: primeiro você deve escolher uma estrela, desenhar uma abertura sobre ela, desenhar outra abertura em uma região de fundo, iniciar a aquisição de fótons e esperar o detector acumular contagens. O espectro muda dinamicamente durante a observação, como aconteceria em uma exposição real.
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Roteiro de experimentos}
-\textbf{Experimento 1: aquisição de fótons.}
-Escolha uma estrela brilhante, desenhe uma abertura sobre ela e desenhe uma abertura de fundo em uma região sem estrelas. Antes de iniciar a aquisição, anote que o detector está zerado. Clique em \textit{Iniciar aquisição} e registre como o espectro muda após aproximadamente $5\,\mathrm{s}$, $15\,\mathrm{s}$ e $30\,\mathrm{s}$ de tempo acumulado. Explique por que o espectro fica menos irregular quando mais fótons são coletados.
+\textbf{O trabalho é de uma observação só.} Escolha uma estrela, defina o raio da abertura sobre
+ela, defina o raio da abertura de fundo, acumule fótons até o espectro ficar limpo --- e todos os
+oito itens abaixo saem \emph{dessa} observação. Não é preciso repetir nada, nem comparar alvos: o
+que se pede é uma medida bem feita, lida de oito maneiras.
 
-\textbf{Experimento 2: extração por abertura.}
-Para a mesma estrela, use três raios de abertura: pequeno, adequado e grande. Para cada raio, mantenha a mesma abertura de fundo e registre $\lambda_{\max}$, $F_B$, $F_V$, $F_R$ e o fluxo integrado. Use a estimativa
+\textbf{Experimento 1: aquisição.}
+Desenhe as duas aberturas e inicie a aquisição. Registre o que aparece na tela depois de
+aproximadamente $5\,\mathrm{s}$, $30\,\mathrm{s}$ e ao final. Explique por que o espectro fica menos
+irregular quando mais fótons são coletados.
+
+\textbf{Experimento 2: as condições da medida.}
+Anote o alvo, o raio da abertura da estrela, o raio da abertura de fundo, a fração coletada e o
+tempo acumulado. Tudo o que vem depois depende destes cinco números, e um resultado sem eles não é
+reprodutível.
+
+\textbf{Experimento 3: temperatura por Wien.}
+No espectro calibrado, localize $\lambda_{\max}$ e calcule
 \[
-C_{\rm estrela}=C_{\rm ap}-\frac{A_{\rm ap}}{A_{\rm fundo}}C_{\rm fundo}
+T=\frac{2{,}898\times10^{6}}{\lambda_{\max}(\mathrm{nm})}\ \mathrm{K}.
 \]
-para interpretar como a escolha da abertura altera o sinal coletado, o fundo subtraído e o ruído.
+Diga em que faixa do espectro o pico caiu.
 
-\textbf{Experimento 3: subtração de fundo.}
-Mantendo a mesma estrela e a mesma abertura do alvo, coloque a abertura de fundo em uma região limpa e depois em uma região contaminada por uma estrela fraca. Compare os espectros extraídos. Quantifique a diferença percentual no fluxo integrado e explique por que uma escolha ruim de fundo altera o contínuo.
+\textbf{Experimento 4: temperatura por ajuste de corpo negro.}
+Pause a aquisição, ative \textit{Ajustar corpo-negro} e varie temperatura e escala até a curva
+acompanhar o contínuo observado. Registre a temperatura obtida e compare-a com a de Wien. As duas
+saem do mesmo espectro por caminhos diferentes: uma usa um ponto, a outra usa a forma inteira.
+Explique por que podem não coincidir.
 
-\textbf{Experimento 4: calibração instrumental.}
-Para uma abertura bem escolhida, compare o espectro bruto, o espectro com dark subtraído e o espectro com dark + resposta instrumental corrigidos. Para cada caso, registre $\lambda_{\max}$ e calcule
-\[
-T=\frac{2{,}898\times10^6}{\lambda_{\max}(\mathrm{nm})}\ \mathrm{K}.
-\]
-Compare as temperaturas obtidas e explique por que calibração não é detalhe estético: ela muda a forma física do contínuo.
-
-\textbf{Experimento 5: temperatura por Wien.}
-Escolha três estrelas com cores visivelmente diferentes. Para cada uma, acumule fótons por tempo semelhante, use o espectro calibrado, determine $\lambda_{\max}$ e calcule $T$ pela lei de Wien. Ordene os alvos por temperatura. A estrela mais azul ficou com maior temperatura? A mais avermelhada ficou com menor temperatura? Há alguma estrela semelhante ao Sol? Justifique numericamente comparando sua temperatura com $T_\odot\simeq5778\,\mathrm{K}$.
-
-\textbf{Experimento 6: fotometria em bandas.}
-Para os mesmos alvos, registre $F_B$, $F_V$ e $F_R$. Calcule
+\textbf{Experimento 5: cor.}
+Registre $F_B$, $F_V$ e $F_R$ e calcule
 \[
 B-V=-2{,}5\log_{10}(F_B/F_V).
 \]
-Compare $B-V$ com a temperatura estimada por Wien. Explique por que $B-V$ menor indica objeto relativamente mais azul e, em geral, mais quente.
+A cor concorda com as duas temperaturas anteriores? Lembre que $B-V$ menor indica objeto
+relativamente mais azul.
 
-\textbf{Experimento 7: linhas espectrais e velocidade radial.}
-Escolha uma linha, preferencialmente H$\alpha$, H$\beta$ ou Na D. Registre $\lambda_{\rm obs}$ e calcule
+\textbf{Experimento 6: fluxo integrado.}
+Integre o espectro líquido na janela observada. Explique por que esse número \emph{não} é o fluxo
+bolométrico, e diga o que ficou de fora em cada extremidade.
+
+\textbf{Experimento 7: velocidade radial.}
+Marque pelo menos \emph{duas} quedas do espectro, identifique-as --- H$\alpha$, H$\beta$ ou Na D ---
+e calcule
 \[
-v_r\simeq c\frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}.
+v_r\simeq c\,\frac{\lambda_{\rm obs}-\lambda_0}{\lambda_0}
 \]
-Informe se o alvo está se aproximando ou se afastando. Repita com outra linha quando possível e compare os valores.
+em cada uma. Informe se o alvo se aproxima ou se afasta, e compare os dois valores entre si: eles
+deveriam concordar, e a diferença entre eles é a sua barra de erro.
 
 \textbf{Experimento 8: interpretação física.}
-Escolha duas estrelas e escreva uma cadeia de inferência:
+Escreva a cadeia de inferência
 \[
-\text{fótons acumulados} \;\longrightarrow\; \text{espectro reduzido} \;\longrightarrow\; \text{temperatura, cor e velocidade radial}.
+\text{fótons acumulados} \;\longrightarrow\; \text{espectro reduzido} \;\longrightarrow\;
+\text{temperatura, cor e velocidade radial},
 \]
-Indique o que foi medido diretamente e o que depende de modelo físico.
+separando o que foi medido diretamente do que depende de modelo. Confronte as três estimativas de
+temperatura --- Wien, ajuste de corpo negro e cor. Se divergirem, diga de onde vem a diferença.
 \end{lessonblock}
 
 \begin{lessonblock}{Formato da entrega}
-A entrega deve conter o CSV exportado pelo laboratório, uma tabela com pelo menos três alvos, os raios de abertura usados, o tempo acumulado de aquisição, os cálculos de $T$ por Wien, $B-V$, velocidade radial por pelo menos uma linha e uma interpretação curta separando observação direta de inferência física.
+A entrega é um artigo curto, e o próprio laboratório monta o esqueleto a partir da observação que
+estiver na tela. O botão \textit{Exportar dados desta observação} baixa três arquivos, nomeados pelo
+alvo: \texttt{espectro.csv} (fluxo por comprimento de onda), \texttt{medidas.csv} (uma linha com
+todas as grandezas medidas e inferidas, inclusive as três temperaturas) e \texttt{linhas.csv} (as
+linhas marcadas, com $\lambda_0$, $\lambda_{\rm obs}$ e $v_r$). O botão \textit{Gerar template}, na
+aba \textit{Template de Relatório}, salva esses mesmos dados junto com \texttt{main.tex} já
+preenchido, as figuras e as tabelas.
+
+O texto deve trazer, além dos oito itens do roteiro, as condições da medida declaradas no
+Experimento 2 e uma frase dizendo o que você faria diferente se pudesse observar de novo.
 \end{lessonblock}
 
 \begin{lessonblock}{Extensão opcional: o mesmo laboratório com dados reais}
