@@ -2991,12 +2991,18 @@ Um espectro observado não começa como ``fluxo físico''. Ele começa como cont
 \[
 C_{\rm bruto}(\lambda)=t\,R_{\rm inst}(\lambda)\,F_\lambda(\lambda)+D(\lambda)+N(\lambda),
 \]
-onde $R_{\rm inst}$ é a resposta instrumental, $D$ é dark current e $N$ representa ruído. A redução de dados tenta recuperar algo proporcional ao fluxo:
+onde $R_{\rm inst}$ é a \textbf{resposta instrumental} --- quantas contagens cada unidade de fluxo produz em cada comprimento de onda, somando espelho, óptica, rede e detector ---, $D$ é a \textbf{corrente escura} e $N$ é o \textbf{ruído}.
+
+A corrente escura, ou \textit{dark} no jargão, é o sinal que o detector produz sozinho. A agitação térmica arranca elétrons do silício, e eles se acumulam no pixel mesmo com o obturador fechado: não é luz que chegou, é calor do próprio instrumento. Ela independe do que está no céu e depende só do tempo e da temperatura --- cresce linearmente com a duração da exposição e dobra a cada $6$ a $7\,^\circ$C, razão pela qual detectores astronômicos são resfriados. E é justamente por não depender da luz que ela pode ser medida: fecha-se o obturador, expõe-se pelo mesmo tempo, e o que aparecer é $D$. Daí ela entrar na equação como parcela a subtrair, enquanto $R_{\rm inst}$ entra como fator a dividir.
+
+O ruído $N$ é de outra natureza. Não é uma parcela fixa que se possa medir e remover, e sim a flutuação estatística do que foi contado --- a do sinal da estrela, a do céu e a da própria corrente escura. Subtrair o \textit{dark} tira o valor médio dele, mas não desfaz a incerteza que ele acrescentou. A cadeia completa de redução, com \textit{bias} e \textit{flat-field}, está no Capítulo 3.
+
+A redução tenta então recuperar algo proporcional ao fluxo:
 \[
 F_\lambda(\lambda)\propto
 \frac{C_{\rm bruto}(\lambda)-D(\lambda)}{t\,R_{\rm inst}(\lambda)}.
 \]
-No laboratório, os modos ``bruto'', ``subtrair dark'' e ``dark + resposta instrumental'' mostram por que calibração não é detalhe burocrático: ela altera a forma do contínuo e, portanto, a temperatura inferida.
+Calibração não é detalhe burocrático: subtrair o \textit{dark} e dividir pela resposta instrumental altera a \emph{forma} do contínuo e, portanto, a temperatura inferida dele. O exemplo a seguir mostra quanto.
 \end{lessonblock}
 
 \subsection*{Temperatura a partir do contínuo}
