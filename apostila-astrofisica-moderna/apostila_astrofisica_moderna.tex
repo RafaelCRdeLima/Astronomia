@@ -2959,6 +2959,9 @@ com as seções na ordem, a equação já escrita e os lugares da tabela e do gr
 \addcontentsline{toc}{section}{Capítulo 6 -- Radiação, corpo negro e espectros}
 A luz é o mensageiro mais importante da astrofísica. Ela transporta energia, momento, direção, polarização e informação espectral. Um único fóton possui energia $E=h\nu=hc/\lambda$, de modo que comprimentos de onda menores correspondem a fótons mais energéticos. Essa relação conecta cor, temperatura, transições atômicas e processos de alta energia. Quando um telescópio registra luz, ele não está apenas formando uma imagem: está coletando evidências sobre a matéria que emitiu, absorveu ou espalhou essa radiação.
 
+\subsection*{Panorama: o que a luz carrega}
+\addcontentsline{toc}{subsection}{Panorama: o que a luz carrega}
+
 O espectro contínuo de muitos objetos pode ser comparado, em primeira aproximação, à radiação de corpo negro. Um corpo negro ideal absorve e emite radiação de maneira determinada apenas por sua temperatura. A lei de Wien indica que o comprimento de onda de máxima emissão diminui quando a temperatura aumenta:
 \[
 \lambda_{\max}T\simeq2{,}9\times10^{-3}\,\mathrm{m\,K}.
@@ -2980,6 +2983,9 @@ O efeito Doppler transforma espectros em medidores de movimento. Se uma fonte se
 \]
 permite medir a velocidade radial. Esse método revela binárias espectroscópicas, rotação estelar, expansão de nebulosas, discos de acreção, planetas por velocidade radial e redshifts de galáxias. Em cosmologia, o redshift ganha interpretação ligada à expansão do próprio espaço, mas a ideia observacional continua sendo o deslocamento de linhas.
 
+\subsection*{Do detector ao fluxo calibrado}
+\addcontentsline{toc}{subsection}{Do detector ao fluxo calibrado}
+
 \begin{lessonblock}{O que o detector realmente mede}
 Um espectro observado não começa como ``fluxo físico''. Ele começa como contagens no detector. Para uma exposição de duração $t$, em um comprimento de onda $\lambda$, uma forma simplificada do sinal é
 \[
@@ -2992,6 +2998,9 @@ F_\lambda(\lambda)\propto
 \]
 No laboratório, os modos ``bruto'', ``subtrair dark'' e ``dark + resposta instrumental'' mostram por que calibração não é detalhe burocrático: ela altera a forma do contínuo e, portanto, a temperatura inferida.
 \end{lessonblock}
+
+\subsection*{Temperatura a partir do contínuo}
+\addcontentsline{toc}{subsection}{Temperatura a partir do contínuo}
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Corpo negro e temperatura efetiva}
 A lei de Planck para radiância espectral pode ser escrita como
@@ -3028,17 +3037,20 @@ T\simeq4750\,\mathrm{K}.
 \]
 A diferença não significa que a estrela mudou: significa que a resposta instrumental deformou o contínuo observado.
 
+\subsection*{Cor: fotometria em bandas largas}
+\addcontentsline{toc}{subsection}{Cor: fotometria em bandas largas}
+
 \begin{lessonblock}{Fotometria em filtros e índice de cor}
 Um filtro não mede o fluxo em um único comprimento de onda; ele mede uma média ponderada por uma curva de transmissão $S_X(\lambda)$:
 \[
 F_X=\frac{\int F_\lambda(\lambda)S_X(\lambda)\,d\lambda}
 {\int S_X(\lambda)\,d\lambda}.
 \]
-Em fotometria astronômica, magnitudes são logarítmicas. Ignorando constantes de ponto zero, a diferença de cor entre duas bandas pode ser estimada por
+Em fotometria astronômica, magnitudes são logarítmicas. O índice $B-V$ já foi definido no Capítulo 2, com a relação de Pogson completa, $B-V=-2{,}5\log_{10}(F_B/F_V)+\text{const}$; aqui interessa apenas a \emph{variação} de cor entre alvos observados no mesmo instrumento, de modo que a constante de ponto zero se cancela e basta
 \[
 B-V\simeq -2{,}5\log_{10}\left(\frac{F_B}{F_V}\right).
 \]
-Valores menores de $B-V$ indicam objeto relativamente mais azul; valores maiores indicam objeto relativamente mais vermelho. Essa interpretação deve ser feita com cuidado, pois poeira interestelar também avermelha a luz.
+Valores menores de $B-V$ indicam objeto relativamente mais azul; valores maiores indicam objeto relativamente mais vermelho. Vale relembrar a advertência do Capítulo 2: poeira interestelar também avermelha, e o excesso de cor $E(B-V)=(B-V)_{\rm obs}-(B-V)_{\rm intr}$ com $R_V=A_V/E(B-V)\simeq3{,}1$ mede exatamente esse efeito. Uma cor observada só vira temperatura depois de descontada a extinção.
 \end{lessonblock}
 
 \textbf{Exemplo: cor a partir de fluxos.} Se uma observação calibrada fornece $F_B=0{,}42$ e $F_V=0{,}60$ em unidades relativas,
@@ -3047,6 +3059,9 @@ B-V=-2{,}5\log_{10}(0{,}42/0{,}60)
 =-2{,}5\log_{10}(0{,}70)\simeq0{,}39.
 \]
 Se outra estrela tem $F_B/F_V=1{,}20$, então $B-V\simeq-0{,}20$, indicando espectro mais azul e, em geral, temperatura efetiva maior.
+
+\subsection*{Velocidade radial a partir das linhas}
+\addcontentsline{toc}{subsection}{Velocidade radial a partir das linhas}
 
 \begin{lessonblock}{Linhas espectrais e velocidade radial}
 Uma linha espectral tem um comprimento de onda de repouso $\lambda_0$. Se a linha é observada em $\lambda_{\rm obs}$, então
@@ -3080,6 +3095,9 @@ v_r\simeq 299792\,\frac{-0{,}23}{656{,}28}
 \]
 O sinal negativo indica aproximação. Em uma entrega, sempre informe a linha usada, o comprimento de onda de repouso, o comprimento observado e o sinal da velocidade.
 
+\subsection*{Fluxo integrado, abertura e fundo}
+\addcontentsline{toc}{subsection}{Fluxo integrado, abertura e fundo}
+
 \begin{lessonblock}{Fluxo integrado e comparação entre objetos}
 O fluxo bolométrico é a integral do fluxo espectral:
 \[
@@ -3093,7 +3111,7 @@ Esse valor não é o fluxo bolométrico completo, pois falta radiação fora da 
 \end{lessonblock}
 
 \begin{lessonblock}{Da imagem ao espectro: abertura e fundo}
-Antes de obter um espectro útil, o observador precisa decidir de onde vem a luz do objeto e de onde vem o fundo. Em uma imagem real, a estrela não aparece como um ponto matemático: ela é espalhada pela óptica e pelo detector em uma \textit{função de espalhamento pontual} (PSF). Por isso usamos uma abertura circular em torno da estrela. Se a abertura for pequena demais, perdemos parte da luz; se for grande demais, somamos ruído e luz de fundo desnecessários.
+Antes de obter um espectro útil, o observador precisa decidir de onde vem a luz do objeto e de onde vem o fundo. A fotometria de abertura e a PSF já foram apresentadas no Capítulo 3, junto com o compromisso na escolha do raio --- pequeno demais perde as asas da PSF, grande demais soma ruído de céu --- e com o ótimo prático de $r\simeq1{,}5$ vez a largura a meia altura. O que muda aqui é que a mesma operação passa a ser feita \emph{comprimento de onda a comprimento de onda}, e não sobre uma imagem só.
 
 O sinal líquido de uma estrela pode ser estimado por fotometria de abertura:
 \[
@@ -3108,8 +3126,287 @@ C_{\rm estrela}=18500-\frac{1}{4}(4200)=17450.
 Se o fundo fosse ignorado, o fluxo seria superestimado em aproximadamente $1050/17450\simeq 6{,}0\%$. Essa diferença altera temperaturas por cor, fluxos integrados e profundidades de linhas.
 \end{lessonblock}
 
+\subsection*{As grandezas do campo de radiação}
+\addcontentsline{toc}{subsection}{As grandezas do campo de radiação}
+
+Antes de qualquer lei, é preciso definir com precisão o que se está medindo. A grandeza fundamental é a \textbf{intensidade específica} $I_\nu$: a energia que atravessa uma área $dA$, em um intervalo de tempo $dt$, dentro de um ângulo sólido $d\Omega$ em torno de uma direção que faz ângulo $\theta$ com a normal, e em um intervalo de frequência $d\nu$:
+\[
+dE=I_\nu\cos\theta\,dA\,d\Omega\,d\nu\,dt.
+\]
+Sua unidade é $\mathrm{W\,m^{-2}\,sr^{-1}\,Hz^{-1}}$, e o esterradiano que aparece nela é o ângulo sólido definido no Capítulo 1 --- é aquela integral $\Omega=2\pi(1-\cos\alpha)$ que agora, finalmente, ganha uso físico. A propriedade decisiva de $I_\nu$ é que, na ausência de emissão ou absorção, \textbf{ela é constante ao longo de um raio}. Isso parece contradizer a lei do inverso do quadrado, mas não contradiz: à medida que nos afastamos de uma fonte extensa, o fluxo cai com $d^{-2}$ \emph{e} o ângulo sólido subtendido cai com $d^{-2}$, e a razão entre os dois --- que é a intensidade --- permanece a mesma. É por isso que a superfície do Sol tem o mesmo brilho superficial visto da Terra ou de Júpiter, embora entregue fluxos muito diferentes.
+
+Os \textbf{momentos} da intensidade produzem as demais grandezas. Integrando sobre todas as direções com peso $\cos\theta$ obtém-se o fluxo:
+\[
+F_\nu=\int I_\nu\cos\theta\,d\Omega.
+\]
+Sem peso, obtém-se a densidade de energia:
+\[
+u_\nu=\frac{1}{c}\int I_\nu\,d\Omega.
+\]
+Com peso $\cos^{2}\theta$, a pressão de radiação:
+\[
+P_\nu=\frac{1}{c}\int I_\nu\cos^{2}\theta\,d\Omega.
+\]
+Para um campo isotrópico, as integrais angulares são imediatas: $\int d\Omega=4\pi$ e $\int\cos^{2}\theta\,d\Omega=4\pi/3$, de modo que
+\[
+u=\frac{4\pi}{c}I,\qquad P=\frac{1}{3}u.
+\]
+A relação $P=u/3$ é a equação de estado da radiação, e ela reaparece na estrutura estelar, na cosmologia do universo primordial e na dinâmica de discos de acreção. Ela vale para qualquer gás de partículas ultrarrelativísticas, não só fótons. Falta ainda dizer \emph{quanto} vale $u$ para um campo térmico; isso sai da lei de Stefan-Boltzmann, deduzida adiante, e fecha a equação de estado em $P_{\rm rad}=\tfrac{1}{3}aT^{4}$.
+
+\subsection*{A equação de transporte radiativo}
+\addcontentsline{toc}{subsection}{A equação de transporte radiativo}
+
+Ao percorrer um caminho $ds$ dentro de um meio, a intensidade perde energia por absorção e ganha por emissão:
+\[
+\frac{dI_\nu}{ds}=-\kappa_\nu\rho I_\nu+j_\nu.
+\]
+Aqui $\kappa_\nu$ é a opacidade (em $\mathrm{m^2\,kg^{-1}}$) e $j_\nu$ o coeficiente de emissão. Definindo a \textbf{profundidade óptica} $d\tau_\nu=\kappa_\nu\rho\,ds$ e a \textbf{função fonte} $S_\nu=j_\nu/(\kappa_\nu\rho)$, a equação assume sua forma canônica:
+\[
+\boxed{\ \frac{dI_\nu}{d\tau_\nu}=-I_\nu+S_\nu\ }
+\]
+Esta é uma equação diferencial linear de primeira ordem, com solução formal obtida por fator integrante:
+\[
+I_\nu(\tau_\nu)=I_\nu(0)e^{-\tau_\nu}+\int_0^{\tau_\nu}S_\nu(t)e^{-(\tau_\nu-t)}\,dt.
+\]
+A leitura é direta: o primeiro termo é a radiação de fundo atenuada exponencialmente; o segundo é a contribuição emitida ao longo do caminho, cada elemento também atenuado pelo que resta à sua frente.
+
+Dois regimes importam. Se $\tau_\nu\ll1$ (meio opticamente fino), $I_\nu\simeq I_\nu(0)+\tau_\nu S_\nu$: vemos através do meio, e a emissão apenas soma. Se $\tau_\nu\gg1$ (opticamente espesso) e $S_\nu$ varia devagar, $I_\nu\to S_\nu$: a intensidade emergente iguala a função fonte local, independentemente do que havia atrás. Em equilíbrio termodinâmico local, $S_\nu=B_\nu(T)$, a função de Planck --- e é \emph{por isso} que corpos opticamente espessos irradiam como corpos negros. A afirmação ``estrelas emitem aproximadamente como corpos negros'' não é uma coincidência empírica: é consequência de $\tau\gg1$ na fotosfera.
+
+Uma consequência prática: define-se a fotosfera como a superfície em que $\tau_\nu\simeq2/3$, valor que sai da aproximação de Eddington para o transporte em atmosferas plano-paralelas. Como $\kappa_\nu$ depende do comprimento de onda, \textbf{a fotosfera está em profundidades físicas diferentes em cada cor} --- e é exatamente isso que produz o escurecimento de bordo e as linhas de absorção.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: por que existem linhas de absorção}
+Considere uma atmosfera em que a temperatura cai para fora. Em uma frequência de linha, a opacidade $\kappa_\nu$ é muito maior que no contínuo. Como a fotosfera fica onde $\tau_\nu\simeq2/3$, e como $\tau$ acumula mais rápido onde $\kappa$ é grande, na frequência da linha atingimos $\tau=2/3$ em uma camada \emph{mais alta} da atmosfera.
+
+Camadas mais altas são mais frias. Como a intensidade emergente é $S_\nu\simeq B_\nu(T)$ avaliada nessa camada, e $B_\nu$ cresce com $T$, a linha aparece \emph{mais escura} que o contínuo vizinho. Não há absorção líquida de energia no sentido ingênuo: há emissão de uma camada mais fria. Se a temperatura crescesse para fora --- como acontece na cromosfera solar --- a mesma lógica produziria linhas em \emph{emissão}. A direção do gradiente de temperatura decide o sinal da linha.
+\end{lessonblock}
+
+\subsection*{A lei de Planck, deduzida}
+\addcontentsline{toc}{subsection}{A lei de Planck, deduzida}
+
+O resultado central da física da radiação pode ser montado em duas etapas.
+
+\textbf{Etapa 1: contar modos.} Em uma cavidade cúbica de lado $L$ com paredes condutoras, as ondas estacionárias têm vetores de onda $\vec{k}=(\pi/L)(n_x,n_y,n_z)$ com $n_i$ inteiros positivos. O número de modos com módulo de $\vec{k}$ até $k$ é o volume do octante de esfera no espaço $(n_x,n_y,n_z)$, multiplicado por 2 para as duas polarizações:
+\[
+N(k)=2\cdot\frac{1}{8}\cdot\frac{4}{3}\pi\left(\frac{kL}{\pi}\right)^{3}=\frac{k^{3}L^{3}}{3\pi^{2}}.
+\]
+Com $k=2\pi\nu/c$, a densidade de modos por unidade de volume e frequência é
+\[
+g(\nu)=\frac{1}{L^{3}}\frac{dN}{d\nu}=\frac{8\pi\nu^{2}}{c^{3}}.
+\]
+
+\textbf{Etapa 2: energia média por modo.} Aqui está a diferença entre a física clássica e a quântica. Classicamente, a equipartição daria $kT$ por modo, e a densidade de energia seria $u_\nu=8\pi\nu^{2}kT/c^{3}$ --- a lei de Rayleigh-Jeans, que diverge ao integrar em $\nu$: é a catástrofe do ultravioleta. Planck impôs que a energia de um modo só pode assumir valores $E_n=nh\nu$. Com a distribuição de Boltzmann, a energia média é
+\[
+\langle E\rangle=\frac{\sum_{n=0}^{\infty}nh\nu\,e^{-nh\nu/kT}}{\sum_{n=0}^{\infty}e^{-nh\nu/kT}}.
+\]
+Chamando $x=e^{-h\nu/kT}$, o denominador é a série geométrica $1/(1-x)$ e o numerador é $h\nu\,x/(1-x)^{2}$. Logo
+\[
+\langle E\rangle=\frac{h\nu\,x}{1-x}=\frac{h\nu}{e^{h\nu/kT}-1}.
+\]
+Multiplicando pela densidade de modos e convertendo densidade de energia em intensidade ($I_\nu=cu_\nu/4\pi$):
+\[
+\boxed{\ B_\nu(T)=\frac{2h\nu^{3}}{c^{2}}\frac{1}{e^{h\nu/kT}-1}\ }
+\]
+Os dois limites são instrutivos. Para $h\nu\ll kT$, expandindo a exponencial, $B_\nu\to2\nu^{2}kT/c^{2}$: recupera-se Rayleigh-Jeans, e é por isso que radioastronomia mede ``temperatura de brilho'' diretamente proporcional à intensidade. Para $h\nu\gg kT$, $B_\nu\to(2h\nu^{3}/c^{2})e^{-h\nu/kT}$: a cauda de Wien, exponencialmente suprimida.
+
+Em comprimento de onda, usando $B_\lambda\,d\lambda=B_\nu\,d\nu$ e $|d\nu/d\lambda|=c/\lambda^{2}$:
+\[
+B_\lambda(T)=\frac{2hc^{2}}{\lambda^{5}}\frac{1}{e^{hc/\lambda kT}-1}.
+\]
+Vale notar que $B_\nu$ e $B_\lambda$ têm picos em posições \emph{diferentes} --- eles não descrevem a mesma coisa, e sim densidades por unidade de frequência e por unidade de comprimento de onda.
+
+\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: as leis de Wien e de Stefan-Boltzmann}
+\textbf{Wien.} Derivando $B_\lambda$ em relação a $\lambda$ e igualando a zero, com $x=hc/\lambda kT$:
+\[
+\frac{d}{d\lambda}\left[\lambda^{-5}\left(e^{x}-1\right)^{-1}\right]=0
+\quad\Longrightarrow\quad
+5\left(1-e^{-x}\right)=x.
+\]
+A raiz não trivial dessa transcendental é $x_{\rm max}=4{,}965$, obtida numericamente. Logo
+\[
+\lambda_{\rm max}T=\frac{hc}{4{,}965\,k}=2{,}898\times10^{-3}\,\mathrm{m\,K}.
+\]
+A constante de Wien não é empírica: ela é $hc/4{,}965k$, três constantes fundamentais e a raiz de uma equação.
+
+\textbf{Stefan-Boltzmann.} Integrando $B_\nu$ sobre todas as frequências e sobre o hemisfério, o fluxo emergente de uma superfície é $F=\pi\int_0^\infty B_\nu\,d\nu$. Substituindo $x=h\nu/kT$:
+\[
+F=\frac{2\pi h}{c^{2}}\left(\frac{kT}{h}\right)^{4}\int_0^{\infty}\frac{x^{3}}{e^{x}-1}dx.
+\]
+A integral vale $\pi^{4}/15$ (é $\Gamma(4)\zeta(4)=6\times\pi^4/90$). Portanto
+\[
+\boxed{\ F=\sigma T^{4},\qquad \sigma=\frac{2\pi^{5}k^{4}}{15c^{2}h^{3}}=5{,}670\times10^{-8}\,\mathrm{W\,m^{-2}\,K^{-4}}\ }
+\]
+Novamente: a constante de Stefan-Boltzmann é uma combinação de $k$, $h$ e $c$, não um parâmetro ajustado. Toda a lei $L=4\pi R^{2}\sigma T_{\rm ef}^{4}$, usada dezenas de vezes nesta apostila, repousa nessa integral.
+
+\textbf{A densidade de energia e a equação de estado da radiação.} O mesmo resultado fecha a conta deixada em aberto na seção dos momentos. Para um campo isotrópico vale $u=(4\pi/c)\,I$, e no caso térmico $I=\int_0^\infty B_\nu\,d\nu=\sigma T^{4}/\pi$. Logo
+\[
+\boxed{\ u=aT^{4},\qquad a=\frac{4\sigma}{c}=7{,}566\times10^{-16}\,\mathrm{J\,m^{-3}\,K^{-4}}\ }
+\]
+e, com $P=u/3$,
+\[
+P_{\rm rad}=\frac{1}{3}aT^{4}.
+\]
+A constante $a$ é chamada \textbf{constante de radiação}. É esta a equação de estado usada no Capítulo 8 para comparar pressão de radiação com pressão de gás, e é dela que sai o expoente $w=1/3$ do fluido de radiação na cosmologia do Capítulo 17.
+\end{lessonblock}
+
+\subsection*{Coeficientes de Einstein e a origem das linhas}
+\addcontentsline{toc}{subsection}{Coeficientes de Einstein e a origem das linhas}
+
+Considere dois níveis atômicos, $1$ e $2$, com energias separadas por $h\nu_0$. Einstein identificou três processos: absorção, com taxa $B_{12}n_1\bar{J}$; emissão espontânea, com taxa $A_{21}n_2$; e emissão estimulada, com taxa $B_{21}n_2\bar{J}$, em que $\bar{J}$ é a intensidade média. Em equilíbrio estatístico,
+\[
+n_1B_{12}\bar{J}=n_2A_{21}+n_2B_{21}\bar{J}.
+\]
+Isolando $\bar{J}$ e impondo que, em equilíbrio termodinâmico, $\bar{J}=B_\nu(T)$ e $n_2/n_1=(g_2/g_1)e^{-h\nu_0/kT}$, a igualdade só pode valer para todo $T$ se
+\[
+g_1B_{12}=g_2B_{21},\qquad
+A_{21}=\frac{2h\nu_0^{3}}{c^{2}}B_{21}.
+\]
+Estas são as \textbf{relações de Einstein}. Elas têm um conteúdo notável: são propriedades \emph{atômicas}, deduzidas por um argumento termodinâmico, e valem mesmo fora de equilíbrio. E a segunda mostra que a emissão espontânea cresce com $\nu^{3}$, razão pela qual transições ópticas decaem em nanossegundos enquanto transições de rádio --- como a de $21\,\mathrm{cm}$ do hidrogênio --- têm tempos de vida de milhões de anos.
+
+\subsection*{Populações: Boltzmann e Saha}
+\addcontentsline{toc}{subsection}{Populações: Boltzmann e Saha}
+
+A razão de populações entre dois níveis de excitação de um mesmo átomo, em equilíbrio térmico, segue a \textbf{equação de Boltzmann}:
+\[
+\frac{n_2}{n_1}=\frac{g_2}{g_1}e^{-(E_2-E_1)/kT}.
+\]
+A razão entre estágios de ionização sucessivos exige incluir o elétron livre, que tem estados de translação disponíveis. Contando esses estados no espaço de fase e integrando, obtém-se a \textbf{equação de Saha}:
+\[
+\boxed{\ \frac{n_{i+1}}{n_i}=\frac{2Z_{i+1}}{n_eZ_i}\left(\frac{2\pi m_ekT}{h^{2}}\right)^{3/2}e^{-\chi_i/kT}\ }
+\]
+em que $\chi_i$ é o potencial de ionização e $Z$ são as funções de partição. O fator $(2\pi m_ekT/h^{2})^{3/2}$ é a densidade quântica de estados do elétron livre, e o $1/n_e$ expressa que ionização é favorecida quando há poucos elétrons para recombinar.
+
+Essas duas equações juntas explicam a \textbf{sequência espectral} OBAFGKM, que por décadas foi apenas um ordenamento empírico. As linhas de Balmer do hidrogênio, por exemplo, exigem átomos com o elétron no nível $n=2$. Em estrelas frias, quase nenhum átomo está excitado --- Boltzmann suprime a população. Em estrelas quentes, o hidrogênio está quase todo ionizado --- Saha remove os átomos neutros. As linhas de Balmer atingem máxima intensidade em torno de $9500\,\mathrm{K}$, nas estrelas de tipo A, por causa da competição entre esses dois efeitos. A força de uma linha não mede abundância diretamente; mede abundância vezes a fração de átomos no estado certo, e essa fração depende exponencialmente da temperatura.
+
+\subsection*{Efeito Doppler: a versão que se deve usar}
+\addcontentsline{toc}{subsection}{Efeito Doppler: a versão que se deve usar}
+
+Para velocidades pequenas, $\Delta\lambda/\lambda_0=v_r/c$. A expressão relativística correta, para movimento puramente radial, é
+\[
+\frac{\lambda_{\rm obs}}{\lambda_0}=\sqrt{\frac{1+\beta}{1-\beta}},\qquad \beta=\frac{v}{c},
+\]
+que se reduz à forma simples para $\beta\ll1$. Há ainda o \textbf{Doppler transversal}, $\lambda_{\rm obs}/\lambda_0=\gamma$, puramente relativístico e sem análogo clássico, relevante em jatos e em discos de acreção próximos a objetos compactos.
+
+Convém insistir em uma distinção que atravessa o resto da apostila: o desvio para o vermelho cosmológico \emph{não} é efeito Doppler. Ele não decorre de movimento através do espaço, e sim da expansão do próprio espaço enquanto a luz viaja, com $1+z=1/a(t_{\rm emis})$. Usar a fórmula Doppler para converter $z$ em velocidade produz resultados sem sentido para $z\gtrsim0{,}1$ e é um dos erros conceituais mais comuns da área.
+
+
+\subsection*{Alargamento de linhas}
+\addcontentsline{toc}{subsection}{Alargamento de linhas}
+
+Nenhuma linha é infinitamente estreita, e a forma do perfil carrega física.
+
+O \textbf{alargamento natural} decorre do princípio da incerteza: um nível com tempo de vida $\Delta t$ tem energia indefinida por $\Delta E\simeq\hbar/\Delta t$, produzindo um perfil lorentziano de largura $\Delta\nu\simeq1/(2\pi\Delta t)$.
+
+O \textbf{alargamento Doppler} vem da distribuição de velocidades térmicas. Com a distribuição de Maxwell-Boltzmann, a largura característica é
+\[
+\frac{\Delta\lambda}{\lambda_0}=\frac{1}{c}\sqrt{\frac{2kT}{m}},
+\]
+produzindo um perfil gaussiano. Note a dependência $m^{-1/2}$: linhas de hidrogênio são intrinsecamente mais alargadas que linhas de ferro à mesma temperatura, o que permite separar os dois efeitos.
+
+O \textbf{alargamento colisional} ou de pressão vem de perturbações dos níveis por partículas vizinhas; é lorentziano e cresce com a densidade. É por isso que anãs brancas, com gravidades superficiais enormes e atmosferas densas, têm linhas de hidrogênio absurdamente largas --- e é assim que se distingue uma anã branca de uma estrela normal apenas pelo espectro, sem conhecer sua distância.
+
+A convolução de um perfil gaussiano com um lorentziano é o \textbf{perfil de Voigt}, que descreve linhas reais: núcleo gaussiano dominado por Doppler e asas lorentzianas dominadas por colisões e amortecimento natural. Ajustar um Voigt a uma linha observada e separar as duas contribuições fornece, simultaneamente, temperatura e densidade da camada onde a linha se forma.
+
+\subsection*{Atmosferas estelares: a aproximação de Eddington}
+\addcontentsline{toc}{subsection}{Atmosferas estelares: a aproximação de Eddington}
+
+A equação de transporte pode ser resolvida analiticamente em um caso idealizado que, apesar da simplicidade, reproduz surpreendentemente bem a estrutura de uma fotosfera. Considere uma atmosfera plano-paralela, em equilíbrio radiativo, com opacidade independente da frequência --- a chamada \textbf{atmosfera cinza}.
+
+Em geometria plano-paralela a única direção que importa é o ângulo $\theta$ com a vertical. Escrevendo $\mu=\cos\theta$ e medindo agora a profundidade óptica $\tau$ \emph{para dentro} da atmosfera --- convenção oposta à do caminho $s$ usado antes, o que troca o sinal --- a equação de transporte assume a forma
+\[
+\mu\,\frac{dI}{d\tau}=I-S.
+\]
+É esta forma, e não a anterior, que se integra em ângulo. Definem-se os momentos:
+\[
+J=\frac{1}{2}\int_{-1}^{1}I\,d\mu,
+\qquad
+H=\frac{1}{2}\int_{-1}^{1}I\mu\,d\mu,
+\qquad
+K=\frac{1}{2}\int_{-1}^{1}I\mu^{2}\,d\mu.
+\]
+Integrando $\mu\,dI/d\tau=I-S$ em $\tfrac{1}{2}\int_{-1}^{1}d\mu$ --- o \textbf{momento de ordem zero} --- obtém-se $dH/d\tau=J-S$; em equilíbrio radiativo o fluxo é constante, $H=\text{const}$, o que impõe $J=S$. Multiplicando antes por $\mu$ e integrando --- o \textbf{momento de ordem um} --- vem
+\[
+\frac{dK}{d\tau}=H.
+\]
+Esta última é exata. O fecho do sistema exige uma relação entre $K$ e $J$, e é aí que entra a \textbf{aproximação de Eddington}: supõe-se que o campo de radiação seja quase isotrópico, de modo que $K=J/3$ --- exatamente a mesma relação $P=u/3$ deduzida antes. Então
+\[
+\frac{dJ}{d\tau}=3H
+\quad\Longrightarrow\quad
+J(\tau)=3H\tau+J(0).
+\]
+A condição de contorno na superfície --- não há radiação entrando --- fornece, após integração, $J(0)=2H$. Portanto
+\[
+J(\tau)=H\left(3\tau+2\right).
+\]
+Como $J=S=\sigma T^{4}/\pi$ em equilíbrio termodinâmico local, e $H=\sigma T_{\rm ef}^{4}/4\pi$, chega-se ao \textbf{perfil de temperatura da atmosfera cinza}:
+\[
+\boxed{\ T^{4}(\tau)=\frac{3}{4}T_{\rm ef}^{4}\left(\tau+\frac{2}{3}\right)\ }
+\]
+Três consequências valem ser lidas com atenção. Primeira: $T=T_{\rm ef}$ exatamente em $\tau=2/3$ --- e é daí que vem a definição operacional da fotosfera usada em todo lugar. Segunda: na superfície ($\tau=0$), $T=(1/2)^{1/4}T_{\rm ef}\simeq0{,}84\,T_{\rm ef}$; a temperatura de contorno não é zero, e sim cerca de $84\%$ da efetiva. Terceira: a temperatura cresce monotonicamente para dentro, com $T\propto\tau^{1/4}$ em profundidade --- resultado que justifica a hipótese usada para explicar linhas de absorção.
+
+\subsection*{Escurecimento de bordo, deduzido}
+\addcontentsline{toc}{subsection}{Escurecimento de bordo, deduzido}
+
+Com o perfil de temperatura acima, a intensidade emergente em uma direção $\mu$ sai da solução formal da equação de transporte:
+\[
+I(0,\mu)=\int_0^{\infty}S(\tau)e^{-\tau/\mu}\frac{d\tau}{\mu}.
+\]
+Com $S(\tau)=a+b\tau$, um resultado conhecido como relação de Eddington-Barbier dá simplesmente $I(0,\mu)=a+b\mu$, ou seja: \textbf{a intensidade emergente em uma direção corresponde à função fonte avaliada em $\tau=\mu$}. Substituindo $a=2H$ e $b=3H$:
+\[
+\frac{I(0,\mu)}{I(0,1)}=\frac{2+3\mu}{5}=\frac{2}{5}+\frac{3}{5}\mu.
+\]
+Comparando com a lei linear de escurecimento de bordo, $I(\mu)/I(1)=1-u(1-\mu)$, identifica-se $u=3/5=0{,}6$. O valor solar medido no visível é $u\simeq0{,}6$--$0{,}7$. Uma aproximação de duas linhas reproduz um fenômeno observado com precisão de dez por cento --- e explica por que o disco solar tem borda mais escura, por que o fundo de um trânsito planetário é curvo e por que ignorar o efeito enviesa raios planetários.
+
+\subsection*{As fontes de opacidade}
+\addcontentsline{toc}{subsection}{As fontes de opacidade}
+
+O coeficiente $\kappa$ que aparece em todas as equações não é um número único, e sim a soma de processos distintos que dominam em regimes diferentes.
+
+\textbf{Espalhamento por elétrons livres (Thomson).} Independente da frequência e da temperatura:
+\[
+\kappa_{\rm es}=\frac{\sigma_Tn_e}{\rho}=0{,}02\left(1+X\right)\ \mathrm{m^{2}\,kg^{-1}}.
+\]
+Domina em interiores quentes e totalmente ionizados. É por ser independente de $\rho$ e de $T$ que ela permite tratar $\kappa$ como constante --- hipótese que o Capítulo 8 usará para extrair a relação massa-luminosidade $L\propto M^{3}$ por homologia.
+
+\textbf{Livre-livre (Bremsstrahlung inverso).} Um elétron livre passando por um íon absorve um fóton. A dependência é
+\[
+\kappa_{\rm ff}\propto\rho T^{-7/2},
+\]
+a chamada \textbf{lei de Kramers}. Ela também descreve aproximadamente a opacidade ligado-livre (fotoionização). O expoente negativo é crucial: opacidade cresce ao esfriar, o que torna os envelopes estelares opacos e favorece convecção.
+
+\textbf{Íon negativo de hidrogênio.} O $\mathrm{H^{-}}$ tem energia de ligação de apenas $0{,}75\,\mathrm{eV}$ e é facilmente fotodissociado por luz visível. Sua abundância exige hidrogênio neutro \emph{e} elétrons livres, condição satisfeita em atmosferas de estrelas de tipo solar, onde os metais fornecem os elétrons. É a principal fonte de opacidade na fotosfera solar, e portanto a responsável direta pela forma do espectro contínuo do Sol --- aquele mesmo que o laboratório do capítulo integra.
+
+\textbf{Linhas atômicas e moleculares.} Em estrelas frias, milhões de linhas se sobrepõem produzindo o \textit{line blanketing}, que retém radiação e redistribui o fluxo para o infravermelho. Modelar atmosferas de anãs M ou de exoplanetas é, em grande parte, um problema de contabilizar corretamente essas linhas.
+
+Para uso nas equações de estrutura, define-se a \textbf{média de Rosseland}, que é uma média harmônica ponderada:
+\[
+\frac{1}{\kappa_R}=\frac{\int_0^{\infty}\frac{1}{\kappa_\nu}\frac{\partial B_\nu}{\partial T}d\nu}{\int_0^{\infty}\frac{\partial B_\nu}{\partial T}d\nu}.
+\]
+A escolha da média harmônica não é arbitrária: em transporte difusivo, a energia escoa preferencialmente pelas frequências \emph{mais transparentes}, e é a média harmônica que reflete corretamente esse fato. Usar uma média aritmética superestimaria grosseiramente a opacidade efetiva.
+
+\subsection*{Emissão de corpos não térmicos: síncrotron}
+\addcontentsline{toc}{subsection}{Emissão de corpos não térmicos: síncrotron}
+
+Nem toda radiação astrofísica é térmica. Um elétron relativístico de fator de Lorentz $\gamma$ espiralando em um campo magnético $B$ irradia potência
+\[
+P_{\rm sinc}=\frac{4}{3}\sigma_Tc\gamma^{2}\beta^{2}u_B,
+\qquad
+u_B=\frac{B^{2}}{2\mu_0},
+\]
+concentrada em torno da frequência crítica
+\[
+\nu_c\simeq\frac{3}{4\pi}\gamma^{2}\frac{eB}{m_e}.
+\]
+A dependência $\gamma^{2}$ nas duas expressões é o que torna o síncrotron tão eficiente, e é ela --- muito mais que o campo --- que decide a banda de emissão. Elétrons com $\gamma\sim10^{3}$--$10^{4}$ em campos de microgauss emitem em rádio: com $\gamma=10^{4}$ e $B=1\,\mu\mathrm{G}$, a fórmula dá $\nu_c\simeq400\,\mathrm{MHz}$. Para chegar a raios X com o \emph{mesmo} campo seria preciso $\gamma\sim10^{8}$ --- e é exatamente isso que se observa em remanescentes jovens como SN 1006, onde $\gamma\sim10^{8}$ em $B\sim100\,\mu\mathrm{G}$ produz $\nu_c\sim4\times10^{18}\,\mathrm{Hz}$. Subir o campo ajuda linearmente; subir o fator de Lorentz ajuda ao quadrado. Detectar síncrotron em raios X é, portanto, evidência direta de elétrons ultrarrelativísticos, e não de campos excepcionalmente fortes.
+
+Se a população de elétrons segue uma lei de potência em energia, $N(\gamma)\propto\gamma^{-p}$ --- como produzido por aceleração em choques ---, o espectro integrado também é uma lei de potência:
+\[
+F_\nu\propto\nu^{-(p-1)/2}.
+\]
+A aceleração de Fermi de primeira ordem em choques fortes prevê $p=2$ exatamente, como se deduz no Capítulo 10; o valor \emph{observado} nas fontes, uma vez incluídos propagação e escape dos elétrons, fica em torno de $p\simeq2{,}4$, e é esse que dá $F_\nu\propto\nu^{-0{,}7}$ --- exatamente o índice espectral medido no fundo de rádio galáctico e em rádio-galáxias. A distinção entre emissão térmica (espectro de corpo negro, ou $F_\nu\propto\nu^{2}$ no regime Rayleigh-Jeans) e não térmica (lei de potência com índice negativo) é feita justamente medindo o espectro em várias frequências, e é o diagnóstico primário para identificar partículas relativísticas em uma fonte.
+
 \subsection*{Laboratório}
 \addcontentsline{toc}{subsection}{Laboratório -- Capítulo 6}
+
 O laboratório interativo deste capítulo está disponível em:
 
 \begin{center}
@@ -3175,258 +3472,6 @@ Uma versão complementar com imagens reais do SDSS está disponível em:
 \end{center}
 Ela pode ser usada depois do laboratório artificial para comparar uma simulação controlada com fotometria de abertura em dados reais.
 \end{lessonblock}
-\subsection*{As grandezas do campo de radiação}
-
-Antes de qualquer lei, é preciso definir com precisão o que se está medindo. A grandeza fundamental é a \textbf{intensidade específica} $I_\nu$: a energia que atravessa uma área $dA$, em um intervalo de tempo $dt$, dentro de um ângulo sólido $d\Omega$ em torno de uma direção que faz ângulo $\theta$ com a normal, e em um intervalo de frequência $d\nu$:
-\[
-dE=I_\nu\cos\theta\,dA\,d\Omega\,d\nu\,dt.
-\]
-Sua unidade é $\mathrm{W\,m^{-2}\,sr^{-1}\,Hz^{-1}}$. A propriedade decisiva de $I_\nu$ é que, na ausência de emissão ou absorção, \textbf{ela é constante ao longo de um raio}. Isso parece contradizer a lei do inverso do quadrado, mas não contradiz: à medida que nos afastamos de uma fonte extensa, o fluxo cai com $d^{-2}$ \emph{e} o ângulo sólido subtendido cai com $d^{-2}$, e a razão entre os dois --- que é a intensidade --- permanece a mesma. É por isso que a superfície do Sol tem o mesmo brilho superficial visto da Terra ou de Júpiter, embora entregue fluxos muito diferentes.
-
-Os \textbf{momentos} da intensidade produzem as demais grandezas. Integrando sobre todas as direções com peso $\cos\theta$ obtém-se o fluxo:
-\[
-F_\nu=\int I_\nu\cos\theta\,d\Omega.
-\]
-Sem peso, obtém-se a densidade de energia:
-\[
-u_\nu=\frac{1}{c}\int I_\nu\,d\Omega.
-\]
-Com peso $\cos^{2}\theta$, a pressão de radiação:
-\[
-P_\nu=\frac{1}{c}\int I_\nu\cos^{2}\theta\,d\Omega.
-\]
-Para um campo isotrópico, as integrais angulares são imediatas: $\int d\Omega=4\pi$ e $\int\cos^{2}\theta\,d\Omega=4\pi/3$, de modo que
-\[
-u=\frac{4\pi}{c}I,\qquad P=\frac{1}{3}u.
-\]
-A relação $P=u/3$ é a equação de estado da radiação, e ela reaparece na estrutura estelar, na cosmologia do universo primordial e na dinâmica de discos de acreção. Ela vale para qualquer gás de partículas ultrarrelativísticas, não só fótons.
-
-\subsection*{A equação de transporte radiativo}
-
-Ao percorrer um caminho $ds$ dentro de um meio, a intensidade perde energia por absorção e ganha por emissão:
-\[
-\frac{dI_\nu}{ds}=-\kappa_\nu\rho I_\nu+j_\nu.
-\]
-Aqui $\kappa_\nu$ é a opacidade (em $\mathrm{m^2\,kg^{-1}}$) e $j_\nu$ o coeficiente de emissão. Definindo a \textbf{profundidade óptica} $d\tau_\nu=\kappa_\nu\rho\,ds$ e a \textbf{função fonte} $S_\nu=j_\nu/(\kappa_\nu\rho)$, a equação assume sua forma canônica:
-\[
-\boxed{\ \frac{dI_\nu}{d\tau_\nu}=-I_\nu+S_\nu\ }
-\]
-Esta é uma equação diferencial linear de primeira ordem, com solução formal obtida por fator integrante:
-\[
-I_\nu(\tau_\nu)=I_\nu(0)e^{-\tau_\nu}+\int_0^{\tau_\nu}S_\nu(t)e^{-(\tau_\nu-t)}\,dt.
-\]
-A leitura é direta: o primeiro termo é a radiação de fundo atenuada exponencialmente; o segundo é a contribuição emitida ao longo do caminho, cada elemento também atenuado pelo que resta à sua frente.
-
-Dois regimes importam. Se $\tau_\nu\ll1$ (meio opticamente fino), $I_\nu\simeq I_\nu(0)+\tau_\nu S_\nu$: vemos através do meio, e a emissão apenas soma. Se $\tau_\nu\gg1$ (opticamente espesso) e $S_\nu$ varia devagar, $I_\nu\to S_\nu$: a intensidade emergente iguala a função fonte local, independentemente do que havia atrás. Em equilíbrio termodinâmico local, $S_\nu=B_\nu(T)$, a função de Planck --- e é \emph{por isso} que corpos opticamente espessos irradiam como corpos negros. A afirmação ``estrelas emitem aproximadamente como corpos negros'' não é uma coincidência empírica: é consequência de $\tau\gg1$ na fotosfera.
-
-Uma consequência prática: define-se a fotosfera como a superfície em que $\tau_\nu\simeq2/3$, valor que sai da aproximação de Eddington para o transporte em atmosferas plano-paralelas. Como $\kappa_\nu$ depende do comprimento de onda, \textbf{a fotosfera está em profundidades físicas diferentes em cada cor} --- e é exatamente isso que produz o escurecimento de bordo e as linhas de absorção.
-
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: por que existem linhas de absorção}
-Considere uma atmosfera em que a temperatura cai para fora. Em uma frequência de linha, a opacidade $\kappa_\nu$ é muito maior que no contínuo. Como a fotosfera fica onde $\tau_\nu\simeq2/3$, e como $\tau$ acumula mais rápido onde $\kappa$ é grande, na frequência da linha atingimos $\tau=2/3$ em uma camada \emph{mais alta} da atmosfera.
-
-Camadas mais altas são mais frias. Como a intensidade emergente é $S_\nu\simeq B_\nu(T)$ avaliada nessa camada, e $B_\nu$ cresce com $T$, a linha aparece \emph{mais escura} que o contínuo vizinho. Não há absorção líquida de energia no sentido ingênuo: há emissão de uma camada mais fria. Se a temperatura crescesse para fora --- como acontece na cromosfera solar --- a mesma lógica produziria linhas em \emph{emissão}. A direção do gradiente de temperatura decide o sinal da linha.
-\end{lessonblock}
-
-\subsection*{A lei de Planck, deduzida}
-
-O resultado central da física da radiação pode ser montado em duas etapas.
-
-\textbf{Etapa 1: contar modos.} Em uma cavidade cúbica de lado $L$ com paredes condutoras, as ondas estacionárias têm vetores de onda $\vec{k}=(\pi/L)(n_x,n_y,n_z)$ com $n_i$ inteiros positivos. O número de modos com módulo de $\vec{k}$ até $k$ é o volume do octante de esfera no espaço $(n_x,n_y,n_z)$, multiplicado por 2 para as duas polarizações:
-\[
-N(k)=2\cdot\frac{1}{8}\cdot\frac{4}{3}\pi\left(\frac{kL}{\pi}\right)^{3}=\frac{k^{3}L^{3}}{3\pi^{2}}.
-\]
-Com $k=2\pi\nu/c$, a densidade de modos por unidade de volume e frequência é
-\[
-g(\nu)=\frac{1}{L^{3}}\frac{dN}{d\nu}=\frac{8\pi\nu^{2}}{c^{3}}.
-\]
-
-\textbf{Etapa 2: energia média por modo.} Aqui está a diferença entre a física clássica e a quântica. Classicamente, a equipartição daria $kT$ por modo, e a densidade de energia seria $u_\nu=8\pi\nu^{2}kT/c^{3}$ --- a lei de Rayleigh-Jeans, que diverge ao integrar em $\nu$: é a catástrofe do ultravioleta. Planck impôs que a energia de um modo só pode assumir valores $E_n=nh\nu$. Com a distribuição de Boltzmann, a energia média é
-\[
-\langle E\rangle=\frac{\sum_{n=0}^{\infty}nh\nu\,e^{-nh\nu/kT}}{\sum_{n=0}^{\infty}e^{-nh\nu/kT}}.
-\]
-Chamando $x=e^{-h\nu/kT}$, o denominador é a série geométrica $1/(1-x)$ e o numerador é $h\nu\,x/(1-x)^{2}$. Logo
-\[
-\langle E\rangle=\frac{h\nu\,x}{1-x}=\frac{h\nu}{e^{h\nu/kT}-1}.
-\]
-Multiplicando pela densidade de modos e convertendo densidade de energia em intensidade ($I_\nu=cu_\nu/4\pi$):
-\[
-\boxed{\ B_\nu(T)=\frac{2h\nu^{3}}{c^{2}}\frac{1}{e^{h\nu/kT}-1}\ }
-\]
-Os dois limites são instrutivos. Para $h\nu\ll kT$, expandindo a exponencial, $B_\nu\to2\nu^{2}kT/c^{2}$: recupera-se Rayleigh-Jeans, e é por isso que radioastronomia mede ``temperatura de brilho'' diretamente proporcional à intensidade. Para $h\nu\gg kT$, $B_\nu\to(2h\nu^{3}/c^{2})e^{-h\nu/kT}$: a cauda de Wien, exponencialmente suprimida.
-
-Em comprimento de onda, usando $B_\lambda\,d\lambda=B_\nu\,d\nu$ e $|d\nu/d\lambda|=c/\lambda^{2}$:
-\[
-B_\lambda(T)=\frac{2hc^{2}}{\lambda^{5}}\frac{1}{e^{hc/\lambda kT}-1}.
-\]
-Vale notar que $B_\nu$ e $B_\lambda$ têm picos em posições \emph{diferentes} --- eles não descrevem a mesma coisa, e sim densidades por unidade de frequência e por unidade de comprimento de onda.
-
-\begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Dedução: as leis de Wien e de Stefan-Boltzmann}
-\textbf{Wien.} Derivando $B_\lambda$ em relação a $\lambda$ e igualando a zero, com $x=hc/\lambda kT$:
-\[
-\frac{d}{d\lambda}\left[\lambda^{-5}\left(e^{x}-1\right)^{-1}\right]=0
-\quad\Longrightarrow\quad
-5\left(1-e^{-x}\right)=x.
-\]
-A raiz não trivial dessa transcendental é $x_{\rm max}=4{,}965$, obtida numericamente. Logo
-\[
-\lambda_{\rm max}T=\frac{hc}{4{,}965\,k}=2{,}898\times10^{-3}\,\mathrm{m\,K}.
-\]
-A constante de Wien não é empírica: ela é $hc/4{,}965k$, três constantes fundamentais e a raiz de uma equação.
-
-\textbf{Stefan-Boltzmann.} Integrando $B_\nu$ sobre todas as frequências e sobre o hemisfério, o fluxo emergente de uma superfície é $F=\pi\int_0^\infty B_\nu\,d\nu$. Substituindo $x=h\nu/kT$:
-\[
-F=\frac{2\pi h}{c^{2}}\left(\frac{kT}{h}\right)^{4}\int_0^{\infty}\frac{x^{3}}{e^{x}-1}dx.
-\]
-A integral vale $\pi^{4}/15$ (é $\Gamma(4)\zeta(4)=6\times\pi^4/90$). Portanto
-\[
-\boxed{\ F=\sigma T^{4},\qquad \sigma=\frac{2\pi^{5}k^{4}}{15c^{2}h^{3}}=5{,}670\times10^{-8}\,\mathrm{W\,m^{-2}\,K^{-4}}\ }
-\]
-Novamente: a constante de Stefan-Boltzmann é uma combinação de $k$, $h$ e $c$, não um parâmetro ajustado. Toda a lei $L=4\pi R^{2}\sigma T_{\rm ef}^{4}$, usada dezenas de vezes nesta apostila, repousa nessa integral.
-\end{lessonblock}
-
-\subsection*{Coeficientes de Einstein e a origem das linhas}
-
-Considere dois níveis atômicos, $1$ e $2$, com energias separadas por $h\nu_0$. Einstein identificou três processos: absorção, com taxa $B_{12}n_1\bar{J}$; emissão espontânea, com taxa $A_{21}n_2$; e emissão estimulada, com taxa $B_{21}n_2\bar{J}$, em que $\bar{J}$ é a intensidade média. Em equilíbrio estatístico,
-\[
-n_1B_{12}\bar{J}=n_2A_{21}+n_2B_{21}\bar{J}.
-\]
-Isolando $\bar{J}$ e impondo que, em equilíbrio termodinâmico, $\bar{J}=B_\nu(T)$ e $n_2/n_1=(g_2/g_1)e^{-h\nu_0/kT}$, a igualdade só pode valer para todo $T$ se
-\[
-g_1B_{12}=g_2B_{21},\qquad
-A_{21}=\frac{2h\nu_0^{3}}{c^{2}}B_{21}.
-\]
-Estas são as \textbf{relações de Einstein}. Elas têm um conteúdo notável: são propriedades \emph{atômicas}, deduzidas por um argumento termodinâmico, e valem mesmo fora de equilíbrio. E a segunda mostra que a emissão espontânea cresce com $\nu^{3}$, razão pela qual transições ópticas decaem em nanossegundos enquanto transições de rádio --- como a de $21\,\mathrm{cm}$ do hidrogênio --- têm tempos de vida de milhões de anos.
-
-\subsection*{Populações: Boltzmann e Saha}
-
-A razão de populações entre dois níveis de excitação de um mesmo átomo, em equilíbrio térmico, segue a \textbf{equação de Boltzmann}:
-\[
-\frac{n_2}{n_1}=\frac{g_2}{g_1}e^{-(E_2-E_1)/kT}.
-\]
-A razão entre estágios de ionização sucessivos exige incluir o elétron livre, que tem estados de translação disponíveis. Contando esses estados no espaço de fase e integrando, obtém-se a \textbf{equação de Saha}:
-\[
-\boxed{\ \frac{n_{i+1}}{n_i}=\frac{2Z_{i+1}}{n_eZ_i}\left(\frac{2\pi m_ekT}{h^{2}}\right)^{3/2}e^{-\chi_i/kT}\ }
-\]
-em que $\chi_i$ é o potencial de ionização e $Z$ são as funções de partição. O fator $(2\pi m_ekT/h^{2})^{3/2}$ é a densidade quântica de estados do elétron livre, e o $1/n_e$ expressa que ionização é favorecida quando há poucos elétrons para recombinar.
-
-Essas duas equações juntas explicam a \textbf{sequência espectral} OBAFGKM, que por décadas foi apenas um ordenamento empírico. As linhas de Balmer do hidrogênio, por exemplo, exigem átomos com o elétron no nível $n=2$. Em estrelas frias, quase nenhum átomo está excitado --- Boltzmann suprime a população. Em estrelas quentes, o hidrogênio está quase todo ionizado --- Saha remove os átomos neutros. As linhas de Balmer atingem máxima intensidade em torno de $9500\,\mathrm{K}$, nas estrelas de tipo A, por causa da competição entre esses dois efeitos. A força de uma linha não mede abundância diretamente; mede abundância vezes a fração de átomos no estado certo, e essa fração depende exponencialmente da temperatura.
-
-\subsection*{Alargamento de linhas}
-
-Nenhuma linha é infinitamente estreita, e a forma do perfil carrega física.
-
-O \textbf{alargamento natural} decorre do princípio da incerteza: um nível com tempo de vida $\Delta t$ tem energia indefinida por $\Delta E\simeq\hbar/\Delta t$, produzindo um perfil lorentziano de largura $\Delta\nu\simeq1/(2\pi\Delta t)$.
-
-O \textbf{alargamento Doppler} vem da distribuição de velocidades térmicas. Com a distribuição de Maxwell-Boltzmann, a largura característica é
-\[
-\frac{\Delta\lambda}{\lambda_0}=\frac{1}{c}\sqrt{\frac{2kT}{m}},
-\]
-produzindo um perfil gaussiano. Note a dependência $m^{-1/2}$: linhas de hidrogênio são intrinsecamente mais alargadas que linhas de ferro à mesma temperatura, o que permite separar os dois efeitos.
-
-O \textbf{alargamento colisional} ou de pressão vem de perturbações dos níveis por partículas vizinhas; é lorentziano e cresce com a densidade. É por isso que anãs brancas, com gravidades superficiais enormes e atmosferas densas, têm linhas de hidrogênio absurdamente largas --- e é assim que se distingue uma anã branca de uma estrela normal apenas pelo espectro, sem conhecer sua distância.
-
-A convolução de um perfil gaussiano com um lorentziano é o \textbf{perfil de Voigt}, que descreve linhas reais: núcleo gaussiano dominado por Doppler e asas lorentzianas dominadas por colisões e amortecimento natural. Ajustar um Voigt a uma linha observada e separar as duas contribuições fornece, simultaneamente, temperatura e densidade da camada onde a linha se forma.
-
-\subsection*{Efeito Doppler: a versão que se deve usar}
-
-Para velocidades pequenas, $\Delta\lambda/\lambda_0=v_r/c$. A expressão relativística correta, para movimento puramente radial, é
-\[
-\frac{\lambda_{\rm obs}}{\lambda_0}=\sqrt{\frac{1+\beta}{1-\beta}},\qquad \beta=\frac{v}{c},
-\]
-que se reduz à forma simples para $\beta\ll1$. Há ainda o \textbf{Doppler transversal}, $\lambda_{\rm obs}/\lambda_0=\gamma$, puramente relativístico e sem análogo clássico, relevante em jatos e em discos de acreção próximos a objetos compactos.
-
-Convém insistir em uma distinção que atravessa o resto da apostila: o desvio para o vermelho cosmológico \emph{não} é efeito Doppler. Ele não decorre de movimento através do espaço, e sim da expansão do próprio espaço enquanto a luz viaja, com $1+z=1/a(t_{\rm emis})$. Usar a fórmula Doppler para converter $z$ em velocidade produz resultados sem sentido para $z\gtrsim0{,}1$ e é um dos erros conceituais mais comuns da área.
-
-
-\subsection*{Atmosferas estelares: a aproximação de Eddington}
-
-A equação de transporte pode ser resolvida analiticamente em um caso idealizado que, apesar da simplicidade, reproduz surpreendentemente bem a estrutura de uma fotosfera. Considere uma atmosfera plano-paralela, em equilíbrio radiativo, com opacidade independente da frequência --- a chamada \textbf{atmosfera cinza}.
-
-Escrevendo $\mu=\cos\theta$ e integrando a equação de transporte sobre todos os ângulos, obtêm-se os chamados momentos:
-\[
-J=\frac{1}{2}\int_{-1}^{1}I\,d\mu,
-\qquad
-H=\frac{1}{2}\int_{-1}^{1}I\mu\,d\mu,
-\qquad
-K=\frac{1}{2}\int_{-1}^{1}I\mu^{2}\,d\mu.
-\]
-O primeiro momento da equação de transporte fornece $dH/d\tau=J-S$, e em equilíbrio radiativo o fluxo é constante, $H=\text{const}$, o que impõe $J=S$. O segundo momento dá
-\[
-\frac{dK}{d\tau}=H.
-\]
-Esta última é exata. O fecho do sistema exige uma relação entre $K$ e $J$, e é aí que entra a \textbf{aproximação de Eddington}: supõe-se que o campo de radiação seja quase isotrópico, de modo que $K=J/3$ --- exatamente a mesma relação $P=u/3$ deduzida antes. Então
-\[
-\frac{dJ}{d\tau}=3H
-\quad\Longrightarrow\quad
-J(\tau)=3H\tau+J(0).
-\]
-A condição de contorno na superfície --- não há radiação entrando --- fornece, após integração, $J(0)=2H$. Portanto
-\[
-J(\tau)=H\left(3\tau+2\right).
-\]
-Como $J=S=\sigma T^{4}/\pi$ em equilíbrio termodinâmico local, e $H=\sigma T_{\rm ef}^{4}/4\pi$, chega-se ao \textbf{perfil de temperatura da atmosfera cinza}:
-\[
-\boxed{\ T^{4}(\tau)=\frac{3}{4}T_{\rm ef}^{4}\left(\tau+\frac{2}{3}\right)\ }
-\]
-Três consequências valem ser lidas com atenção. Primeira: $T=T_{\rm ef}$ exatamente em $\tau=2/3$ --- e é daí que vem a definição operacional da fotosfera usada em todo lugar. Segunda: na superfície ($\tau=0$), $T=(1/2)^{1/4}T_{\rm ef}\simeq0{,}84\,T_{\rm ef}$; a temperatura de contorno não é zero, e sim cerca de $84\%$ da efetiva. Terceira: a temperatura cresce monotonicamente para dentro, com $T\propto\tau^{1/4}$ em profundidade --- resultado que justifica a hipótese usada para explicar linhas de absorção.
-
-\subsection*{Escurecimento de bordo, deduzido}
-
-Com o perfil de temperatura acima, a intensidade emergente em uma direção $\mu$ sai da solução formal da equação de transporte:
-\[
-I(0,\mu)=\int_0^{\infty}S(\tau)e^{-\tau/\mu}\frac{d\tau}{\mu}.
-\]
-Com $S(\tau)=a+b\tau$, um resultado conhecido como relação de Eddington-Barbier dá simplesmente $I(0,\mu)=a+b\mu$, ou seja: \textbf{a intensidade emergente em uma direção corresponde à função fonte avaliada em $\tau=\mu$}. Substituindo $a=2H$ e $b=3H$:
-\[
-\frac{I(0,\mu)}{I(0,1)}=\frac{2+3\mu}{5}=\frac{2}{5}+\frac{3}{5}\mu.
-\]
-Comparando com a lei linear de escurecimento de bordo, $I(\mu)/I(1)=1-u(1-\mu)$, identifica-se $u=3/5=0{,}6$. O valor solar medido no visível é $u\simeq0{,}6$--$0{,}7$. Uma aproximação de duas linhas reproduz um fenômeno observado com precisão de dez por cento --- e explica por que o disco solar tem borda mais escura, por que o fundo de um trânsito planetário é curvo e por que ignorar o efeito enviesa raios planetários.
-
-\subsection*{As fontes de opacidade}
-
-O coeficiente $\kappa$ que aparece em todas as equações não é um número único, e sim a soma de processos distintos que dominam em regimes diferentes.
-
-\textbf{Espalhamento por elétrons livres (Thomson).} Independente da frequência e da temperatura:
-\[
-\kappa_{\rm es}=\frac{\sigma_Tn_e}{\rho}=0{,}02\left(1+X\right)\ \mathrm{m^{2}\,kg^{-1}}.
-\]
-Domina em interiores quentes e totalmente ionizados, e é por isso que a relação $L\propto M^{3}$ deduzida por homologia usa $\kappa$ constante.
-
-\textbf{Livre-livre (Bremsstrahlung inverso).} Um elétron livre passando por um íon absorve um fóton. A dependência é
-\[
-\kappa_{\rm ff}\propto\rho T^{-7/2},
-\]
-a chamada \textbf{lei de Kramers}. Ela também descreve aproximadamente a opacidade ligado-livre (fotoionização). O expoente negativo é crucial: opacidade cresce ao esfriar, o que torna os envelopes estelares opacos e favorece convecção.
-
-\textbf{Íon negativo de hidrogênio.} O $\mathrm{H^{-}}$ tem energia de ligação de apenas $0{,}75\,\mathrm{eV}$ e é facilmente fotodissociado por luz visível. Sua abundância exige hidrogênio neutro \emph{e} elétrons livres, condição satisfeita em atmosferas de estrelas de tipo solar, onde os metais fornecem os elétrons. É a principal fonte de opacidade na fotosfera solar, e portanto a responsável direta pela forma do espectro contínuo do Sol --- aquele mesmo que o laboratório do capítulo integra.
-
-\textbf{Linhas atômicas e moleculares.} Em estrelas frias, milhões de linhas se sobrepõem produzindo o \textit{line blanketing}, que retém radiação e redistribui o fluxo para o infravermelho. Modelar atmosferas de anãs M ou de exoplanetas é, em grande parte, um problema de contabilizar corretamente essas linhas.
-
-Para uso nas equações de estrutura, define-se a \textbf{média de Rosseland}, que é uma média harmônica ponderada:
-\[
-\frac{1}{\kappa_R}=\frac{\int_0^{\infty}\frac{1}{\kappa_\nu}\frac{\partial B_\nu}{\partial T}d\nu}{\int_0^{\infty}\frac{\partial B_\nu}{\partial T}d\nu}.
-\]
-A escolha da média harmônica não é arbitrária: em transporte difusivo, a energia escoa preferencialmente pelas frequências \emph{mais transparentes}, e é a média harmônica que reflete corretamente esse fato. Usar uma média aritmética superestimaria grosseiramente a opacidade efetiva.
-
-\subsection*{Emissão de corpos não térmicos: síncrotron}
-
-Nem toda radiação astrofísica é térmica. Um elétron relativístico de fator de Lorentz $\gamma$ espiralando em um campo magnético $B$ irradia potência
-\[
-P_{\rm sinc}=\frac{4}{3}\sigma_Tc\gamma^{2}\beta^{2}u_B,
-\qquad
-u_B=\frac{B^{2}}{2\mu_0},
-\]
-concentrada em torno da frequência crítica
-\[
-\nu_c\simeq\frac{3}{4\pi}\gamma^{2}\frac{eB}{m_e}.
-\]
-A dependência $\gamma^{2}$ nas duas expressões é o que torna o síncrotron tão eficiente: elétrons com $\gamma\sim10^{3}$--$10^{4}$ em campos de microgauss emitem em rádio, enquanto os mesmos elétrons em campos mais intensos emitem em raios X.
-
-Se a população de elétrons segue uma lei de potência em energia, $N(\gamma)\propto\gamma^{-p}$ --- como produzido por aceleração em choques ---, o espectro integrado também é uma lei de potência:
-\[
-F_\nu\propto\nu^{-(p-1)/2}.
-\]
-Para o valor típico $p\simeq2{,}4$ produzido por aceleração de Fermi de primeira ordem, obtém-se $F_\nu\propto\nu^{-0{,}7}$ --- exatamente o índice espectral observado no fundo de rádio galáctico e em rádio-galáxias. A distinção entre emissão térmica (espectro de corpo negro, ou $F_\nu\propto\nu^{2}$ no regime Rayleigh-Jeans) e não térmica (lei de potência com índice negativo) é feita justamente medindo o espectro em várias frequências, e é o diagnóstico primário para identificar partículas relativísticas em uma fonte.
 
 \begin{lessonblock}[borderline west={2pt}{0pt}{astroGold}]{Laboratório de dados 3 -- a temperatura do Sol a partir do espectro medido}
 \textbf{Arquivo:} \texttt{03\_espectro\_solar.csv} --- irradiância espectral solar medida acima da atmosfera terrestre, de $200$ a $2400\,\mathrm{nm}$.
@@ -3448,7 +3493,7 @@ F=\left(\frac{R_\odot}{d}\right)^{2}\sigma T_{\rm ef}^{4}.
 
 \textbf{Entrega.} Os dois valores de temperatura, o fluxo integrado e uma explicação da diferença entre eles.
 
-\textbf{Confira.} A integral deve dar em torno de $1310\,\mathrm{W/m^2}$ --- menor que a constante solar de $1361$, porque o arquivo termina em $2400\,\mathrm{nm}$ e falta o infravermelho distante. Corrigindo por isso, $T_{\rm ef}\simeq5772\,\mathrm{K}$. A lei de Wien dá um valor mais alto, porque o Sol não é um corpo negro perfeito.
+\textbf{Confira.} A integral deve dar em torno de $1310\,\mathrm{W/m^2}$ --- menor que a constante solar de $1361$, porque o arquivo termina em $2400\,\mathrm{nm}$ e falta o infravermelho distante. Levando esse $1310$ direto para o passo 3, você obtém $T_{\rm ef}\simeq5717\,\mathrm{K}$: esse é o valor correto do \emph{seu} cálculo, e não um erro. Repondo o infravermelho que falta --- isto é, usando $1361\,\mathrm{W/m^2}$ --- o mesmo passo devolve $T_{\rm ef}\simeq5772\,\mathrm{K}$, o valor nominal adotado pela IAU. Note que um déficit de $4\%$ no fluxo se traduz em apenas $1\%$ na temperatura: é a raiz quarta trabalhando a seu favor. Já a lei de Wien, aplicada ao pico em torno de $480\,\mathrm{nm}$, dá cerca de $6000\,\mathrm{K}$ --- bem mais alto, porque o Sol não é um corpo negro perfeito e o pico do espectro real não cai onde Planck mandaria.
 \end{lessonblock}
 
 \newpage
