@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lei de Wien: a cor de um corpo negro | Astronomia (AST0001)</title>
+<style>
+:root{--bg:#050505;--panel:#101010;--panel2:#151515;--line:#343434;--text:#f4f4f1;
+      --muted:#aaa69c;--accent:#d7b46a;--blue:#72a7ff;--cyan:#6fd3d8;--bad:#d96d6d;--good:#8fd18f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+.shell{width:min(1300px,calc(100vw - 20px));margin:0 auto;padding:14px 0 20px}
+h1{margin:0;font-size:23px;font-weight:650;letter-spacing:-.2px}
+.sub{margin-top:4px;font-size:13.5px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 330px;gap:14px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+canvas{display:block;width:100%;border-radius:8px;background:#080808}
+.rot{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.control{margin-bottom:13px}
+.control label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.control label b{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);background:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{border-color:var(--accent);color:var(--bg);background:var(--accent);font-weight:600}
+.metric{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1c1c1c;font-size:13px}
+.metric:last-child{border-bottom:none}
+.metric small{color:var(--muted)}
+.metric strong{font-variant-numeric:tabular-nums;font-weight:600}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;margin-right:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.tit{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+.tit:first-child{margin-top:0}
+.nota{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.5}
+.tipo{font-size:15px;font-weight:650;padding:7px 0;text-align:center;border-radius:8px;margin-bottom:8px}
+.disco{display:flex;align-items:center;gap:11px;margin-bottom:4px}
+.disco .bola{width:52px;height:52px;border-radius:50%;flex:none;box-shadow:0 0 22px -2px currentColor}
+.disco .leg{font-size:12px;color:var(--muted);line-height:1.4}
+.barras{margin-top:4px}
+.barra{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:12px}
+.barra .nome{width:88px;color:var(--muted);flex:none}
+.barra .trilho{flex:1;height:9px;background:#1b1b1b;border-radius:5px;overflow:hidden}
+.barra .cheio{display:block;height:100%;border-radius:5px;transition:width .12s}
+.barra .val{width:44px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+.fixa{color:var(--good)}
+body.embed{overflow:hidden}
+body.embed .shell{padding:6px 0 6px;width:calc(100vw - 8px)}
+body.embed h1,body.embed .sub{display:none}
+body.embed .panel{padding:9px;border-radius:9px}
+body.embed .tit{margin:9px 0 5px}
+body.embed .tit:first-child{margin-top:0}
+body.embed .control{margin-bottom:9px}
+body.embed .metric{padding:2px 0;font-size:11.5px}
+body.embed .nota{display:none}
+body.embed .chip{padding:3px 8px;font-size:11px}
+body.embed .chips{gap:4px;margin-bottom:8px}
+body.embed .control label{font-size:11.5px;margin-bottom:3px}
+body.embed .btn{padding:4px 9px;font-size:11.5px}
+body.embed .rot{font-size:10px;margin-bottom:3px}
+body.embed .disco .bola{width:38px;height:38px}
+body.embed .disco .leg{display:none}
+body.embed .opt{display:none}
+body.embed .tit{margin:5px 0 3px}
+body.embed .tipo{padding:4px 0;font-size:13.5px;margin-bottom:6px}
+body.embed .chips{margin-bottom:6px}
+body.embed .control{margin-bottom:7px}
+body.embed .segundo{margin-top:8px!important}
+body.embed .barras{margin-top:2px}
+body.embed .metric{padding:1px 0}
+body.embed .barra{margin:2px 0}
+body.embed .disco{margin-bottom:0}
+body.embed .panel{padding:8px}
+body.embed .barra{margin:3px 0;font-size:11px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="shell">
+<h1>Lei de Wien &middot; a cor de um corpo negro</h1>
+<div class="sub">Mude a temperatura e veja o pico da curva de Planck atravessar o espectro. A curva é
+desenhada <b>na cor do comprimento de onda que ela ocupa</b>: violeta escurecendo no ultravioleta,
+o arco-íris na faixa visível, vermelho escurecendo no infravermelho.<br>
+<span style="opacity:.8">O produto &lambda;<sub>máx</sub>&thinsp;&times;&thinsp;T fica parado enquanto tudo o mais se move. É esta a lei.</span></div>
+<div class="grid">
+  <div>
+    <div class="panel">
+      <div class="rot">B<sub>&lambda;</sub>(T) contra comprimento de onda, em escala log &mdash; o pico anda, e a cor do pico anda junto</div>
+      <canvas id="cv" width="1000" height="556"></canvas>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <div id="tipo" class="tipo">&mdash;</div>
+      <div class="tit">Objeto</div>
+      <div class="chips" id="chips"></div>
+      <div class="tit">Temperatura</div>
+      <div class="control"><label>T <b id="vt">5772 K</b></label>
+        <input id="t" type="range" min="3" max="4.6" step="0.001" value="3.761"></div>
+      <div class="tit">Eixo vertical</div>
+      <div class="chips" id="chipsY"></div>
+      <button class="btn" id="play">varrer</button><button class="btn" id="sol">voltar ao Sol</button>
+    </div>
+    <div class="panel segundo" style="margin-top:12px">
+      <div class="tit">A estrela vista de fora</div>
+      <div class="disco"><div class="bola" id="bola"></div>
+        <div class="leg">Cor aparente do corpo negro nesta temperatura, integrada sobre todo o espectro &mdash;
+        não é a cor do pico.</div></div>
+      <div class="tit">Onde a energia sai</div>
+      <div class="barras">
+        <div class="barra"><span class="nome">ultravioleta</span><span class="trilho"><span class="cheio" id="bUV"></span></span><span class="val" id="pUV">–</span></div>
+        <div class="barra"><span class="nome">visível</span><span class="trilho"><span class="cheio" id="bVI"></span></span><span class="val" id="pVI">–</span></div>
+        <div class="barra"><span class="nome">infravermelho</span><span class="trilho"><span class="cheio" id="bIV"></span></span><span class="val" id="pIV">–</span></div>
+      </div>
+      <div class="tit">Leituras</div>
+      <div class="metric"><small>&lambda;<sub>máx</sub></small><strong id="mlam" style="color:var(--accent)">–</strong></div>
+      <div class="metric opt"><small>cor do pico</small><strong id="mcor">–</strong></div>
+      <div class="metric"><small><b>&lambda;<sub>máx</sub> &times; T</b> &mdash; a constante de Wien</small><strong id="mb" class="fixa">–</strong></div>
+      <div class="metric"><small>fluxo &sigma;T&#8308;, em unidades solares</small><strong id="mf">–</strong></div>
+      <div class="metric opt"><small>energia de um fóton em &lambda;<sub>máx</sub></small><strong id="mev">–</strong></div>
+      <div class="nota" id="nota"></div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const $=i=>document.getElementById(i);
+const cv=$("cv"), ctx=cv.getContext("2d");
+const H_=6.62607015e-34, C_=2.99792458e8, K_=1.380649e-23, EV=1.602176634e-19;
+const B_WIEN=2.897771955e-3, SIG=5.670374419e-8, T_SOL=5772;
+const LMIN=60, LMAX=15000;           // nm, eixo log
+const VIS0=380, VIS1=750;            // fronteiras da faixa visivel
+let yLog=false, varrendo=false, dir=1, ultimo=performance.now();
+let Tfixo=T_SOL;          // preset ativo: T exata, sem o arredondamento do slider
+const tempAtual=()=>Tfixo!=null?Tfixo:Math.pow(10,+$("t").value);
+
+const PRE=[["anã marrom · 1000 K",1000],["anã M · 3000 K",3000],["Sol · 5772 K",5772],
+           ["Vega · 9600 K",9600],["Rigel · 12100 K",12100],["estrela O · 30000 K",30000]];
+
+/* ---------- física ---------- */
+function planck(lam_nm,T){           // B_lambda, unidades arbitrarias mas consistentes
+  const l=lam_nm*1e-9;
+  return (2*H_*C_*C_/Math.pow(l,5))/(Math.expm1(H_*C_/(l*K_*T)));
+}
+function lamMax(T){ return B_WIEN/T*1e9; }   // nm
+
+/* ---------- cor de um comprimento de onda ---------- */
+function hsl(h,s,l){                 // s,l em 0..1  ->  [r,g,b] 0..255
+  const a=s*Math.min(l,1-l);
+  const f=n=>{const k=(n+h/30)%12; return 255*(l-a*Math.max(-1,Math.min(k-3,9-k,1)));};
+  return [f(0),f(8),f(4)];
+}
+function arcoIris(l){                // 380..750 nm -> arco-iris, sem atenuacao nas pontas
+  let r,g,b;
+  if(l<440){ r=-(l-440)/60; g=0; b=1; }
+  else if(l<490){ r=0; g=(l-440)/50; b=1; }
+  else if(l<510){ r=0; g=1; b=-(l-510)/20; }
+  else if(l<580){ r=(l-510)/70; g=1; b=0; }
+  else if(l<645){ r=1; g=-(l-645)/65; b=0; }
+  else { r=1; g=0; b=0; }
+  return [r*255,g*255,b*255];
+}
+function corDe(l){                   // l em nm -> [r,g,b]
+  if(l>=VIS0 && l<=VIS1) return arcoIris(l);
+  if(l>VIS1){                        // infravermelho: vermelho intenso que escurece
+    const u=Math.min(1,Math.log(l/VIS1)/Math.log(LMAX/VIS0));
+    return hsl(0, 0.94, 0.55-0.36*u);
+  }                                  // ultravioleta: violeta que escurece
+  const u=Math.min(1,Math.log(VIS0/Math.max(l,1))/Math.log(VIS0/LMIN));
+  return hsl(292-26*u, 0.82, 0.63-0.38*u);
+}
+const css=c=>"rgb("+c[0].toFixed(0)+","+c[1].toFixed(0)+","+c[2].toFixed(0)+")";
+const cssA=(c,a)=>"rgba("+c[0].toFixed(0)+","+c[1].toFixed(0)+","+c[2].toFixed(0)+","+a+")";
+
+/* cor aparente de um corpo negro (aproximação de Tanner Helland, 1000–40000 K) */
+function corCorpoNegro(T){
+  const t=Math.min(40000,Math.max(1000,T))/100;
+  let r,g,b;
+  r = t<=66 ? 255 : 329.698727446*Math.pow(t-60,-0.1332047592);
+  g = t<=66 ? 99.4708025861*Math.log(t)-161.1195681661
+            : 288.1221695283*Math.pow(t-60,-0.0755148492);
+  b = t>=66 ? 255 : (t<=19 ? 0 : 138.5177312231*Math.log(t-10)-305.0447927307);
+  const cl=x=>Math.max(0,Math.min(255,x));
+  return [cl(r),cl(g),cl(b)];
+}
+function nomeCor(l){
+  if(l<VIS0) return ["ultravioleta","#9b5de5"];
+  if(l<450) return ["violeta","#7b5cff"];
+  if(l<495) return ["azul","#3d7dff"];
+  if(l<515) return ["ciano","#28d7d0"];
+  if(l<570) return ["verde","#4fd14f"];
+  if(l<590) return ["amarelo","#e8d44a"];
+  if(l<620) return ["laranja","#f09030"];
+  if(l<=VIS1) return ["vermelho","#f24b4b"];
+  return ["infravermelho","#c0392b"];
+}
+function faixa(l){
+  if(l<VIS0) return ["o pico está no ultravioleta","#9b5de5"];
+  if(l<=VIS1) return ["o pico está no visível","#d7b46a"];
+  return ["o pico está no infravermelho","#d96d6d"];
+}
+
+/* frações de energia por faixa: integra B_lambda em grade log */
+function fracoes(T){
+  const N=1400, a=Math.log(1), b=Math.log(2e6);   // 1 nm a 2 mm
+  let tot=0,uv=0,vi=0,iv=0,ant=null;
+  for(let i=0;i<=N;i++){
+    const l=Math.exp(a+(b-a)*i/N), y=planck(l,T);
+    if(ant){
+      const dl=l-ant.l, m=(y+ant.y)/2*dl, lm=(l+ant.l)/2;
+      tot+=m;
+      if(lm<VIS0) uv+=m; else if(lm<=VIS1) vi+=m; else iv+=m;
+    }
+    ant={l,y};
+  }
+  return [uv/tot,vi/tot,iv/tot];
+}
+
+/* ---------- desenho ---------- */
+function desenha(T){
+  const W=cv.width,Hh=cv.height,PL=74,PR=22,PT=40,PB=128;
+  const X=l=>PL+(Math.log(l/LMIN)/Math.log(LMAX/LMIN))*(W-PL-PR);
+  ctx.clearRect(0,0,W,Hh);
+  const lmax=lamMax(T), pico=planck(lmax,T);
+  const yTopAbs=planck(lamMax(40000),40000);
+  const Y=v=>{
+    if(!yLog) return Hh-PB-(v/pico)*(Hh-PB-PT);
+    const lo=Math.log(yTopAbs)-Math.log(1e11), hi=Math.log(yTopAbs);
+    return Hh-PB-((Math.log(Math.max(v,1e-30))-lo)/(hi-lo))*(Hh-PB-PT);
+  };
+
+  /* grade vertical em décadas */
+  ctx.font="17px Inter,sans-serif"; ctx.textAlign="center";
+  for(let d=2;d<=4;d++){
+    for(let m=1;m<10;m++){
+      const l=m*Math.pow(10,d); if(l<LMIN||l>LMAX) continue;
+      ctx.strokeStyle=m===1?"#2b2b2b":"#1a1a1a"; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(X(l),PT); ctx.lineTo(X(l),Hh-PB); ctx.stroke();
+      if(m===1){ ctx.fillStyle="#6a6a6a";
+        ctx.fillText(l>=1000?(l/1000)+" µm":l+" nm",X(l),Hh-PB+40); }
+    }
+  }
+  /* fronteiras das faixas */
+  [[VIS0,"380"],[VIS1,"750"]].forEach(([l])=>{
+    ctx.strokeStyle="#4a4a4a"; ctx.setLineDash([4,5]); ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.moveTo(X(l),PT); ctx.lineTo(X(l),Hh-PB); ctx.stroke(); ctx.setLineDash([]);
+  });
+  /* rótulos das três regiões */
+  const rot=(a,b,txt,cor)=>{
+    const x=(X(a)+X(b))/2; if(X(b)-X(a)<60) return;
+    ctx.fillStyle=cor; ctx.font="600 18px Inter,sans-serif";
+    ctx.fillText(txt,x,PT-14);
+  };
+  rot(LMIN,VIS0,"ULTRAVIOLETA","#9b5de5");
+  rot(VIS0,VIS1,"VISÍVEL","#e8d44a");
+  rot(VIS1,LMAX,"INFRAVERMELHO","#d96d6d");
+
+  /* gradiente do espectro, amostrado ao longo do eixo log */
+  const grad=ctx.createLinearGradient(PL,0,W-PR,0);
+  for(let i=0;i<=400;i++){
+    const f=i/400, l=LMIN*Math.pow(LMAX/LMIN,f);
+    grad.addColorStop(f,css(corDe(l)));
+  }
+  /* régua 1: o espectro inteiro, na mesma escala log do eixo */
+  const fy=Hh-PB+4, fh=16;
+  ctx.fillStyle=grad; ctx.fillRect(PL,fy,W-PL-PR,fh);
+  ctx.strokeStyle="#2b2b2b"; ctx.lineWidth=1; ctx.strokeRect(PL,fy,W-PL-PR,fh);
+
+  /* régua 2: a faixa visível esticada na largura toda -- é onde o arco-íris se lê */
+  const vy=Hh-PB+64, vh=24, XV=l=>PL+((l-VIS0)/(VIS1-VIS0))*(W-PL-PR);
+  const gv=ctx.createLinearGradient(PL,0,W-PR,0);
+  for(let i=0;i<=300;i++){ const f=i/300; gv.addColorStop(f,css(arcoIris(VIS0+(VIS1-VIS0)*f))); }
+  ctx.fillStyle=gv; ctx.fillRect(PL,vy,W-PL-PR,vh);
+  ctx.strokeStyle="#2b2b2b"; ctx.lineWidth=1; ctx.strokeRect(PL,vy,W-PL-PR,vh);
+  ctx.fillStyle="#6a6a6a"; ctx.font="15px Inter,sans-serif"; ctx.textAlign="left";
+  ctx.fillText("a faixa visível, esticada na largura toda",PL,vy+vh+18);
+  ctx.textAlign="right"; ctx.fillText("380 nm  a  750 nm",W-PR,vy+vh+18);
+  /* onde o pico cai dentro do visível */
+  if(lmax>=VIS0&&lmax<=VIS1){
+    const xv=XV(lmax);
+    ctx.fillStyle="#f4f4f1"; ctx.beginPath();
+    ctx.moveTo(xv,vy-3); ctx.lineTo(xv-7,vy-13); ctx.lineTo(xv+7,vy-13); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle="#f4f4f1"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(xv,vy); ctx.lineTo(xv,vy+vh); ctx.stroke();
+  }
+  ctx.textAlign="center";
+
+  /* a curva */
+  const pts=[]; const N=900;
+  for(let i=0;i<=N;i++){
+    const l=LMIN*Math.pow(LMAX/LMIN,i/N), v=planck(l,T), y=Y(v);
+    pts.push([X(l),y,l,v]);
+  }
+  /* área sob a curva, no gradiente */
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(pts[0][0],Hh-PB);
+  pts.forEach(p=>ctx.lineTo(p[0],Math.max(PT-40,p[1])));
+  ctx.lineTo(pts[pts.length-1][0],Hh-PB); ctx.closePath();
+  ctx.clip();
+  ctx.globalAlpha=0.20; ctx.fillStyle=grad; ctx.fillRect(PL,PT-40,W-PL-PR,Hh-PB-PT+40);
+  ctx.restore();
+  /* traço da curva, colorido em segmentos */
+  ctx.lineWidth=3.4; ctx.lineJoin="round"; ctx.lineCap="round";
+  for(let i=1;i<pts.length;i++){
+    const [x0,y0]=pts[i-1], [x1,y1,l1]=pts[i];
+    if(y1<PT-40&&y0<PT-40) continue;
+    ctx.strokeStyle=css(corDe(l1));
+    ctx.beginPath(); ctx.moveTo(x0,Math.max(PT-40,y0)); ctx.lineTo(x1,Math.max(PT-40,y1)); ctx.stroke();
+  }
+  /* marca do pico */
+  const cp=corDe(lmax), xp=X(lmax), yp=Y(pico);
+  ctx.strokeStyle=cssA(cp,0.85); ctx.lineWidth=1.8; ctx.setLineDash([5,5]);
+  ctx.beginPath(); ctx.moveTo(xp,yp); ctx.lineTo(xp,Hh-PB); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=css(cp); ctx.beginPath(); ctx.arc(xp,yp,7.5,0,7); ctx.fill();
+  ctx.strokeStyle="#f4f4f1"; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle="#f4f4f1"; ctx.font="600 20px Inter,sans-serif";
+  const txt="λmáx = "+(lmax<1000?lmax.toFixed(0)+" nm":(lmax/1000).toFixed(2).replace(".",",")+" µm");
+  const acima = yp-16 > PT+26;               // so escreve por cima se houver folga
+  const dir = xp>W-280 ? -1 : 1, ty = acima ? yp-16 : yp+36;
+  ctx.textAlign = dir<0 ? "right" : "left";
+  const larg=ctx.measureText(txt).width;
+  ctx.fillStyle="rgba(5,5,5,.78)";
+  ctx.fillRect(xp+dir*10-(dir<0?larg+8:0)-4, ty-19, larg+12, 26);
+  ctx.fillStyle="#f4f4f1";
+  ctx.fillText(txt, xp+dir*14, ty);
+
+  /* eixos */
+  ctx.strokeStyle="#3a3a3a"; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(PL,PT-40); ctx.lineTo(PL,Hh-PB); ctx.lineTo(W-PR,Hh-PB); ctx.stroke();
+  ctx.fillStyle="#8a8a8a"; ctx.font="18px Inter,sans-serif"; ctx.textAlign="center";
+  ctx.save(); ctx.translate(24,(PT+Hh-PB)/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText(yLog?"Bλ(T)  — log, escala absoluta":"Bλ(T)  — pico normalizado a 1",0,0);
+  ctx.restore(); ctx.textAlign="left";
+}
+
+/* ---------- sincronia ---------- */
+function fmt(x,d){return x.toFixed(d).replace(".",",");}
+function sync(){
+  const T=tempAtual();
+  const lmax=lamMax(T), [nome,corN]=nomeCor(lmax), [ftxt,fcor]=faixa(lmax);
+  $("vt").textContent=Math.round(T).toLocaleString("pt-BR").replace(/\./g," ")+" K";
+  $("tipo").textContent=ftxt; $("tipo").style.color=fcor; $("tipo").style.background=fcor+"18";
+  $("mlam").textContent = lmax<1000 ? fmt(lmax,0)+" nm" : fmt(lmax/1000,2)+" µm";
+  $("mcor").innerHTML='<span style="color:'+corN+'">'+nome+'</span>';
+  $("mb").textContent = fmt(lmax*1e-9*T*1e3,3)+"×10⁻³ m·K";
+  const fl=Math.pow(T/T_SOL,4);
+  $("mf").textContent = fl<0.001 ? fl.toExponential(1).replace(".",",").replace("e","×10^")
+                      : fl<1 ? fmt(fl,3) : fl<1000 ? fmt(fl,1) : Math.round(fl).toLocaleString("pt-BR");
+  $("mev").textContent = fmt(H_*C_/(lmax*1e-9)/EV,2)+" eV";
+  const cb=corCorpoNegro(T);
+  $("bola").style.background=css(cb); $("bola").style.color=css(cb);
+  const [uv,vi,iv]=fracoes(T);
+  const pintar=(id,idb,v,cor)=>{$(id).textContent=(v*100).toFixed(v<0.1?1:0).replace(".",",")+"%";
+    $(idb).style.width=(v*100).toFixed(1)+"%"; $(idb).style.background=cor;};
+  pintar("pUV","bUV",uv,"#9b5de5"); pintar("pVI","bVI",vi,"#e8d44a"); pintar("pIV","bIV",iv,"#d96d6d");
+  $("nota").textContent = lmax>VIS1
+    ? "O pico está fora do visível, no infravermelho. A estrela ainda parece avermelhada porque é a cauda da curva que chega aos olhos — e a cauda cai mais devagar do lado vermelho."
+    : lmax<VIS0
+    ? "O pico está no ultravioleta e não chega ao chão: a atmosfera bloqueia. O que se vê é a cauda Rayleigh-Jeans, e ela é azulada. Por isso estrelas muito quentes parecem azul-branco, nunca violeta."
+    : "O pico está dentro da faixa visível. Mesmo assim a cor aparente não é a cor do pico: o olho integra a curva inteira, e o resultado puxa para o branco.";
+  desenha(T);
+}
+function chips(){
+  const c=$("chips"); c.innerHTML="";
+  PRE.forEach(([n,T])=>{const b=document.createElement("button");b.className="chip";b.textContent=n;
+    b.onclick=()=>{Tfixo=T;$("t").value=Math.log10(T);sync();marca(n);};c.appendChild(b);});
+  const y=$("chipsY"); y.innerHTML="";
+  [["pico = 1",false],["log absoluto",true]].forEach(([n,v])=>{
+    const b=document.createElement("button");b.className="chip"+(v===yLog?" on":"");b.textContent=n;
+    b.onclick=()=>{yLog=v;[...y.children].forEach(z=>z.classList.toggle("on",z===b));sync();};
+    y.appendChild(b);});
+}
+function marca(n){[...$("chips").children].forEach(b=>b.classList.toggle("on",b.textContent===n));}
+function laco(now){
+  const dt=Math.min(0.05,(now-ultimo)/1000); ultimo=now;
+  if(varrendo){
+    const s=$("t"); let v=+s.value+dir*dt*0.26;
+    if(v>=+s.max){v=+s.max;dir=-1;} if(v<=+s.min){v=+s.min;dir=1;}
+    s.value=v; Tfixo=null; sync(); marca("");
+  }
+  requestAnimationFrame(laco);
+}
+$("t").addEventListener("input",()=>{Tfixo=null;sync();marca("");});
+$("play").onclick=()=>{varrendo=!varrendo;$("play").textContent=varrendo?"parar":"varrer";};
+$("sol").onclick=()=>{varrendo=false;$("play").textContent="varrer";
+  Tfixo=T_SOL;$("t").value=Math.log10(T_SOL);sync();marca("Sol · 5772 K");};
+chips(); $("t").value=Math.log10(T_SOL); sync(); marca("Sol · 5772 K");
+const qs=new URLSearchParams(location.search);
+if(qs.has("T")){
+  const T0=Math.min(39811,Math.max(1000,+qs.get("T")||T_SOL));
+  Tfixo=T0; $("t").value=Math.log10(T0); sync();
+  marca((PRE.find(p=>p[1]===T0)||["",0])[0]);
+}
+if(qs.has("embed")){ document.body.classList.add("embed"); sync(); }
+requestAnimationFrame(laco);
+</script>
+</body></html>
