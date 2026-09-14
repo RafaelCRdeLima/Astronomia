@@ -657,10 +657,71 @@ def fig_doppler_espectro():
     salva(fig, "a6_doppler_espectro")
 
 
+# ================================ 13. as duas leis classicas contra a de Planck
+def fig_wien_rj_planck():
+    """Cada lei classica acerta uma metade do espectro. Precisa de dois paineis:
+    no linear a catastrofe se ve, mas a convergencia de Rayleigh-Jeans so aparece
+    no log, muito alem de 2,5 um."""
+    T = 5772.0
+    def curvas(lam):
+        lm = lam * 1e-9
+        p = (2 * H * C**2 / lm**5) / np.expm1(H * C / (lm * KB * T))
+        w = (2 * H * C**2 / lm**5) * np.exp(-H * C / (lm * KB * T))
+        r = 2 * C * KB * T / lm**4
+        return p, w, r
+
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11.4, 4.7))
+
+    # ---------------------------------------- (a) linear: a catastrofe
+    lam = np.linspace(40, 2500, 2400)
+    p, w, r = curvas(lam)
+    esc = p.max()
+    a1.plot(lam, r/esc, color=ROSA, lw=2.6, label="Rayleigh-Jeans (1900)")
+    a1.plot(lam, w/esc, color=BLUE, lw=2.2, ls="--", label="Wien (1896)")
+    a1.plot(lam, p/esc, color=GOLD, lw=3.0, label="Planck (1900), e o medido")
+    a1.axvspan(380, 750, color=GOLD, alpha=0.10, lw=0, zorder=0)
+    a1.set_xlim(0, 2500); a1.set_ylim(0, 1.5)
+    a1.set_xlabel(r"$\lambda$ (nm)", fontsize=11.5, color=INK)
+    a1.set_ylabel(r"$B_\lambda$, em unidades do pico de Planck", fontsize=11, color=INK)
+    a1.set_title("(a) a catástrofe, em escala linear", fontsize=12, color=NAVY, pad=9)
+    enfeita(a1)
+    leg = a1.legend(loc="upper right", fontsize=9.5, frameon=True, edgecolor=LINE,
+                    facecolor="white")
+    for t in leg.get_texts():
+        t.set_color(INK)
+    a1.annotate("continua subindo sem limite:\nem 200 nm, 20 000× o medido",
+                xy=(1010, 1.47), xytext=(70, 1.41), fontsize=9.5, color=ROSA, va="top",
+                arrowprops=dict(arrowstyle="->", color=ROSA, lw=1.2))
+
+    # ---------------------------------------- (b) log-log: as duas metades
+    lam = np.logspace(np.log10(80), np.log10(2e5), 2000)
+    p, w, r = curvas(lam)
+    esc = p.max()
+    a2.plot(lam, r/esc, color=ROSA, lw=2.4, label="Rayleigh-Jeans")
+    a2.plot(lam, w/esc, color=BLUE, lw=2.0, ls="--", label="Wien")
+    a2.plot(lam, p/esc, color=GOLD, lw=2.8, label="Planck")
+    a2.set_xscale("log"); a2.set_yscale("log")
+    a2.set_xlim(80, 2e5); a2.set_ylim(1e-9, 1e4)
+    a2.set_xticks([1e2, 1e3, 1e4, 1e5])
+    a2.set_xticklabels(["100 nm", "1 µm", "10 µm", "100 µm"])
+    a2.set_xlabel(r"$\lambda$", fontsize=11.5, color=INK)
+    a2.set_title("(b) as duas metades, em log-log", fontsize=12, color=NAVY, pad=9)
+    enfeita(a2)
+    a2.annotate("Wien acerta aqui\ne despenca depois", xy=(160, 4e-3), xytext=(95, 8e-7),
+                fontsize=10, color=BLUE,
+                arrowprops=dict(arrowstyle="->", color=BLUE, lw=1.1))
+    a2.annotate("Rayleigh-Jeans só encosta\nem Planck além de ~13 µm",
+                xy=(4e4, 2.5e-5), xytext=(2.2e2, 1.1e-8), fontsize=10, color=ROSA,
+                arrowprops=dict(arrowstyle="->", color=ROSA, lw=1.1))
+    fig.tight_layout(w_pad=2.6)
+    salva(fig, "a6_wien_rj_planck")
+
+
 if __name__ == "__main__":
     os.makedirs(SAIDA, exist_ok=True)
     for f in (fig_planck, fig_solar, fig_atmosfera, fig_perfis, fig_balmer, fig_termico,
               fig_filtros_curvas, fig_filtro_produto, fig_filtros_duas_estrelas,
-              fig_cores_atomos, fig_emissao_absorcao, fig_doppler_espectro):
+              fig_cores_atomos, fig_emissao_absorcao, fig_doppler_espectro,
+              fig_wien_rj_planck):
         f()
     print("ok")
