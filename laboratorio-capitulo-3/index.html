@@ -624,6 +624,12 @@
     const LAMBDA_MIN = 90;
     const LAMBDA_MAX = 2500;
     const MIN_DISPLAY_SPAN = 80;
+    const LINE_SEARCH_RADIUS = 12;   // nm: o quanto a marca pode se afastar do clique
+    const LINE_CONT_RADIUS = 45;     // nm: janela usada para estimar o contínuo local
+    const LINE_MIN_DEPTH = 0.04;     // queda mínima em relação ao contínuo
+    const LINE_SIGMA = 3;            // ou N vezes o ruído local, o que for maior
+    const LINE_SMOOTH = 2;           // meia-largura da suavização, em pontos
+    const MAX_PLAUSIBLE_RV = 1500;   // km/s: acima disso a linha foi casada com a transição errada
     const REST_LINES = [
       { id: "hdelta", label: "Hδ", lambda: 410.17 },
       { id: "hgamma", label: "Hγ", lambda: 434.05 },
@@ -1463,20 +1469,113 @@
       return displayLambdaMin + fraction * (displayLambdaMax - displayLambdaMin);
     }
 
-    function nearestLocalMinimum(lambda) {
-      if (!currentSpectrum.length) return { lambda, flux: NaN };
-      const window = currentSpectrum.filter(p => Math.abs(p.lambda - lambda) <= 10);
-      const candidates = window.length ? window : currentSpectrum;
-      const minPoint = candidates.reduce((best, p) => p.flux < best.flux ? p : best, candidates[0]);
-      return { lambda: minPoint.lambda, flux: minPoint.flux };
+    function medianOf(values) {
+      if (!values.length) return 0;
+      const sorted = [...values].sort((a, b) => a - b);
+      const mid = sorted.length >> 1;
+      return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+    }
+
+    // Contínuo local ajustado em log(fluxo) contra log(λ): nessa escala a curva de Planck
+    // é quase uma reta em um trecho de algumas dezenas de nm, enquanto em escala linear ela
+    // tem curvatura suficiente para ser confundida com uma depressão.
+    function localContinuum(points, pivotLambda) {
+      const usable = points.filter(p => p.flux > 0 && p.lambda > 0);
+      if (usable.length < 6) return null;
+      const x0 = Math.log(pivotLambda);
+      let sx = 0, sy = 0, sxx = 0, sxy = 0;
+      usable.forEach(p => {
+        const x = Math.log(p.lambda) - x0;
+        const y = Math.log(p.flux);
+        sx += x; sy += y; sxx += x * x; sxy += x * y;
+      });
+      const n = usable.length;
+      const den = n * sxx - sx * sx;
+      if (!den) return null;
+      const slope = (n * sxy - sx * sy) / den;
+      const intercept = (sy - slope * sx) / n;
+      return lambda => Math.exp(intercept + slope * (Math.log(lambda) - x0));
+    }
+
+    // Ruído estimado por diferenças entre pontos vizinhos: estrutura suave (o contínuo e as
+    // asas das linhas) quase não contribui, então o que sobra é o ruído de contagem.
+    function relativeNoise(points) {
+      const diffs = [];
+      for (let i = 1; i < points.length; i += 1) {
+        const ref = Math.max(Math.abs(points[i].flux), 1e-12);
+        diffs.push(Math.abs(points[i].flux - points[i - 1].flux) / ref);
+      }
+      return 1.4826 * medianOf(diffs) / Math.SQRT2;
+    }
+
+    function smoothedFlux(points, i, half) {
+      const values = [];
+      for (let j = i - half; j <= i + half; j += 1) {
+        if (points[j]) values.push(points[j].flux);
+      }
+      return values.reduce((s, x) => s + x, 0) / values.length;
+    }
+
+    // Procura a linha de absorção mais próxima do clique. O ponto de menor fluxo não serve:
+    // em um contínuo inclinado ele é sempre a borda de baixo da janela, e a marca sai
+    // deslocada de onde o aluno clicou. O que se procura é a maior queda *em relação ao
+    // contínuo local*, e só se ela for maior que o ruído.
+    function findAbsorptionLine(clickLambda) {
+      if (!currentSpectrum.length) return { found: false };
+      const wide = currentSpectrum.filter(p => Math.abs(p.lambda - clickLambda) <= LINE_CONT_RADIUS);
+      if (wide.length < 11) return { found: false };
+
+      // o contínuo é ajustado só nas bandas laterais, fora da região onde a linha estaria,
+      // e descartando o terço mais baixo, que costuma ser outra linha
+      let sides = wide.filter(p => Math.abs(p.lambda - clickLambda) > LINE_SEARCH_RADIUS);
+      if (sides.length < 6) sides = wide;
+      const sorted = sides.map(p => p.flux).sort((a, b) => a - b);
+      const cut = sorted[Math.floor(sorted.length * 0.35)];
+      const top = sides.filter(p => p.flux >= cut);
+      const continuum = localContinuum(top.length >= 6 ? top : sides, clickLambda);
+      if (!continuum) return { found: false };
+
+      const noise = relativeNoise(wide) / Math.sqrt(2 * LINE_SMOOTH + 1);
+      const threshold = Math.max(LINE_MIN_DEPTH, LINE_SIGMA * noise);
+
+      const near = currentSpectrum.filter(p => Math.abs(p.lambda - clickLambda) <= LINE_SEARCH_RADIUS);
+      if (near.length < 5) return { found: false, threshold };
+      const depths = near.map((p, i) => {
+        const c = continuum(p.lambda);
+        return { lambda: p.lambda, flux: p.flux, depth: c > 0 ? smoothedFlux(near, i, LINE_SMOOTH) / c : 1 };
+      });
+
+      const minima = depths.filter((p, i) =>
+        i > 0 && i < depths.length - 1 &&
+        p.depth <= depths[i - 1].depth && p.depth < depths[i + 1].depth &&
+        p.depth < 1 - threshold);
+      const candidates = minima.length ? minima : depths.filter(p => p.depth < 1 - threshold);
+      if (!candidates.length) return { found: false, threshold };
+
+      // entre os candidatos, o mais próximo do clique — e não o mais fundo, para que linhas
+      // vizinhas continuem separáveis e a marca caia onde o aluno apontou
+      const best = candidates.reduce((b, p) =>
+        Math.abs(p.lambda - clickLambda) < Math.abs(b.lambda - clickLambda) ? p : b, candidates[0]);
+      return { found: true, lambda: best.lambda, flux: best.flux, depth: 1 - best.depth, threshold };
     }
 
     function markAbsorptionLine(event, canvas) {
       if (!measuringLines || photonTotal <= 0 || observationSeconds <= 0) return;
+      const status = document.getElementById("fieldStatus");
       const estimated = lambdaFromCanvasPoint(event, canvas);
-      const mark = nearestLocalMinimum(estimated);
+      const mark = findAbsorptionLine(estimated);
+      if (!mark.found) {
+        status.textContent = `Nenhuma linha em ${fmt(estimated, 0)} nm: o espectro ali é contínuo, ou o ruído ainda é maior que a queda. Acumule mais fótons ou clique sobre uma depressão visível.`;
+        return;
+      }
+      const repeated = absorptionMarks.find(m => Math.abs(m.lambda - mark.lambda) < 3);
+      if (repeated) {
+        status.textContent = `Esta linha já está marcada em ${fmt(repeated.lambda, 1)} nm.`;
+        return;
+      }
       absorptionMarks.push({ lambda: mark.lambda, flux: mark.flux });
       absorptionMarks.sort((a, b) => a.lambda - b.lambda);
+      status.textContent = `Linha marcada em ${fmt(mark.lambda, 1)} nm, ${fmt(mark.depth * 100, 0)}% abaixo do contínuo.`;
       renderObservation();
     }
 
@@ -1623,7 +1722,17 @@
       document.getElementById("targetMetric").textContent = target.name;
       document.getElementById("peakMetric").textContent = m ? `${fmt(m.peak, 0)} nm` : "--";
       document.getElementById("tempMetric").textContent = fittingBlackbody ? `${fmt(Number(blackbodyTempSlider.value), 0)} K` : "--";
-      document.getElementById("rvMetric").textContent = m ? `${fmt(m.rv, 0)} km/s` : "--";
+      const rvNode = document.getElementById("rvMetric");
+      if (!m || !Number.isFinite(m.rv)) {
+        rvNode.textContent = "--";
+        rvNode.title = "";
+      } else if (Math.abs(m.rv) > MAX_PLAUSIBLE_RV) {
+        rvNode.textContent = `${fmt(m.rv, 0)} km/s (?)`;
+        rvNode.title = `A linha marcada em ${fmt(m.lineObserved, 1)} nm foi casada com ${m.line.label} (${fmt(m.line.lambda, 2)} nm), a transição mais próxima do catálogo. Uma estrela do campo não tem velocidade dessa ordem: a marca provavelmente não é uma linha desse catálogo.`;
+      } else {
+        rvNode.textContent = `${fmt(m.rv, 0)} km/s`;
+        rvNode.title = `Linha em ${fmt(m.lineObserved, 1)} nm casada com ${m.line.label} (${fmt(m.line.lambda, 2)} nm).`;
+      }
       document.getElementById("timeReadout").textContent = `${fmt(observationSeconds, 1)} s acumulados`;
       document.getElementById("photonReadout").textContent = `${fmt(photonTotal, 0)} fótons`;
       document.getElementById("acquisitionReadout").textContent = isObserving
