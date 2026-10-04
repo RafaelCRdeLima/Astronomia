@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resolução e amostragem: difração, seeing e o tamanho do pixel | Astronomia (AST0001)</title>
+<style>
+:root{--bg:#050505;--panel:#101010;--panel2:#151515;--line:#343434;--text:#f4f4f1;
+      --muted:#aaa69c;--accent:#d7b46a;--blue:#72a7ff;--cyan:#6fd3d8;--bad:#d96d6d;--good:#8fd18f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+.shell{width:min(1300px,calc(100vw - 20px));margin:0 auto;padding:14px 0 20px}
+h1{margin:0;font-size:23px;font-weight:650;letter-spacing:-.2px}
+.sub{margin-top:4px;font-size:13.5px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 346px;gap:14px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.duas{display:grid;grid-template-columns:1.05fr 1fr;gap:10px}
+canvas{display:block;width:100%;border-radius:8px;background:#080808}
+.rot{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.control{margin-bottom:13px}
+.control label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.control label b{color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);background:transparent}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{border-color:var(--accent);color:var(--bg);background:var(--accent);font-weight:600}
+.metric{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #1c1c1c;font-size:13px}
+.metric:last-child{border-bottom:none}
+.metric small{color:var(--muted)}
+.metric strong{font-variant-numeric:tabular-nums;font-weight:600}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 13px;font-size:13px;cursor:pointer;margin-right:6px}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.tit{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+.tit:first-child{margin-top:0}
+.nota{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.5}
+.tipo{font-size:15px;font-weight:650;padding:7px 0;text-align:center;border-radius:8px;margin-bottom:8px}
+body.embed{overflow:hidden}
+body.embed .shell{padding:6px 0 6px;width:calc(100vw - 8px)}
+body.embed h1,body.embed .sub{display:none}
+body.embed .panel{padding:9px;border-radius:9px}
+body.embed .tit{margin:9px 0 5px}
+body.embed .tit:first-child{margin-top:0}
+body.embed .control{margin-bottom:9px}
+body.embed .metric{padding:2px 0;font-size:11.5px}
+body.embed .nota{display:none}
+body.embed .chip{padding:3px 8px;font-size:11px}
+body.embed .chips{gap:4px;margin-bottom:8px}
+body.embed .control label{font-size:11.5px;margin-bottom:3px}
+body.embed .btn{padding:5px 10px;font-size:12px}
+body.embed .rot{font-size:10px;margin-bottom:3px}
+body.embed .control{margin-bottom:6px}
+body.embed .metric{padding:1px 0;font-size:11px}
+body.embed .tit{margin:7px 0 4px;font-size:10.5px}
+body.embed .tipo{font-size:13px;padding:5px 0;margin-bottom:6px}
+body.embed .chips{margin-bottom:6px;gap:3px}
+body.embed .chip{padding:2px 7px;font-size:10.5px}
+body.embed input[type=range]{height:14px}
+body.embed .so-cheia{display:none}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.duas{grid-template-columns:1fr}}
+</style></head>
+<body>
+<div class="shell">
+<h1>Resolução e amostragem &middot; difração, seeing e o tamanho do pixel</h1>
+<div class="sub">Duas estrelas separadas por um ângulo fixo. Mude a abertura, o comprimento de onda e o detector, e
+veja quando elas se separam &mdash; e quando o detector joga fora o que a óptica entregou.<br>
+<span style="opacity:.8">A resolução é fixada pela óptica e pela atmosfera; a amostragem, pelo pixel. São limites
+diferentes, e o resultado final é sempre o pior dos dois.</span></div>
+<div class="grid">
+  <div>
+    <div class="panel">
+      <div class="duas">
+        <div><div class="rot">o plano focal</div><canvas id="img" width="760" height="760"></canvas></div>
+        <div><div class="rot">corte horizontal pelas duas fontes</div><canvas id="cut" width="760" height="760"></canvas></div>
+      </div>
+      <div class="nota" id="nota"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="tipo" id="veredito">&mdash;</div>
+
+    <div class="tit">preset</div>
+    <div class="chips" id="presets"></div>
+
+    <div class="tit">telescópio</div>
+    <div class="control"><label>abertura <i>D</i> <b><span id="vD"></span> m</b></label>
+      <input type="range" id="sD" min="-1" max="1.62" step="0.01" value="0.38"></div>
+    <div class="control"><label>comprimento de onda <i>&lambda;</i> <b><span id="vL"></span></b></label>
+      <input type="range" id="sL" min="2.6" max="4.4" step="0.01" value="2.7"></div>
+    <div class="control so-cheia"><label>razão focal <b>f/<span id="vF"></span></b></label>
+      <input type="range" id="sF" min="2" max="40" step="0.5" value="12"></div>
+
+    <div class="tit">o que chega ao espelho</div>
+    <div class="chips" id="modos"></div>
+    <div class="control" id="boxSeeing"><label>seeing em 500 nm <b><span id="vS"></span>&Prime;</b></label>
+      <input type="range" id="sS" min="0.3" max="2.5" step="0.05" value="1.0"></div>
+    <div class="control" id="boxStrehl"><label>Strehl da correção <b><span id="vSt"></span></b></label>
+      <input type="range" id="sSt" min="0.05" max="0.95" step="0.01" value="0.45"></div>
+
+    <div class="tit">detector e fontes</div>
+    <div class="control"><label>lado do pixel <i>p</i> <b><span id="vP"></span> &mu;m</b></label>
+      <input type="range" id="sP" min="1" max="30" step="0.5" value="9"></div>
+    <div class="control"><label>separação das duas fontes <b><span id="vSep"></span>&Prime;</b></label>
+      <input type="range" id="sSep" min="-2.7" max="0.7" step="0.01" value="-1.0"></div>
+    <div class="chips" id="vistas"></div>
+
+    <div class="tit">leituras</div>
+    <div class="metric"><small>resolução de difração 1,22&lambda;/<i>D</i></small><strong id="mRes"></strong></div>
+    <div class="metric"><small>largura entregue (FWHM)</small><strong id="mFwhm"></strong></div>
+    <div class="metric"><small>escala angular por pixel</small><strong id="mEsc"></strong></div>
+    <div class="metric so-cheia"><small>pixel de Nyquist 0,50 <i>f</i>&lambda;/<i>D</i></small><strong id="mNyq"></strong></div>
+    <div class="metric"><small><i>p</i> / <i>p</i><sub>Nyquist</sub></small><strong id="mRaz"></strong></div>
+    <div class="metric so-cheia"><small>separação / largura entregue</small><strong id="mSep"></strong></div>
+  </div>
+</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const RAD=206264.806;
+// ---- funcao de Bessel J1 (Abramowitz & Stegun 9.4.4 / 9.4.6) ----
+function J1(x){
+  const ax=Math.abs(x);
+  if(ax<8){
+    const y=x*x;
+    const n=x*(72362614232.0+y*(-7895059235.0+y*(242396853.1+y*(-2972611.439+y*(15704.48260+y*(-30.16036606))))));
+    const d=144725228442.0+y*(2300535178.0+y*(18583304.74+y*(99447.43394+y*(376.9991397+y*1.0))));
+    return n/d;
+  }
+  const z=8/ax,y=z*z,xx=ax-2.356194491;
+  const p1=1.0+y*(0.183105e-2+y*(-0.3516396496e-4+y*(0.2457520174e-5+y*(-0.240337019e-6))));
+  const p2=0.04687499995+y*(-0.2002690873e-3+y*(0.8449199096e-5+y*(-0.88228987e-6+y*0.105787412e-6)));
+  const r=Math.sqrt(0.636619772/ax)*(Math.cos(xx)*p1-z*Math.sin(xx)*p2);
+  return x<0?-r:r;
+}
+function airy(u){ if(Math.abs(u)<1e-8) return 1; const t=2*J1(u)/u; return t*t; }
+
+// ---- estado ----
+const S={D:2.4,lam:5e-7,fr:12,modo:"difracao",seeing:1.0,strehl:0.45,p:9e-6,sep:0.1,vista:"detector"};
+const MODOS=[["difracao","só difração"],["seeing","difração + seeing"],["ao","com óptica adaptativa"]];
+const VISTAS=[["detector","o que o detector registra"],["real","o céu, sem pixels"]];
+const PRESETS={
+ "Hubble, 0,6 µm":{D:2.4,lam:6e-7,fr:24,p:15e-6,modo:"difracao",sep:0.10},
+ "JWST NIRCam, 2 µm":{D:6.5,lam:2e-6,fr:20,p:18e-6,modo:"difracao",sep:0.10},
+ "1 m no solo, sem correção":{D:1.0,lam:5.5e-7,fr:8,p:9e-6,modo:"seeing",seeing:1.2,sep:0.6},
+ "8 m com AO, 2,2 µm":{D:8.0,lam:2.2e-6,fr:15,p:18e-6,modo:"ao",seeing:0.8,strehl:0.5,sep:0.16},
+ "ELT 39 m, 2,2 µm":{D:39,lam:2.2e-6,fr:17,p:15e-6,modo:"ao",seeing:0.8,strehl:0.7,sep:0.03},
+};
+
+function f_m(){ return S.D*S.fr; }                       // distancia focal, m
+function thRes(){ return 1.22*S.lam/S.D*RAD; }           // arcsec
+function r0(){ // comprimento de Fried no comprimento de onda atual, a partir do seeing em 500 nm
+  const r0_500=0.98*5e-7/(S.seeing/RAD);
+  return r0_500*Math.pow(S.lam/5e-7,6/5);
+}
+function thSeeing(){ return 0.98*S.lam/r0()*RAD; }
+function fwhmAiry(){ return 1.028*S.lam/S.D*RAD; }
+function fwhmEntregue(){
+  if(S.modo==="difracao") return fwhmAiry();
+  if(S.modo==="seeing")   return Math.hypot(fwhmAiry(),thSeeing());
+  return fwhmAiry();                                      // AO: o nucleo e o de difracao
+}
+function escPix(){ return S.p/f_m()*RAD; }                // arcsec por pixel
+function pNyq(){ return 0.5*f_m()*S.lam/S.D; }            // metros
+
+// perfil radial normalizado (pico 1 para difracao pura)
+function perfil(th){                                      // th em arcsec
+  const u=Math.PI*S.D*(th/RAD)/S.lam;
+  const a=airy(u);
+  if(S.modo==="difracao") return a;
+  const sg=thSeeing()/2.3548;
+  const g=Math.exp(-0.5*(th/sg)*(th/sg));
+  if(S.modo==="seeing"){
+    const q=Math.hypot(fwhmAiry(),thSeeing())/2.3548;
+    return Math.exp(-0.5*(th/q)*(th/q));
+  }
+  return S.strehl*a+(1-S.strehl)*g*0.25;                  // AO: nucleo coerente + halo
+}
+function cena(x,y){                                        // x,y em arcsec
+  const d1=Math.hypot(x+S.sep/2,y), d2=Math.hypot(x-S.sep/2,y);
+  return perfil(d1)+perfil(d2);
+}
+
+// ---- desenho ----
+const img=$("img"),ic=img.getContext("2d");
+const cut=$("cut"),cc=cut.getContext("2d");
+function corDoValor(v){                                    // escala de cor quente
+  const t=Math.max(0,Math.min(1,v));
+  const r=Math.round(255*Math.min(1,t*1.45));
+  const g=Math.round(255*Math.max(0,Math.min(1,t*1.45-0.42)));
+  const b=Math.round(255*Math.max(0,Math.min(1,t*1.45-0.80)));
+  return [r,g,b];
+}
+function campo(){                                          // meio-campo mostrado, em arcsec
+  return Math.max(S.sep*2.1, fwhmEntregue()*3.2, escPix()*3.5);
+}
+function desenhaImagem(){
+  const W=img.width,H=img.height,C=campo();
+  const d=ic.createImageData(W,H);
+  const esc=escPix(), np=Math.max(1,Math.round(2*C/esc));
+  // valor maximo para normalizar
+  let vmax=0;
+  const sub=2;
+  const cache=[];
+  if(S.vista==="detector"){
+    for(let i=0;i<np;i++){ cache.push([]);
+      for(let j=0;j<np;j++){
+        let s=0;
+        for(let a=0;a<sub;a++) for(let b=0;b<sub;b++){
+          const x=-C+(i+(a+0.5)/sub)*esc, y=-C+(j+(b+0.5)/sub)*esc;
+          s+=cena(x,y);
+        }
+        s/=sub*sub; cache[i].push(s); if(s>vmax) vmax=s;
+      }
+    }
+  } else {
+    vmax=cena(S.sep/2,0);
+  }
+  for(let py=0;py<H;py++){
+    for(let px=0;px<W;px++){
+      const x=-C+2*C*px/W, y=-C+2*C*py/H;
+      let v;
+      if(S.vista==="detector"){
+        const i=Math.min(np-1,Math.max(0,Math.floor((x+C)/esc)));
+        const j=Math.min(np-1,Math.max(0,Math.floor((y+C)/esc)));
+        v=cache[i][j]/vmax;
+      } else { v=cena(x,y)/vmax; }
+      const c=corDoValor(Math.pow(v,0.55));
+      const k=4*(py*W+px);
+      d.data[k]=c[0]; d.data[k+1]=c[1]; d.data[k+2]=c[2]; d.data[k+3]=255;
+    }
+  }
+  ic.putImageData(d,0,0);
+  // grade de pixels
+  if(S.vista==="detector" && np<=90){
+    ic.strokeStyle="rgba(244,244,241,0.16)"; ic.lineWidth=1; ic.beginPath();
+    for(let i=0;i<=np;i++){ const q=i*esc/(2*C)*W; ic.moveTo(q,0); ic.lineTo(q,H); ic.moveTo(0,q); ic.lineTo(W,q); }
+    ic.stroke();
+  }
+  // barra de escala
+  ic.fillStyle="#f4f4f1"; ic.font="20px ui-sans-serif,system-ui";
+  const alvo=C*0.6, pot=Math.pow(10,Math.floor(Math.log10(alvo)));
+  let L=pot; [1,2,5,10].forEach(m=>{ if(pot*m<=alvo) L=pot*m; });
+  const w=L/(2*C)*W;
+  ic.fillRect(22,H-34,w,4);
+  ic.fillText(L>=1?L.toFixed(1)+"\u2033":(L*1000).toFixed(0)+" mas",22,H-44);
+}
+function desenhaCorte(){
+  const W=cut.width,H=cut.height,C=campo();
+  cc.clearRect(0,0,W,H); cc.fillStyle="#080808"; cc.fillRect(0,0,W,H);
+  const mL=78,mR=46,mT=54,mB=74, pw=W-mL-mR, ph=H-mT-mB;
+  const X=x=>mL+(x+C)/(2*C)*pw;
+  const Y=v=>mT+ph*(1-v);
+  // eixos
+  cc.strokeStyle="#343434"; cc.lineWidth=1.2; cc.beginPath();
+  cc.moveTo(mL,mT); cc.lineTo(mL,mT+ph); cc.lineTo(mL+pw,mT+ph); cc.stroke();
+  cc.fillStyle="#aaa69c"; cc.font="19px ui-sans-serif,system-ui";
+  cc.fillText("separação angular",mL+12,H-14);
+  cc.save(); cc.translate(26,mT+ph/2); cc.rotate(-Math.PI/2);
+  cc.fillText("intensidade",-62,0); cc.restore();
+  for(let k=-2;k<=2;k++){
+    const x=k*C/2, q=X(x);
+    cc.strokeStyle="#1e1e1e"; cc.beginPath(); cc.moveTo(q,mT); cc.lineTo(q,mT+ph); cc.stroke();
+    cc.fillStyle="#aaa69c"; cc.textAlign="center";
+    cc.fillText((Math.abs(x)<1?(x*1000).toFixed(0)+" mas":x.toFixed(2)+"\u2033"),q,mT+ph+26);
+  }
+  cc.textAlign="left";
+  // perfil verdadeiro
+  const N=900; let vmax=0; const vs=[];
+  for(let i=0;i<=N;i++){ const x=-C+2*C*i/N; const v=cena(x,0); vs.push(v); if(v>vmax)vmax=v; }
+  cc.strokeStyle="#72a7ff"; cc.lineWidth=2.4; cc.beginPath();
+  vs.forEach((v,i)=>{ const x=-C+2*C*i/N; i?cc.lineTo(X(x),Y(v/vmax)):cc.moveTo(X(x),Y(v/vmax)); });
+  cc.stroke();
+  // amostragem por pixels
+  const esc=escPix(); const np=Math.max(1,Math.round(2*C/esc));
+  cc.strokeStyle="#d7b46a"; cc.lineWidth=2.4; cc.beginPath();
+  let primeiro=true;
+  for(let i=0;i<np;i++){
+    const x0=-C+i*esc, x1=x0+esc;
+    let s=0,n=0; for(let k=0;k<6;k++){ s+=cena(x0+(k+0.5)/6*esc,0); n++; }
+    const v=s/n/vmax;
+    if(primeiro){ cc.moveTo(X(x0),Y(v)); primeiro=false; } else cc.lineTo(X(x0),Y(v));
+    cc.lineTo(X(x1),Y(v));
+  }
+  cc.stroke();
+  // posicoes verdadeiras das fontes
+  cc.strokeStyle="rgba(111,211,216,0.55)"; cc.setLineDash([5,5]); cc.lineWidth=1.4;
+  [-S.sep/2,S.sep/2].forEach(x=>{ cc.beginPath(); cc.moveTo(X(x),mT); cc.lineTo(X(x),mT+ph); cc.stroke(); });
+  cc.setLineDash([]);
+  // legenda
+  cc.font="19px ui-sans-serif,system-ui";
+  // legenda em uma linha, acima da moldura
+  const itens=[["#72a7ff","a óptica entrega"],["#d7b46a","o detector registra"]];
+  cc.font="18px ui-sans-serif,system-ui"; cc.textAlign="left";
+  let lx=mL;
+  itens.forEach(([cor,rot])=>{
+    cc.strokeStyle=cor; cc.lineWidth=3; cc.beginPath(); cc.moveTo(lx,mT-18); cc.lineTo(lx+22,mT-18); cc.stroke();
+    cc.fillStyle=cor; cc.fillText(rot,lx+28,mT-12);
+    lx+=28+cc.measureText(rot).width+22;
+  });
+}
+
+function veredito(){
+  const sep=S.sep, fw=fwhmEntregue(), raz=S.p/pNyq();
+  let t,cor;
+  if(sep>=1.22*S.lam/S.D*RAD){ t="separadas"; cor="#8fd18f"; }
+  else if(sep>=0.85*fw){ t="no limite"; cor="#d7b46a"; }
+  else { t="não separadas"; cor="#d96d6d"; }
+  let a;
+  if(raz<=1.02) a=raz<0.45?"superamostrado":"amostragem crítica";
+  else a="subamostrado";
+  $("veredito").textContent=t+" \u00b7 "+a;
+  $("veredito").style.background=cor; $("veredito").style.color="#101010";
+  const txt=[];
+  if(sep<0.85*fw) txt.push("As duas fontes caem dentro de uma largura só: o que se vê é um objeto, não dois.");
+  else if(sep<1.22*S.lam/S.D*RAD) txt.push("No limite: há um vale entre os picos, mas raso — com ruído, ele some.");
+  else txt.push("A óptica separa as duas fontes.");
+  if(raz>1.02) txt.push("O pixel é maior que o limite de Nyquist: o perfil registrado depende de onde a grade cai, e o detalhe que a óptica entregou está sendo jogado fora.");
+  else if(raz<0.45) txt.push("O pixel é bem menor que o necessário: nada se perde, mas os mesmos fótons se espalham por mais pixels, e cada um deles acrescenta ruído de leitura.");
+  else txt.push("A amostragem está próxima do ideal: dois pixels por elemento de resolução.");
+  if(S.modo==="seeing") txt.push("Com seeing, a largura entregue é a atmosférica e praticamente não depende de D — aumentar o espelho dá mais luz, não mais detalhe.");
+  if(S.modo==="ao") txt.push("A óptica adaptativa devolve um núcleo de difração sobre um halo residual; o Strehl mede a fração da luz que volta ao núcleo.");
+  $("nota").textContent=txt.join(" ");
+}
+function leituras(){
+  const fmt=(v,n=2)=>v.toLocaleString("pt-BR",{minimumFractionDigits:n,maximumFractionDigits:n});
+  const ang=v=>v<0.1?fmt(v*1000,1)+" mas":fmt(v,3)+"\u2033";
+  $("mRes").textContent=ang(thRes());
+  $("mFwhm").textContent=ang(fwhmEntregue());
+  $("mEsc").textContent=ang(escPix());
+  $("mNyq").textContent=fmt(pNyq()*1e6,2)+" \u00b5m";
+  const raz=S.p/pNyq();
+  $("mRaz").textContent=fmt(raz,2)+"\u00d7";
+  $("mSep").textContent=fmt(S.sep/fwhmEntregue(),2)+"\u00d7";
+  $("vD").textContent=fmt(S.D,S.D<10?2:1);
+  $("vL").textContent=S.lam<1e-6?fmt(S.lam*1e9,0)+" nm":fmt(S.lam*1e6,2)+" \u00b5m";
+  $("vF").textContent=fmt(S.fr,1);
+  $("vP").textContent=fmt(S.p*1e6,1);
+  $("vSep").textContent=S.sep<0.1?fmt(S.sep*1000,0)+" mas":fmt(S.sep,3);
+  $("vS").textContent=fmt(S.seeing,2);
+  $("vSt").textContent=fmt(S.strehl,2);
+  $("boxSeeing").style.display=S.modo==="difracao"?"none":"block";
+  $("boxStrehl").style.display=S.modo==="ao"?"block":"none";
+}
+function render(){ leituras(); desenhaImagem(); desenhaCorte(); veredito(); }
+
+// ---- controles ----
+function chips(cont,lista,get,set){
+  cont.innerHTML="";
+  lista.forEach(([k,r])=>{
+    const b=document.createElement("button"); b.className="chip"+(get()===k?" on":"");
+    b.textContent=r; b.onclick=()=>{ set(k); chips(cont,lista,get,set); render(); };
+    cont.appendChild(b);
+  });
+}
+chips($("modos"),MODOS,()=>S.modo,k=>S.modo=k);
+chips($("vistas"),VISTAS,()=>S.vista,k=>S.vista=k);
+(function(){
+  const c=$("presets");
+  Object.keys(PRESETS).forEach(nome=>{
+    const b=document.createElement("button"); b.className="chip"; b.textContent=nome;
+    b.onclick=()=>{
+      const P=PRESETS[nome]; Object.assign(S,P);
+      $("sD").value=Math.log10(S.D); $("sL").value=Math.log10(S.lam*1e9);
+      $("sF").value=S.fr; $("sP").value=S.p*1e6; $("sSep").value=Math.log10(S.sep);
+      $("sS").value=S.seeing; $("sSt").value=S.strehl;
+      chips($("modos"),MODOS,()=>S.modo,k=>S.modo=k);
+      [...c.children].forEach(x=>x.classList.remove("on")); b.classList.add("on");
+      render();
+    };
+    c.appendChild(b);
+  });
+})();
+$("sD").oninput=e=>{ S.D=Math.pow(10,+e.target.value); render(); };
+$("sL").oninput=e=>{ S.lam=Math.pow(10,+e.target.value)*1e-9; render(); };
+$("sF").oninput=e=>{ S.fr=+e.target.value; render(); };
+$("sP").oninput=e=>{ S.p=+e.target.value*1e-6; render(); };
+$("sSep").oninput=e=>{ S.sep=Math.pow(10,+e.target.value); render(); };
+$("sS").oninput=e=>{ S.seeing=+e.target.value; render(); };
+$("sSt").oninput=e=>{ S.strehl=+e.target.value; render(); };
+
+if(new URLSearchParams(location.search).get("embed")){
+  document.body.classList.add("embed");
+  img.height=500; img.width=525; cut.height=500; cut.width=500;
+}
+$("sD").value=Math.log10(S.D); $("sL").value=Math.log10(S.lam*1e9);
+$("sSep").value=Math.log10(S.sep); $("sP").value=S.p*1e6;
+render();
+</script>
+</body></html>
